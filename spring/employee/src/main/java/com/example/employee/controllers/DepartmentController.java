@@ -40,9 +40,9 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/departments/get-by-name")
-	public ResponseEntity<List<Department>> getByDepartmentName(Pageable pageable, @RequestParam String name) {
-		Page<Department> departments = departmentServiceImpl.getByDepartmentName(pageable, name);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments.getContent());
+	public ResponseEntity<Department> getByDepartmentName(@RequestParam String name) {
+		Department departments = departmentServiceImpl.getByDepartmentName(name);
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments);
 	}
 
 	@PostMapping("/departments/create")
@@ -57,7 +57,7 @@ public class DepartmentController {
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(newDepartment);
 	}
 
-	@GetMapping("/departments/get-one/{departmentId}")
+	@DeleteMapping("/departments/get-one/{departmentId}")
 	public ResponseEntity<Void> deleteDepartment(@PathVariable Integer departmentId) {
 		departmentServiceImpl.deleteDepartment(departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);

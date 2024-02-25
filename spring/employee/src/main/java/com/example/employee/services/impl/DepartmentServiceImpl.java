@@ -25,12 +25,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 	
 	@Override
 	public Department getDepartmentById(Integer departmentId) {
-		return null;
+		return departmentRepository.findById(departmentId).get();
 	}
 
 	@Override
-	public Page<Department> getByDepartmentName(Pageable pageable, String departmentName) {
-		return departmentRepository.findAllByName(pageable, departmentName);
+	public Department getByDepartmentName(String departmentName) {
+		return departmentRepository.findByName(departmentName);
 	}
 
 	@Override
