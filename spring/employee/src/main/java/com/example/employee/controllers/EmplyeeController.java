@@ -33,13 +33,13 @@ public class EmplyeeController {
 	}
 
 	@GetMapping("/employees/get-one/{employeeId}")
-	public ResponseEntity<Employee> getEmployeebyId(@PathVariable Integer employeeId) {
+	public ResponseEntity<Employee> getEmployeeById(@PathVariable Integer employeeId) {
 		Employee employee = employeeServiceImpl.getEmployeebyId(employeeId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employee);
 	}
 
 	@GetMapping("/employees/get-by-department/{departmentId}")
-	public ResponseEntity<List<Employee>> getByDepartmentId(Pageable pageable,@PathVariable Integer departmentId) {
+	public ResponseEntity<List<Employee>> getByDepartmentId(Pageable pageable, @PathVariable Integer departmentId) {
 		Page<Employee> employees = employeeServiceImpl.getByDepartmentId(pageable, departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
 	}
@@ -57,7 +57,7 @@ public class EmplyeeController {
 	}
 
 	@DeleteMapping("/employees/delete/{employeeId}")
-	public ResponseEntity<Void> delete(@PathVariable Integer employeeId) {
+	public ResponseEntity<Void> deleteEmployee(@PathVariable Integer employeeId) {
 		employeeServiceImpl.deleteEmployee(employeeId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
 	}
