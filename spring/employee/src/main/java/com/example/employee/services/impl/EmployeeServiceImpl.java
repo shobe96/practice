@@ -29,7 +29,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Page<Employee> getByDepartmentId(Pageable pageable, Integer departmentId) {
+	public Page<Employee> getEmployeeByDepartmentId(Pageable pageable, Integer departmentId) {
 		return employeeRepository.findAllByDepartmentId(pageable, departmentId);
 	}
 

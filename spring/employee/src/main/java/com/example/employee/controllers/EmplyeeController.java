@@ -39,8 +39,8 @@ public class EmplyeeController {
 	}
 
 	@GetMapping("/employees/get-by-department/{departmentId}")
-	public ResponseEntity<List<Employee>> getByDepartmentId(Pageable pageable, @PathVariable Integer departmentId) {
-		Page<Employee> employees = employeeServiceImpl.getByDepartmentId(pageable, departmentId);
+	public ResponseEntity<List<Employee>> getEmployeeByDepartmentId(Pageable pageable, @PathVariable Integer departmentId) {
+		Page<Employee> employees = employeeServiceImpl.getEmployeeByDepartmentId(pageable, departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
 	}
 
