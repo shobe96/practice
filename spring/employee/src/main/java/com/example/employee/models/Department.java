@@ -4,16 +4,18 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 
 @Entity
@@ -23,7 +25,7 @@ public class Department {
 	@Id
 	@Column(name = "department_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer departmentId;
+	private Integer id;
 	
 	@Column(name = "name", length = 25)
 	private String name;
@@ -43,15 +45,16 @@ public class Department {
 	@Column(name = "active")
 	private Boolean active;
 	
-	@OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "department")
+	@JsonIgnoreProperties("department")
 	Set<Employee> employees = new HashSet<Employee>();
 
-	public Integer getDepartmentId() {
-		return departmentId;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setDepartmentId(Integer departmentId) {
-		this.departmentId = departmentId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getName() {

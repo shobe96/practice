@@ -2,16 +2,18 @@ package com.example.employee.models;
 
 import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.PostUpdate;
-import javax.persistence.PrePersist;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PostUpdate;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "employee", schema = "employee")
@@ -20,7 +22,7 @@ public class Employee {
 	@Id
 	@Column(name = "employee_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Integer employeeId;
+	private Integer id;
 	
 	@Column(name = "name", length = 25)
 	private String name;
@@ -45,14 +47,15 @@ public class Employee {
 	
 	@ManyToOne
 	@JoinColumn(name = "department_id")
+	@JsonIgnoreProperties("employees")
 	Department department;
 
-	public Integer getEmployeeId() {
-		return employeeId;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setEmployeeId(Integer employeeId) {
-		this.employeeId = employeeId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
 	public String getName() {
