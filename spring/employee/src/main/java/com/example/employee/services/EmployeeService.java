@@ -12,5 +12,5 @@ public interface EmployeeService {
 	public Page<Employee> getByDepartmentId(Pageable pageable, Integer departmentId);
 	public Employee saveEmployee(Employee employee);
 	public Employee updateEmployee(Employee employee);
-	public void delete(Integer employeeId);
+	public void deleteEmployee(Integer employeeId);
 }
