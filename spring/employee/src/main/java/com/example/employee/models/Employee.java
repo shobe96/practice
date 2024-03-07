@@ -2,6 +2,8 @@ package com.example.employee.models;
 
 import java.util.Date;
 
+import org.springframework.lang.NonNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -14,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 
 @Entity
 @Table(name = "employee", schema = "employee")
@@ -25,9 +28,13 @@ public class Employee {
 	private Integer id;
 	
 	@Column(name = "name", length = 25)
+	@NonNull
+	@Size(min = 5, max = 25)
 	private String name;
 	
 	@Column(name = "surname", length = 25)
+	@NonNull
+	@Size(min = 5, max = 25)
 	private String surname;
 	
 	@Column(name = "add_date")
@@ -131,5 +138,12 @@ public class Employee {
 	@PostUpdate
 	private void beforeUpdate() {
 		this.modDate = new Date();
+	}
+
+	@Override
+	public String toString() {
+		return "Employee [id=" + id + ", name=" + name + ", surname=" + surname + ", addDate=" + addDate + ", modDate="
+				+ modDate + ", addUser=" + addUser + ", modUser=" + modUser + ", active=" + active + ", department="
+				+ department + "]";
 	}
 }

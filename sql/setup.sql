@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS department (
 DROP TABLE IF EXISTS employee;
 CREATE TABLE IF NOT EXISTS employee (
     employee_id BIGINT NOT NULL AUTO_INCREMENT,
-    name VARCHAR(25),
-    surname VARCHAR(25),
+    name varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    surname varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
     add_user VARCHAR(25),
     mod_user VARCHAR(25),
     add_date TIMESTAMP,

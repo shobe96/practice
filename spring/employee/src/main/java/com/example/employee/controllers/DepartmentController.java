@@ -18,48 +18,48 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.models.Department;
-import com.example.employee.services.impl.DepartmentServiceImpl;
+import com.example.employee.services.DepartmentService;
 
 @RestController
 @RequestMapping("/api")
 public class DepartmentController {
 
 	@Autowired
-	private DepartmentServiceImpl departmentServiceImpl;
+	private DepartmentService departmentService;
 
 	@GetMapping("/departments")
 	public ResponseEntity<List<Department>> getAllDepartments(Pageable pageable) {
-		Page<Department> departments = departmentServiceImpl.getAllDepartments(pageable);
+		Page<Department> departments = departmentService.getAllDepartments(pageable);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments.getContent());
 	}
 
 	@GetMapping("/departments/get-one/{departmentId}")
 	public ResponseEntity<Department> getDepartmentById(@PathVariable Integer departmentId) {
-		Department department = departmentServiceImpl.getDepartmentById(departmentId);
+		Department department = departmentService.getDepartmentById(departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(department);
 	}
 
 	@GetMapping("/departments/get-by-name")
 	public ResponseEntity<Department> getByDepartmentName(@RequestParam String name) {
-		Department departments = departmentServiceImpl.getByDepartmentName(name);
+		Department departments = departmentService.getByDepartmentName(name);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments);
 	}
 
 	@PostMapping("/departments/create")
 	public ResponseEntity<Department> saveDepartment(@RequestBody Department department) {
-		Department newDepartment = departmentServiceImpl.saveDepartment(department);
+		Department newDepartment = departmentService.saveDepartment(department);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(newDepartment);
 	}
 
 	@PutMapping("/departments/update")
 	public ResponseEntity<Department> updateDepartment(@RequestBody Department department) {
-		Department newDepartment = departmentServiceImpl.updateDepartment(department);
+		Department newDepartment = departmentService.updateDepartment(department);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(newDepartment);
 	}
 
 	@DeleteMapping("/departments/get-one/{departmentId}")
 	public ResponseEntity<Void> deleteDepartment(@PathVariable Integer departmentId) {
-		departmentServiceImpl.deleteDepartment(departmentId);
+		departmentService.deleteDepartment(departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
 	}
 

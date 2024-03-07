@@ -1,5 +1,9 @@
 package com.example.employee.services.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,5 +51,23 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public void deleteEmployee(Integer employeeId) {
 		Employee employee = getEmployeebyId(employeeId);
 		employeeRepository.delete(employee);
+	}
+
+	@Override
+	public List<Employee> filterByActive(Boolean active) {
+		List<Employee> employees = new ArrayList<Employee>();
+		employeeRepository.findAll().forEach(employees::add);
+		employees.removeIf(employee -> employee.getActive() != active);
+		return employees;
+	}
+	
+	@Override
+	public Employee getEmployeebyId2(Integer employeeId) throws Exception {
+		Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+		if (employeeOptional.isPresent()) {
+			return employeeOptional.get();
+		} else {
+			throw new Exception("Employee not found for id: " + employeeId);
+		}
 	}
 }
