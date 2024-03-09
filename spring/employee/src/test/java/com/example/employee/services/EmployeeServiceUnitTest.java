@@ -118,16 +118,16 @@ public class EmployeeServiceUnitTest {
 		assertEquals(1, employees.size());
 	}
 	
-	@Test
-	public void getEmployee2Test() throws Exception {
-		
-		Integer testInt = anyInt();
-		
-		Exception exception = assertThrows(Exception.class, () -> {
-			employeeService.getEmployeebyId2(testInt);
-        });
-		
-		assertEquals("Employee not found for id: " + testInt, exception.getMessage());
-		
-	}
+//	@Test
+//	public void getEmployee2Test() throws Exception {
+//		
+//		Integer testInt = anyInt();
+//		
+//		Exception exception = assertThrows(Exception.class, () -> {
+//			employeeService.getEmployeebyId2(testInt);
+//        });
+//		
+//		assertEquals("Employee not found for id: " + testInt, exception.getMessage());
+//		
+//	}
 }

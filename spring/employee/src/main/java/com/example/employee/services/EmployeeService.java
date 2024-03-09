@@ -16,5 +16,5 @@ public interface EmployeeService {
 	public Employee updateEmployee(Employee employee);
 	public void deleteEmployee(Integer employeeId);
 	public List<Employee> filterByActive(Boolean active);
-	public Employee getEmployeebyId2(Integer employeeId) throws Exception;
+//	public Employee getEmployeebyId2(Integer employeeId) throws Exception;
 }

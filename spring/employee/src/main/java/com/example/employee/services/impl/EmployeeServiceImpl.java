@@ -61,13 +61,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return employees;
 	}
 	
-	@Override
-	public Employee getEmployeebyId2(Integer employeeId) throws Exception {
-		Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-		if (employeeOptional.isPresent()) {
-			return employeeOptional.get();
-		} else {
-			throw new Exception("Employee not found for id: " + employeeId);
-		}
-	}
+//	@Override
+//	public Employee getEmployeebyId2(Integer employeeId) throws Exception {
+//		Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
+//		if (employeeOptional.isPresent()) {
+//			return employeeOptional.get();
+//		} else {
+//			throw new Exception("Employee not found for id: " + employeeId);
+//		}
+//	}
 }

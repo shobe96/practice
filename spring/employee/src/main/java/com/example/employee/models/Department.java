@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +17,7 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Size;
 
 
 @Entity
@@ -28,6 +30,8 @@ public class Department {
 	private Integer id;
 	
 	@Column(name = "name", length = 25)
+	@NonNull
+	@Size(min = 5, max = 25)
 	private String name;
 	
 	@Column(name = "add_date")
@@ -122,5 +126,12 @@ public class Department {
 	@PostUpdate
 	private void beforeUpdate() {
 		this.modDate = new Date();
+	}
+
+	@Override
+	public String toString() {
+		return "Department [id=" + id + ", name=" + name + ", addDate=" + addDate + ", modDate=" + modDate
+				+ ", addUser=" + addUser + ", modUser=" + modUser + ", active=" + active + ", employees=" + employees
+				+ "]";
 	}
 }
