@@ -14,6 +14,9 @@ import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,32 +33,32 @@ import com.example.employee.services.EmployeeService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/employees")
 public class EmployeeController {
 
 	@Autowired
 	private EmployeeService employeeService;
 
-	@GetMapping("/employees")
+	@GetMapping()
 	public ResponseEntity<List<Employee>> getAllEmployees(Pageable pageable) {
 		Page<Employee> employees = employeeService.getAllEmployees(pageable);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
 	}
 
-	@GetMapping("/employees/get-one/{employeeId}")
+	@GetMapping("/get-one/{employeeId}")
 	public ResponseEntity<Employee> getEmployeeById(@PathVariable Integer employeeId) {
 		Employee employee = employeeService.getEmployeebyId(employeeId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employee);
 	}
 
-	@GetMapping("/employees/get-by-department/{departmentId}")
+	@GetMapping("/get-by-department/{departmentId}")
 	public ResponseEntity<List<Employee>> getEmployeeByDepartmentId(Pageable pageable,
 			@PathVariable Integer departmentId) {
 		Page<Employee> employees = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
 	}
 
-	@PostMapping("/employees/create")
+	@PostMapping("/create")
 	public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee) {
 		Employee newEmployee = employeeService.saveEmployee(employee);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
@@ -63,13 +66,13 @@ public class EmployeeController {
 		return ResponseEntity.created(location).headers(new HttpHeaders()).body(newEmployee);
 	}
 
-	@PutMapping("/employees/update")
-	public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee) {
+	@PutMapping("/update")
+	public ResponseEntity<Employee> updateEmployee(@Valid @RequestBody Employee employee) {
 		Employee updatedEmployee = employeeService.saveEmployee(employee);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(updatedEmployee);
 	}
 
-	@DeleteMapping("/employees/delete/{employeeId}")
+	@DeleteMapping("/delete/{employeeId}")
 	public ResponseEntity<Void> deleteEmployee(@PathVariable Integer employeeId) {
 		employeeService.deleteEmployee(employeeId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
@@ -83,26 +86,17 @@ public class EmployeeController {
 //	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(SQLException.class)
-	public Map<String, String> handleValidationExceptions(SQLException ex) {
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		Map<String, String> errors = new HashMap<>();
-		for (Throwable t : ex) {
-			String field = t.getMessage();
-			field = field.substring(field.indexOf("'") + 1);
-			field = field.substring(0, field.indexOf("'"));
-			String message = "";
-			if (t.getMessage().contains("long")) {
-				message = "Field execeds maximum number of characters";
-			}
-
-			if (t.getMessage().contains("null")) {
-				message = "Field is mandatory";
-			}
-			errors.put(field, message);
-		}
+		ex.getBindingResult().getAllErrors().forEach((error) -> {
+			String fieldName = ((FieldError) error).getField();
+			String errorMessage = error.getDefaultMessage();
+			errors.put(fieldName, errorMessage);
+		});
 		return errors;
 	}
-
+	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(PropertyReferenceException.class)
 	public Map<String, String> handleSortExceptions(PropertyReferenceException ex) {
@@ -126,6 +120,15 @@ public class EmployeeController {
 		errors.put(field, message);
 		return errors;
 	}
-
 	
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(HttpMessageNotReadableException.class)
+	public Map<String, String> name(HttpMessageNotReadableException ex) {
+		Map<String, String> errors = new HashMap<>();
+		String message = ex.getMessage();
+		String field = "employee";
+		errors.put(field, message);
+		return errors;
+	}
+
 }

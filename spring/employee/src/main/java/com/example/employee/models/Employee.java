@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -28,13 +29,13 @@ public class Employee {
 	private Integer id;
 	
 	@Column(name = "name", length = 25)
-	@NonNull
-	@Size(min = 5, max = 25)
+	@NotBlank(message = "Name is mandatory")
+	@Size(min = 5, max = 25, message = "Name size must be between 5 and 25")
 	private String name;
 	
 	@Column(name = "surname", length = 25)
-	@NonNull
-	@Size(min = 5, max = 25)
+	@NotBlank(message = "Surname is mandatory")
+	@Size(min = 5, max = 25, message = "Surname size must be between 5 and 25")
 	private String surname;
 	
 	@Column(name = "add_date")
