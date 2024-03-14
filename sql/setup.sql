@@ -33,6 +33,7 @@ CREATE TABLE IF NOT EXISTS employee (
     mod_date TIMESTAMP,
     active BOOLEAN,
     department_id BIGINT,
+    email varchar(50) DEFAULT NULL,
     PRIMARY KEY (employee_id),
     FOREIGN KEY (department_id)
         REFERENCES department (department_id)

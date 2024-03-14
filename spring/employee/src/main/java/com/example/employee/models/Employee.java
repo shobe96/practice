@@ -16,6 +16,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -52,6 +53,11 @@ public class Employee {
 	
 	@Column(name = "active")
 	private Boolean active;
+	
+	@Column(name = "email")
+	@Email(message = "Email is not in correct format")
+	@Size(max = 50, message = "Surname size must be between 5 and 50")
+	private String email;
 	
 	@ManyToOne
 	@JoinColumn(name = "department_id")
@@ -124,6 +130,14 @@ public class Employee {
 	
 	public Department getDepartment() {
 		return department;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public void setDepartment(Department department) {
