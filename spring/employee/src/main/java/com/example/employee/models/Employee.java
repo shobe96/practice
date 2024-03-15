@@ -2,8 +2,6 @@ package com.example.employee.models;
 
 import java.util.Date;
 
-import org.springframework.lang.NonNull;
-
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
