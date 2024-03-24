@@ -1,20 +1,22 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { AppComponent } from './app.component';
 import { BrowserModule } from '@angular/platform-browser';
-import { AppRoutingModuleModule } from './app-routing-module.module';
 
-
+import { AppRoutingModule } from './app-routing.module';
+import { AppComponent } from './app.component';
+import { MenubarModule } from 'primeng/menubar';
+import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 
 @NgModule({
   declarations: [
-
+    AppComponent,
+    NavBarComponent,
   ],
   imports: [
-    CommonModule,
     BrowserModule,
-    AppRoutingModuleModule,
-    AppComponent
+    AppRoutingModule,
+    MenubarModule
   ],
+  providers: [],
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

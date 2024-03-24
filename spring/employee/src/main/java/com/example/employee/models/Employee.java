@@ -54,7 +54,7 @@ public class Employee {
 	
 	@Column(name = "email")
 	@Email(message = "Email is not in correct format")
-	@Size(max = 50, message = "Surname size must be between 5 and 50")
+	@Size(max = 50, message = "Email can't be longer than 50 characters")
 	private String email;
 	
 	@ManyToOne
