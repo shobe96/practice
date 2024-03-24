@@ -5,6 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { MenubarModule } from 'primeng/menubar';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    MenubarModule
+    MenubarModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]
