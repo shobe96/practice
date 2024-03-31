@@ -1,1 +1,60 @@
-<p>employee-edit works! {{id}}</p>
+<div class="card">
+  <h1 *ngIf="id === null; else elseBlock">Add new Employee</h1>
+  <ng-template #elseBlock>
+    <h1>Employee {{ id }}</h1>
+  </ng-template>
+  <form
+    class="employee-form"
+    [formGroup]="employeeFormGroup"
+    (ngSubmit)="submit()"
+  >
+    <input formControlName="name" pInputText placeholder="Name of employee" />
+    <div
+      *ngIf="employeeFormGroup.controls['name'].invalid && employeeFormGroup.controls['name'].touched"
+    >
+      <div *ngIf="employeeFormGroup.controls['name'].errors?.['required']">
+        Name is required!
+      </div>
+      <div *ngIf="employeeFormGroup.controls['name'].errors?.['minlength']">
+        Name must be bigger than 5 characters!
+      </div>
+      <div *ngIf="employeeFormGroup.controls['name'].errors?.['maxlength']">
+        Name must be shorter than 25 characters!
+      </div>
+    </div>
+    <input
+      formControlName="surname"
+      pInputText
+      placeholder="Surname of employee"
+    />
+    <div
+      *ngIf="employeeFormGroup.controls['surname'].invalid && employeeFormGroup.controls['surname'].touched"
+    >
+      <div *ngIf="employeeFormGroup.controls['surname'].errors?.['required']">
+        Surname is required!
+      </div>
+      <div *ngIf="employeeFormGroup.controls['surname'].errors?.['minlength']">
+        Surname must be bigger than 5 characters!
+      </div>
+      <div
+        *ngIf="employeeFormGroup.controls['surname'].errors?.['maxlength']"
+      ></div>
+    </div>
+    <input formControlName="email" pInputText placeholder="Email of employee" />
+    <div
+      *ngIf="employeeFormGroup.controls['email'].invalid && employeeFormGroup.controls['email'].touched"
+    >
+      <div *ngIf="employeeFormGroup.controls['email'].errors?.['email']">
+        Email address is not valid!
+      </div>
+      <div *ngIf="employeeFormGroup.controls['email'].errors?.['maxlength']">
+        Email address must be shorter than 50 characters!
+      </div>
+    </div>
+    <p-dropdown formControlName="department" [options]="departments" optionLabel="name" placeholder="Select a Department" dataKey="id"></p-dropdown>
+    <div class="action-buttons">
+      <p-button label="Cancel" (onClick)="back()" />
+      <p-button label="Submit" type="submit" />
+    </div>
+  </form>
+</div>

@@ -1,5 +1,8 @@
 package com.example.employee.services.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,5 +50,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public void deleteDepartment(Integer departmentId) {
 		Department department = getDepartmentById(departmentId);
 		departmentRepository.delete(department);
+	}
+
+	@Override
+	public List<Department> getAllDepartments() {
+		List<Department> departments = new ArrayList<Department>();
+		departmentRepository.findAll().forEach(departments::add);;
+		return departments;
 	}
 }

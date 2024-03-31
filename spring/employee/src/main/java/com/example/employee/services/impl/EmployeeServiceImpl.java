@@ -58,6 +58,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		employees.removeIf(employee -> employee.getActive() != active);
 		return employees;
 	}
+
+	@Override
+	public Long getEmployeeCount() {
+		// TODO Auto-generated method stub
+		return employeeRepository.count();
+	}
 	
 //	@Override
 //	public Employee getEmployeebyId2(Integer employeeId) throws Exception {

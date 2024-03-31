@@ -1,18 +1,19 @@
 package com.example.employee.controllers;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import com.example.employee.models.Department;
 import com.example.employee.services.DepartmentService;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api")
 public class DepartmentController {
 
@@ -36,9 +38,14 @@ public class DepartmentController {
 	private DepartmentService departmentService;
 
 	@GetMapping("/departments")
-	public ResponseEntity<List<Department>> getAllDepartments(Pageable pageable) {
-		Page<Department> departments = departmentService.getAllDepartments(pageable);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments.getContent());
+	public ResponseEntity<List<Department>> getAllDepartments(Pageable pageable, @RequestParam() Boolean all) {
+		List<Department> departments = new ArrayList<Department>();
+		if (all) {
+			departments = departmentService.getAllDepartments();
+		} else {			
+			departments = departmentService.getAllDepartments(pageable).getContent();
+		}
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments);
 	}
 
 	@GetMapping("/departments/get-one/{departmentId}")

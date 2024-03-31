@@ -58,6 +58,12 @@ public class EmployeeController {
 		Page<Employee> employees = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
 	}
+	
+	@GetMapping("/count")
+	public ResponseEntity<Long> getEmployeeCount() {
+		Long employeeCount = employeeService.getEmployeeCount();
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeCount);
+	}
 
 	@PostMapping("/create")
 	public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee) {

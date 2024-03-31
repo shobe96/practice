@@ -7,7 +7,7 @@ import { MenuItem, PrimeIcons } from 'primeng/api';
   styleUrl: './nav-bar.component.scss'
 })
 export class NavBarComponent implements OnInit {
-  items: MenuItem[] | undefined;
+  items: MenuItem[] = [];
 
   ngOnInit(): void {
     this.items = [
@@ -23,7 +23,7 @@ export class NavBarComponent implements OnInit {
           {
             label: 'Employees',
             icon: PrimeIcons.USER,
-            routerLink: '/employee'
+            routerLink: '/employee/list'
           },
           {
             label: 'Departments',
