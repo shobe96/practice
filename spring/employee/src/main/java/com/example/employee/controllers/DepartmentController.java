@@ -1,9 +1,7 @@
 package com.example.employee.controllers;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -27,57 +25,64 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.models.Department;
+import com.example.employee.models.DepartmentSearchResult;
 import com.example.employee.services.DepartmentService;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
-@RequestMapping("/api")
+@RequestMapping("/api/departments")
 public class DepartmentController {
 
 	@Autowired
 	private DepartmentService departmentService;
 
-	@GetMapping("/departments")
-	public ResponseEntity<List<Department>> getAllDepartments(Pageable pageable, @RequestParam() Boolean all) {
-		List<Department> departments = new ArrayList<Department>();
+	@GetMapping()
+	public ResponseEntity<DepartmentSearchResult> getAllDepartments(Pageable pageable, @RequestParam() Boolean all) {
+		DepartmentSearchResult departments = new DepartmentSearchResult();
 		if (all) {
-			departments = departmentService.getAllDepartments();
-		} else {			
-			departments = departmentService.getAllDepartments(pageable).getContent();
+			departments.setDepartments(departmentService.getAllDepartments());
+		} else {
+			departments = departmentService.getAllDepartments(pageable);
 		}
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments);
 	}
 
-	@GetMapping("/departments/get-one/{departmentId}")
+	@GetMapping("/get-one/{departmentId}")
 	public ResponseEntity<Department> getDepartmentById(@PathVariable Integer departmentId) {
 		Department department = departmentService.getDepartmentById(departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(department);
 	}
 
-	@GetMapping("/departments/get-by-name")
+	@GetMapping("/get-by-name")
 	public ResponseEntity<Department> getByDepartmentName(@RequestParam String name) {
 		Department departments = departmentService.getByDepartmentName(name);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments);
 	}
 
-	@PostMapping("/departments/create")
+	@GetMapping("/search")
+	public ResponseEntity<DepartmentSearchResult> search(@RequestParam(required = false) String name,
+			Pageable pageable) {
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(departmentService.searchDepartments(name, pageable));
+	}
+
+	@PostMapping("/create")
 	public ResponseEntity<Department> saveDepartment(@RequestBody Department department) {
 		Department newDepartment = departmentService.saveDepartment(department);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(newDepartment);
 	}
 
-	@PutMapping("/departments/update")
+	@PutMapping("/update")
 	public ResponseEntity<Department> updateDepartment(@RequestBody Department department) {
 		Department newDepartment = departmentService.updateDepartment(department);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(newDepartment);
 	}
 
-	@DeleteMapping("/departments/delete/{departmentId}")
+	@DeleteMapping("/delete/{departmentId}")
 	public ResponseEntity<Void> deleteDepartment(@PathVariable Integer departmentId) {
 		departmentService.deleteDepartment(departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
 	}
-	
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(SQLException.class)
 	public Map<String, String> handleValidationExceptions(SQLException ex) {

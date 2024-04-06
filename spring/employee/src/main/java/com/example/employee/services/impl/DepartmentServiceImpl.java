@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Department;
+import com.example.employee.models.DepartmentSearchResult;
 import com.example.employee.repositories.DepartmentRepository;
 import com.example.employee.services.DepartmentService;
 
@@ -22,8 +23,11 @@ public class DepartmentServiceImpl implements DepartmentService {
 	private DepartmentRepository departmentRepository;
 
 	@Override
-	public Page<Department> getAllDepartments(Pageable pageable) {
-		return departmentRepository.findAll(pageable);
+	public DepartmentSearchResult getAllDepartments(Pageable pageable) {
+		DepartmentSearchResult departmentSearchResult = new DepartmentSearchResult();
+		departmentSearchResult.setDepartments(departmentRepository.findAll(pageable).getContent());
+		departmentSearchResult.setSize(departmentRepository.count());
+		return departmentSearchResult;
 	}
 	
 	@Override
@@ -57,5 +61,13 @@ public class DepartmentServiceImpl implements DepartmentService {
 		List<Department> departments = new ArrayList<Department>();
 		departmentRepository.findAll().forEach(departments::add);;
 		return departments;
+	}
+
+	@Override
+	public DepartmentSearchResult searchDepartments(String name, Pageable pageable) {
+		DepartmentSearchResult departmentSearchResult = new DepartmentSearchResult();
+		departmentSearchResult.setDepartments(departmentRepository.searchDepartments(name, pageable).getContent());
+		departmentSearchResult.setSize(departmentRepository.searchResultCount(name));
+		return departmentSearchResult;
 	}
 }

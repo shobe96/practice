@@ -1,1 +1,30 @@
-<p>department-edit works! {{id}}</p>
+<div class="card">
+  <h1 *ngIf="id === null; else elseBlock">Add new Department</h1>
+  <ng-template #elseBlock>
+    <h1>Department {{ id }}</h1>
+  </ng-template>
+  <form
+    class="department-form"
+    [formGroup]="departmentFormGroup"
+    (ngSubmit)="submit()"
+  >
+    <input formControlName="name" pInputText placeholder="Name of department" />
+    <div
+      *ngIf="departmentFormGroup.controls['name'].invalid && departmentFormGroup.controls['name'].touched"
+    >
+      <div *ngIf="departmentFormGroup.controls['name'].errors?.['required']">
+        Name is required!
+      </div>
+      <div *ngIf="departmentFormGroup.controls['name'].errors?.['minlength']">
+        Name must be bigger than 5 characters!
+      </div>
+      <div *ngIf="departmentFormGroup.controls['name'].errors?.['maxlength']">
+        Name must be shorter than 25 characters!
+      </div>
+    </div>
+    <div class="action-buttons">
+      <p-button label="Cancel" (onClick)="back()" />
+      <p-button label="Submit" type="submit" />
+    </div>
+  </form>
+</div>

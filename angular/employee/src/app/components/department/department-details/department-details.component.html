@@ -1,1 +1,8 @@
-<p>department-details works!</p>
+<div class="card">
+  <h1>Department {{ department.id }}</h1>
+  <label for="name">Name:</label>
+  <p id="name">{{ department.name }}</p>
+  <div class="action-buttons">
+    <p-button label="Back" (onClick)="back()" />
+  </div>
+</div>
