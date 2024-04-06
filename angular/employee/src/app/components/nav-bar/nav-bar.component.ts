@@ -28,7 +28,7 @@ export class NavBarComponent implements OnInit {
           {
             label: 'Departments',
             icon: PrimeIcons.SITEMAP,
-            routerLink: '/department'
+            routerLink: '/department/list'
           }
         ]
       }
