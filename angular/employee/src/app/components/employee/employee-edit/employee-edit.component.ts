@@ -6,6 +6,7 @@ import { Employee } from '../../../models/employee.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Department } from '../../../models/department.model';
 import { DepartmentService } from '../../../services/department/department.service';
+import { DepartmentSearchResult } from '../../../models/department-search-result.model';
 
 @Component({
   selector: 'app-employee-edit',
@@ -43,13 +44,13 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.departmentSubscription$ = this.departmentService.getAllDepartments(true).subscribe({
-      next: (value: any) => {
-        this.departments = value;
+      next: (value: DepartmentSearchResult) => {
+        this.departments = value.departments !== undefined ? value.departments : [];
       },
       error: (err: any) => {
         console.log(err)
       },
-      complete: () => {console.log("Completed")}
+      complete: () => { console.log("Completed") }
     });
     // this.employeService.mySub.subscribe((val) => {console.log(val)});
     this.buildForm();
@@ -70,7 +71,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
 
   private initFormFields() {
     if (this.id !== null) {
-      const employeObserver: any = {
+      const employeeObserver: any = {
         next: (value: Employee) => {
           this.employee = value;
           this.employeeFormGroup.controls['name'].setValue(value.name);
@@ -81,7 +82,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
         error: (err: any) => { console.log(err) },
         complete: () => { console.log('Completed') }
       };
-      this.employeeSubscription$ = this.employeeService.getEmployee(this.id).subscribe(employeObserver);
+      this.employeeSubscription$ = this.employeeService.getEmployee(this.id).subscribe(employeeObserver);
     }
   }
 
@@ -90,7 +91,6 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
   }
 
   submit() {
-    console.log(this.employee);
     this.employee.name = this.employeeFormGroup.controls['name'].value;
     this.employee.surname = this.employeeFormGroup.controls['surname'].value;
     this.employee.email = this.employeeFormGroup.controls['email'].value;

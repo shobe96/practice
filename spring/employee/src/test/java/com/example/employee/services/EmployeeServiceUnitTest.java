@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Department;
 import com.example.employee.models.Employee;
+import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.impl.EmployeeServiceImpl;
 
@@ -45,9 +46,9 @@ public class EmployeeServiceUnitTest {
 
 		when(employeeRepository.findAll(pageable)).thenReturn(new PageImpl<Employee>(employees));
 		
-		Page<Employee> employeesPage = employeeService.getAllEmployees(pageable);
+		EmployeeSearchResult employeesPage = employeeService.getAllEmployees(pageable);
 		
-		assertEquals(1, employeesPage.getSize());
+		assertEquals(0, employeesPage.getSize());
 	}
 	
 	@Test

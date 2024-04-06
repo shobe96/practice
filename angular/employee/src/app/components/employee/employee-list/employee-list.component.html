@@ -1,10 +1,42 @@
 <div class="card">
   <p-accordion [activeIndex]="0">
     <p-accordionTab header="Search Filters">
-
+      <div class="search-inputs">
+        <input
+          [(ngModel)]="employeeSearch.name"
+          pInputText
+          placeholder="Name of employee"
+          (keyup)="search()"
+        />
+        <input
+          [(ngModel)]="employeeSearch.surname"
+          pInputText
+          placeholder="Surname of employee"
+          (keyup)="search()"
+        />
+        <input
+          [(ngModel)]="employeeSearch.email"
+          pInputText
+          placeholder="Email of employee"
+          (keyup)="search()"
+        />
+        <p-button
+          icon="pi pi-trash"
+          [rounded]="true"
+          (onClick)="clear()"
+          severity="danger"
+          [pTooltip]="clearFiltersTooltip"
+          tooltipPosition="top"
+        />
+        <ng-template #clearFiltersTooltip>
+          <div class="flex align-items-center">
+            <span>Clear Filters</span>
+          </div>
+        </ng-template>
+      </div>
     </p-accordionTab>
-</p-accordion>
-  <p-button label="Add New" (onClick)="addNew()"></p-button>
+  </p-accordion>
+  <p-button label="Add New" (onClick)="addNew()" />
   <p-table [value]="employees" [tableStyle]="{ 'min-width': '70rem' }">
     <ng-template pTemplate="header">
       <tr>
@@ -33,9 +65,45 @@
           </ng-template>
         </td>
         <td>
-          <p-button icon="pi pi-eye" [rounded]="true" (onClick)="goToDetails(employee.id)" severity="success"/>
-          <p-button icon="pi pi-pencil" [rounded]="true" (onClick)="goToEdit(employee.id)" severity="warning"/>
-          <p-button icon="pi pi-trash" [rounded]="true" (onClick)="showDialog(true, employee.id)" severity="danger"/>
+          <p-button
+            icon="pi pi-eye"
+            [rounded]="true"
+            (onClick)="goToDetails(employee.id)"
+            severity="success"
+            [pTooltip]="detailsTooltip"
+            tooltipPosition="top"
+          />
+          <ng-template #detailsTooltip>
+            <div class="flex align-items-center">
+              <span>View Employee</span>
+            </div>
+          </ng-template>
+          <p-button
+            icon="pi pi-pencil"
+            [rounded]="true"
+            (onClick)="goToEdit(employee.id)"
+            severity="warning"
+            [pTooltip]="editTooltip"
+            tooltipPosition="top"
+          />
+          <ng-template #editTooltip>
+            <div class="flex align-items-center">
+              <span>Edit Employee</span>
+            </div>
+          </ng-template>
+          <p-button
+            icon="pi pi-trash"
+            [rounded]="true"
+            (onClick)="showDialog(true, employee.id)"
+            severity="danger"
+            [pTooltip]="deleteTooltip"
+            tooltipPosition="top"
+          />
+          <ng-template #deleteTooltip>
+            <div class="flex align-items-center">
+              <span>Delete Employee</span>
+            </div>
+          </ng-template>
         </td>
       </tr>
     </ng-template>

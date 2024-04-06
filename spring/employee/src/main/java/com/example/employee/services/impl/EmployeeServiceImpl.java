@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Employee;
+import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.EmployeeService;
 
@@ -21,8 +22,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 	EmployeeRepository employeeRepository;
 
 	@Override
-	public Page<Employee> getAllEmployees(Pageable pageable) {
-		return employeeRepository.findAll(pageable);
+	public EmployeeSearchResult getAllEmployees(Pageable pageable) {
+		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+		employeeSearchResult.setSize(employeeRepository.count());
+		employeeSearchResult.setEmployees(employeeRepository.findAll(pageable).getContent());
+		return employeeSearchResult;
 	}
 
 	@Override
@@ -60,9 +64,21 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Long getEmployeeCount() {
-		// TODO Auto-generated method stub
-		return employeeRepository.count();
+	public EmployeeSearchResult searcEmployees(String name, String surname, String email, Pageable pageable) {
+		if (name == null) {
+			name = "";
+		}
+		if (surname == null) {
+			surname = "";
+		}
+		if (email == null) {
+			email = "";
+		}
+		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+		List<Employee> employees = employeeRepository.searchEmployees(name, surname, email, pageable).getContent();
+		employeeSearchResult.setEmployees(employees);
+		employeeSearchResult.setSize(employeeRepository.searchResultCount(name, surname, email));
+		return employeeSearchResult;
 	}
 	
 //	@Override

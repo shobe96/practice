@@ -6,10 +6,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Employee;
+import com.example.employee.models.EmployeeSearchResult;
 
 public interface EmployeeService {
 	
-	public Page<Employee> getAllEmployees(Pageable pageable);
+	public EmployeeSearchResult getAllEmployees(Pageable pageable);
 	public Employee getEmployeebyId(Integer employeeId); 
 	public Page<Employee> getEmployeeByDepartmentId(Pageable pageable, Integer departmentId);
 	public Employee saveEmployee(Employee employee);
@@ -17,5 +18,5 @@ public interface EmployeeService {
 	public void deleteEmployee(Integer employeeId);
 	public List<Employee> filterByActive(Boolean active);
 //	public Employee getEmployeebyId2(Integer employeeId) throws Exception;
-	public Long getEmployeeCount();
+	public EmployeeSearchResult searcEmployees(String name, String surname, String email, Pageable pageable);
 }

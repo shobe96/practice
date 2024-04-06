@@ -25,10 +25,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.employee.models.Employee;
+import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.services.EmployeeService;
 import jakarta.validation.Valid;
 
@@ -41,9 +43,9 @@ public class EmployeeController {
 	private EmployeeService employeeService;
 
 	@GetMapping()
-	public ResponseEntity<List<Employee>> getAllEmployees(Pageable pageable) {
-		Page<Employee> employees = employeeService.getAllEmployees(pageable);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
+	public ResponseEntity<EmployeeSearchResult> getAllEmployees(Pageable pageable) {
+		EmployeeSearchResult employees = employeeService.getAllEmployees(pageable);
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees);
 	}
 
 	@GetMapping("/get-one/{employeeId}")
@@ -57,12 +59,6 @@ public class EmployeeController {
 			@PathVariable Integer departmentId) {
 		Page<Employee> employees = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
-	}
-	
-	@GetMapping("/count")
-	public ResponseEntity<Long> getEmployeeCount() {
-		Long employeeCount = employeeService.getEmployeeCount();
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeCount);
 	}
 
 	@PostMapping("/create")
@@ -83,6 +79,11 @@ public class EmployeeController {
 	public ResponseEntity<Void> deleteEmployee(@PathVariable Integer employeeId) {
 		employeeService.deleteEmployee(employeeId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
+	}
+	
+	@GetMapping("/search")
+	public ResponseEntity<EmployeeSearchResult> searchEMployees(@RequestParam(required = false) String name, @RequestParam(required = false) String surname, @RequestParam(required = false) String email, Pageable pageable) {
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeService.searcEmployees(name, surname, email, pageable));
 	}
 
 //	@GetMapping("/employees/get-by-active")

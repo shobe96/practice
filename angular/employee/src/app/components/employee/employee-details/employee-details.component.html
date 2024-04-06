@@ -1,7 +1,12 @@
-<h1>Employee {{ employee.id }}</h1>
-<label for="name">Name:</label>
-<p id="name">{{ employee.name }}</p>
-<label for="surname">Surname:</label>
-<p id="surname">{{ employee.surname }}</p>
-<label for="email">Email:</label>
-<p id="email">{{ employee.email }}</p>
+<div class="card">
+  <h1>Employee {{ employee.id }}</h1>
+  <label for="name">Name:</label>
+  <p id="name">{{ employee.name }}</p>
+  <label for="surname">Surname:</label>
+  <p id="surname">{{ employee.surname }}</p>
+  <label for="email">Email:</label>
+  <p id="email">{{ employee.email }}</p>
+  <div class="action-buttons">
+    <p-button label="Back" (onClick)="back()" />
+  </div>
+</div>

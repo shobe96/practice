@@ -5,6 +5,9 @@ import { environment } from '../../../environments/environment.development';
 import { Employee } from '../../models/employee.model';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeCreateResponse } from '../../models/employee-create-response.model';
+import { EmpoyeeSearchResult } from '../../models/empoyee-search-result.model';
+import { buildSearchParams } from '../../shared/utils';
+import { PageEvent } from '../../models/page-event.model';
 
 @Injectable({
   providedIn: 'root',
@@ -18,12 +21,8 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  public getAllEmpoloyees(page: PaginatorState): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${this.backendURL}${this.baseUrl}?page=${page.page}&size=${page.rows}&sort=asc`).pipe(catchError(this.errorHandler));
-  }
-
-  public getEmployeeCount(): Observable<number> {
-    return this.http.get<number>(`${this.backendURL}${this.baseUrl}/count`).pipe(catchError(this.errorHandler));
+  public getAllEmpoloyees(page: PaginatorState): Observable<EmpoyeeSearchResult> {
+    return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}?page=${page.page}&size=${page.rows}&sort=asc`).pipe(catchError(this.errorHandler));
   }
 
   public getEmployee(employeeId: number): Observable<Employee> {
@@ -40,6 +39,10 @@ export class EmployeeService {
 
   public delete(employeeId: number): Observable<void> {
     return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${employeeId}`);
+  }
+
+  public search(employee: Employee, page: PageEvent): Observable<EmpoyeeSearchResult> {
+    return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
   private errorHandler(errorRes: HttpErrorResponse) {

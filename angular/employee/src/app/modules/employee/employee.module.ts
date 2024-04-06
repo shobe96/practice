@@ -9,6 +9,7 @@ import { TableHoverDirective } from '../../shared/directives/table-hover.directi
 import { EmployeeEditComponent } from '../../components/employee/employee-edit/employee-edit.component';
 import { EmployeeDetailsComponent } from '../../components/employee/employee-details/employee-details.component';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '../shared/shared.module';
 
 
 @NgModule({
@@ -16,13 +17,12 @@ import { ReactiveFormsModule } from '@angular/forms';
     EmployeeComponent,
     EmployeeListComponent,
     EmployeeEditComponent,
-    EmployeeDetailsComponent,
-    TableHoverDirective
+    EmployeeDetailsComponent
   ],
   imports: [
-    CommonModule,
+    // CommonModule,
     EmployeeRoutingModule,
-    PrimeNgModule,
+    SharedModule,
     ReactiveFormsModule
   ]
 })
