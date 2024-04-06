@@ -50,7 +50,7 @@ public class Department {
 	
 	@OneToMany(mappedBy = "department")
 	@JsonIgnoreProperties("department")
-	Set<Employee> employees = new HashSet<Employee>();
+	private Set<Employee> employees = new HashSet<Employee>();
 
 	public Integer getId() {
 		return id;
