@@ -9,12 +9,12 @@ import { PaginatorModule } from 'primeng/paginator';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
-import { AccordionModule } from 'primeng/accordion';
+import { AccordionModule } from 'primeng/accordion';3
+import { TooltipModule } from 'primeng/tooltip';
 
 @NgModule({
   declarations: [],
   imports: [
-    CommonModule,
     MenubarModule,
     TableModule,
     SplitButtonModule,
@@ -24,7 +24,8 @@ import { AccordionModule } from 'primeng/accordion';
     DialogModule,
     InputTextModule,
     DropdownModule,
-    AccordionModule
+    AccordionModule,
+    TooltipModule
   ],
   exports: [
     MenubarModule,
@@ -36,7 +37,8 @@ import { AccordionModule } from 'primeng/accordion';
     DialogModule,
     InputTextModule,
     DropdownModule,
-    AccordionModule
+    AccordionModule,
+    TooltipModule
   ]
 })
 export class PrimeNgModule { }
