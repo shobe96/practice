@@ -13,5 +13,10 @@
     "name": "message.repository.error",
     "type": "java.lang.String",
     "description": "A description for 'message.repository.error'"
+  },
+  {
+    "name": "secret.key",
+    "type": "java.lang.String",
+    "description": "A description for 'secret.key'"
   }
 ]}
