@@ -14,6 +14,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,6 +33,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.services.EmployeeService;
+
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.validation.Valid;
 
 @RestController
@@ -131,10 +134,20 @@ public class EmployeeController {
 	
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public Map<String, String> name(HttpMessageNotReadableException ex) {
+	public Map<String, String> handleMessageException(HttpMessageNotReadableException ex) {
 		Map<String, String> errors = new HashMap<>();
 		String message = ex.getMessage();
 		String field = "employee";
+		errors.put(field, message);
+		return errors;
+	}
+	
+	@ResponseStatus(HttpStatus.UNAUTHORIZED)
+	@ExceptionHandler(ExpiredJwtException.class)
+	public Map<String, String> handleTokenExpiredException(ExpiredJwtException ex) {
+		Map<String, String> errors = new HashMap<>();
+		String message = ex.getMessage();
+		String field = "auth";
 		errors.put(field, message);
 		return errors;
 	}

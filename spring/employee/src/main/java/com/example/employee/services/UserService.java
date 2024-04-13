@@ -1,7 +1,7 @@
 package com.example.employee.services;
 
-import com.example.employee.models.User;
+import org.springframework.security.core.userdetails.UserDetails;
 
 public interface UserService {
-	User loadUserByUsername(String login, String password);
+//	UserDetails loadUserByUsername(String login, String password);
 }

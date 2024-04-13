@@ -4,16 +4,16 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
-import { HttpClientModule } from '@angular/common/http';
-import { PrimeNgModule } from './modules/prime-ng/prime-ng.module';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { TableHoverDirective } from './shared/directives/table-hover.directive';
+import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { SharedModule } from './modules/shared/shared.module';
+import { AuthFormComponent } from './components/auth/auth-form/auth-form.component';
+import { authInterceptor } from './shared/interceptor/auth/auth.interceptor';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavBarComponent
+    NavBarComponent,
+    AuthFormComponent
   ],
   imports: [
     BrowserModule,
@@ -22,7 +22,7 @@ import { SharedModule } from './modules/shared/shared.module';
     HttpClientModule,
     SharedModule
   ],
-  providers: [],
+  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

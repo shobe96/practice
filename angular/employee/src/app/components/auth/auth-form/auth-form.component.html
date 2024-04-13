@@ -1,0 +1,56 @@
+<div class="card">
+  <h1>Login</h1>
+  <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="login()">
+    <input formControlName="username" pInputText placeholder="Username" />
+    <div class="password-input">
+      <input
+        formControlName="password"
+        pInputText
+        placeholder="Password"
+        type="{{ showPassword ? 'text' : 'password' }}"
+      />
+
+      <p-button
+        icon="{{icon}}"
+        [rounded]="true"
+        (onClick)="togglePasswordVisibility()"
+        severity="{{ severity }}"
+        [pTooltip]="toggleVisibilityTooltip"
+        tooltipPosition="top"
+      />
+      <ng-template #toggleVisibilityTooltip>
+        <div class="flex align-items-center">
+          <span>{{ tooltipMessage }}</span>
+        </div>
+      </ng-template>
+    </div>
+    <div class="validation-messages" *ngIf="authFormGroup.controls['password']?.invalid && authFormGroup.controls['password']?.touched">
+      <span
+        class="block"
+        [ngClass]="{'text-primary': authFormGroup.controls['password'].value?.match('^(?=.*[A-Z])')}"
+        >At least oneu uppercase letter.</span
+      >
+      <span
+        class="block"
+        [ngClass]="{'text-primary': authFormGroup.controls['password'].value?.match('(?=.*[a-z])')}"
+        >At least one lowercase letter.</span
+      >
+      <span
+        class="block"
+        [ngClass]="{'text-primary': authFormGroup.controls['password'].value?.match('(.*[0-9].*)')}"
+        >At least one digit.</span
+      >
+      <span
+        class="block"
+        [ngClass]="{'text-primary': authFormGroup.controls['password'].value?.match('(?=.*[!@#$%^&*])')}"
+        >At least one special character.</span
+      >
+      <span
+        class="block"
+        [ngClass]="{'text-primary': authFormGroup.controls['password'].value?.match('.{8,}')}"
+        >At least 8 characters long.</span
+      >
+    </div>
+    <p-button label="Submit" type="submit" />
+  </form>
+</div>

@@ -22,8 +22,7 @@ import { SharedModule } from '../shared/shared.module';
   imports: [
     // CommonModule,
     EmployeeRoutingModule,
-    SharedModule,
-    ReactiveFormsModule
+    SharedModule
   ]
 })
 export class EmployeeModule { }

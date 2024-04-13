@@ -8,5 +8,6 @@ import com.example.employee.models.User;
 
 @Repository
 public interface UserRepository extends CrudRepository<User, Integer>, PagingAndSortingRepository<User, Integer> {
-	User findByLoginAndPassword(String login, String password);
+	User findByUsername(String username);
+	User findByUsernameAndPassword(String username, String password);
 }

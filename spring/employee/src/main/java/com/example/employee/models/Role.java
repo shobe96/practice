@@ -36,10 +36,10 @@ public class Role {
 	@Column(name = "description", length = 25)
 	@Size(min = 5, max = 100)
 	private String description;
-	
+
 	@OneToMany(mappedBy = "role")
 	@JsonIgnoreProperties("role")
-	private Set<UserRole> userRoles = new HashSet<UserRole>(); 
+	private Set<UserRole> userRoles = new HashSet<UserRole>();
 
 	public Integer getId() {
 		return id;
@@ -71,5 +71,13 @@ public class Role {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public Set<UserRole> getUserRoles() {
+		return userRoles;
+	}
+
+	public void setUserRoles(Set<UserRole> userRoles) {
+		this.userRoles = userRoles;
 	}
 }

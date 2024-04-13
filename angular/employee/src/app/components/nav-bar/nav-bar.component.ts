@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuItem, PrimeIcons } from 'primeng/api';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -8,6 +9,8 @@ import { MenuItem, PrimeIcons } from 'primeng/api';
 })
 export class NavBarComponent implements OnInit {
   items: MenuItem[] = [];
+
+  constructor(private authService: AuthService) {}
 
   ngOnInit(): void {
     this.items = [
@@ -22,7 +25,7 @@ export class NavBarComponent implements OnInit {
         items: [
           {
             label: 'Employees',
-            icon: PrimeIcons.USER,
+            icon: PrimeIcons.USERS,
             routerLink: '/employee/list'
           },
           {
@@ -31,8 +34,33 @@ export class NavBarComponent implements OnInit {
             routerLink: '/department/list'
           }
         ]
+      },
+      {
+        label: 'User',
+        icon: PrimeIcons.USER,
+        items: [
+          {
+            label: 'Login',
+            icon: PrimeIcons.SIGN_IN,
+            routerLink: '/auth/login'
+          },
+          {
+            label: 'Register',
+            icon: PrimeIcons.USER_PLUS
+          },
+          {
+            label: 'Logout',
+            icon: PrimeIcons.SIGN_OUT,
+            command: () => {
+              this.logout();
+            }
+          }
+        ]
       }
     ];
   }
 
+  private logout() {
+    this.authService.logout();
+  }
 }

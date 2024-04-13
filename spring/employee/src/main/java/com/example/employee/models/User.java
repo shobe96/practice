@@ -24,16 +24,16 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "login")
+	@Column(name = "username")
 	@NonNull
 	@Size(min = 5, max = 100)
-	private String login;
+	private String username;
 
 	@Column(name = "password")
 	@NonNull
 	@Size(min = 8, max = 100)
 	private String password;
-	
+
 	@OneToMany(mappedBy = "user")
 	@JsonIgnoreProperties("user")
 	private Set<UserRole> userRoles = new HashSet<UserRole>();
@@ -46,12 +46,12 @@ public class User {
 		this.id = id;
 	}
 
-	public String getLogin() {
-		return login;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setLogin(String login) {
-		this.login = login;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public String getPassword() {
@@ -60,6 +60,14 @@ public class User {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public Set<UserRole> getUserRoles() {
+		return userRoles;
+	}
+
+	public void setUserRoles(Set<UserRole> userRoles) {
+		this.userRoles = userRoles;
 	}
 
 }

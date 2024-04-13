@@ -9,7 +9,6 @@ import { DepartmentDetailsComponent } from '../../components/department/departme
 import { DepartmentEditComponent } from '../../components/department/department-edit/department-edit.component';
 import { TableHoverDirective } from '../../shared/directives/table-hover.directive';
 import { SharedModule } from '../shared/shared.module';
-import { ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -22,8 +21,7 @@ import { ReactiveFormsModule } from '@angular/forms';
   imports: [
     // CommonModule,
     DepartmentRoutingModule,
-    SharedModule,
-    ReactiveFormsModule
+    SharedModule
   ]
 })
 export class DepartmentModule { }

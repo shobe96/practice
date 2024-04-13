@@ -1,20 +1,25 @@
 package com.example.employee.utils;
 
+import java.security.Key;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.example.employee.models.AuthResponse;
 import com.example.employee.models.User;
+import com.example.employee.repositories.UserRepository;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import jakarta.servlet.http.HttpServletRequest;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtil {
@@ -22,66 +27,58 @@ public class JwtUtil {
 	@Value("${secret.key}")
 	private String securityKey;
 
-	private long accessTokenValidity = 60 * 60 * 1000;
+	@Value("${secret.jwtExpirationMs}")
+	private long accessTokenValidity;
 
-	private final JwtParser jwtParser;
-
-	private final String TOKEN_HEADER = "Authorization";
-	private final String TOKEN_PREFIX = "Bearer ";
-
-	public JwtUtil(JwtParser jwtParser) {
-		this.jwtParser = Jwts.parser().setSigningKey(securityKey);
+	public String extractUsername(String token) {
+		return extractClaim(token, Claims::getSubject);
 	}
 
-	public String createToken(User user) {
-		Claims claims = Jwts.claims().setSubject(user.getLogin());
-		Date tokenCreateTime = new Date();
-		Date tokenValidity = new Date(tokenCreateTime.getTime() + TimeUnit.MINUTES.toMillis(accessTokenValidity));
-		return Jwts.builder().setClaims(claims).setExpiration(tokenValidity)
-				.signWith(SignatureAlgorithm.HS256, securityKey).compact();
+	public Date extractExpiration(String token) {
+		return extractClaim(token, Claims::getExpiration);
 	}
 
-	public Claims parseJwtClaims(String token) {
-		return jwtParser.parseClaimsJws(token).getBody();
+	public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+		final Claims claims = extractAllClaims(token);
+		return claimsResolver.apply(claims);
 	}
 
-	public Claims resolveClaims(HttpServletRequest request) {
-		try {
-			String token = resolveToken(request);
-			if (token != null) {
-				return parseJwtClaims(token);
-			}
-			return null;
-		} catch (ExpiredJwtException e) {
-			request.setAttribute("expired", e.getMessage());
-			e.printStackTrace();
-			throw e;
-		} catch (Exception e) {
-			request.setAttribute("invalid", e.getMessage());
-			e.printStackTrace();
-			throw e;
-		}
+	private Claims extractAllClaims(String token) {
+		return Jwts.parserBuilder().setSigningKey(getSignKey()).build().parseClaimsJws(token).getBody();
 	}
 
-	public String resolveToken(HttpServletRequest request) {
-		String bearerToken = request.getHeader(TOKEN_HEADER);
-		if (bearerToken != null && bearerToken.startsWith(TOKEN_PREFIX)) {
-			return bearerToken.substring(TOKEN_PREFIX.length());
-		}
-		return null;
+	private Boolean isTokenExpired(String token) {
+		return extractExpiration(token).before(new Date());
 	}
 
-	public boolean validateClaims(Claims claims) throws AuthenticationException {
-		try {
-			return claims.getExpiration().after(new Date());
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw e;
-		}
+	public Boolean validateToken(String token, UserDetails userDetails) {
+		final String username = extractUsername(token);
+		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
-	public String getLogin(Claims claims) {
-		return claims.getSubject();
+	public AuthResponse generateToken(String username) {
+		Map<String, Object> claims = new HashMap<>();
+		return createToken(claims, username);
+	}
+
+	private AuthResponse createToken(Map<String, Object> claims, String username) {
+		
+		AuthResponse authResponse = new AuthResponse();
+		authResponse.setIssueDate(new Date(System.currentTimeMillis()));
+		authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
+		authResponse.setExpiration(accessTokenValidity);
+		String token = Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
+				.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
+				.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+		authResponse.setToken(token);
+		authResponse.setUsername(username);
+
+		return authResponse;
+	}
+
+	private Key getSignKey() {
+		byte[] keyBytes = Decoders.BASE64.decode(securityKey);
+		return Keys.hmacShaKeyFor(keyBytes);
 	}
 
 }

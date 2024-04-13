@@ -1,4 +1,7 @@
-/*https://medium.com/code-with-farhan/spring-security-jwt-authentication-authorization-a2c6860be3cf*/
+/*
+https://medium.com/code-with-farhan/spring-security-jwt-authentication-authorization-a2c6860be3cf
+https://www.javainuse.com/spring/boot-jwt-mysql
+*/
 
 CREATE SCHEMA `employee`;
 
@@ -21,7 +24,7 @@ DELETE FROM role;
 DROP TABLE IF EXISTS user;
 CREATE TABLE IF NOT EXISTS user (
 	user_id BIGINT NOT NULL AUTO_INCREMENT,
-	login varchar(100) NOT NULL,
+	username varchar(100) NOT NULL,
 	password varchar(100) NOT NULL,
 	PRIMARY KEY (user_id)
 )
