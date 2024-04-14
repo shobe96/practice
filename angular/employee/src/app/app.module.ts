@@ -7,7 +7,7 @@ import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { SharedModule } from './modules/shared/shared.module';
 import { AuthFormComponent } from './components/auth/auth-form/auth-form.component';
-import { authInterceptor } from './shared/interceptor/auth/auth.interceptor';
+import { authInterceptor } from './shared/interceptors/auth/auth.interceptor';
 
 @NgModule({
   declarations: [
