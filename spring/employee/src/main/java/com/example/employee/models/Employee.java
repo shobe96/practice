@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
@@ -26,41 +27,45 @@ public class Employee {
 	@Column(name = "employee_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
-	
+
 	@Column(name = "name", length = 25)
 	@NotBlank(message = "Name is mandatory")
 	@Size(min = 5, max = 25, message = "Name size must be between 5 and 25")
 	private String name;
-	
+
 	@Column(name = "surname", length = 25)
 	@NotBlank(message = "Surname is mandatory")
 	@Size(min = 5, max = 25, message = "Surname size must be between 5 and 25")
 	private String surname;
-	
+
 	@Column(name = "add_date")
 	private Date addDate;
-	
+
 	@Column(name = "mod_date")
 	private Date modDate;
-	
+
 	@Column(name = "add_user")
 	private String addUser;
-	
+
 	@Column(name = "mod_user")
 	private String modUser;
-	
+
 	@Column(name = "active")
 	private Boolean active;
-	
+
 	@Column(name = "email")
 	@Email(message = "Email is not in correct format")
 	@Size(max = 50, message = "Email can't be longer than 50 characters")
 	private String email;
-	
+
 	@ManyToOne
 	@JoinColumn(name = "department_id")
 	@JsonIgnoreProperties("employees")
-	Department department;
+	private Department department;
+
+	@OneToOne()
+    @JoinColumn(name = "user_id")
+	private User user;
 
 	public Integer getId() {
 		return id;
@@ -125,7 +130,7 @@ public class Employee {
 	public void setActive(Boolean active) {
 		this.active = active;
 	}
-	
+
 	public Department getDepartment() {
 		return department;
 	}
@@ -142,12 +147,20 @@ public class Employee {
 		this.department = department;
 	}
 
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	@PrePersist
 	private void beforeCreate() {
 		this.active = true;
 		this.addDate = new Date();
 	}
-	
+
 	@PostUpdate
 	private void beforeUpdate() {
 		this.modDate = new Date();

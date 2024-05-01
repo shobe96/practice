@@ -10,6 +10,7 @@
   >
     <input formControlName="name" pInputText placeholder="Name of employee" />
     <div
+    class="validation-messages"
       *ngIf="employeeFormGroup.controls['name'].invalid && employeeFormGroup.controls['name'].touched"
     >
       <div *ngIf="employeeFormGroup.controls['name'].errors?.['required']">
@@ -28,6 +29,7 @@
       placeholder="Surname of employee"
     />
     <div
+    class="validation-messages"
       *ngIf="employeeFormGroup.controls['surname'].invalid && employeeFormGroup.controls['surname'].touched"
     >
       <div *ngIf="employeeFormGroup.controls['surname'].errors?.['required']">
@@ -42,8 +44,12 @@
     </div>
     <input formControlName="email" pInputText placeholder="Email of employee" />
     <div
+    class="validation-messages"
       *ngIf="employeeFormGroup.controls['email'].invalid && employeeFormGroup.controls['email'].touched"
     >
+      <div *ngIf="employeeFormGroup.controls['email'].errors?.['required']">
+        Email address is required!
+      </div>
       <div *ngIf="employeeFormGroup.controls['email'].errors?.['email']">
         Email address is not valid!
       </div>
@@ -54,7 +60,7 @@
     <p-dropdown formControlName="department" [options]="departments" optionLabel="name" placeholder="Select a Department" dataKey="id"></p-dropdown>
     <div class="action-buttons">
       <p-button label="Cancel" (onClick)="back()" />
-      <p-button label="Submit" type="submit" />
+      <p-button [disabled]="employeeFormGroup.invalid" label="Submit" type="submit" />
     </div>
   </form>
 </div>

@@ -1,7 +1,14 @@
 package com.example.employee.services;
 
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.data.domain.Pageable;
+
+import com.example.employee.models.RegisterRequest;
+import com.example.employee.models.User;
+import com.example.employee.models.UserSearchResult;
 
 public interface UserService {
-//	UserDetails loadUserByUsername(String login, String password);
+
+	public User registerUser(RegisterRequest request);
+	
+	public UserSearchResult getAllUsers(Pageable pageable);
 }

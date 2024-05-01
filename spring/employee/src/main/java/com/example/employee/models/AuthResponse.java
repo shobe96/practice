@@ -1,6 +1,7 @@
 package com.example.employee.models;
 
 import java.util.Date;
+import java.util.List;
 
 public class AuthResponse {
 
@@ -9,6 +10,8 @@ public class AuthResponse {
 	private Date expirationDate;
 	private Long expiration;
 	private String username;
+	private Integer userId;
+	private List<Role> roles;
 
 	public String getToken() {
 		return token;
@@ -50,4 +53,19 @@ public class AuthResponse {
 		this.expirationDate = expirationDate;
 	}
 
+	public Integer getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public List<Role> getRoles() {
+		return roles;
+	}
+
+	public void setRoles(List<Role> roles) {
+		this.roles = roles;
+	}
 }

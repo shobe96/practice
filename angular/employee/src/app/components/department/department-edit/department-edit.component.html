@@ -10,6 +10,7 @@
   >
     <input formControlName="name" pInputText placeholder="Name of department" />
     <div
+    class="validation-messages"
       *ngIf="departmentFormGroup.controls['name'].invalid && departmentFormGroup.controls['name'].touched"
     >
       <div *ngIf="departmentFormGroup.controls['name'].errors?.['required']">
@@ -24,7 +25,7 @@
     </div>
     <div class="action-buttons">
       <p-button label="Cancel" (onClick)="back()" />
-      <p-button label="Submit" type="submit" />
+      <p-button [disabled]="departmentFormGroup.invalid" label="Submit" type="submit" />
     </div>
   </form>
 </div>

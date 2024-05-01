@@ -1,45 +1,71 @@
 package com.example.employee.services.impl;
 
-import java.util.List;
-
-import org.springframework.security.core.userdetails.UserDetails;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
-import com.example.employee.models.Role;
+import com.example.employee.models.Employee;
+import com.example.employee.models.RegisterRequest;
 import com.example.employee.models.User;
-import com.example.employee.repositories.RoleRepository;
+import com.example.employee.models.UserSearchResult;
+import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.UserRepository;
 import com.example.employee.services.UserService;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
 
-//	private final UserRepository userRepository;
-//
-//	private final RoleRepository roleRepository;
-//
-//	public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
-//		this.userRepository = userRepository;
-//		this.roleRepository = roleRepository;
-//	}
-//
-//	@Override
-//	public UserDetails loadUserByUsername(String login, String password) {
-//		User user = userRepository.findByLoginAndPassword(login, password);
-//		List<Role> roles = roleRepository.getRolesByUserId(user.getId());
-//		UserDetails userDetails = org.springframework.security.core.userdetails.User.builder().username(user.getLogin())
-//				.password(user.getPassword()).roles(getRolesCodes(roles)).build();
-//		return userDetails;
-//	}
-//
-//	private String[] getRolesCodes(List<Role> roles) {
-//		String[] rolesCodes = new String[roles.size()];
-//		int index = 0;
-//		for (Role role : roles) {
-//			rolesCodes[index] = role.getCode();
-//			index++;
-//		}
-//		return rolesCodes;
-//	}
+	private UserRepository userRepository;
+	private EmployeeRepository employeeRepository;
+	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
+	@Autowired
+	public UserServiceImpl(UserRepository userRepository, EmployeeRepository employeeRepository) {
+		this.userRepository = userRepository;
+		this.employeeRepository = employeeRepository;
+	}
+
+	@Override
+	public User registerUser(RegisterRequest request) {
+		try {
+			User user = null;
+			user = userRepository.findByUsername(request.getUsername());
+			if (user == null) {
+				user = new User();
+				user.setUsername(request.getUsername());
+				user.setPassword(hash(request.getPassword()));
+				user.setRoles(request.getRoles());
+				user = userRepository.save(user);
+				Employee employee = request.getEmployee();
+				employee.setUser(user);
+				employeeRepository.save(employee);
+				
+				return user;
+			} else {
+				return null;
+			}
+
+		} catch (Exception e) {
+			logger.error(e.getMessage());
+			return null;
+		}
+	}
+
+	public String hash(String password) {
+		return BCrypt.hashpw(password, BCrypt.gensalt(12));
+	}
+
+	@Override
+	public UserSearchResult getAllUsers(Pageable pageable) {
+		UserSearchResult userSearchResult = new UserSearchResult();
+		userSearchResult.setSize(userRepository.count());
+		userSearchResult.setUsers(userRepository.findAll(pageable).getContent());
+		return userSearchResult;
+	}
 }

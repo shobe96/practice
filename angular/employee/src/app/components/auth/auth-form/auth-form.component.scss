@@ -7,9 +7,9 @@
     flex-direction: row;
     align-items: center;
   }
-  .validation-messages {
+  .confirm-password-input {
     display: flex;
-    flex-direction: column;
-    color: red;
+    flex-direction: row;
+    align-items: center;
   }
 }

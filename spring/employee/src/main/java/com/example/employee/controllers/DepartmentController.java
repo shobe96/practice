@@ -33,13 +33,17 @@ import com.example.employee.services.DepartmentService;
 @RequestMapping("/api/departments")
 public class DepartmentController {
 
-	@Autowired
 	private DepartmentService departmentService;
+	
+	@Autowired
+	public DepartmentController(DepartmentService departmentService) {
+		this.departmentService = departmentService;
+	}
 
 	@GetMapping()
 	public ResponseEntity<DepartmentSearchResult> getAllDepartments(Pageable pageable, @RequestParam() Boolean all) {
 		DepartmentSearchResult departments = new DepartmentSearchResult();
-		if (all) {
+		if (all.equals(true)) {
 			departments.setDepartments(departmentService.getAllDepartments());
 		} else {
 			departments = departmentService.getAllDepartments(pageable);
@@ -50,7 +54,12 @@ public class DepartmentController {
 	@GetMapping("/get-one/{departmentId}")
 	public ResponseEntity<Department> getDepartmentById(@PathVariable Integer departmentId) {
 		Department department = departmentService.getDepartmentById(departmentId);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(department);
+		if (department == null) {
+			return ResponseEntity.notFound().headers(new HttpHeaders()).build();
+		} else {			
+			return ResponseEntity.ok().headers(new HttpHeaders()).body(department);
+		}
+		
 	}
 
 	@GetMapping("/get-by-name")

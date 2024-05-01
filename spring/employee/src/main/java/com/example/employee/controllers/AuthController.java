@@ -1,54 +1,58 @@
 package com.example.employee.controllers;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.catalina.connector.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.models.AuthRequest;
 import com.example.employee.models.AuthResponse;
+import com.example.employee.models.RegisterRequest;
+import com.example.employee.models.RestError;
 import com.example.employee.models.User;
+import com.example.employee.services.UserService;
 import com.example.employee.utils.JwtUtil;
-
-import io.jsonwebtoken.ExpiredJwtException;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/auth")
 public class AuthController {
 
-	@Autowired
 	private AuthenticationManager authenticationManager;
+	private JwtUtil jwtUtil;
+	private UserService userService;
 
 	@Autowired
-	JwtUtil jwtUtil;
+	public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
+		this.authenticationManager = authenticationManager;
+		this.jwtUtil = jwtUtil;
+		this.userService = userService;
+	}
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest user) {
-		Authentication authentication = authenticationManager
+	public ResponseEntity<Object> login(@RequestBody AuthRequest user) {
+		authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-		if (authentication.isAuthenticated()) {
-			AuthResponse token = jwtUtil.generateToken(user.getUsername());
-			return ResponseEntity.ok().headers(new HttpHeaders()).body(token);
+		AuthResponse token = jwtUtil.generateToken(user.getUsername());
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(token);
+
+	}
+
+	@PostMapping("/register-user")
+	public ResponseEntity<Object> registerUser(@RequestBody() RegisterRequest request) {
+		User user = userService.registerUser(request);
+		if (user == null) {
+			RestError restError = new RestError(400, "Bad request", false, "HttpErrorResponse",
+					"Username is already taken!");
+			return ResponseEntity.badRequest().headers(new HttpHeaders()).body(restError);
 		} else {
-			throw new UsernameNotFoundException("invalid user request..!!");
+			return ResponseEntity.ok().headers(new HttpHeaders()).body(user);
 		}
 	}
 }

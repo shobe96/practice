@@ -11,12 +11,12 @@ import com.example.employee.models.EmployeeSearchResult;
 public interface EmployeeService {
 	
 	public EmployeeSearchResult getAllEmployees(Pageable pageable);
+	public List<Employee> getAllEmployees();
 	public Employee getEmployeebyId(Integer employeeId); 
 	public Page<Employee> getEmployeeByDepartmentId(Pageable pageable, Integer departmentId);
 	public Employee saveEmployee(Employee employee);
 	public Employee updateEmployee(Employee employee);
 	public void deleteEmployee(Integer employeeId);
 	public List<Employee> filterByActive(Boolean active);
-//	public Employee getEmployeebyId2(Integer employeeId) throws Exception;
 	public EmployeeSearchResult searcEmployees(String name, String surname, String email, Pageable pageable);
 }

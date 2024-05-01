@@ -1,6 +1,7 @@
 package com.example.employee.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -8,24 +9,23 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.example.employee.services.UserService;
+import com.example.employee.repositories.RoleRepository;
+import com.example.employee.repositories.UserRepository;
 import com.example.employee.services.impl.UserDetailsServiceImpl;
+import com.example.employee.utils.AuthoritiesConstants;
 import com.example.employee.utils.JwtAuthFilter;
 
 @Configuration
@@ -33,12 +33,23 @@ import com.example.employee.utils.JwtAuthFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
+	private JwtAuthFilter jwtAuthFilter;
+	private UserRepository userRepository;
+	private RoleRepository roleRepository;
+	
+	private AuthenticationEntryPoint authEntryPoint;
+
 	@Autowired
-	JwtAuthFilter jwtAuthFilter;
+	public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserRepository userRepository, RoleRepository roleRepository, @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authEntryPoint) {
+		this.jwtAuthFilter = jwtAuthFilter;
+		this.userRepository = userRepository;
+		this.roleRepository = roleRepository;
+		this.authEntryPoint = authEntryPoint;
+		}
 
 	@Bean
 	public UserDetailsService userDetailsService() {
-		return new UserDetailsServiceImpl();
+		return new UserDetailsServiceImpl(userRepository, roleRepository);
 	}
 
 	@Bean
@@ -49,10 +60,17 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.cors(cors -> cors.disable()).csrf(AbstractHttpConfigurer::disable)
-				.authorizeHttpRequests(
-						auth -> auth.requestMatchers("/api/auth/**").permitAll().requestMatchers("/api/employees/**")
-								.authenticated().requestMatchers("/api/departments/**").authenticated())
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/api/auth/login").permitAll()
+						.requestMatchers("/api/auth/register-user").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/employees/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/users/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/departments/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/roles/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.httpBasic(basic -> basic.authenticationEntryPoint(authEntryPoint))
+				.exceptionHandling(Customizer.withDefaults())
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
 

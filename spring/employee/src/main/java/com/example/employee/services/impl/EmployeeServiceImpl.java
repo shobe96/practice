@@ -2,6 +2,8 @@ package com.example.employee.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +20,12 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class EmployeeServiceImpl implements EmployeeService {
 
-	@Autowired
 	EmployeeRepository employeeRepository;
+
+	@Autowired
+	public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+		this.employeeRepository = employeeRepository;
+	}
 
 	@Override
 	public EmployeeSearchResult getAllEmployees(Pageable pageable) {
@@ -31,7 +37,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public Employee getEmployeebyId(Integer employeeId) {
-		return employeeRepository.findById(employeeId).get();
+		Optional<Employee> optional = employeeRepository.findById(employeeId);
+		if (optional.isPresent()) {
+			return optional.get();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -57,9 +68,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public List<Employee> filterByActive(Boolean active) {
-		List<Employee> employees = new ArrayList<Employee>();
+		List<Employee> employees = new ArrayList<>();
 		employeeRepository.findAll().forEach(employees::add);
-		employees.removeIf(employee -> employee.getActive() != active);
+		employees.removeIf(employee -> employee.getActive().equals(active));
 		return employees;
 	}
 
@@ -80,14 +91,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 		employeeSearchResult.setSize(employeeRepository.searchResultCount(name, surname, email));
 		return employeeSearchResult;
 	}
-	
-//	@Override
-//	public Employee getEmployeebyId2(Integer employeeId) throws Exception {
-//		Optional<Employee> employeeOptional = employeeRepository.findById(employeeId);
-//		if (employeeOptional.isPresent()) {
-//			return employeeOptional.get();
-//		} else {
-//			throw new Exception("Employee not found for id: " + employeeId);
-//		}
-//	}
+
+	@Override
+	public List<Employee> getAllEmployees() {
+		List<Employee> employees = new ArrayList<>();
+		employees = employeeRepository.findEmployeesWithoutUser();
+		return employees;
+	}
 }

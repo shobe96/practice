@@ -4,7 +4,7 @@ import { AuthResponse } from '../../../models/auth-response.model';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   console.log(req.headers);
   if (!req.url.includes("login")) {
-    let authResponse = localStorage.getItem("authResponse");
+    const authResponse = localStorage.getItem("authResponse");
     if (authResponse !== null) {
       let json: AuthResponse = {};
       json = JSON.parse(authResponse);

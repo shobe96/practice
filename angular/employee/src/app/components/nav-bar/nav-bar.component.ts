@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuItem, PrimeIcons } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
 import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
@@ -10,57 +10,16 @@ import { AuthService } from '../../services/auth/auth.service';
 export class NavBarComponent implements OnInit {
   items: MenuItem[] = [];
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    this.items = [
-      {
-        label: 'Home',
-        icon: PrimeIcons.HOME,
-        routerLink: "/"
+    const navBarString = localStorage.getItem("navBarState");
+    this.authService.menuItemsSubject.subscribe({
+      next: (value: MenuItem[]) => {
+        this.items = value;
       },
-      {
-        label: 'Features',
-        icon: PrimeIcons.LIST,
-        items: [
-          {
-            label: 'Employees',
-            icon: PrimeIcons.USERS,
-            routerLink: '/employee/list'
-          },
-          {
-            label: 'Departments',
-            icon: PrimeIcons.SITEMAP,
-            routerLink: '/department/list'
-          }
-        ]
-      },
-      {
-        label: 'User',
-        icon: PrimeIcons.USER,
-        items: [
-          {
-            label: 'Login',
-            icon: PrimeIcons.SIGN_IN,
-            routerLink: '/auth/login'
-          },
-          {
-            label: 'Register',
-            icon: PrimeIcons.USER_PLUS
-          },
-          {
-            label: 'Logout',
-            icon: PrimeIcons.SIGN_OUT,
-            command: () => {
-              this.logout();
-            }
-          }
-        ]
-      }
-    ];
-  }
-
-  private logout() {
-    this.authService.logout();
+      error: (err: any) => { console.log(err) },
+      complete: () => { }
+    });
   }
 }

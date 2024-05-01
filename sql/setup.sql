@@ -78,7 +78,10 @@ CREATE TABLE IF NOT EXISTS employee (
     active BOOLEAN,
     department_id BIGINT,
     email varchar(50) DEFAULT NULL,
+	user_id bigint DEFAULT NULL,
     PRIMARY KEY (employee_id),
+	FOREIGN KEY (user_id) 
+		REFERENCES user (`user_id`)
     FOREIGN KEY (department_id)
         REFERENCES department (department_id)
 );

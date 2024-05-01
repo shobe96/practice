@@ -3,6 +3,7 @@ package com.example.employee.utils;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -12,7 +13,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.example.employee.models.AuthResponse;
+import com.example.employee.models.Role;
 import com.example.employee.models.User;
+import com.example.employee.repositories.RoleRepository;
 import com.example.employee.repositories.UserRepository;
 
 import io.jsonwebtoken.Claims;
@@ -27,8 +30,17 @@ public class JwtUtil {
 	@Value("${secret.key}")
 	private String securityKey;
 
-	@Value("${secret.jwtExpirationMs}")
+	@Value("${secret.jwt.expiration.ms}")
 	private long accessTokenValidity;
+
+	private UserRepository userRepository;
+	private RoleRepository roleRepository;
+
+	@Autowired
+	public JwtUtil(UserRepository userRepository,RoleRepository roleRepository) {
+		this.userRepository = userRepository;
+		this.roleRepository = roleRepository;
+	}
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);
@@ -62,17 +74,20 @@ public class JwtUtil {
 	}
 
 	private AuthResponse createToken(Map<String, Object> claims, String username) {
-		
+		User user = userRepository.findByUsername(username);
+		List<Role> roles = roleRepository.findRolesByUsersId(user.getId());
 		AuthResponse authResponse = new AuthResponse();
 		authResponse.setIssueDate(new Date(System.currentTimeMillis()));
 		authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
 		authResponse.setExpiration(accessTokenValidity);
-		String token = Jwts.builder().setClaims(claims).setSubject(username).setIssuedAt(new Date(System.currentTimeMillis()))
+		String token = Jwts.builder().setClaims(claims).setSubject(username)
+				.setIssuedAt(new Date(System.currentTimeMillis()))
 				.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
 				.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
 		authResponse.setToken(token);
 		authResponse.setUsername(username);
-
+		authResponse.setUserId(user.getId());
+		authResponse.setRoles(roles);
 		return authResponse;
 	}
 
