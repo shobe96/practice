@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Department } from '../../../models/department.model';
 import { ActivatedRoute, Router } from '@angular/router';
 

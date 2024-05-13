@@ -1,3 +1,6 @@
+import { MenuItem, PrimeIcons } from "primeng/api";
+import { PageEvent } from "../models/page-event.model";
+
 export function buildSearchParams(object: any): string {
   let params: string = "";
   const keys = Object.keys(object);
@@ -13,3 +16,12 @@ export function buildSearchParams(object: any): string {
   }
   return params;
 }
+
+export function buildPaginationParams(page?: PageEvent): string {
+  let queryParams: string = page?.page === undefined ? `` : `page=${page.page}`;
+  queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
+  queryParams += ``;
+  return queryParams;
+}
+
+

@@ -11,3 +11,8 @@
   display: flex;
   justify-content: space-evenly;
 }
+.validation-messages {
+  display: flex;
+  flex-direction: column;
+  color: red;
+}

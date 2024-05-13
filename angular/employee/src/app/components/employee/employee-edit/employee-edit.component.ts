@@ -7,6 +7,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Department } from '../../../models/department.model';
 import { DepartmentService } from '../../../services/department/department.service';
 import { DepartmentSearchResult } from '../../../models/department-search-result.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-employee-edit',
@@ -28,7 +29,9 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
     private employeeService: EmployeeService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private departmentService: DepartmentService) { }
+    private departmentService: DepartmentService,
+    private messageService: MessageService
+  ) { }
   ngOnDestroy(): void {
     if (this.routeSubscription$ !== undefined) {
       this.routeSubscription$.unsubscribe();
@@ -45,7 +48,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.departmentSubscription$ = this.departmentService.getAllDepartments(true).subscribe({
       next: (value: DepartmentSearchResult) => {
-        this.departments = value.departments !== undefined ? value.departments : [];
+        this.departments = value.departments ?? [];
       },
       error: (err: any) => {
         console.log(err)
@@ -96,9 +99,12 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
     this.employee.email = this.employeeFormGroup.controls['email'].value;
     this.employee.department = this.employeeFormGroup.controls['department'].value;
     const employeeObserver: any = {
-      next: (value: any) => {
+      next: (value: Employee) => {
         if (this.id === null) {
           this.router.navigate([`employee/details/${value.id}`])
+          this.fireToast("success","Success",`Employee ${value.name} ${value.surname} has been created`);
+        } else {
+          this.fireToast("success","Success",`Employee ${value.name} ${value.surname} has been updated`);
         }
       },
       error: (err: any) => { console.log(err) },
@@ -109,5 +115,9 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
     } else {
       this.employeeService.update(this.employee).subscribe(employeeObserver);
     }
+  }
+
+  private fireToast(severity: string, summary: string, detail: string) {
+    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }

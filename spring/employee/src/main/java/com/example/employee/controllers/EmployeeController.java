@@ -32,6 +32,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.services.EmployeeService;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -39,19 +40,33 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
-	@Autowired
 	private EmployeeService employeeService;
 
+	@Autowired
+	public EmployeeController(EmployeeService employeeService) {
+		this.employeeService = employeeService;
+	}
+
 	@GetMapping()
-	public ResponseEntity<EmployeeSearchResult> getAllEmployees(Pageable pageable) {
-		EmployeeSearchResult employees = employeeService.getAllEmployees(pageable);
+	public ResponseEntity<EmployeeSearchResult> getAllEmployees(Pageable pageable, @RequestParam() Boolean all) {
+		EmployeeSearchResult employees = new EmployeeSearchResult();
+		if (all.equals(true)) {
+			employees.setEmployees(employeeService.getAllEmployees());;
+		} else {
+			employees = employeeService.getAllEmployees(pageable);
+		}
+		
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees);
 	}
 
 	@GetMapping("/get-one/{employeeId}")
-	public ResponseEntity<Employee> getEmployeeById(@PathVariable Integer employeeId) {
+	public ResponseEntity<Object> getEmployeeById(@PathVariable Integer employeeId) {
 		Employee employee = employeeService.getEmployeebyId(employeeId);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employee);
+		if (employee == null) {
+			return ResponseEntity.notFound().headers(new HttpHeaders()).build();
+		} else {			
+			return ResponseEntity.ok().headers(new HttpHeaders()).body(employee);
+		}
 	}
 
 	@GetMapping("/get-by-department/{departmentId}")
@@ -80,31 +95,27 @@ public class EmployeeController {
 		employeeService.deleteEmployee(employeeId);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
 	}
-	
-	@GetMapping("/search")
-	public ResponseEntity<EmployeeSearchResult> searchEMployees(@RequestParam(required = false) String name, @RequestParam(required = false) String surname, @RequestParam(required = false) String email, Pageable pageable) {
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeService.searcEmployees(name, surname, email, pageable));
-	}
 
-//	@GetMapping("/employees/get-by-active")
-//	public ResponseEntity<List<Employee>> getEmployeesByActive(@PathParam("active") Boolean active) {
-//		List<Employee> employees = employeeService.filterByActive(active);
-//
-//		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees);
-//	}
+	@GetMapping("/search")
+	public ResponseEntity<EmployeeSearchResult> searchEMployees(@RequestParam(required = false) String name,
+			@RequestParam(required = false) String surname, @RequestParam(required = false) String email,
+			Pageable pageable) {
+		return ResponseEntity.ok().headers(new HttpHeaders())
+				.body(employeeService.searcEmployees(name, surname, email, pageable));
+	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
 		Map<String, String> errors = new HashMap<>();
-		ex.getBindingResult().getAllErrors().forEach((error) -> {
+		ex.getBindingResult().getAllErrors().forEach(error -> {
 			String fieldName = ((FieldError) error).getField();
 			String errorMessage = error.getDefaultMessage();
 			errors.put(fieldName, errorMessage);
 		});
 		return errors;
 	}
-	
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(PropertyReferenceException.class)
 	public Map<String, String> handleSortExceptions(PropertyReferenceException ex) {
@@ -128,15 +139,14 @@ public class EmployeeController {
 		errors.put(field, message);
 		return errors;
 	}
-	
+
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public Map<String, String> name(HttpMessageNotReadableException ex) {
+	public Map<String, String> handleMessageException(HttpMessageNotReadableException ex) {
 		Map<String, String> errors = new HashMap<>();
 		String message = ex.getMessage();
 		String field = "employee";
 		errors.put(field, message);
 		return errors;
 	}
-
 }

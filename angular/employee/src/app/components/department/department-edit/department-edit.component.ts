@@ -5,6 +5,7 @@ import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DepartmentService } from '../../../services/department/department.service';
 import { Employee } from '../../../models/employee.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-department-edit',
@@ -23,7 +24,9 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private formBuilder: FormBuilder,
-    private departmentService: DepartmentService) { }
+    private departmentService: DepartmentService,
+    private messageService: MessageService
+  ) { }
   ngOnDestroy(): void {
     if (this.routeSubscription$ !== undefined) {
       this.routeSubscription$.unsubscribe();
@@ -35,11 +38,9 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
-    // this.employeService.mySub.next(1);
     this.buildForm();
     this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["departmentId"] !== undefined && params["departmentId"] !== null ? params["departmentId"] : null;;
+      this.id = params["departmentId"] ?? null;;
       this.initFormFields();
     });
   }
@@ -72,9 +73,12 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
     this.department.name = this.departmentFormGroup.controls['name'].value;
 
     const departmentObserver: any = {
-      next: (value: any) => {
+      next: (value: Department) => {
         if (this.id === null) {
-          this.router.navigate([`employee/details/${value.id}`])
+          this.fireToast("success","Success",`Department ${value.name} has been created`);
+          this.router.navigate([`department/details/${value.id}`])
+        } else {
+          this.fireToast("success","Success",`Department ${value.name} has been updated`);
         }
       },
       error: (err: any) => { console.log(err) },
@@ -85,5 +89,9 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
     } else {
       this.departmentService.update(this.department).subscribe(departmentObserver);
     }
+  }
+
+  private fireToast(severity: string, summary: string, detail: string) {
+    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }

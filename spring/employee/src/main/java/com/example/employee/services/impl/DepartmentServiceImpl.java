@@ -2,9 +2,9 @@ package com.example.employee.services.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +18,13 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class DepartmentServiceImpl implements DepartmentService {
-	
-	@Autowired
+
 	private DepartmentRepository departmentRepository;
+
+	@Autowired
+	public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+		this.departmentRepository = departmentRepository;
+	}
 
 	@Override
 	public DepartmentSearchResult getAllDepartments(Pageable pageable) {
@@ -29,10 +33,15 @@ public class DepartmentServiceImpl implements DepartmentService {
 		departmentSearchResult.setSize(departmentRepository.count());
 		return departmentSearchResult;
 	}
-	
+
 	@Override
 	public Department getDepartmentById(Integer departmentId) {
-		return departmentRepository.findById(departmentId).get();
+		Optional<Department> optional = departmentRepository.findById(departmentId);
+		if (optional.isPresent()) {			
+			return optional.get();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -58,8 +67,8 @@ public class DepartmentServiceImpl implements DepartmentService {
 
 	@Override
 	public List<Department> getAllDepartments() {
-		List<Department> departments = new ArrayList<Department>();
-		departmentRepository.findAll().forEach(departments::add);;
+		List<Department> departments = new ArrayList<>();
+		departmentRepository.findAll().forEach(departments::add);
 		return departments;
 	}
 

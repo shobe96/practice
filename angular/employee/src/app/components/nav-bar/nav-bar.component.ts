@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuItem, PrimeIcons } from 'primeng/api';
+import { MenuItem } from 'primeng/api';
+import { AuthService } from '../../services/auth/auth.service';
 
 @Component({
   selector: 'app-nav-bar',
@@ -9,30 +10,16 @@ import { MenuItem, PrimeIcons } from 'primeng/api';
 export class NavBarComponent implements OnInit {
   items: MenuItem[] = [];
 
-  ngOnInit(): void {
-    this.items = [
-      {
-        label: 'Home',
-        icon: PrimeIcons.HOME,
-        routerLink: "/"
-      },
-      {
-        label: 'Features',
-        icon: PrimeIcons.LIST,
-        items: [
-          {
-            label: 'Employees',
-            icon: PrimeIcons.USER,
-            routerLink: '/employee/list'
-          },
-          {
-            label: 'Departments',
-            icon: PrimeIcons.SITEMAP,
-            routerLink: '/department/list'
-          }
-        ]
-      }
-    ];
-  }
+  constructor(private authService: AuthService) { }
 
+  ngOnInit(): void {
+    const navBarString = localStorage.getItem("navBarState");
+    this.authService.menuItemsSubject.subscribe({
+      next: (value: MenuItem[]) => {
+        this.items = value;
+      },
+      error: (err: any) => { console.log(err) },
+      complete: () => { }
+    });
+  }
 }

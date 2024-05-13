@@ -1,5 +1,7 @@
 package com.example.employee.repositories;
 
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +22,7 @@ public interface EmployeeRepository
 	
 	@Query("SELECT COUNT(e) FROM Employee e WHERE e.name LIKE CONCAT('%', :name, '%') AND e.surname LIKE CONCAT('%', :surname, '%') AND e.email LIKE CONCAT('%', :email, '%')")
 	public Long searchResultCount(String name, String surname, String email);
+	
+	@Query("SELECT e FROM Employee e WHERE e.user.id IS NULL")
+	public List<Employee> findEmployeesWithoutUser();
 }

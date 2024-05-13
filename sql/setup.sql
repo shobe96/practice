@@ -1,4 +1,7 @@
-/*https://medium.com/code-with-farhan/spring-security-jwt-authentication-authorization-a2c6860be3cf*/
+/*
+https://medium.com/code-with-farhan/spring-security-jwt-authentication-authorization-a2c6860be3cf
+https://www.javainuse.com/spring/boot-jwt-mysql
+*/
 
 CREATE SCHEMA `employee`;
 
@@ -21,9 +24,9 @@ DELETE FROM role;
 DROP TABLE IF EXISTS user;
 CREATE TABLE IF NOT EXISTS user (
 	user_id BIGINT NOT NULL AUTO_INCREMENT,
-	login varchar(100) NOT NULL,
+	username varchar(100) NOT NULL,
 	password varchar(100) NOT NULL,
-	CONSTRAINT user_pk PRIMARY KEY (user_id)
+	PRIMARY KEY (user_id)
 )
 
 DROP TABLE IF EXISTS role;
@@ -32,13 +35,13 @@ CREATE TABLE IF NOT EXISTS role (
 	code varchar(100) NOT NULL,
 	name varchar(100) NULL,
 	description varchar(100) NULL,
-	CONSTRAINT role_pk PRIMARY KEY (role_id)
+	PRIMARY KEY (role_id)
 )
 
-INSERT INTO role (description) VALUES
-	 ('Regular employee with the lowest privileges'),
-	 ('Employee with the highest privileges'),
-	 ('Employee in charge of department');
+INSERT INTO role (code, description) VALUES
+	 ('EMP','Regular employee with the lowest privileges'),
+	 ('ADM','Employee with the highest privileges'),
+	 ('DCH','Employee in charge of department');
 
 
 DROP TABLE IF EXISTS user_role;
@@ -46,9 +49,9 @@ CREATE TABLE IF NOT EXISTS user_role (
 	user_role_id BIGINT NOT NULL AUTO_INCREMENT,
 	user_id BIGINT NULL,
 	role_id BIGINT NULL,
-	CONSTRAINT user_role_pk PRIMARY KEY (user_role_id),
-	CONSTRAINT user_role_user_FK FOREIGN KEY (user_id) REFERENCES employee.`user`(user_id),
-	CONSTRAINT user_role_role_FK FOREIGN KEY (role_id) REFERENCES employee.`role`(role_id)
+	PRIMARY KEY (user_role_id),
+	FOREIGN KEY (user_id) REFERENCES employee.`user`(user_id),
+	FOREIGN KEY (role_id) REFERENCES employee.`role`(role_id)
 )
 
 DROP TABLE IF EXISTS department;
@@ -75,7 +78,10 @@ CREATE TABLE IF NOT EXISTS employee (
     active BOOLEAN,
     department_id BIGINT,
     email varchar(50) DEFAULT NULL,
+	user_id bigint DEFAULT NULL,
     PRIMARY KEY (employee_id),
+	FOREIGN KEY (user_id) 
+		REFERENCES user (`user_id`)
     FOREIGN KEY (department_id)
         REFERENCES department (department_id)
 );

@@ -21,8 +21,16 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  public getAllEmpoloyees(page: PaginatorState): Observable<EmpoyeeSearchResult> {
-    return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}?page=${page.page}&size=${page.rows}&sort=asc`).pipe(catchError(this.errorHandler));
+  public getAllEmpoloyees(all: boolean, page?: PageEvent): Observable<EmpoyeeSearchResult> {
+    if (all) {
+      return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}?all=${all}`)
+    } else {
+      let queryParams: string = page?.page === undefined ? `` : `page=${page.page}`;
+      queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
+      queryParams += ``;
+      return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
+    }
+    // .pipe(catchError(this.errorHandler));
   }
 
   public getEmployee(employeeId: number): Observable<Employee> {
@@ -45,12 +53,9 @@ export class EmployeeService {
     return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
-  private errorHandler(errorRes: HttpErrorResponse) {
+  private errorHandler(errorRes: any) {
     console.log(errorRes);
     let errorMessage = 'Error occurred!';
     return throwError(() => new Error(errorMessage));
   }
-
-
-
 }
