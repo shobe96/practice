@@ -5,7 +5,7 @@ import { environment } from '../../../environments/environment.development';
 import { Employee } from '../../models/employee.model';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeCreateResponse } from '../../models/employee-create-response.model';
-import { EmpoyeeSearchResult } from '../../models/empoyee-search-result.model';
+import { EmployeeSearchResult } from '../../models/employee-search-result.model';
 import { buildSearchParams } from '../../shared/utils';
 import { PageEvent } from '../../models/page-event.model';
 
@@ -21,14 +21,14 @@ export class EmployeeService {
 
   constructor(private http: HttpClient) { }
 
-  public getAllEmpoloyees(all: boolean, page?: PageEvent): Observable<EmpoyeeSearchResult> {
+  public getAllEmployees(all: boolean, page?: PageEvent): Observable<EmployeeSearchResult> {
     if (all) {
-      return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}?all=${all}`)
+      return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}?all=${all}`)
     } else {
       let queryParams: string = page?.page === undefined ? `` : `page=${page.page}`;
       queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
       queryParams += ``;
-      return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
+      return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
     }
     // .pipe(catchError(this.errorHandler));
   }
@@ -49,8 +49,8 @@ export class EmployeeService {
     return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${employeeId}`);
   }
 
-  public search(employee: Employee, page: PageEvent): Observable<EmpoyeeSearchResult> {
-    return this.http.get<EmpoyeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
+  public search(employee: Employee, page: PageEvent): Observable<EmployeeSearchResult> {
+    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
   private errorHandler(errorRes: any) {

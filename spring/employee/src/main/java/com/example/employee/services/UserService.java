@@ -11,4 +11,6 @@ public interface UserService {
 	public User registerUser(RegisterRequest request);
 	
 	public UserSearchResult getAllUsers(Pageable pageable);
+	
+	public void deleteUser(Integer userId);
 }

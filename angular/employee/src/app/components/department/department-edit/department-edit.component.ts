@@ -6,6 +6,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DepartmentService } from '../../../services/department/department.service';
 import { Employee } from '../../../models/employee.model';
 import { MessageService } from 'primeng/api';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-department-edit',
@@ -75,10 +76,10 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
     const departmentObserver: any = {
       next: (value: Department) => {
         if (this.id === null) {
-          this.fireToast("success","Success",`Department ${value.name} has been created`);
+          fireToast("success","Success",`Department ${value.name} has been created`, this.messageService);
           this.router.navigate([`department/details/${value.id}`])
         } else {
-          this.fireToast("success","Success",`Department ${value.name} has been updated`);
+          fireToast("success","Success",`Department ${value.name} has been updated`, this.messageService);
         }
       },
       error: (err: any) => { console.log(err) },
@@ -89,9 +90,5 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
     } else {
       this.departmentService.update(this.department).subscribe(departmentObserver);
     }
-  }
-
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }

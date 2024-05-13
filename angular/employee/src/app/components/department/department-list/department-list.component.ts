@@ -7,6 +7,7 @@ import { DepartmentService } from '../../../services/department/department.servi
 import { DepartmentSearchResult } from '../../../models/department-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-department-list',
@@ -82,10 +83,6 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
     this.router.navigate(["department/new"]);
   }
 
-  setId(departmentId: number) {
-    this.departmentId = departmentId;
-  }
-
   onPageChange(event: PaginatorState) {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
@@ -120,14 +117,11 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
           this.getAllDepartments();
         }
         this.showDialog(false);
-        this.fireToast("success", "success", `Department with id ${this.departmentId} has been deleted.`);
+        fireToast("success", "success", `Department with id ${this.departmentId} has been deleted.`, this.messageService);
       },
-      error: (err: any) => { console.log(err); this.fireToast('error', 'Error', err.error.message); },
+      error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { console.log("Completed") }
     });
-  }
-  fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 
   onKeyUp() {

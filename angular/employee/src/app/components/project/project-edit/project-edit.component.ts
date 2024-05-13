@@ -1,0 +1,92 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, Params } from '@angular/router';
+import { MessageService } from 'primeng/api';
+import { Subscription } from 'rxjs';
+import { Project } from '../../../models/project.model';
+import { ProjectService } from '../../../services/project/project.service';
+import { fireToast } from '../../../shared/utils';
+
+@Component({
+  selector: 'app-project-edit',
+  templateUrl: './project-edit.component.html',
+  styleUrl: './project-edit.component.scss'
+})
+export class ProjectEditComponent implements OnInit, OnDestroy {
+  id: number | null = null;
+  private routeSubscription$!: Subscription;
+  private projectSubscription$!: Subscription;
+  project: Project = new Project();
+  projectFormGroup!: FormGroup;
+
+  constructor(
+    private route: ActivatedRoute,
+    private projectService: ProjectService,
+    private router: Router,
+    private formBuilder: FormBuilder,
+    private messageService: MessageService) { }
+
+  ngOnInit(): void {
+    this.buildForm();
+    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
+      this.id = params["projectId"] !== undefined && params["projectId"] !== null ? params["projectId"] : null;
+      this.initFormFields();
+    });
+  }
+  ngOnDestroy(): void {
+    if (this.routeSubscription$ !== undefined) {
+      this.routeSubscription$.unsubscribe();
+    }
+    if (this.projectSubscription$ !== undefined) {
+      this.projectSubscription$.unsubscribe();
+    }
+  }
+
+  buildForm() {
+    this.projectFormGroup = this.formBuilder.group({
+      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
+      code: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
+    });
+  }
+
+  private initFormFields() {
+    if (this.id !== null) {
+      const projectObserver: any = {
+        next: (value: Project) => {
+          this.project = value;
+          this.projectFormGroup.controls['name'].setValue(value.name);
+          this.projectFormGroup.controls['code'].setValue(value.code);
+        },
+        error: (err: any) => { console.log(err) },
+        complete: () => { console.log('Completed') }
+      };
+      this.projectSubscription$ = this.projectService.getProject(this.id).subscribe(projectObserver);
+    }
+  }
+
+  back() {
+    this.router.navigate(["project/list"])
+  }
+
+  submit() {
+    this.project.name = this.projectFormGroup.controls['name'].value;
+    this.project.code = this.projectFormGroup.controls['code'].value;
+    const projectObserver: any = {
+      next: (value: Project) => {
+        if (this.id === null) {
+          this.router.navigate([`project/details/${value.id}`])
+          fireToast("success", "Success", `Project ${value.name} has been created`, this.messageService);
+        } else {
+          fireToast("success", "Success", `Project ${value.name} has been updated`, this.messageService);
+        }
+      },
+      error: (err: any) => { console.log(err) },
+      complete: () => { },
+    }
+    if (this.id === null) {
+      this.projectService.save(this.project).subscribe(projectObserver);
+    } else {
+      this.projectService.update(this.project).subscribe(projectObserver);
+    }
+  }
+}

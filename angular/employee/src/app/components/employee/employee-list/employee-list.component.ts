@@ -5,8 +5,9 @@ import { Subject, Subscription, debounceTime } from 'rxjs';
 import { Router } from '@angular/router';
 import { PaginatorState } from 'primeng/paginator';
 import { PageEvent } from '../../../models/page-event.model';
-import { EmpoyeeSearchResult } from '../../../models/empoyee-search-result.model';
+import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
 import { MessageService } from 'primeng/api';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-employee-list',
@@ -32,7 +33,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   constructor(private employeeService: EmployeeService, private router: Router, private messageService: MessageService) { }
 
   ngOnInit(): void {
-    this.getAllEmpoloyees();
+    this.getAllEmployees();
     this.searchSubject.pipe(debounceTime(2000)).subscribe({
       next: (value) => {
         this.employeeService.search(value, this.page).subscribe({
@@ -64,28 +65,24 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     this.router.navigate([`employee/edit/${employeeId}`]);
   }
 
-  public getAllEmpoloyees() {
+  public getAllEmployees() {
     const employeesObserver: any = {
-      next: (value: EmpoyeeSearchResult) => {
+      next: (value: EmployeeSearchResult) => {
         this.employees = value.employees !== undefined ? value.employees : [];
         this.page.pageCount = value.size !== undefined ? value.size : 0;
       },
       error: (err: any) => {
-        this.fireToast('error', 'Error', err.message);
+        fireToast('error', 'Error', err.message, this.messageService);
       },
       complete: () => {
         console.log('Completed');
       },
     };
-    this.employees$ = this.employeeService.getAllEmpoloyees(false, this.page).subscribe(employeesObserver);
+    this.employees$ = this.employeeService.getAllEmployees(false, this.page).subscribe(employeesObserver);
   }
 
   public addNew() {
     this.router.navigate(["employee/new"]);
-  }
-
-  setId(employeeId: number) {
-    this.employeeId = employeeId;
   }
 
   onPageChange(event: PaginatorState) {
@@ -95,7 +92,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     if ((this.employeeSearch.name !== undefined && this.employeeSearch.name !== "") || (this.employeeSearch.surname !== undefined && this.employeeSearch.surname !== "") || (this.employeeSearch.email !== undefined && this.employeeSearch.surname !== "")) {
       this.search();
     } else {
-      this.getAllEmpoloyees();
+      this.getAllEmployees();
     }
   }
 
@@ -111,12 +108,12 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
           this.search();
         } else {
           console.log("DELETE");
-          this.getAllEmpoloyees();
+          this.getAllEmployees();
         }
         this.showDialog(false);
-        this.fireToast("success", "success", `Employee with id ${this.employeeId} has been deleted.`);
+        fireToast("success", "success", `Employee with id ${this.employeeId} has been deleted.`, this.messageService);
       },
-      error: (err: any) => { console.log(err); this.fireToast('error', 'Error', err.error.message); },
+      error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { console.log("Completed") }
     });
   }
@@ -130,17 +127,13 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     if ((this.employeeSearch.name !== undefined && this.employeeSearch.name !== "") || (this.employeeSearch.surname !== undefined && this.employeeSearch.surname !== "") || (this.employeeSearch.email !== undefined && this.employeeSearch.surname !== "")) {
       this.search();
     } else {
-      this.getAllEmpoloyees();
+      this.getAllEmployees();
     }
   }
 
   clear() {
     this.employeeSearch = new Employee();
     console.log("CLEAR");
-    this.getAllEmpoloyees();
-  }
-
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
+    this.getAllEmployees();
   }
 }

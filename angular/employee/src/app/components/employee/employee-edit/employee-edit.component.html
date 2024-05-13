@@ -40,7 +40,7 @@
       </div>
       <div
         *ngIf="employeeFormGroup.controls['surname'].errors?.['maxlength']"
-      ></div>
+      >Surname must be shorter than 25 characters!</div>
     </div>
     <input formControlName="email" pInputText placeholder="Email of employee" />
     <div

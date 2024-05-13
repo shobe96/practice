@@ -1,5 +1,6 @@
-import { MenuItem, PrimeIcons } from "primeng/api";
+import { MenuItem, MessageService, PrimeIcons } from "primeng/api";
 import { PageEvent } from "../models/page-event.model";
+import { inject } from "@angular/core";
 
 export function buildSearchParams(object: any): string {
   let params: string = "";
@@ -22,6 +23,10 @@ export function buildPaginationParams(page?: PageEvent): string {
   queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
   queryParams += ``;
   return queryParams;
+}
+
+export function fireToast(severity: string, summary: string, detail: string, messageService: any) {
+  messageService.add({ severity: severity, summary: summary, detail: detail });
 }
 
 

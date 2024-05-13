@@ -7,6 +7,8 @@ import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { UserSearchResult } from '../../../models/user-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
+import { AuthService } from '../../../services/auth/auth.service';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-user-list',
@@ -27,7 +29,7 @@ export class UserListComponent implements OnInit, OnDestroy {
   users: User[] = [];
   visible: boolean = false;
 
-  constructor(private userService: UserService, private router: Router, private messageService: MessageService) { }
+  constructor(private userService: UserService, private router: Router, private messageService: MessageService, private authService: AuthService) { }
 
   ngOnInit(): void {
     this.getAllUsers();
@@ -44,7 +46,7 @@ export class UserListComponent implements OnInit, OnDestroy {
       },
       error: (err: any) => {
         console.log(err);
-        this.fireToast('error', 'Error', err.message);
+        fireToast('error', 'Error', err.message, this.messageService);
       },
       complete: () => {
         console.log('Completed');
@@ -54,7 +56,15 @@ export class UserListComponent implements OnInit, OnDestroy {
   }
 
   delete() {
-    throw new Error('Method not implemented.');
+    this.authService.delete(this.userId).subscribe({
+      next: (value: any) => {
+        this.getAllUsers();
+        this.showDialog(false);
+        fireToast("success", "success", `Employee with id ${this.userId} has been deleted.`, this.messageService);
+      },
+      error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
+      complete: () => { console.log("Completed") }
+    });
   }
   onPageChange(event: PaginatorState) {
     this.page.first = event.first ?? 0;
@@ -65,9 +75,5 @@ export class UserListComponent implements OnInit, OnDestroy {
   showDialog(visible: boolean, userId?: number) {
     this.userId = userId ?? 0;
     this.visible = visible;
-  }
-
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }

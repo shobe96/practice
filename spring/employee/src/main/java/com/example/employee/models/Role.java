@@ -35,10 +35,6 @@ public class Role {
 	@Column(name = "description", length = 25)
 	@Size(min = 5, max = 100)
 	private String description;
-
-//	@OneToMany(mappedBy = "role")
-//	@JsonIgnoreProperties("role")
-//	private Set<UserRole> userRoles = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "roles")
 	@JsonIgnore

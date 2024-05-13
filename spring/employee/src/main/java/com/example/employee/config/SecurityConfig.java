@@ -63,10 +63,13 @@ public class SecurityConfig {
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/login").permitAll()
 						.requestMatchers("/api/auth/register-user").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/auth/delete/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/employees/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/users/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/departments/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/roles/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/skills/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/projects/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.httpBasic(basic -> basic.authenticationEntryPoint(authEntryPoint))

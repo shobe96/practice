@@ -8,7 +8,6 @@ import java.util.NoSuchElementException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -48,16 +47,16 @@ public class DepartmentController {
 		} else {
 			departments = departmentService.getAllDepartments(pageable);
 		}
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments);
+		return ResponseEntity.ok().body(departments);
 	}
 
 	@GetMapping("/get-one/{departmentId}")
 	public ResponseEntity<Department> getDepartmentById(@PathVariable Integer departmentId) {
 		Department department = departmentService.getDepartmentById(departmentId);
 		if (department == null) {
-			return ResponseEntity.notFound().headers(new HttpHeaders()).build();
+			return ResponseEntity.notFound().build();
 		} else {			
-			return ResponseEntity.ok().headers(new HttpHeaders()).body(department);
+			return ResponseEntity.ok().body(department);
 		}
 		
 	}
@@ -65,31 +64,31 @@ public class DepartmentController {
 	@GetMapping("/get-by-name")
 	public ResponseEntity<Department> getByDepartmentName(@RequestParam String name) {
 		Department departments = departmentService.getByDepartmentName(name);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(departments);
+		return ResponseEntity.ok().body(departments);
 	}
 
 	@GetMapping("/search")
 	public ResponseEntity<DepartmentSearchResult> search(@RequestParam(required = false) String name,
 			Pageable pageable) {
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(departmentService.searchDepartments(name, pageable));
+		return ResponseEntity.ok().body(departmentService.searchDepartments(name, pageable));
 	}
 
 	@PostMapping("/create")
 	public ResponseEntity<Department> saveDepartment(@RequestBody Department department) {
 		Department newDepartment = departmentService.saveDepartment(department);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(newDepartment);
+		return ResponseEntity.ok().body(newDepartment);
 	}
 
 	@PutMapping("/update")
 	public ResponseEntity<Department> updateDepartment(@RequestBody Department department) {
 		Department newDepartment = departmentService.updateDepartment(department);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(newDepartment);
+		return ResponseEntity.ok().body(newDepartment);
 	}
 
 	@DeleteMapping("/delete/{departmentId}")
 	public ResponseEntity<Void> deleteDepartment(@PathVariable Integer departmentId) {
 		departmentService.deleteDepartment(departmentId);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
+		return ResponseEntity.ok().body(null);
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

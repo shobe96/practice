@@ -1,0 +1,56 @@
+2024-05-13T09:49:44.856+02:00  INFO 16448 --- [restartedMain] c.example.employee.EmployeeApplication   : Starting EmployeeApplication using Java 17.0.8 with PID 16448 (C:\Users\stefan.sogorovic\Desktop\Engineering\test\practice\spring\employee\target\classes started by ssogorovic in C:\Users\stefan.sogorovic\Desktop\Engineering\test\practice\spring\employee)
+2024-05-13T09:49:44.917+02:00  INFO 16448 --- [restartedMain] c.example.employee.EmployeeApplication   : The following 1 profile is active: "dev"
+2024-05-13T09:49:45.055+02:00  INFO 16448 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : Devtools property defaults active! Set 'spring.devtools.add-properties' to 'false' to disable
+2024-05-13T09:49:45.056+02:00  INFO 16448 --- [restartedMain] .e.DevToolsPropertyDefaultsPostProcessor : For additional web related logging consider setting the 'logging.level.web' property to 'DEBUG'
+2024-05-13T09:49:49.178+02:00  INFO 16448 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2024-05-13T09:49:49.585+02:00  INFO 16448 --- [restartedMain] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 376 ms. Found 7 JPA repository interfaces.
+2024-05-13T09:49:52.603+02:00  INFO 16448 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2024-05-13T09:49:52.641+02:00  INFO 16448 --- [restartedMain] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2024-05-13T09:49:52.643+02:00  INFO 16448 --- [restartedMain] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.18]
+2024-05-13T09:49:52.917+02:00  INFO 16448 --- [restartedMain] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2024-05-13T09:49:52.919+02:00  INFO 16448 --- [restartedMain] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 7861 ms
+2024-05-13T09:49:53.484+02:00  INFO 16448 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2024-05-13T09:49:54.939+02:00  INFO 16448 --- [restartedMain] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection com.mysql.cj.jdbc.ConnectionImpl@376a9f74
+2024-05-13T09:49:54.947+02:00  INFO 16448 --- [restartedMain] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2024-05-13T09:49:55.054+02:00  INFO 16448 --- [restartedMain] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2024-05-13T09:49:55.320+02:00  INFO 16448 --- [restartedMain] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.1.Final
+2024-05-13T09:49:55.522+02:00  INFO 16448 --- [restartedMain] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2024-05-13T09:49:56.373+02:00  INFO 16448 --- [restartedMain] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2024-05-13T09:49:58.957+02:00  INFO 16448 --- [restartedMain] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2024-05-13T09:49:58.966+02:00  INFO 16448 --- [restartedMain] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2024-05-13T09:49:59.505+02:00  INFO 16448 --- [restartedMain] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2024-05-13T09:50:01.070+02:00  WARN 16448 --- [restartedMain] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2024-05-13T09:50:01.871+02:00  INFO 16448 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@607131ad, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@4c139eec, org.springframework.security.web.context.SecurityContextHolderFilter@4f0ee866, org.springframework.security.web.header.HeaderWriterFilter@6d5fbbaa, org.springframework.security.web.authentication.logout.LogoutFilter@6ab2b7f5, com.example.employee.utils.JwtAuthFilter@5691b407, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@67018430, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@70f7bf5f, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@531d44ee, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2758b35a, org.springframework.security.web.session.SessionManagementFilter@5302b58c, org.springframework.security.web.access.ExceptionTranslationFilter@7152ed4e, org.springframework.security.web.access.intercept.AuthorizationFilter@776bfeb2]
+2024-05-13T09:50:01.905+02:00  WARN 16448 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/swagger-ui/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T09:50:01.905+02:00  INFO 16448 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/swagger-ui/**']
+2024-05-13T09:50:01.907+02:00  WARN 16448 --- [restartedMain] o.s.s.c.a.web.builders.WebSecurity       : You are asking Spring Security to ignore Mvc [pattern='/v3/api-docs/**']. This is not recommended -- please use permitAll via HttpSecurity#authorizeHttpRequests instead.
+2024-05-13T09:50:01.908+02:00  INFO 16448 --- [restartedMain] o.s.s.web.DefaultSecurityFilterChain     : Will not secure Mvc [pattern='/v3/api-docs/**']
+2024-05-13T09:50:02.704+02:00  INFO 16448 --- [restartedMain] o.s.b.d.a.OptionalLiveReloadServer       : LiveReload server is running on port 35729
+2024-05-13T09:50:02.828+02:00  INFO 16448 --- [restartedMain] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2024-05-13T09:50:02.842+02:00  INFO 16448 --- [restartedMain] c.example.employee.EmployeeApplication   : Started EmployeeApplication in 19.305 seconds (process running for 22.949)
+2024-05-13T09:50:05.792+02:00  INFO 16448 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2024-05-13T09:50:05.792+02:00  INFO 16448 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2024-05-13T09:50:05.795+02:00  INFO 16448 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 2 ms
+2024-05-13T09:50:08.149+02:00  INFO 16448 --- [http-nio-8080-exec-4] o.springdoc.api.AbstractOpenApiResource  : Init duration for springdoc-openapi is: 1666 ms
+2024-05-13T09:59:23.833+02:00  INFO 16448 --- [http-nio-8080-exec-7] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:33.103+02:00  INFO 16448 --- [http-nio-8080-exec-8] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:35.833+02:00  INFO 16448 --- [http-nio-8080-exec-9] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:37.488+02:00  INFO 16448 --- [http-nio-8080-exec-10] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:38.744+02:00  INFO 16448 --- [http-nio-8080-exec-1] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:43.321+02:00  INFO 16448 --- [http-nio-8080-exec-2] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:47.506+02:00  INFO 16448 --- [http-nio-8080-exec-3] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:48.467+02:00  INFO 16448 --- [http-nio-8080-exec-4] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:49.606+02:00  INFO 16448 --- [http-nio-8080-exec-5] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:50.535+02:00  INFO 16448 --- [http-nio-8080-exec-6] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T09:59:51.740+02:00  INFO 16448 --- [http-nio-8080-exec-7] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:01.017+02:00  INFO 16448 --- [http-nio-8080-exec-8] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:01.049+02:00  INFO 16448 --- [http-nio-8080-exec-9] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:01.173+02:00  INFO 16448 --- [http-nio-8080-exec-10] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:02.337+02:00  INFO 16448 --- [http-nio-8080-exec-1] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:06.198+02:00  INFO 16448 --- [http-nio-8080-exec-2] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:06.215+02:00  INFO 16448 --- [http-nio-8080-exec-3] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:06.266+02:00  INFO 16448 --- [http-nio-8080-exec-4] c.e.e.s.impl.UserDetailsServiceImpl      : Searching for user with username: admin2
+2024-05-13T10:00:18.015+02:00  INFO 16448 --- [RMI TCP Connection(14)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2024-05-13T10:00:18.066+02:00  INFO 16448 --- [RMI TCP Connection(14)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2024-05-13T10:00:18.072+02:00  INFO 16448 --- [RMI TCP Connection(14)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2024-05-13T10:00:18.088+02:00  INFO 16448 --- [RMI TCP Connection(14)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.

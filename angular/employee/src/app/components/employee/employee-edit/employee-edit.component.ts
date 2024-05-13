@@ -8,6 +8,7 @@ import { Department } from '../../../models/department.model';
 import { DepartmentService } from '../../../services/department/department.service';
 import { DepartmentSearchResult } from '../../../models/department-search-result.model';
 import { MessageService } from 'primeng/api';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-employee-edit',
@@ -102,9 +103,9 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
       next: (value: Employee) => {
         if (this.id === null) {
           this.router.navigate([`employee/details/${value.id}`])
-          this.fireToast("success","Success",`Employee ${value.name} ${value.surname} has been created`);
+          fireToast("success","Success",`Employee ${value.name} ${value.surname} has been created`, this.messageService);
         } else {
-          this.fireToast("success","Success",`Employee ${value.name} ${value.surname} has been updated`);
+          fireToast("success","Success",`Employee ${value.name} ${value.surname} has been updated`, this.messageService);
         }
       },
       error: (err: any) => { console.log(err) },
@@ -115,9 +116,5 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
     } else {
       this.employeeService.update(this.employee).subscribe(employeeObserver);
     }
-  }
-
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }

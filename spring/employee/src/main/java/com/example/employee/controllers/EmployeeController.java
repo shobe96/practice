@@ -56,16 +56,16 @@ public class EmployeeController {
 			employees = employeeService.getAllEmployees(pageable);
 		}
 		
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees);
+		return ResponseEntity.ok().body(employees);
 	}
 
 	@GetMapping("/get-one/{employeeId}")
 	public ResponseEntity<Object> getEmployeeById(@PathVariable Integer employeeId) {
 		Employee employee = employeeService.getEmployeebyId(employeeId);
 		if (employee == null) {
-			return ResponseEntity.notFound().headers(new HttpHeaders()).build();
+			return ResponseEntity.notFound().build();
 		} else {			
-			return ResponseEntity.ok().headers(new HttpHeaders()).body(employee);
+			return ResponseEntity.ok().body(employee);
 		}
 	}
 
@@ -73,7 +73,7 @@ public class EmployeeController {
 	public ResponseEntity<List<Employee>> getEmployeeByDepartmentId(Pageable pageable,
 			@PathVariable Integer departmentId) {
 		Page<Employee> employees = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
+		return ResponseEntity.ok().body(employees.getContent());
 	}
 
 	@PostMapping("/create")
@@ -81,19 +81,19 @@ public class EmployeeController {
 		Employee newEmployee = employeeService.saveEmployee(employee);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(newEmployee.getId()).toUri();
-		return ResponseEntity.created(location).headers(new HttpHeaders()).body(newEmployee);
+		return ResponseEntity.created(location).body(newEmployee);
 	}
 
 	@PutMapping("/update")
 	public ResponseEntity<Employee> updateEmployee(@Valid @RequestBody Employee employee) {
 		Employee updatedEmployee = employeeService.saveEmployee(employee);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(updatedEmployee);
+		return ResponseEntity.ok().body(updatedEmployee);
 	}
 
 	@DeleteMapping("/delete/{employeeId}")
 	public ResponseEntity<Void> deleteEmployee(@PathVariable Integer employeeId) {
 		employeeService.deleteEmployee(employeeId);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
+		return ResponseEntity.ok().body(null);
 	}
 
 	@GetMapping("/search")

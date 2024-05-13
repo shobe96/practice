@@ -1,5 +1,5 @@
 import { Employee } from "./employee.model";
-import { Role } from "./role";
+import { Role } from "./role.model";
 
 export class RegisterRequest {
   username?: string;

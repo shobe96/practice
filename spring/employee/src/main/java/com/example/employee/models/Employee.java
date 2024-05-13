@@ -1,15 +1,20 @@
 package com.example.employee.models;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostUpdate;
@@ -64,8 +69,16 @@ public class Employee {
 	private Department department;
 
 	@OneToOne()
-    @JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "employee_skill", joinColumns = @JoinColumn(name = "employee_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+	private Set<Skill> skills = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "employee_project", joinColumns = @JoinColumn(name = "employee_id"), inverseJoinColumns = @JoinColumn(name = "project_id"))
+	private Set<Project> projects = new HashSet<>();
 
 	public Integer getId() {
 		return id;
@@ -155,9 +168,25 @@ public class Employee {
 		this.user = user;
 	}
 
+	public Set<Skill> getSkills() {
+		return skills;
+	}
+
+	public void setSkills(Set<Skill> skills) {
+		this.skills = skills;
+	}
+
+	public Set<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(Set<Project> projects) {
+		this.projects = projects;
+	}
+
 	@PrePersist
 	private void beforeCreate() {
-		this.active = true;
+		this.active = false;
 		this.addDate = new Date();
 	}
 

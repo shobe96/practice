@@ -25,4 +25,6 @@ public interface EmployeeRepository
 	
 	@Query("SELECT e FROM Employee e WHERE e.user.id IS NULL")
 	public List<Employee> findEmployeesWithoutUser();
+	
+	public Employee findByUserId(Integer userId);
 }

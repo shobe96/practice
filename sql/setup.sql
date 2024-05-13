@@ -79,9 +79,62 @@ CREATE TABLE IF NOT EXISTS employee (
     department_id BIGINT,
     email varchar(50) DEFAULT NULL,
 	user_id bigint DEFAULT NULL,
+	skill_id bigint DEFAULT NULL,
     PRIMARY KEY (employee_id),
 	FOREIGN KEY (user_id) 
-		REFERENCES user (`user_id`)
+		REFERENCES user (`user_id`),
     FOREIGN KEY (department_id)
         REFERENCES department (department_id)
+);
+
+DROP TABLE IF EXISTS skill;
+CREATE TABLE IF NOT EXISTS skill (
+	skill_id BIGINT NOT NULL AUTO_INCREMENT,
+	name varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+	description varchar(100) NULL,
+	PRIMARY KEY (skill_id)
+);
+
+DROP TABLE IF EXISTS employee_skill;
+CREATE TABLE IF NOT EXISTS employee_skill (
+	employee_skill_id BIGINT NOT NULL AUTO_INCREMENT,
+	skill_id BIGINT DEFAULT NULL,
+	employee_id BIGINT DEFAULT NULL,
+	PRIMARY KEY (employee_skill_id),
+	FOREIGN KEY (skill_id) 
+		REFERENCES skill (`skill_id`),
+    FOREIGN KEY (employee_id)
+        REFERENCES employee (employee_id)
+);
+
+DROP TABLE IF EXISTS project;
+CREATE TABLE IF NOT EXISTS project (
+	project_id BIGINT NOT NULL AUTO_INCREMENT,
+	name varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+	code varchar(100) NOT NULL,
+	PRIMARY KEY (project_id)
+);
+
+DROP TABLE IF EXISTS employee_project;
+CREATE TABLE IF NOT EXISTS employee_project (
+	employee_project_id BIGINT NOT NULL AUTO_INCREMENT,
+	project_id BIGINT DEFAULT NULL,
+	employee_id BIGINT DEFAULT NULL,
+	PRIMARY KEY (employee_project_id),
+	FOREIGN KEY (project_id) 
+		REFERENCES project (`project_id`),
+    FOREIGN KEY (employee_id)
+        REFERENCES employee (employee_id)
+);
+
+DROP TABLE IF EXISTS project_skill;
+CREATE TABLE IF NOT EXISTS project_skill (
+	project_skill_id BIGINT NOT NULL AUTO_INCREMENT,
+	project_id BIGINT DEFAULT NULL,
+	skill_id BIGINT DEFAULT NULL,
+	PRIMARY KEY (project_skill_id),
+	FOREIGN KEY (project_id) 
+		REFERENCES project (`project_id`),
+    FOREIGN KEY (skill_id) 
+		REFERENCES skill (`skill_id`)
 );

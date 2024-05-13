@@ -1,0 +1,50 @@
+<div class="card">
+  <h1 *ngIf="id === null; else elseBlock">Add new Project</h1>
+  <ng-template #elseBlock>
+    <h1>Project {{ id }}</h1>
+  </ng-template>
+  <form
+    class="project-form"
+    [formGroup]="projectFormGroup"
+    (ngSubmit)="submit()"
+  >
+    <input formControlName="name" pInputText placeholder="Name of project" />
+    <div
+    class="validation-messages"
+      *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['name'].errors?.['required']">
+        Name is required!
+      </div>
+      <div *ngIf="projectFormGroup.controls['name'].errors?.['minlength']">
+        Name must be bigger than 0 characters!
+      </div>
+      <div *ngIf="projectFormGroup.controls['name'].errors?.['maxlength']">
+        Name must be shorter than 25 characters!
+      </div>
+    </div>
+    <input
+      formControlName="code"
+      pInputText
+      placeholder="Code of project"
+    />
+    <div
+    class="validation-messages"
+      *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['code'].errors?.['required']">
+        Code is required!
+      </div>
+      <div *ngIf="projectFormGroup.controls['code'].errors?.['minlength']">
+        Code must be bigger than 5 characters!
+      </div>
+      <div
+        *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']"
+      >Code must be shorter than 100 characters!</div>
+    </div>
+    <div class="action-buttons">
+      <p-button label="Cancel" (onClick)="back()" />
+      <p-button [disabled]="projectFormGroup.invalid" label="Submit" type="submit" />
+    </div>
+  </form>
+</div>

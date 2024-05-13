@@ -8,12 +8,13 @@ import { StrongPasswordRegx } from '../../../shared/constants.model';
 import { MessageService, PrimeIcons } from 'primeng/api';
 import { Router } from '@angular/router';
 import { RoleService } from '../../../services/role/role.service';
-import { Role } from '../../../models/role';
+import { Role } from '../../../models/role.model';
 import { RoleSearchResult } from '../../../models/role-search-result.model';
 import { RegisterRequest } from '../../../models/register-request.model';
 import { Employee } from '../../../models/employee.model';
 import { EmployeeService } from '../../../services/employee/employee.service';
-import { EmpoyeeSearchResult } from '../../../models/empoyee-search-result.model';
+import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-auth-form',
@@ -51,12 +52,12 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 
     this.isLoggin = this.router.url.includes("login");
     if (!this.isLoggin) {
-      this.employeeService.getAllEmpoloyees(true).subscribe({
-        next: (value: EmpoyeeSearchResult) => {
+      this.employeeService.getAllEmployees(true).subscribe({
+        next: (value: EmployeeSearchResult) => {
           this.employees = value.employees ?? [];
         },
         error: (err: any) => {
-          this.fireToast('error', `${err.statusText}`, 'Failed to retrieve employees.');
+          fireToast('error', `${err.statusText}`, 'Failed to retrieve employees.', this.messageService);
         },
         complete: () => {
 
@@ -68,9 +69,9 @@ export class AuthFormComponent implements OnInit, OnDestroy {
         },
         error: (err: any) => {
           if (err.status === 0) {
-            this.fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`);
+            fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
           } else {
-            this.fireToast('error', 'Error', `${err.message}`);
+            fireToast('error', 'Error', `${err.message}`, this.messageService);
           }
         },
         complete: () => { }
@@ -96,12 +97,12 @@ export class AuthFormComponent implements OnInit, OnDestroy {
         next: (value: AuthResponse) => {
           localStorage.setItem('authResponse', JSON.stringify(value));
           this.authService.autoLogout(value.expiration ?? 0);
-          this.authService.updateMenuItems(true);
+          this.authService.updateMenuItems(true, value.roles);
           this.router.navigate(["/"]);
-          this.fireToast('success', 'Success', `Welcome: ${value.username}`);
+          fireToast('success', 'Success', `Welcome: ${value.username}`, this.messageService);
 
         },
-        error: (err: any) => { this.fireToast('error', 'Error', err.error.message); },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { }
       });
     } else {
@@ -112,9 +113,9 @@ export class AuthFormComponent implements OnInit, OnDestroy {
       registerRequest.employee = this.authFormGroup.controls['employee'].value;
       this.authService.registerUser(registerRequest).subscribe({
         next: (value: string) => {
-          this.fireToast('success', 'Success', 'Registered successfully');
+          fireToast('success', 'Success', 'Registered successfully', this.messageService);
         },
-        error: (err: any) => { console.log(err); this.fireToast('error', 'Error', err.error.message); },
+        error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log("Complete") }
       });
     }
@@ -180,9 +181,5 @@ export class AuthFormComponent implements OnInit, OnDestroy {
       return password === confirmPassword ? null : { passwordMissmatch: true }
     }
 
-  }
-
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }
