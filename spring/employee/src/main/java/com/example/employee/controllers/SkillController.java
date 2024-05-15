@@ -49,8 +49,7 @@ public class SkillController {
 	public ResponseEntity<SkillSearchResult> getAllSkills(Pageable pageable, @RequestParam() Boolean all) {
 		SkillSearchResult skills = new SkillSearchResult();
 		if (all.equals(true)) {
-			skills.setSkills(skillService.getAllSkills());
-			;
+			skills = skillService.getAllSkills();
 		} else {
 			skills = skillService.getAllSkills(pageable);
 		}

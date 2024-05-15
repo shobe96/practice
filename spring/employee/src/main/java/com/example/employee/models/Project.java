@@ -3,8 +3,6 @@ package com.example.employee.models;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -35,9 +33,12 @@ public class Project {
 	@NotBlank(message = "Code is mandatory")
 	@Size(min = 3, max = 100)
 	private String code;
+	
+	@Column(name = "active")
+	private Boolean active;
 
-	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "projects")
-	@JsonIgnore
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "employee_project", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "employee_id"))
 	private Set<Employee> employees;
 	
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -66,6 +67,14 @@ public class Project {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	public Set<Employee> getEmployees() {

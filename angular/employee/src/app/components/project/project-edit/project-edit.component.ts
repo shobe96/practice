@@ -6,6 +6,11 @@ import { Subscription } from 'rxjs';
 import { Project } from '../../../models/project.model';
 import { ProjectService } from '../../../services/project/project.service';
 import { fireToast } from '../../../shared/utils';
+import { Skill } from '../../../models/skill.model';
+import { SkillService } from '../../../services/skill/skill.service';
+import { SkillSearchResult } from '../../../models/skill-search-result.model';
+import { Employee } from '../../../models/employee.model';
+import { EmployeeService } from '../../../services/employee/employee.service';
 
 @Component({
   selector: 'app-project-edit',
@@ -18,15 +23,33 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
   private projectSubscription$!: Subscription;
   project: Project = new Project();
   projectFormGroup!: FormGroup;
+  skills: Skill[] = [];
+  employees: Employee[] = [];
 
   constructor(
     private route: ActivatedRoute,
     private projectService: ProjectService,
     private router: Router,
     private formBuilder: FormBuilder,
-    private messageService: MessageService) { }
+    private messageService: MessageService,
+    private skillService: SkillService,
+    private employeeService: EmployeeService
+  ) { }
 
   ngOnInit(): void {
+    this.skillService.getAllSkills(true).subscribe({
+      next: (value: SkillSearchResult) => {
+        this.skills = value.skills ?? [];
+      },
+      error: (err: any) => {
+        if (err.status === 0) {
+          fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
+        } else {
+          fireToast('error', 'Error', `${err.message}`, this.messageService);
+        }
+      },
+      complete: () => { }
+    });
     this.buildForm();
     this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
       this.id = params["projectId"] !== undefined && params["projectId"] !== null ? params["projectId"] : null;
@@ -45,7 +68,9 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
   buildForm() {
     this.projectFormGroup = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
-      code: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
+      code: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]],
+      selectedSkills: [[]],
+      selectedEmployees: [[]]
     });
   }
 
@@ -56,6 +81,10 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
           this.project = value;
           this.projectFormGroup.controls['name'].setValue(value.name);
           this.projectFormGroup.controls['code'].setValue(value.code);
+          this.projectFormGroup.controls['selectedSkills'].setValue(value.skills);
+          const skills = value.skills ?? [];
+          this.retrieveEmployees(skills);
+          this.projectFormGroup.controls['selectedEmployees'].setValue(value.employees)
         },
         error: (err: any) => { console.log(err) },
         complete: () => { console.log('Completed') }
@@ -71,6 +100,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
   submit() {
     this.project.name = this.projectFormGroup.controls['name'].value;
     this.project.code = this.projectFormGroup.controls['code'].value;
+    this.project.skills = this.projectFormGroup.controls['selectedSkills'].value;
+    this.project.employees = this.projectFormGroup.controls['selectedEmployees'].value;
     const projectObserver: any = {
       next: (value: Project) => {
         if (this.id === null) {
@@ -87,6 +118,23 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       this.projectService.save(this.project).subscribe(projectObserver);
     } else {
       this.projectService.update(this.project).subscribe(projectObserver);
+    }
+  }
+
+  private retrieveEmployees(value: Skill[]) {
+    this.employeeService.filterEmployeesByActiveAndSkills(value).subscribe({
+      next: (value: Employee[]) => {
+        this.employees = value;
+      },
+      error: (err: any) => { },
+      complete: () => { }
+    });
+  }
+
+  public onSkillsChange(value: Skill[]) {
+    console.log(value);
+    if (value.length > 0) {
+      this.retrieveEmployees(value);
     }
   }
 }

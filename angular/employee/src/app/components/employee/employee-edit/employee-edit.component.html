@@ -58,6 +58,13 @@
       </div>
     </div>
     <p-dropdown formControlName="department" [options]="departments" optionLabel="name" placeholder="Select a Department" dataKey="id"></p-dropdown>
+    <p-dropdown formControlName="selectedSkills" [options]="skills" optionLabel="name" placeholder="Select a Department" dataKey="id"></p-dropdown>
+    <p-multiSelect
+      [options]="skills"
+      formControlName="selectedSkills"
+      optionLabel="name"
+      placeholder="Select Skills"
+    />
     <div class="action-buttons">
       <p-button label="Cancel" (onClick)="back()" />
       <p-button [disabled]="employeeFormGroup.invalid" label="Submit" type="submit" />

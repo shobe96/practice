@@ -12,7 +12,7 @@ import { AccordionModule } from 'primeng/accordion'; 3
 import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ToastModule } from 'primeng/toast';
-
+import { TabViewModule } from 'primeng/tabview';
 @NgModule({
   declarations: [],
   imports: [
@@ -28,7 +28,8 @@ import { ToastModule } from 'primeng/toast';
     AccordionModule,
     TooltipModule,
     MultiSelectModule,
-    ToastModule
+    ToastModule,
+    TabViewModule
   ],
   exports: [
     MenubarModule,
@@ -43,7 +44,8 @@ import { ToastModule } from 'primeng/toast';
     AccordionModule,
     TooltipModule,
     MultiSelectModule,
-    ToastModule
+    ToastModule,
+    TabViewModule
   ]
 })
 export class PrimeNgModule { }

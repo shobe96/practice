@@ -10,7 +10,7 @@
   >
     <input formControlName="name" pInputText placeholder="Name of project" />
     <div
-    class="validation-messages"
+      class="validation-messages"
       *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].touched"
     >
       <div *ngIf="projectFormGroup.controls['name'].errors?.['required']">
@@ -23,13 +23,9 @@
         Name must be shorter than 25 characters!
       </div>
     </div>
-    <input
-      formControlName="code"
-      pInputText
-      placeholder="Code of project"
-    />
+    <input formControlName="code" pInputText placeholder="Code of project" />
     <div
-    class="validation-messages"
+      class="validation-messages"
       *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].touched"
     >
       <div *ngIf="projectFormGroup.controls['code'].errors?.['required']">
@@ -38,13 +34,32 @@
       <div *ngIf="projectFormGroup.controls['code'].errors?.['minlength']">
         Code must be bigger than 5 characters!
       </div>
-      <div
-        *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']"
-      >Code must be shorter than 100 characters!</div>
+      <div *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']">
+        Code must be shorter than 100 characters!
+      </div>
     </div>
+    <p-multiSelect
+      [options]="skills"
+      formControlName="selectedSkills"
+      optionLabel="name"
+      placeholder="Select Skills"
+      (onChange)="onSkillsChange($event.value)"
+    />
+    <p-multiSelect
+    *ngIf="employees.length > 0"
+      [options]="employees"
+      formControlName="selectedEmployees"
+      optionLabel="name"
+      placeholder="Select Employees"
+      optionDisabled="active"
+    />
     <div class="action-buttons">
       <p-button label="Cancel" (onClick)="back()" />
-      <p-button [disabled]="projectFormGroup.invalid" label="Submit" type="submit" />
+      <p-button
+        [disabled]="projectFormGroup.invalid"
+        label="Submit"
+        type="submit"
+      />
     </div>
   </form>
 </div>

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
+import com.example.employee.models.Skill;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.EmployeeService;
 
@@ -97,5 +98,14 @@ public class EmployeeServiceImpl implements EmployeeService {
 		List<Employee> employees = new ArrayList<>();
 		employees = employeeRepository.findEmployeesWithoutUser();
 		return employees;
+	}
+
+	@Override
+	public List<Employee> filterEmployeesByActiveAndSkills(List<Skill> skills) {
+		List<Integer> skillIds = new ArrayList<>();
+		for (Skill skill : skills) {
+			skillIds.add(skill.getId());
+		}
+		return employeeRepository.filterEmployeesByActiveAndSkills(skillIds);
 	}
 }

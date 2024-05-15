@@ -47,4 +47,8 @@ export class ProjectService {
   public delete(projectId: number): Observable<void> {
     return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${projectId}`);
   }
+
+  public unassignEmployee(employeeId: number, project: Project) {
+    return this.http.post<void>(`${this.backendURL}${this.baseUrl}/unassign-employee/${employeeId}`, project);
+  }
 }

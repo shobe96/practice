@@ -1,7 +1,5 @@
 package com.example.employee.services;
 
-import java.util.List;
-
 import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Skill;
@@ -9,7 +7,7 @@ import com.example.employee.models.SkillSearchResult;
 
 public interface SkillService {
 	public SkillSearchResult getAllSkills(Pageable pageable);
-	public List<Skill> getAllSkills();
+	public SkillSearchResult getAllSkills();
 	public Skill getSkillbyId(Integer skillId); 
 	public Skill saveSkill(Skill skill);
 	public Skill updateSkill(Skill skill);

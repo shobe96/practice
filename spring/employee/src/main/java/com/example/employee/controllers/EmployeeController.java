@@ -31,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
+import com.example.employee.models.Skill;
 import com.example.employee.services.EmployeeService;
 
 import jakarta.validation.Valid;
@@ -97,11 +98,17 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<EmployeeSearchResult> searchEMployees(@RequestParam(required = false) String name,
+	public ResponseEntity<EmployeeSearchResult> searchEmployees(@RequestParam(required = false) String name,
 			@RequestParam(required = false) String surname, @RequestParam(required = false) String email,
 			Pageable pageable) {
 		return ResponseEntity.ok().headers(new HttpHeaders())
 				.body(employeeService.searcEmployees(name, surname, email, pageable));
+	}
+	
+	@PostMapping("/filter-by-active-and-skills")
+	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@RequestBody List<Skill> skills) {
+		return ResponseEntity.ok().headers(new HttpHeaders())
+				.body(employeeService.filterEmployeesByActiveAndSkills(skills));
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

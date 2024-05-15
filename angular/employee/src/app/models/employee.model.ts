@@ -14,7 +14,6 @@ export class Employee {
   email?: string;
   department?: Department;
   skills?: Skill[];
-  projects?: Project[];
 
   constructor(
     id?: number,
@@ -28,7 +27,6 @@ export class Employee {
     email?: string,
     department?: Department,
     skills?: Skill[],
-    projects?: Project[]
   ) {
     this.id = id;
     this.name = name;
@@ -41,6 +39,5 @@ export class Employee {
     this.email = email;
     this.department = department;
     this.skills = skills;
-    this.projects = projects;
   }
 }

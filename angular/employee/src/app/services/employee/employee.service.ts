@@ -1,13 +1,12 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, catchError, map, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { Employee } from '../../models/employee.model';
-import { PaginatorState } from 'primeng/paginator';
-import { EmployeeCreateResponse } from '../../models/employee-create-response.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';
 import { buildSearchParams } from '../../shared/utils';
 import { PageEvent } from '../../models/page-event.model';
+import { Skill } from '../../models/skill.model';
 
 @Injectable({
   providedIn: 'root',
@@ -53,9 +52,14 @@ export class EmployeeService {
     return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
+  public filterEmployeesByActiveAndSkills(skills: Skill[]): Observable<Employee[]> {
+    return this.http.post<Employee[]>(`${this.backendURL}${this.baseUrl}/filter-by-active-and-skills`, skills);
+  };
+
   private errorHandler(errorRes: any) {
     console.log(errorRes);
     let errorMessage = 'Error occurred!';
     return throwError(() => new Error(errorMessage));
   }
+
 }

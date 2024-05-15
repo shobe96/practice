@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
+import com.example.employee.models.Skill;
 
 public interface EmployeeService {
 	
@@ -19,4 +20,5 @@ public interface EmployeeService {
 	public void deleteEmployee(Integer employeeId);
 	public List<Employee> filterByActive(Boolean active);
 	public EmployeeSearchResult searcEmployees(String name, String surname, String email, Pageable pageable);
+	public List<Employee> filterEmployeesByActiveAndSkills(List<Skill> skills);
 }

@@ -27,4 +27,7 @@ public interface EmployeeRepository
 	public List<Employee> findEmployeesWithoutUser();
 	
 	public Employee findByUserId(Integer userId);
+	
+	@Query("SELECT e FROM Employee e JOIN e.skills s WHERE s.id IN :skillIds")
+	public List<Employee> filterEmployeesByActiveAndSkills(List<Integer> skillIds);
 }

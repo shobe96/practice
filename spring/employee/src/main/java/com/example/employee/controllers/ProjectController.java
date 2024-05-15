@@ -92,6 +92,12 @@ public class ProjectController {
 			Pageable pageable) {
 		return ResponseEntity.ok().body(projectService.searcProjects(name, pageable));
 	}
+	
+	@PostMapping("/unassign-employee/{employeeId}")
+	public ResponseEntity<Void> unassignEmployee(@PathVariable Integer employeeId, @RequestBody Project project) {
+		projectService.unassignEmployee(employeeId, project);
+		return ResponseEntity.ok().body(null);
+	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)

@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.models.Employee;
 import com.example.employee.models.Project;
 import com.example.employee.models.ProjectSearchResult;
+import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectRepository;
 import com.example.employee.services.ProjectService;
 
@@ -18,26 +20,28 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ProjectServiceImpl implements ProjectService {
-	
+
 	private ProjectRepository projectRepository;
+	private EmployeeRepository employeeRepository;
 
 	@Autowired
-	public ProjectServiceImpl(ProjectRepository projectRepository) {
+	public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeRepository employeeRepository) {
 		this.projectRepository = projectRepository;
+		this.employeeRepository = employeeRepository;
 	}
 
 	@Override
 	public ProjectSearchResult getAllProjects(Pageable pageable) {
 		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
 		projectSearchResult.setSize(projectRepository.count());
-		projectSearchResult.setProjects(projectRepository.findAll(pageable).getContent());
+		projectSearchResult.setProjects(projectRepository.findAllByActive(true, pageable).getContent());
 		return projectSearchResult;
 	}
 
 	@Override
 	public List<Project> getAllProjects() {
 		List<Project> projects = new ArrayList<>();
-		projectRepository.findAll().forEach(projects::add);
+		projectRepository.findAllByActive(true).forEach(projects::add);
 		return projects;
 	}
 
@@ -53,6 +57,10 @@ public class ProjectServiceImpl implements ProjectService {
 
 	@Override
 	public Project saveProject(Project project) {
+		for (Employee employee : project.getEmployees()) {
+			employee.setActive(true);
+			employeeRepository.save(employee);
+		}
 		return projectRepository.save(project);
 	}
 
@@ -64,7 +72,12 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void deleteProject(Integer projectId) {
 		Project project = getProjectbyId(projectId);
-		projectRepository.delete(project);
+		for (Employee employee : project.getEmployees()) {
+			employee.setActive(false);
+			employeeRepository.save(employee);
+		}
+		project.setActive(false);
+		projectRepository.save(project);
 
 	}
 
@@ -78,6 +91,20 @@ public class ProjectServiceImpl implements ProjectService {
 		projectSearchResult.setProjects(employees);
 		projectSearchResult.setSize(projectRepository.searchResultCount(name));
 		return projectSearchResult;
+	}
+
+	@Override
+	public void unassignEmployee(Integer employeeId, Project project) {
+		for (Employee employee : project.getEmployees()) {
+			if (employee.getId().equals(employeeId)) {
+				project.getEmployees().remove(employee);
+				projectRepository.save(project);
+				employee.setActive(false);
+				employeeRepository.save(employee);
+				break;
+			}
+		}
+		
 	}
 
 }
