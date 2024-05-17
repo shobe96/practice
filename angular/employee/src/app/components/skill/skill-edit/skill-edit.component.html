@@ -17,7 +17,7 @@
         Name is required!
       </div>
       <div *ngIf="skillFormGroup.controls['name'].errors?.['minlength']">
-        Name must be bigger than 0 characters!
+        Name must be longer than 0 characters!
       </div>
       <div *ngIf="skillFormGroup.controls['name'].errors?.['maxlength']">
         Name must be shorter than 25 characters!
@@ -36,7 +36,7 @@
         Description is required!
       </div>
       <div *ngIf="skillFormGroup.controls['description'].errors?.['minlength']">
-        Description must be bigger than 5 characters!
+        Description must be longer than 5 characters!
       </div>
       <div
         *ngIf="skillFormGroup.controls['description'].errors?.['maxlength']"

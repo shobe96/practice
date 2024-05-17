@@ -59,12 +59,13 @@ public class Employee {
 	@Column(name = "active")
 	private Boolean active;
 
-	@Column(name = "email")
+	@Column(name = "email", length = 50)
 	@Email(message = "Email is not in correct format")
 	@Size(max = 50, message = "Email can't be longer than 50 characters")
+	@NotBlank(message = "Email is mandatory")
 	private String email;
 
-	@ManyToOne
+	@ManyToOne()
 	@JoinColumn(name = "department_id")
 	@JsonIgnoreProperties("employees")
 	private Department department;

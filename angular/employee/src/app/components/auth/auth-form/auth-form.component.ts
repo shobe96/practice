@@ -114,6 +114,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
       this.authService.registerUser(registerRequest).subscribe({
         next: (value: string) => {
           fireToast('success', 'Success', 'Registered successfully', this.messageService);
+          this.router.navigate(["user/list"]);
         },
         error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log("Complete") }
@@ -126,11 +127,11 @@ export class AuthFormComponent implements OnInit, OnDestroy {
     if (this.isLoggin) {
       this.authFormGroup = this.formBuilder.group({
         username: ['', [Validators.required]],
-        password: ['', [Validators.required, Validators.pattern(StrongPasswordRegx)]],
+        password: ['', [Validators.required]],
       });
     } else {
       this.authFormGroup = new FormGroup({
-        username: new FormControl('', [Validators.required]),
+        username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
         password: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
         confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
         selectedRoles: new FormControl([]),

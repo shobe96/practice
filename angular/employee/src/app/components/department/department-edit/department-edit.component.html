@@ -17,7 +17,7 @@
         Name is required!
       </div>
       <div *ngIf="departmentFormGroup.controls['name'].errors?.['minlength']">
-        Name must be bigger than 5 characters!
+        Name must be longer than 5 characters!
       </div>
       <div *ngIf="departmentFormGroup.controls['name'].errors?.['maxlength']">
         Name must be shorter than 25 characters!

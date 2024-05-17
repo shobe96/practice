@@ -10,7 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Department;
 import com.example.employee.models.DepartmentSearchResult;
+import com.example.employee.models.Employee;
 import com.example.employee.repositories.DepartmentRepository;
+import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.DepartmentService;
 
 import jakarta.transaction.Transactional;
@@ -20,10 +22,12 @@ import jakarta.transaction.Transactional;
 public class DepartmentServiceImpl implements DepartmentService {
 
 	private DepartmentRepository departmentRepository;
+	private EmployeeRepository employeeRepository;
 
 	@Autowired
-	public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+	public DepartmentServiceImpl(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository) {
 		this.departmentRepository = departmentRepository;
+		this.employeeRepository = employeeRepository;
 	}
 
 	@Override
@@ -62,6 +66,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public void deleteDepartment(Integer departmentId) {
 		Department department = getDepartmentById(departmentId);
+		employeeRepository.unassignEmployeesFromDepartment(departmentId);
 		departmentRepository.delete(department);
 	}
 

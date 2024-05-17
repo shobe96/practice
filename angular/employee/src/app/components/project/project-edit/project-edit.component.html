@@ -17,7 +17,7 @@
         Name is required!
       </div>
       <div *ngIf="projectFormGroup.controls['name'].errors?.['minlength']">
-        Name must be bigger than 0 characters!
+        Name must be longer than 0 characters!
       </div>
       <div *ngIf="projectFormGroup.controls['name'].errors?.['maxlength']">
         Name must be shorter than 25 characters!
@@ -32,10 +32,10 @@
         Code is required!
       </div>
       <div *ngIf="projectFormGroup.controls['code'].errors?.['minlength']">
-        Code must be bigger than 5 characters!
+        Code must be longer than 3 characters!
       </div>
       <div *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']">
-        Code must be shorter than 100 characters!
+        Code must be shorter than 5 characters!
       </div>
     </div>
     <p-multiSelect

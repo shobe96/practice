@@ -13,8 +13,18 @@
     >
       <span
         class="block"
-        [ngClass]="{'text-primary': authFormGroup.controls['username'].errors?.['required']}"
+        *ngIf="authFormGroup.controls['username'].errors?.['required']"
         >Username is required!</span
+      >
+      <span
+        class="block"
+        *ngIf="authFormGroup.controls['username'].errors?.['minLength']"
+        >Username must be longer than 5 characters!!</span
+      >
+      <span
+        class="block"
+        *ngIf="authFormGroup.controls['username'].errors?.['maxLength']"
+        >Username must be shorter than 100 characters!!</span
       >
     </div>
     <div class="password-input">

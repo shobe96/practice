@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -29,22 +30,22 @@ public class Project {
 	@Size(min = 5, max = 25, message = "Name size must be between 5 and 25")
 	private String name;
 
-	@Column(name = "code", length = 100)
+	@Column(name = "code", length = 5)
 	@NotBlank(message = "Code is mandatory")
-	@Size(min = 3, max = 100)
+	@Size(min = 3, max = 5, message = "Code size must be between 3 and 5")
 	private String code;
-	
+
 	@Column(name = "active")
 	private Boolean active;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "employee_project", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "employee_id"))
 	private Set<Employee> employees;
-	
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "project_skill", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
 	private Set<Skill> skills = new HashSet<>();
-	
+
 	public Integer getId() {
 		return id;
 	}
@@ -91,5 +92,10 @@ public class Project {
 
 	public void setSkills(Set<Skill> skills) {
 		this.skills = skills;
+	}
+
+	@PrePersist
+	private void beforeCreate() {
+		this.active = false;
 	}
 }

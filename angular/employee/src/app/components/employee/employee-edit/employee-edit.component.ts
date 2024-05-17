@@ -126,11 +126,11 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
     const employeeObserver: any = {
       next: (value: Employee) => {
         if (this.id === null) {
-          this.router.navigate([`employee/details/${value.id}`])
           fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been created`, this.messageService);
         } else {
           fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been updated`, this.messageService);
         }
+        this.router.navigate([`employee/details/${value.id}`])
       },
       error: (err: any) => { console.log(err) },
       complete: () => { },

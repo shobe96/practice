@@ -33,7 +33,7 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public ProjectSearchResult getAllProjects(Pageable pageable) {
 		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
-		projectSearchResult.setSize(projectRepository.count());
+		projectSearchResult.setSize(projectRepository.countAllActiveProjects());
 		projectSearchResult.setProjects(projectRepository.findAllByActive(true, pageable).getContent());
 		return projectSearchResult;
 	}

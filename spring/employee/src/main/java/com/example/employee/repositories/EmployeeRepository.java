@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -30,4 +31,8 @@ public interface EmployeeRepository
 	
 	@Query("SELECT e FROM Employee e JOIN e.skills s WHERE s.id IN :skillIds")
 	public List<Employee> filterEmployeesByActiveAndSkills(List<Integer> skillIds);
+	
+	@Query(nativeQuery = true, value = "UPDATE employee.employee e SET e.department_id = NULL WHERE e.department_id = ?1")
+	@Modifying
+	public Integer unassignEmployeesFromDepartment(Integer departmentId);
 }

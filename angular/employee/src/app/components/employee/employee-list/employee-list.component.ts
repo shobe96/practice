@@ -97,7 +97,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
 
   showDialog(visible: boolean, employeeId?: number) {
-    this.employeeId = employeeId === undefined ? 0 : employeeId;
+    this.employeeId = employeeId ?? 0;
     this.visible = visible;
   }
 
@@ -124,7 +124,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
 
   onKeyUp() {
-    if ((this.employeeSearch.name !== undefined && this.employeeSearch.name !== "") || (this.employeeSearch.surname !== undefined && this.employeeSearch.surname !== "") || (this.employeeSearch.email !== undefined && this.employeeSearch.surname !== "")) {
+    if ((this.employeeSearch.name !== undefined && this.employeeSearch.name !== "") || (this.employeeSearch.surname !== undefined && this.employeeSearch.surname !== "") || (this.employeeSearch.email !== undefined && this.employeeSearch.email !== "")) {
       this.search();
     } else {
       this.getAllEmployees();

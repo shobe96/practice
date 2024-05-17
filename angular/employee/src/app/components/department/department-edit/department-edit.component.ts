@@ -77,10 +77,10 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
       next: (value: Department) => {
         if (this.id === null) {
           fireToast("success","Success",`Department ${value.name} has been created`, this.messageService);
-          this.router.navigate([`department/details/${value.id}`])
         } else {
           fireToast("success","Success",`Department ${value.name} has been updated`, this.messageService);
         }
+        this.router.navigate([`department/details/${value.id}`])
       },
       error: (err: any) => { console.log(err) },
       complete: () => { },

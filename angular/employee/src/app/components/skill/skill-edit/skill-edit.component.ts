@@ -75,11 +75,11 @@ export class SkillEditComponent implements OnInit, OnDestroy {
     const skillObserver: any = {
       next: (value: Skill) => {
         if (this.id === null) {
-          this.router.navigate([`skill/details/${value.id}`])
           fireToast("success", "Success", `Skill ${value.name} has been created`, this.messageService);
         } else {
           fireToast("success", "Success", `Skill ${value.name} has been updated`, this.messageService);
         }
+        this.router.navigate([`skill/details/${value.id}`])
       },
       error: (err: any) => { console.log(err) },
       complete: () => { },

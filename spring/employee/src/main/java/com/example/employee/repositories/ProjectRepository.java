@@ -24,4 +24,7 @@ public interface ProjectRepository
 	Page<Project> findAllByActive(Boolean active, Pageable pageable);
 	
 	List<Project> findAllByActive(Boolean active);
+	
+	@Query("SELECT COUNT(p) FROM Project p WHERE p.active = true")
+	Long countAllActiveProjects();
 }

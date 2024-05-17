@@ -17,7 +17,7 @@
         Name is required!
       </div>
       <div *ngIf="employeeFormGroup.controls['name'].errors?.['minlength']">
-        Name must be bigger than 5 characters!
+        Name must be longer than 5 characters!
       </div>
       <div *ngIf="employeeFormGroup.controls['name'].errors?.['maxlength']">
         Name must be shorter than 25 characters!
@@ -36,7 +36,7 @@
         Surname is required!
       </div>
       <div *ngIf="employeeFormGroup.controls['surname'].errors?.['minlength']">
-        Surname must be bigger than 5 characters!
+        Surname must be longer than 5 characters!
       </div>
       <div
         *ngIf="employeeFormGroup.controls['surname'].errors?.['maxlength']"
@@ -57,8 +57,7 @@
         Email address must be shorter than 50 characters!
       </div>
     </div>
-    <p-dropdown formControlName="department" [options]="departments" optionLabel="name" placeholder="Select a Department" dataKey="id"></p-dropdown>
-    <p-dropdown formControlName="selectedSkills" [options]="skills" optionLabel="name" placeholder="Select a Department" dataKey="id"></p-dropdown>
+    <p-dropdown formControlName="department" [options]="departments" optionLabel="name" placeholder="Select a Department" dataKey="id" />
     <p-multiSelect
       [options]="skills"
       formControlName="selectedSkills"
