@@ -12,10 +12,9 @@ import { fireToast } from '../../../shared/utils';
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
-  styleUrl: './employee-list.component.scss'
+  styleUrl: './employee-list.component.scss',
 })
 export class EmployeeListComponent implements OnInit, OnDestroy {
-
   private employees$!: Subscription;
   private searchSubject = new Subject<Employee>();
   employeeSearch: Employee = new Employee();
@@ -25,12 +24,16 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     first: 0,
     rows: 5,
     pageCount: 0,
-    sort: "asc"
+    sort: 'asc',
   };
   employees: Employee[] = [];
   visible: boolean = false;
 
-  constructor(private employeeService: EmployeeService, private router: Router, private messageService: MessageService) { }
+  constructor(
+    private employeeService: EmployeeService,
+    private router: Router,
+    private messageService: MessageService
+  ) {}
 
   ngOnInit(): void {
     this.getAllEmployees();
@@ -43,12 +46,12 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             console.log(err);
-          }
-        })
+          },
+        });
       },
       error: (err) => {
         console.log(err);
-      }
+      },
     });
   }
 
@@ -78,18 +81,27 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
         console.log('Completed');
       },
     };
-    this.employees$ = this.employeeService.getAllEmployees(false, this.page).subscribe(employeesObserver);
+    this.employees$ = this.employeeService
+      .getAllEmployees(false, this.page)
+      .subscribe(employeesObserver);
   }
 
   public addNew() {
-    this.router.navigate(["employee/new"]);
+    this.router.navigate(['employee/new']);
   }
 
   onPageChange(event: PaginatorState) {
     this.page.first = event.first !== undefined ? event.first : 0;
     this.page.page = event.page !== undefined ? event.page : 0;
     this.page.rows = event.rows !== undefined ? event.rows : 0;
-    if ((this.employeeSearch.name !== undefined && this.employeeSearch.name !== "") || (this.employeeSearch.surname !== undefined && this.employeeSearch.surname !== "") || (this.employeeSearch.email !== undefined && this.employeeSearch.surname !== "")) {
+    if (
+      (this.employeeSearch.name !== undefined &&
+        this.employeeSearch.name !== '') ||
+      (this.employeeSearch.surname !== undefined &&
+        this.employeeSearch.surname !== '') ||
+      (this.employeeSearch.email !== undefined &&
+        this.employeeSearch.surname !== '')
+    ) {
       this.search();
     } else {
       this.getAllEmployees();
@@ -104,17 +116,34 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   delete() {
     this.employeeService.delete(this.employeeId).subscribe({
       next: (value: any) => {
-        if ((this.employeeSearch.name !== undefined && this.employeeSearch.name !== "") || (this.employeeSearch.surname !== undefined && this.employeeSearch.surname !== "") || (this.employeeSearch.email !== undefined && this.employeeSearch.surname !== "")) {
+        if (
+          (this.employeeSearch.name !== undefined &&
+            this.employeeSearch.name !== '') ||
+          (this.employeeSearch.surname !== undefined &&
+            this.employeeSearch.surname !== '') ||
+          (this.employeeSearch.email !== undefined &&
+            this.employeeSearch.surname !== '')
+        ) {
           this.search();
         } else {
-          console.log("DELETE");
+          console.log('DELETE');
           this.getAllEmployees();
         }
+        fireToast(
+          'success',
+          'success',
+          `Employee with id ${this.employeeId} has been deleted.`,
+          this.messageService
+        );
         this.showDialog(false);
-        fireToast("success", "success", `Employee with id ${this.employeeId} has been deleted.`, this.messageService);
       },
-      error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { console.log("Completed") }
+      error: (err: any) => {
+        console.log(err);
+        fireToast('error', 'Error', err.error.message, this.messageService);
+      },
+      complete: () => {
+        console.log('Completed');
+      },
     });
   }
 
@@ -124,7 +153,14 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   }
 
   onKeyUp() {
-    if ((this.employeeSearch.name !== undefined && this.employeeSearch.name !== "") || (this.employeeSearch.surname !== undefined && this.employeeSearch.surname !== "") || (this.employeeSearch.email !== undefined && this.employeeSearch.email !== "")) {
+    if (
+      (this.employeeSearch.name !== undefined &&
+        this.employeeSearch.name !== '') ||
+      (this.employeeSearch.surname !== undefined &&
+        this.employeeSearch.surname !== '') ||
+      (this.employeeSearch.email !== undefined &&
+        this.employeeSearch.email !== '')
+    ) {
       this.search();
     } else {
       this.getAllEmployees();
@@ -133,7 +169,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
 
   clear() {
     this.employeeSearch = new Employee();
-    console.log("CLEAR");
+    console.log('CLEAR');
     this.getAllEmployees();
   }
 }

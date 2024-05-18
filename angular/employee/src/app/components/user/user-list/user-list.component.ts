@@ -13,10 +13,9 @@ import { fireToast } from '../../../shared/utils';
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.scss'
+  styleUrl: './user-list.component.scss',
 })
 export class UserListComponent implements OnInit, OnDestroy {
-
   private users$!: Subscription;
   userId: number = 0;
   page: PageEvent = {
@@ -24,12 +23,17 @@ export class UserListComponent implements OnInit, OnDestroy {
     first: 0,
     rows: 5,
     pageCount: 0,
-    sort: "asc"
+    sort: 'asc',
   };
   users: User[] = [];
   visible: boolean = false;
 
-  constructor(private userService: UserService, private router: Router, private messageService: MessageService, private authService: AuthService) { }
+  constructor(
+    private userService: UserService,
+    private router: Router,
+    private messageService: MessageService,
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
     this.getAllUsers();
@@ -52,18 +56,30 @@ export class UserListComponent implements OnInit, OnDestroy {
         console.log('Completed');
       },
     };
-    this.users$ = this.userService.getAllUsers(this.page).subscribe(usersObserver);
+    this.users$ = this.userService
+      .getAllUsers(this.page)
+      .subscribe(usersObserver);
   }
 
   delete() {
     this.authService.delete(this.userId).subscribe({
       next: (value: any) => {
         this.getAllUsers();
+        fireToast(
+          'success',
+          'success',
+          `Employee with id ${this.userId} has been deleted.`,
+          this.messageService
+        );
         this.showDialog(false);
-        fireToast("success", "success", `Employee with id ${this.userId} has been deleted.`, this.messageService);
       },
-      error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { console.log("Completed") }
+      error: (err: any) => {
+        console.log(err);
+        fireToast('error', 'Error', err.error.message, this.messageService);
+      },
+      complete: () => {
+        console.log('Completed');
+      },
     });
   }
   onPageChange(event: PaginatorState) {

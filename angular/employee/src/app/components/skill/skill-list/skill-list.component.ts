@@ -12,7 +12,7 @@ import { fireToast } from '../../../shared/utils';
 @Component({
   selector: 'app-skill-list',
   templateUrl: './skill-list.component.html',
-  styleUrl: './skill-list.component.scss'
+  styleUrl: './skill-list.component.scss',
 })
 export class SkillListComponent implements OnInit, OnDestroy {
   private skills$!: Subscription;
@@ -24,12 +24,16 @@ export class SkillListComponent implements OnInit, OnDestroy {
     first: 0,
     rows: 5,
     pageCount: 0,
-    sort: "asc"
+    sort: 'asc',
   };
   skills: Skill[] = [];
   visible: boolean = false;
 
-  constructor(private skillService: SkillService, private router: Router, private messageService: MessageService) { }
+  constructor(
+    private skillService: SkillService,
+    private router: Router,
+    private messageService: MessageService
+  ) {}
   ngOnInit(): void {
     this.getAllSkills();
     this.searchSubject.pipe(debounceTime(2000)).subscribe({
@@ -41,12 +45,12 @@ export class SkillListComponent implements OnInit, OnDestroy {
           },
           error: (err) => {
             console.log(err);
-          }
-        })
+          },
+        });
       },
       error: (err) => {
         console.log(err);
-      }
+      },
     });
   }
   ngOnDestroy(): void {
@@ -67,18 +71,20 @@ export class SkillListComponent implements OnInit, OnDestroy {
         console.log('Completed');
       },
     };
-    this.skills$ = this.skillService.getAllSkills(false, this.page).subscribe(skillsObserver);
+    this.skills$ = this.skillService
+      .getAllSkills(false, this.page)
+      .subscribe(skillsObserver);
   }
 
   public addNew() {
-    this.router.navigate(["skill/new"]);
+    this.router.navigate(['skill/new']);
   }
 
   onPageChange(event: PaginatorState) {
     this.page.first = event.first !== undefined ? event.first : 0;
     this.page.page = event.page !== undefined ? event.page : 0;
     this.page.rows = event.rows !== undefined ? event.rows : 0;
-    if (this.skillSearch.name !== undefined && this.skillSearch.name !== "") {
+    if (this.skillSearch.name !== undefined && this.skillSearch.name !== '') {
       this.search();
     } else {
       this.getAllSkills();
@@ -93,22 +99,33 @@ export class SkillListComponent implements OnInit, OnDestroy {
   delete() {
     this.skillService.delete(this.skillId).subscribe({
       next: (value: any) => {
-        if (this.skillSearch.name !== undefined && this.skillSearch.name !== "") {
+        if (
+          this.skillSearch.name !== undefined &&
+          this.skillSearch.name !== ''
+        ) {
           this.search();
         } else {
-          console.log("DELETE");
           this.getAllSkills();
         }
-        fireToast("success", "success", `Skill with id ${this.skillId} has been deleted.`, this.messageService);
+        fireToast(
+          'success',
+          'success',
+          `Skill with id ${this.skillId} has been deleted.`,
+          this.messageService
+        );
         this.showDialog(false);
       },
-      error: (err: any) => {  fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { console.log("Completed") }
+      error: (err: any) => {
+        fireToast('error', 'Error', err.error.message, this.messageService);
+      },
+      complete: () => {
+        console.log('Completed');
+      },
     });
   }
 
   onKeyUp() {
-    if (this.skillSearch.name !== undefined && this.skillSearch.name !== "") {
+    if (this.skillSearch.name !== undefined && this.skillSearch.name !== '') {
       this.search();
     } else {
       this.getAllSkills();
@@ -117,7 +134,7 @@ export class SkillListComponent implements OnInit, OnDestroy {
 
   clear() {
     this.skillSearch = new Skill();
-    console.log("CLEAR");
+    console.log('CLEAR');
     this.getAllSkills();
   }
 
