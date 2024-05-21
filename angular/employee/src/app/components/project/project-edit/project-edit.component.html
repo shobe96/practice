@@ -43,16 +43,35 @@
       formControlName="selectedSkills"
       optionLabel="name"
       placeholder="Select Skills"
-      (onChange)="onSkillsChange($event.value)"
     />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['selectedSkills'].invalid && projectFormGroup.controls['selectedSkills'].touched"
+    >
+      <div
+        *ngIf="projectFormGroup.controls['selectedSkills'].errors?.['required']"
+      >
+        Skills are required!
+      </div>
+    </div>
     <p-multiSelect
-    *ngIf="employees.length > 0"
+      *ngIf="employees.length > 0"
       [options]="employees"
       formControlName="selectedEmployees"
       optionLabel="name"
       placeholder="Select Employees"
       optionDisabled="active"
     />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['selectedEmployees'].invalid && projectFormGroup.controls['selectedEmployees'].touched"
+    >
+      <div
+        *ngIf="projectFormGroup.controls['selectedEmployees'].errors?.['required']"
+      >
+        Employees are required!
+      </div>
+    </div>
     <div class="action-buttons">
       <p-button label="Cancel" (onClick)="back()" />
       <p-button

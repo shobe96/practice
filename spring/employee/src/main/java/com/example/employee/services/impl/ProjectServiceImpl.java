@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -33,8 +34,13 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public ProjectSearchResult getAllProjects(Pageable pageable) {
 		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
+		List<Project> projects = projectRepository.findAllByActive(true, pageable).getContent();
+		if (projects.size() == 0) {
+			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
+			projects = projectRepository.findAllByActive(true, newPage).getContent();
+		}
 		projectSearchResult.setSize(projectRepository.countAllActiveProjects());
-		projectSearchResult.setProjects(projectRepository.findAllByActive(true, pageable).getContent());
+		projectSearchResult.setProjects(projects);
 		return projectSearchResult;
 	}
 

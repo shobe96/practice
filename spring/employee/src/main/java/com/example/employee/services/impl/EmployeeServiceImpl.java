@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -31,8 +32,13 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public EmployeeSearchResult getAllEmployees(Pageable pageable) {
 		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+		List<Employee> employees = employeeRepository.findAll(pageable).getContent();
+		if (employees.size() == 0) {
+			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
+			employees = employeeRepository.findAll(newPage).getContent();
+		}
 		employeeSearchResult.setSize(employeeRepository.count());
-		employeeSearchResult.setEmployees(employeeRepository.findAll(pageable).getContent());
+		employeeSearchResult.setEmployees(employees);
 		return employeeSearchResult;
 	}
 
@@ -64,6 +70,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public void deleteEmployee(Integer employeeId) {
 		Employee employee = getEmployeebyId(employeeId);
+		employeeRepository.deleteEmployeeProjects(employeeId);
 		employeeRepository.delete(employee);
 	}
 

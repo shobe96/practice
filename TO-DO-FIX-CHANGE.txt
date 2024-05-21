@@ -1,13 +1,13 @@
 TO CHANGE/FIX
 1. 
-2. on delete successfully id is not ok
+2. 
 3. 
-4. on delete of employee unassign him from all projects or apply cascade delete
-5. when you delete last element on page retrieve previous page
-6. make skills and employees required on project creation
+4. 
+5. 
+6. 
 7. 
 8. refresh front after unassigning employee from project
-9. make roles and employee required on creation of the user
+9. 
 10. 
 11. fix password missmatch validation
 12. 

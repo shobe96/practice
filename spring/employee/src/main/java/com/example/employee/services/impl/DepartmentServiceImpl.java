@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +34,12 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public DepartmentSearchResult getAllDepartments(Pageable pageable) {
 		DepartmentSearchResult departmentSearchResult = new DepartmentSearchResult();
-		departmentSearchResult.setDepartments(departmentRepository.findAll(pageable).getContent());
+		List<Department> departments = departmentRepository.findAll(pageable).getContent();
+		if (departments.size() == 0) {
+			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
+			departments = departmentRepository.findAll(newPage).getContent();
+		}
+		departmentSearchResult.setDepartments(departments);
 		departmentSearchResult.setSize(departmentRepository.count());
 		return departmentSearchResult;
 	}

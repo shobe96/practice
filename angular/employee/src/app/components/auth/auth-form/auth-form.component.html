@@ -58,31 +58,33 @@
         *ngIf="authFormGroup.controls['password'].errors?.['required']"
         >Password is required!</span
       >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('^(?=.*[A-Z])')"
-        >At least one uppercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[a-z])')"
-        >At least one lowercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(.*[0-9].*)')"
-        >At least one digit.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[!@#$%^&*])')"
-        >At least one special character.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('.{8,}')"
-        >At least 8 characters long.</span
-      >
+      <div *ngIf="!isLoggin" class="password-validation-messages">
+        <span
+          class="block"
+          *ngIf="!authFormGroup.controls['password'].value?.match('^(?=.*[A-Z])')"
+          >At least one uppercase letter.</span
+        >
+        <span
+          class="block"
+          *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[a-z])')"
+          >At least one lowercase letter.</span
+        >
+        <span
+          class="block"
+          *ngIf="!authFormGroup.controls['password'].value?.match('(.*[0-9].*)')"
+          >At least one digit.</span
+        >
+        <span
+          class="block"
+          *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[!@#$%^&*])')"
+          >At least one special character.</span
+        >
+        <span
+          class="block"
+          *ngIf="!authFormGroup.controls['password'].value?.match('.{8,}')"
+          >At least 8 characters long.</span
+        >
+      </div>
     </div>
     <div class="confirm-password-input" *ngIf="!isLoggin">
       <input
@@ -146,14 +148,40 @@
         >Passwords missmatch.
       </span>
     </div>
-    <p-multiSelect
-      *ngIf="!isLoggin"
-      [options]="roles"
-      formControlName="selectedRoles"
-      optionLabel="name"
-      placeholder="Select Roles"
-    ></p-multiSelect>
-    <p-dropdown  *ngIf="!isLoggin" formControlName="employee" [options]="employees" optionLabel="name" placeholder="Select a Employee" dataKey="id"></p-dropdown>
+    <div *ngIf="!isLoggin" class="register-fields">
+      <p-multiSelect
+        [options]="roles"
+        formControlName="selectedRoles"
+        optionLabel="name"
+        placeholder="Select Roles"
+      />
+      <div
+        class="validation-messages"
+        *ngIf="authFormGroup.controls['selectedRoles'].invalid && authFormGroup.controls['selectedRoles'].touched"
+      >
+        <div
+          *ngIf="authFormGroup.controls['selectedRoles'].errors?.['required']"
+        >
+          Roles are required!
+        </div>
+      </div>
+      <p-dropdown
+        formControlName="employee"
+        [options]="employees"
+        optionLabel="name"
+        placeholder="Select a Employee"
+        dataKey="id"
+      />
+      <div
+        class="validation-messages"
+        *ngIf="authFormGroup.controls['employee'].invalid && authFormGroup.controls['employee'].touched"
+      >
+        <div *ngIf="authFormGroup.controls['employee'].errors?.['required']">
+          Employee is required!
+        </div>
+      </div>
+    </div>
+
     <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
   </form>
 </div>

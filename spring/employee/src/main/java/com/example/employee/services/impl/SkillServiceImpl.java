@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -29,8 +30,13 @@ public class SkillServiceImpl implements SkillService {
 	@Override
 	public SkillSearchResult getAllSkills(Pageable pageable) {
 		SkillSearchResult skillSearchResult = new SkillSearchResult();
+		List<Skill> skills = skillRepository.findAll(pageable).getContent();
+		if (skills.size() == 0) {
+			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
+			skills = skillRepository.findAll(newPage).getContent();
+		}
 		skillSearchResult.setSize(skillRepository.count());
-		skillSearchResult.setSkills(skillRepository.findAll(pageable).getContent());
+		skillSearchResult.setSkills(skills);
 		return skillSearchResult;
 	}
 

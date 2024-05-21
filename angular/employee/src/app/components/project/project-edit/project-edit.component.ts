@@ -55,6 +55,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       this.id = params["projectId"] !== undefined && params["projectId"] !== null ? params["projectId"] : null;
       this.initFormFields();
     });
+    this.onChanges();
   }
   ngOnDestroy(): void {
     if (this.routeSubscription$ !== undefined) {
@@ -69,8 +70,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     this.projectFormGroup = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
-      selectedSkills: [[]],
-      selectedEmployees: [[]]
+      selectedSkills: [[], [Validators.required]],
+      selectedEmployees: [[], [Validators.required]]
     });
   }
 
@@ -131,10 +132,11 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     });
   }
 
-  public onSkillsChange(value: Skill[]) {
-    console.log(value);
-    if (value.length > 0) {
-      this.retrieveEmployees(value);
-    }
+  private onChanges() {
+    this.projectFormGroup.valueChanges.subscribe(val => {
+      if (val.selectedSkills.length > 0) {
+        this.retrieveEmployees(val.selectedSkills);
+      }
+    })
   }
 }

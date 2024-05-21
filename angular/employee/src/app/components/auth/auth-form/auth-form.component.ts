@@ -134,8 +134,8 @@ export class AuthFormComponent implements OnInit, OnDestroy {
         username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
         password: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
         confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
-        selectedRoles: new FormControl([]),
-        employee: new FormControl({})
+        selectedRoles: new FormControl([], [Validators.required]),
+        employee: new FormControl({}, [Validators.required])
       }, { validators: [this.passwordMissmatchTest()] });
     }
 

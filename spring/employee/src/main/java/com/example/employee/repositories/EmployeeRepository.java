@@ -35,4 +35,8 @@ public interface EmployeeRepository
 	@Query(nativeQuery = true, value = "UPDATE employee.employee e SET e.department_id = NULL WHERE e.department_id = ?1")
 	@Modifying
 	public Integer unassignEmployeesFromDepartment(Integer departmentId);
+
+	@Query(nativeQuery = true, value = "DELETE FROM employee.employee_project ep WHERE ep.employee_id = ?1")
+	@Modifying
+	public void deleteEmployeeProjects(Integer employeeId);
 }
