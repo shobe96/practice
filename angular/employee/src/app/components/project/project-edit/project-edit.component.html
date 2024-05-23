@@ -38,6 +38,13 @@
         Code must be shorter than 5 characters!
       </div>
     </div>
+    <p-dropdown
+        formControlName="selectedDepartment"
+        [options]="departments"
+        optionLabel="name"
+        placeholder="Select a Department"
+        dataKey="id"
+      />
     <p-multiSelect
       [options]="skills"
       formControlName="selectedSkills"

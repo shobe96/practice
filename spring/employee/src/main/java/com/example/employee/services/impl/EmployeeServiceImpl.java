@@ -106,11 +106,11 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public List<Employee> filterEmployeesByActiveAndSkills(List<Skill> skills) {
+	public List<Employee> filterEmployeesByActiveAndSkills(List<Skill> skills, Integer departmentId) {
 		List<Integer> skillIds = new ArrayList<>();
 		for (Skill skill : skills) {
 			skillIds.add(skill.getId());
 		}
-		return employeeRepository.filterEmployeesByActiveAndSkills(skillIds);
+		return employeeRepository.filterEmployeesByActiveAndSkills(skillIds, departmentId);
 	}
 }

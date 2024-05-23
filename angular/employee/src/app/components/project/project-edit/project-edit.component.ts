@@ -11,6 +11,9 @@ import { SkillService } from '../../../services/skill/skill.service';
 import { SkillSearchResult } from '../../../models/skill-search-result.model';
 import { Employee } from '../../../models/employee.model';
 import { EmployeeService } from '../../../services/employee/employee.service';
+import { Department } from '../../../models/department.model';
+import { DepartmentService } from '../../../services/department/department.service';
+import { DepartmentSearchResult } from '../../../models/department-search-result.model';
 
 @Component({
   selector: 'app-project-edit',
@@ -25,6 +28,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
   projectFormGroup!: FormGroup;
   skills: Skill[] = [];
   employees: Employee[] = [];
+  departments: Department[] = [];
 
   constructor(
     private route: ActivatedRoute,
@@ -33,10 +37,24 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     private formBuilder: FormBuilder,
     private messageService: MessageService,
     private skillService: SkillService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private departmentService: DepartmentService
   ) { }
 
   ngOnInit(): void {
+    this.departmentService.getAllDepartments(true).subscribe({
+      next: (value: DepartmentSearchResult) => {
+        this.departments = value.departments ?? [];
+      },
+      error: (err: any) => {
+        if (err.status === 0) {
+          fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
+        } else {
+          fireToast('error', 'Error', `${err.message}`, this.messageService);
+        }
+      },
+      complete: () => {}
+    })
     this.skillService.getAllSkills(true).subscribe({
       next: (value: SkillSearchResult) => {
         this.skills = value.skills ?? [];
@@ -71,7 +89,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
       selectedSkills: [[], [Validators.required]],
-      selectedEmployees: [[], [Validators.required]]
+      selectedEmployees: [[], [Validators.required]],
+      selectedDepartment: [{}, [Validators.required]]
     });
   }
 
@@ -82,9 +101,11 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
           this.project = value;
           this.projectFormGroup.controls['name'].setValue(value.name);
           this.projectFormGroup.controls['code'].setValue(value.code);
-          this.projectFormGroup.controls['selectedSkills'].setValue(value.skills);
           const skills = value.skills ?? [];
-          this.retrieveEmployees(skills);
+          const department = value.department ?? {};
+          this.projectFormGroup.controls['selectedSkills'].setValue(skills);
+          this.projectFormGroup.controls['selectedDepartment'].setValue(value.department);
+          this.retrieveEmployees(skills, department);
           this.projectFormGroup.controls['selectedEmployees'].setValue(value.employees)
         },
         error: (err: any) => { console.log(err) },
@@ -103,6 +124,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     this.project.code = this.projectFormGroup.controls['code'].value;
     this.project.skills = this.projectFormGroup.controls['selectedSkills'].value;
     this.project.employees = this.projectFormGroup.controls['selectedEmployees'].value;
+    this.project.department = this.projectFormGroup.controls['selectedDepartment'].value;
     const projectObserver: any = {
       next: (value: Project) => {
         if (this.id === null) {
@@ -122,8 +144,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     }
   }
 
-  private retrieveEmployees(value: Skill[]) {
-    this.employeeService.filterEmployeesByActiveAndSkills(value).subscribe({
+  private retrieveEmployees(skills: Skill[], department: Department) {
+    this.employeeService.filterEmployeesByActiveAndSkills(skills, department).subscribe({
       next: (value: Employee[]) => {
         this.employees = value;
       },
@@ -134,8 +156,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   private onChanges() {
     this.projectFormGroup.valueChanges.subscribe(val => {
-      if (val.selectedSkills.length > 0) {
-        this.retrieveEmployees(val.selectedSkills);
+      if (val.selectedSkills.length > 0 && val.selectedDepartment !== undefined) {
+        this.retrieveEmployees(val.selectedSkills, val.selectedDepartment);
       }
     })
   }

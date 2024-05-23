@@ -105,10 +105,10 @@ public class EmployeeController {
 				.body(employeeService.searcEmployees(name, surname, email, pageable));
 	}
 	
-	@PostMapping("/filter-by-active-and-skills")
-	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@RequestBody List<Skill> skills) {
+	@PostMapping("/filter-by-active-and-skills/{departmentId}")
+	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId, @RequestBody List<Skill> skills) {
 		return ResponseEntity.ok().headers(new HttpHeaders())
-				.body(employeeService.filterEmployeesByActiveAndSkills(skills));
+				.body(employeeService.filterEmployeesByActiveAndSkills(skills, departmentId));
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

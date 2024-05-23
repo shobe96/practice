@@ -4,8 +4,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micrometer.common.lang.NonNull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -50,8 +49,12 @@ public class Department {
 	private Boolean active;
 	
 	@OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
-	@JsonIgnoreProperties("department")
+	@JsonIgnore
 	private Set<Employee> employees = new HashSet<>();
+	
+	@OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<Project> projects = new HashSet<>();
 
 	public Integer getId() {
 		return id;
@@ -115,6 +118,14 @@ public class Department {
 
 	public void setEmployees(Set<Employee> employees) {
 		this.employees = employees;
+	}
+
+	public Set<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(Set<Project> projects) {
+		this.projects = projects;
 	}
 
 	@PrePersist

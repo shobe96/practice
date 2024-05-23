@@ -7,6 +7,7 @@ import { EmployeeSearchResult } from '../../models/employee-search-result.model'
 import { buildSearchParams } from '../../shared/utils';
 import { PageEvent } from '../../models/page-event.model';
 import { Skill } from '../../models/skill.model';
+import { Department } from '../../models/department.model';
 
 @Injectable({
   providedIn: 'root',
@@ -48,8 +49,8 @@ export class EmployeeService {
     return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
-  public filterEmployeesByActiveAndSkills(skills: Skill[]): Observable<Employee[]> {
-    return this.http.post<Employee[]>(`${this.backendURL}${this.baseUrl}/filter-by-active-and-skills`, skills);
+  public filterEmployeesByActiveAndSkills(skills: Skill[], department: Department): Observable<Employee[]> {
+    return this.http.post<Employee[]>(`${this.backendURL}${this.baseUrl}/filter-by-active-and-skills/${department.id}`, skills);
   };
 
   private errorHandler(errorRes: any) {

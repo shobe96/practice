@@ -29,8 +29,8 @@ public interface EmployeeRepository
 	
 	public Employee findByUserId(Integer userId);
 	
-	@Query("SELECT e FROM Employee e JOIN e.skills s WHERE s.id IN :skillIds")
-	public List<Employee> filterEmployeesByActiveAndSkills(List<Integer> skillIds);
+	@Query("SELECT e FROM Employee e JOIN e.skills s WHERE s.id IN :skillIds AND e.department.id = :departmentId")
+	public List<Employee> filterEmployeesByActiveAndSkills(List<Integer> skillIds, Integer departmentId);
 	
 	@Query(nativeQuery = true, value = "UPDATE employee.employee e SET e.department_id = NULL WHERE e.department_id = ?1")
 	@Modifying
