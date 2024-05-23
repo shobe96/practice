@@ -1,6 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-
 import { ProjectRoutingModule } from './project-routing.module';
 import { ProjectDetailsComponent } from '../../components/project/project-details/project-details.component';
 import { ProjectEditComponent } from '../../components/project/project-edit/project-edit.component';

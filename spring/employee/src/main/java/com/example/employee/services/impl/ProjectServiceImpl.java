@@ -35,7 +35,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectSearchResult getAllProjects(Pageable pageable) {
 		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
 		List<Project> projects = projectRepository.findAllByActive(true, pageable).getContent();
-		if (projects.size() == 0) {
+		if (projects.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			projects = projectRepository.findAllByActive(true, newPage).getContent();
 		}

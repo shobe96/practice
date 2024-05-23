@@ -25,8 +25,7 @@ public class UserController {
 
 	@GetMapping()
 	public ResponseEntity<UserSearchResult> getAllUsers(Pageable pageable) {
-		UserSearchResult userSearchResult = new UserSearchResult();
-		userSearchResult = userService.getAllUsers(pageable);
+		UserSearchResult userSearchResult = userService.getAllUsers(pageable);
 		return ResponseEntity.ok().body(userSearchResult);
 	}
 

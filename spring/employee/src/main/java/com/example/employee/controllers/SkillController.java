@@ -47,7 +47,7 @@ public class SkillController {
 
 	@GetMapping()
 	public ResponseEntity<SkillSearchResult> getAllSkills(Pageable pageable, @RequestParam() Boolean all) {
-		SkillSearchResult skills = new SkillSearchResult();
+		SkillSearchResult skills = null;
 		if (all.equals(true)) {
 			skills = skillService.getAllSkills();
 		} else {

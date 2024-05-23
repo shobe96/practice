@@ -33,7 +33,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   constructor(
     private projectService: ProjectService,
     private router: Router,
-    private messageService: MessageService) {}
+    private messageService: MessageService) { }
 
   ngOnInit(): void {
     this.getAllProjects();
@@ -62,8 +62,8 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   public getAllProjects() {
     const projectsObserver: any = {
       next: (value: ProjectSearchResult) => {
-        this.projects = value.projects !== undefined ? value.projects : [];
-        this.page.pageCount = value.size !== undefined ? value.size : 0;
+        this.projects = value.projects ?? [];
+        this.page.pageCount = value.size ?? 0;
       },
       error: (err: any) => {
         fireToast('error', 'Error', err.message, this.messageService);
@@ -80,9 +80,9 @@ export class ProjectListComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(event: PaginatorState) {
-    this.page.first = event.first !== undefined ? event.first : 0;
-    this.page.page = event.page !== undefined ? event.page : 0;
-    this.page.rows = event.rows !== undefined ? event.rows : 0;
+    this.page.first = event.first ?? 0;
+    this.page.page = event.page ?? 0;
+    this.page.rows = event.rows ?? 0;
     if (this.projectSearch.name !== undefined && this.projectSearch.name !== "") {
       this.search();
     } else {
@@ -107,7 +107,7 @@ export class ProjectListComponent implements OnInit, OnDestroy {
         fireToast("success", "success", `Project with id ${this.projectId} has been deleted.`, this.messageService);
         this.showDialog(false);
       },
-      error: (err: any) => {  fireToast('error', 'Error', err.error.message, this.messageService); },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { console.log("Completed") }
     });
   }

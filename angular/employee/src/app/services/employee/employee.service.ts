@@ -15,9 +15,6 @@ export class EmployeeService {
   private backendURL = environment.BACKEND_URL;
   private baseUrl = "/api/employees"
 
-  // mySub = new Subject<number>();
-  // mySub1 = new BehaviorSubject<number>(1);
-
   constructor(private http: HttpClient) { }
 
   public getAllEmployees(all: boolean, page?: PageEvent): Observable<EmployeeSearchResult> {
@@ -29,7 +26,6 @@ export class EmployeeService {
       queryParams += ``;
       return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
     }
-    // .pipe(catchError(this.errorHandler));
   }
 
   public getEmployee(employeeId: number): Observable<Employee> {

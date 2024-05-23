@@ -52,7 +52,7 @@ public class EmployeeController {
 	public ResponseEntity<EmployeeSearchResult> getAllEmployees(Pageable pageable, @RequestParam() Boolean all) {
 		EmployeeSearchResult employees = new EmployeeSearchResult();
 		if (all.equals(true)) {
-			employees.setEmployees(employeeService.getAllEmployees());;
+			employees.setEmployees(employeeService.getAllEmployees());
 		} else {
 			employees = employeeService.getAllEmployees(pageable);
 		}

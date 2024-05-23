@@ -31,7 +31,7 @@ public class SkillServiceImpl implements SkillService {
 	public SkillSearchResult getAllSkills(Pageable pageable) {
 		SkillSearchResult skillSearchResult = new SkillSearchResult();
 		List<Skill> skills = skillRepository.findAll(pageable).getContent();
-		if (skills.size() == 0) {
+		if (skills.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			skills = skillRepository.findAll(newPage).getContent();
 		}

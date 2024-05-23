@@ -177,8 +177,6 @@ export class AuthFormComponent implements OnInit, OnDestroy {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.value.password;
       const confirmPassword = control.value.confirmPassword;
-      console.log(password);
-      console.log(confirmPassword);
       return password === confirmPassword ? null : { passwordMissmatch: true }
     }
 

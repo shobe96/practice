@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Department;
 import com.example.employee.models.DepartmentSearchResult;
-import com.example.employee.models.Employee;
 import com.example.employee.repositories.DepartmentRepository;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.DepartmentService;
@@ -35,7 +34,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	public DepartmentSearchResult getAllDepartments(Pageable pageable) {
 		DepartmentSearchResult departmentSearchResult = new DepartmentSearchResult();
 		List<Department> departments = departmentRepository.findAll(pageable).getContent();
-		if (departments.size() == 0) {
+		if (departments.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			departments = departmentRepository.findAll(newPage).getContent();
 		}

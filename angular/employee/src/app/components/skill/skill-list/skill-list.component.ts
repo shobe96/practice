@@ -61,8 +61,8 @@ export class SkillListComponent implements OnInit, OnDestroy {
   public getAllSkills() {
     const skillsObserver: any = {
       next: (value: SkillSearchResult) => {
-        this.skills = value.skills !== undefined ? value.skills : [];
-        this.page.pageCount = value.size !== undefined ? value.size : 0;
+        this.skills = value.skills ?? [];
+        this.page.pageCount = value.size ?? 0;
       },
       error: (err: any) => {
         fireToast('error', 'Error', err.message, this.messageService);
@@ -81,9 +81,9 @@ export class SkillListComponent implements OnInit, OnDestroy {
   }
 
   onPageChange(event: PaginatorState) {
-    this.page.first = event.first !== undefined ? event.first : 0;
-    this.page.page = event.page !== undefined ? event.page : 0;
-    this.page.rows = event.rows !== undefined ? event.rows : 0;
+    this.page.first = event.first ?? 0;
+    this.page.page = event.page ?? 0;
+    this.page.rows = event.rows ?? 0;
     if (this.skillSearch.name !== undefined && this.skillSearch.name !== '') {
       this.search();
     } else {

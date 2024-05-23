@@ -30,7 +30,7 @@ export class SkillEditComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.buildForm();
     this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["skillId"] !== undefined && params["skillId"] !== null ? params["skillId"] : null;
+      this.id = params["skillId"] ?? null;
       this.initFormFields();
     });
   }

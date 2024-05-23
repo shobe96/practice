@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Project } from '../../../models/project.model';
-import { Employee } from '../../../models/employee.model';
 import { ProjectService } from '../../../services/project/project.service';
 import { fireToast } from '../../../shared/utils';
 import { MessageService } from 'primeng/api';
@@ -39,6 +38,9 @@ export class ProjectDetailsComponent implements OnInit {
   unassignEmployee() {
     this.projectService.unassignEmployee(this.employeeId, this.project).subscribe({
       next: (value: any) => {
+        this.project.employees = this.project.employees?.filter(val => {
+          return val.id !== this.employeeId;
+        });
         fireToast('success', 'Success', 'Employee unassigned successfully', this.messageService);
         this.showDialog(false);
       },

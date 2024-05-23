@@ -6,7 +6,7 @@ TO CHANGE/FIX
 5. 
 6. 
 7. 
-8. refresh front after unassigning employee from project
+8. 
 9. 
 10. 
 11. fix password missmatch validation
@@ -20,13 +20,13 @@ TO CHANGE/FIX
 19.
 20.
 TO ADD:
-1. on employee edit add list of skills
+1. 
 2. add department on project creation
 3. add filtering of employee based on skills, active, and department on project creation
 4. add home page for user and show UI depending on role of user
 5. add message to login if you are not logged in on home page
 6. add refresh button on all list components
-7.
+7. add project history entity
 8.
 9.
 10.

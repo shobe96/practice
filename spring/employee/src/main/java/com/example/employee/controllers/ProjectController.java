@@ -49,7 +49,6 @@ public class ProjectController {
 		ProjectSearchResult projects = new ProjectSearchResult();
 		if (all.equals(true)) {
 			projects.setProjects(projectService.getAllProjects());
-			;
 		} else {
 			projects = projectService.getAllProjects(pageable);
 		}

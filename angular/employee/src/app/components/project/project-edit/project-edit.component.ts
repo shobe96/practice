@@ -52,7 +52,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     });
     this.buildForm();
     this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["projectId"] !== undefined && params["projectId"] !== null ? params["projectId"] : null;
+      this.id = params["projectId"] ?? null;
       this.initFormFields();
     });
     this.onChanges();

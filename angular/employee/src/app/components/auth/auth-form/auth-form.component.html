@@ -2,7 +2,7 @@
   <h1 *ngIf="isLoggin; else elseBlock">Login</h1>
   <ng-template #elseBlock>
     <h1>
-      Register new user
+      Register new user {{ authFormGroup.errors?.['passwordMissmatch'] }}
     </h1>
   </ng-template>
   <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="submit()">
@@ -142,9 +142,9 @@
         *ngIf="!authFormGroup.controls['confirmPassword'].value?.match('.{8,}')"
         >At least 8 characters long.</span
       >
-      <span
-        class="block"
-        *ngIf="authFormGroup.controls['password'].value !== '' && authFormGroup.controls['confirmPassword'].value !== '' && authFormGroup.errors?.['passwordMissmatch']"
+    </div>
+    <div class="validation-messages">
+      <span class="block" *ngIf="authFormGroup.errors?.['passwordMissmatch']"
         >Passwords missmatch.
       </span>
     </div>

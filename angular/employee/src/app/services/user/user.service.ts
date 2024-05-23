@@ -16,7 +16,7 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  public getAllUsers(page?: PageEvent) {
+  public getAllUsers(page?: PageEvent): Observable<UserSearchResult> {
     return this.http.get<UserSearchResult>(`${this.backendURL}${this.baseUrl}?${buildPaginationParams(page)}`);
   }
 }

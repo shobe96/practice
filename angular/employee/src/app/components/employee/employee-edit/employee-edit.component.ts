@@ -61,9 +61,8 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
       },
       complete: () => { console.log("Completed") }
     });
-    // this.employeService.mySub.subscribe((val) => {console.log(val)});
     this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["employeeId"] !== undefined && params["employeeId"] !== null ? params["employeeId"] : null;
+      this.id = params["employeeId"] ?? null;
       this.initFormFields();
     });
 

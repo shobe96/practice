@@ -72,14 +72,6 @@ public class Role {
 		this.description = description;
 	}
 
-//	public Set<UserRole> getUserRoles() {
-//		return userRoles;
-//	}
-//
-//	public void setUserRoles(Set<UserRole> userRoles) {
-//		this.userRoles = userRoles;
-//	}
-
 	public Set<User> getUsers() {
 		return users;
 	}

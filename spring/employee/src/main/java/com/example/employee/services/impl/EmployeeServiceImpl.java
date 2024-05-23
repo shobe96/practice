@@ -33,7 +33,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public EmployeeSearchResult getAllEmployees(Pageable pageable) {
 		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
 		List<Employee> employees = employeeRepository.findAll(pageable).getContent();
-		if (employees.size() == 0) {
+		if (employees.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			employees = employeeRepository.findAll(newPage).getContent();
 		}
@@ -102,9 +102,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public List<Employee> getAllEmployees() {
-		List<Employee> employees = new ArrayList<>();
-		employees = employeeRepository.findEmployeesWithoutUser();
-		return employees;
+		return employeeRepository.findEmployeesWithoutUser();
 	}
 
 	@Override

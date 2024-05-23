@@ -1,6 +1,4 @@
-import { MenuItem, MessageService, PrimeIcons } from "primeng/api";
 import { PageEvent } from "../models/page-event.model";
-import { inject } from "@angular/core";
 
 export function buildSearchParams(object: any): string {
   let params: string = "";

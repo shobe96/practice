@@ -41,13 +41,13 @@
     <p-table [value]="employees" [tableStyle]="{ 'min-width': '70rem' }">
       <ng-template pTemplate="header">
         <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Surname</th>
-          <th>Email</th>
-          <th>Employment Date</th>
-          <th>Active</th>
-          <th>Actions</th>
+          <th id="id">ID</th>
+          <th id="name">Name</th>
+          <th id="surname">Surname</th>
+          <th id="email">Email</th>
+          <th id="employmentDate">Employment Date</th>
+          <th id="active">Active</th>
+          <th id="actions">Actions</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-employee>

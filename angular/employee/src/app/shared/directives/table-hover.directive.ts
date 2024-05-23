@@ -12,7 +12,7 @@ export class TableHoverDirective {
 
   constructor(private element: ElementRef) { }
 
-  private highlight(colors: any | null) {
+  private highlight(colors: any) {
     this.element.nativeElement.style.backgroundColor = colors.backgroundColor;
     this.element.nativeElement.style.color = colors.color;
   }

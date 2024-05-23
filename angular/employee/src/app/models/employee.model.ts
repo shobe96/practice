@@ -1,5 +1,4 @@
 import { Department } from './department.model';
-import { Project } from './project.model';
 import { Skill } from './skill.model';
 
 export class Employee {

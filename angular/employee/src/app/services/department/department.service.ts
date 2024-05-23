@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Department } from '../../models/department.model';
-import { Observable, catchError, throwError } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { PageEvent } from '../../models/page-event.model';
@@ -22,13 +22,11 @@ export class DepartmentService {
   public getAllDepartments(all: boolean, page?: PageEvent): Observable<DepartmentSearchResult> {
     if (all) {
       return this.http.get<DepartmentSearchResult>(`${this.backendURL}${this.baseUrl}?all=${all}`)
-      // .pipe(catchError(this.errorHandler));
     } else {
       let queryParams: string = page?.page === undefined ? `` : `page=${page.page}`;
       queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
       queryParams += ``;
       return this.http.get<DepartmentSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
-      // .pipe(catchError(this.errorHandler));
     }
   }
   private errorHandler(errorRes: HttpErrorResponse) {
