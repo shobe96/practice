@@ -23,7 +23,7 @@ export class AuthService {
     {
       label: 'Home',
       icon: PrimeIcons.HOME,
-      routerLink: "/",
+      routerLink: "/home",
     },
     {
       label: 'Features',

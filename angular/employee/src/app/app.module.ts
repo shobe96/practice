@@ -8,6 +8,7 @@ import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/
 import { SharedModule } from './modules/shared/shared.module';
 import { AuthFormComponent } from './components/auth/auth-form/auth-form.component';
 import { authInterceptor } from './shared/interceptors/auth/auth.interceptor';
+import { HomeAdminComponent } from './components/home/home-admin/home-admin.component';
 
 @NgModule({
   declarations: [

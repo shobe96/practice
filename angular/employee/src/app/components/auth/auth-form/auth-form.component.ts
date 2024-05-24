@@ -98,7 +98,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
           localStorage.setItem('authResponse', JSON.stringify(value));
           this.authService.autoLogout(value.expiration ?? 0);
           this.authService.updateMenuItems(true, value.roles);
-          this.router.navigate(["/"]);
+          this.router.navigate(["/home"]);
           fireToast('success', 'Success', `Welcome: ${value.username}`, this.messageService);
 
         },
