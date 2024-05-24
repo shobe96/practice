@@ -33,6 +33,20 @@
             <span>Clear Filters</span>
           </div>
         </ng-template>
+        <p-button
+          icon="pi pi-refresh"
+          [rounded]="true"
+          (onClick)="refresh()"
+          severity="success"
+          [pTooltip]="refreshTooltip"
+          tooltipPosition="top"
+        />
+
+        <ng-template #refreshTooltip>
+          <div class="flex align-items-center">
+            <span>Refresh List</span>
+          </div>
+        </ng-template>
       </div>
     </p-accordionTab>
   </p-accordion>

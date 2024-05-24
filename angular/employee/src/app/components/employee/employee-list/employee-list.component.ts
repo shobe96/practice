@@ -33,7 +33,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     private employeeService: EmployeeService,
     private router: Router,
     private messageService: MessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getAllEmployees();
@@ -126,7 +126,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
         ) {
           this.search();
         } else {
-          console.log('DELETE');
           this.getAllEmployees();
         }
         fireToast(
@@ -167,9 +166,23 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     }
   }
 
-  clear() {
+  public clear() {
     this.employeeSearch = new Employee();
-    console.log('CLEAR');
     this.getAllEmployees();
+  }
+
+  public refresh() {
+    if (
+      (this.employeeSearch.name !== undefined &&
+        this.employeeSearch.name !== '') ||
+      (this.employeeSearch.surname !== undefined &&
+        this.employeeSearch.surname !== '') ||
+      (this.employeeSearch.email !== undefined &&
+        this.employeeSearch.surname !== '')
+    ) {
+      this.search();
+    } else {
+      this.getAllEmployees();
+    }
   }
 }

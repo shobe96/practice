@@ -33,7 +33,7 @@ export class SkillListComponent implements OnInit, OnDestroy {
     private skillService: SkillService,
     private router: Router,
     private messageService: MessageService
-  ) {}
+  ) { }
   ngOnInit(): void {
     this.getAllSkills();
     this.searchSubject.pipe(debounceTime(2000)).subscribe({
@@ -134,8 +134,18 @@ export class SkillListComponent implements OnInit, OnDestroy {
 
   clear() {
     this.skillSearch = new Skill();
-    console.log('CLEAR');
     this.getAllSkills();
+  }
+
+  public refresh() {
+    if (
+      (this.skillSearch.name !== undefined &&
+        this.skillSearch.name !== '')
+    ) {
+      this.search();
+    } else {
+      this.getAllSkills();
+    }
   }
 
   search() {

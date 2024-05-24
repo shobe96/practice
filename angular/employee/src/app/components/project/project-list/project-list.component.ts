@@ -122,10 +122,18 @@ export class ProjectListComponent implements OnInit, OnDestroy {
 
   clear() {
     this.projectSearch = new Project();
-    console.log("CLEAR");
     this.getAllProjects();
   }
-
+  public refresh() {
+    if (
+      (this.projectSearch.name !== undefined &&
+        this.projectSearch.name !== '')
+    ) {
+      this.search();
+    } else {
+      this.getAllProjects();
+    }
+  }
   search() {
     console.log(this.projectSearch);
     this.searchSubject.next(this.projectSearch);

@@ -33,7 +33,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
     private departmentService: DepartmentService,
     private router: Router,
     private messageService: MessageService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getAllDepartments();
@@ -47,7 +47,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
           error: (err) => {
             console.log(err);
           },
-          complete: () => {},
+          complete: () => { },
         });
       },
     });
@@ -113,6 +113,17 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
   clear() {
     this.departmentSearch = new Department();
     this.getAllDepartments();
+  }
+
+  public refresh() {
+    if (
+      (this.departmentSearch.name !== undefined &&
+        this.departmentSearch.name !== '')
+    ) {
+      this.search();
+    } else {
+      this.getAllDepartments();
+    }
   }
 
   delete() {
