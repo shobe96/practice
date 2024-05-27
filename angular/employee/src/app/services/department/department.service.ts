@@ -44,10 +44,10 @@ export class DepartmentService {
   }
 
   update(department: Department): Observable<Department> {
-    return this.http.put<Employee>(`${this.backendURL}${this.baseUrl}/update`, department);
+    return this.http.put<Department>(`${this.backendURL}${this.baseUrl}/update`, department);
   }
   save(department: Department): Observable<Department> {
-    return this.http.post<Employee>(`${this.backendURL}${this.baseUrl}/create`, department);
+    return this.http.post<Department>(`${this.backendURL}${this.baseUrl}/create`, department);
   }
 
   delete(departmentId: number) {

@@ -1,0 +1,56 @@
+<div class="card">
+  <p-tabView>
+    <p-tabPanel header="General"
+      ><h1>Employee {{ employee.id }}</h1>
+      <label for="name">Name:</label>
+      <p id="name">{{ employee.name }}</p>
+      <label for="surname">Surname:</label>
+      <p id="surname">{{ employee.surname }}</p>
+      <label for="email">Email:</label>
+      <p id="email">{{ employee.email }}</p>
+    </p-tabPanel>
+    <p-tabPanel header="Roles">
+      <p-table
+        [value]="employee.user?.roles ?? []"
+        [tableStyle]="{ 'min-width': '70rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th id="roleName">Name</th>
+            <th id="description">Description</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-role>
+          <tr appTableHover>
+            <td>{{ role.name }}</td>
+            <td>{{ role.description }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Skills">
+      <p-table
+        [value]="employee.skills ?? []"
+        [tableStyle]="{ 'min-width': '70rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th id="skillName">Name</th>
+            <th id="description">Description</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-skill>
+          <tr appTableHover>
+            <td>{{ skill.name }}</td>
+            <td>{{ skill.description }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
+    <p-tabPanel header="Currently Assigned project"> </p-tabPanel>
+    <p-tabPanel header="Projects History"> </p-tabPanel>
+  </p-tabView>
+  <div class="action-buttons">
+    <p-button label="Edit" (onClick)="goToEdit()" />
+  </div>
+</div>

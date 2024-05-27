@@ -18,13 +18,7 @@
       </div>
     </ng-template>
   </div>
-  <div *ngIf="roles.length > 0" class="home-pannel-container">
-    <div *ngFor="let role of roles" class="home-pannel">
-      <p-button severity="success" (onClick)="goToPannel(role.code)"
-        >{{ role.name }} Panel</p-button
-      >
-      <p-divider layout="vertical" />
-    </div>
+  <div *ngIf="roles.length > 0">
+    <router-outlet />
   </div>
-  <router-outlet />
 </div>

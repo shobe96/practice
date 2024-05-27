@@ -21,4 +21,5 @@ public interface EmployeeService {
 	public List<Employee> filterByActive(Boolean active);
 	public EmployeeSearchResult searcEmployees(String name, String surname, String email, Pageable pageable);
 	public List<Employee> filterEmployeesByActiveAndSkills(List<Skill> skills, Integer departmentId);
+	public Employee findByUserId(Integer userId); 
 }

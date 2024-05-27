@@ -53,6 +53,10 @@ export class EmployeeService {
     return this.http.post<Employee[]>(`${this.backendURL}${this.baseUrl}/filter-by-active-and-skills/${department.id}`, skills);
   };
 
+  public findByUser(userId: number) {
+    return this.http.get<Employee>(`${this.backendURL}${this.baseUrl}/find-by-user/${userId}`);
+  }
+
   private errorHandler(errorRes: any) {
     console.log(errorRes);
     let errorMessage = 'Error occurred!';

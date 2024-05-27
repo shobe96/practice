@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from '../../components/home/home.component';
-import { HomeAdminComponent } from '../../components/home/home-admin/home-admin.component';
+import { HomePanelComponent } from '../../components/home/home-panel/home-panel.component';
 
 const routes: Routes = [
   {
     path: "", component: HomeComponent, children: [
-      { path: "adm", component: HomeAdminComponent }
+      { path: "panel", component: HomePanelComponent }
     ]
   }
 ];

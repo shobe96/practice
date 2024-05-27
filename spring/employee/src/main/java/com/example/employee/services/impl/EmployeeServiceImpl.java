@@ -113,4 +113,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 		}
 		return employeeRepository.filterEmployeesByActiveAndSkills(skillIds, departmentId);
 	}
+
+	@Override
+	public Employee findByUserId(Integer userId) {
+		return employeeRepository.findByUserId(userId);
+	}
 }

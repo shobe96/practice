@@ -24,7 +24,7 @@ TO ADD:
 2. 
 3. 
 4. add home page for user and show UI depending on role of user
-5. add message to login if you are not logged in on home page
+5. 
 6. add role entity on front
 7. add project history entity
 8.

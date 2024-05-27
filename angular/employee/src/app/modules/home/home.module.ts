@@ -2,13 +2,13 @@ import { NgModule } from '@angular/core';
 import { HomeRoutingModule } from './home-routing.module';
 import { HomeComponent } from '../../components/home/home.component';
 import { SharedModule } from '../shared/shared.module';
-import { HomeAdminComponent } from '../../components/home/home-admin/home-admin.component';
+import { HomePanelComponent } from '../../components/home/home-panel/home-panel.component';
 
 
 @NgModule({
   declarations: [
     HomeComponent,
-    HomeAdminComponent
+    HomePanelComponent
   ],
   imports: [
     SharedModule,

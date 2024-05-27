@@ -110,6 +110,16 @@ public class EmployeeController {
 		return ResponseEntity.ok().headers(new HttpHeaders())
 				.body(employeeService.filterEmployeesByActiveAndSkills(skills, departmentId));
 	}
+	
+	@GetMapping("/find-by-user/{userId}")
+	public ResponseEntity<Object> findByUser(@PathVariable Integer userId) {
+		Employee employee = employeeService.findByUserId(userId);
+		if (employee == null) {
+			return ResponseEntity.notFound().build();
+		} else {			
+			return ResponseEntity.ok().body(employee);
+		}
+	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)

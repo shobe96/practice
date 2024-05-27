@@ -61,12 +61,6 @@ public class DepartmentController {
 		
 	}
 
-	@GetMapping("/get-by-name")
-	public ResponseEntity<Department> getByDepartmentName(@RequestParam String name) {
-		Department departments = departmentService.getByDepartmentName(name);
-		return ResponseEntity.ok().body(departments);
-	}
-
 	@GetMapping("/search")
 	public ResponseEntity<DepartmentSearchResult> search(@RequestParam(required = false) String name,
 			Pageable pageable) {
