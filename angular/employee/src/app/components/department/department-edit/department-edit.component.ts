@@ -55,7 +55,7 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
   private initFormFields() {
     if (this.id !== null) {
       const departmentObserver: any = {
-        next: (value: Employee) => {
+        next: (value: Department) => {
           this.department = value;
           this.departmentFormGroup.controls['name'].setValue(value.name);
         },
