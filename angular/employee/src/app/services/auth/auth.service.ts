@@ -63,6 +63,12 @@ export class AuthService {
           visible: false
         },
         {
+          label: 'Roles',
+          icon: PrimeIcons.WRENCH,
+          routerLink: '/role/list',
+          visible: false
+        },
+        {
           label: 'Login',
           icon: PrimeIcons.SIGN_IN,
           routerLink: '/auth/login'
@@ -118,17 +124,19 @@ export class AuthService {
         if (role.code === ADMIN) {
           this.items[1].visible = isloggedIn;
           this.items[2].items![0].visible = isloggedIn;
-          this.items[2].items![2].visible = isloggedIn;
+          this.items[2].items![1].visible = isloggedIn;
+          this.items[2].items![3].visible = isloggedIn;
         }
       }
     } else {
       this.items[1].visible = isloggedIn;
       this.items[2].items![0].visible = isloggedIn;
-      this.items[2].items![2].visible = isloggedIn;
+      this.items[2].items![1].visible = isloggedIn;
+      this.items[2].items![3].visible = isloggedIn;
     }
 
-    this.items[2].items![1].visible = !isloggedIn;
-    this.items[2].items![3].visible = isloggedIn;
+    this.items[2].items![2].visible = !isloggedIn;
+    this.items[2].items![4].visible = isloggedIn;
     localStorage.setItem('navBarState', JSON.stringify(this.items));
     this.menuItemsSubject.next(this.items);
     console.log(this.items);

@@ -25,7 +25,7 @@ public class Role {
 
 	@Column(name = "code")
 	@NonNull
-	@Size(min = 3, max = 100)
+	@Size(min = 3, max = 5)
 	private String code;
 
 	@Column(name = "name", length = 25)
