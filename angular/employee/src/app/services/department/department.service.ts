@@ -6,7 +6,6 @@ import { environment } from '../../../environments/environment.development';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { PageEvent } from '../../models/page-event.model';
 import { buildSearchParams } from '../../shared/utils';
-import { Employee } from '../../models/employee.model';
 
 @Injectable({
   providedIn: 'root'

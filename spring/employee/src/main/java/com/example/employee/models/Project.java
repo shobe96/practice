@@ -1,8 +1,10 @@
 package com.example.employee.models;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
@@ -15,9 +17,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
@@ -41,6 +45,14 @@ public class Project {
 	@Column(name = "active")
 	private Boolean active;
 
+	@Column(name = "start_date")
+	@NotNull(message = "Start date is mandatory")
+	private Date startDate;
+
+	@Column(name = "end_date")
+	@NotNull(message = "End date is mandatory")
+	private Date endDate;
+
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "employee_project", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "employee_id"))
 	private Set<Employee> employees;
@@ -48,11 +60,15 @@ public class Project {
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "project_skill", joinColumns = @JoinColumn(name = "project_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
 	private Set<Skill> skills = new HashSet<>();
-	
+
 	@ManyToOne()
 	@JoinColumn(name = "department_id")
 	@JsonIgnoreProperties("projects")
 	private Department department;
+
+	@OneToMany(mappedBy = "project", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<ProjectHistory> projectHistories = new HashSet<>();
 
 	public Integer getId() {
 		return id;
@@ -86,6 +102,22 @@ public class Project {
 		this.active = active;
 	}
 
+	public Date getStartDate() {
+		return startDate;
+	}
+
+	public void setStartDate(Date startDate) {
+		this.startDate = startDate;
+	}
+
+	public Date getEndDate() {
+		return endDate;
+	}
+
+	public void setEndDate(Date endDate) {
+		this.endDate = endDate;
+	}
+
 	public Set<Employee> getEmployees() {
 		return employees;
 	}
@@ -110,8 +142,23 @@ public class Project {
 		this.department = department;
 	}
 
+	public Set<ProjectHistory> getProjectHistories() {
+		return projectHistories;
+	}
+
+	public void setProjectHistories(Set<ProjectHistory> projectHistories) {
+		this.projectHistories = projectHistories;
+	}
+
 	@PrePersist
 	private void beforeCreate() {
-		this.active = false;
+		this.active = true;
+	}
+
+	@Override
+	public String toString() {
+		return "Project [id=" + id + ", name=" + name + ", code=" + code + ", active=" + active + ", startDate="
+				+ startDate + ", endDate=" + endDate + ", employees=" + employees + ", skills=" + skills
+				+ ", department=" + department + ", projectHistories=" + projectHistories + "]";
 	}
 }

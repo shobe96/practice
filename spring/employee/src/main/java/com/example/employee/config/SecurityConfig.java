@@ -70,6 +70,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/roles/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/skills/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/projects/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/project-history/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.httpBasic(basic -> basic.authenticationEntryPoint(authEntryPoint))

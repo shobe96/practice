@@ -46,7 +46,7 @@ export class SkillEditComponent implements OnInit, OnDestroy {
   buildForm() {
     this.skillFormGroup = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
-      description: ['', [Validators.maxLength(100), Validators.minLength(5)]]
+      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
     });
   }
 

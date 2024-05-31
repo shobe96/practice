@@ -17,6 +17,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
@@ -64,6 +65,9 @@ public class Employee {
 	@Size(max = 50, message = "Email can't be longer than 50 characters")
 	@NotBlank(message = "Email is mandatory")
 	private String email;
+	
+	@Column(name = "assignment_date")
+	private Date assignmentDate;
 
 	@ManyToOne()
 	@JoinColumn(name = "department_id")
@@ -81,6 +85,10 @@ public class Employee {
 	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "employees")
 	@JsonIgnore
 	private Set<Project> projects = new HashSet<>();
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<ProjectHistory> projectHistories = new HashSet<>();
 
 	public Integer getId() {
 		return id;
@@ -158,6 +166,14 @@ public class Employee {
 		this.email = email;
 	}
 
+	public Date getAssignmentDate() {
+		return assignmentDate;
+	}
+
+	public void setAssignmentDate(Date assignmentDate) {
+		this.assignmentDate = assignmentDate;
+	}
+
 	public void setDepartment(Department department) {
 		this.department = department;
 	}
@@ -184,6 +200,14 @@ public class Employee {
 
 	public void setProjects(Set<Project> projects) {
 		this.projects = projects;
+	}
+
+	public Set<ProjectHistory> getProjectHistories() {
+		return projectHistories;
+	}
+
+	public void setProjectHistories(Set<ProjectHistory> projectHistories) {
+		this.projectHistories = projectHistories;
 	}
 
 	@PrePersist

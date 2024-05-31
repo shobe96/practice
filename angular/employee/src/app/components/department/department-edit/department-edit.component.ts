@@ -4,7 +4,6 @@ import { Subscription } from 'rxjs';
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DepartmentService } from '../../../services/department/department.service';
-import { Employee } from '../../../models/employee.model';
 import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
 

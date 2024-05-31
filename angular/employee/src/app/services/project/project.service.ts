@@ -51,4 +51,8 @@ export class ProjectService {
   public unassignEmployee(employeeId: number, project: Project) {
     return this.http.post<void>(`${this.backendURL}${this.baseUrl}/unassign-employee/${employeeId}`, project);
   }
+
+  public getEmployeeProjectHisotry(employeeId: number): Observable<Project[]> {
+    return this.http.get<Project[]>(`${this.backendURL}${this.baseUrl}/history/${employeeId}`);
+  }
 }

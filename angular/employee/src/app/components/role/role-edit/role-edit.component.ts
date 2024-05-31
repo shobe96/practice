@@ -46,7 +46,8 @@ export class RoleEditComponent implements OnInit, OnDestroy {
   buildForm() {
     this.roleFormGroup = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
-      code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]]
+      code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
     });
   }
 
@@ -57,6 +58,7 @@ export class RoleEditComponent implements OnInit, OnDestroy {
           this.role = value;
           this.roleFormGroup.controls['name'].setValue(value.name);
           this.roleFormGroup.controls['code'].setValue(value.code);
+          this.roleFormGroup.controls['description'].setValue(value.description);
         },
         error: (err: any) => { console.log(err) },
         complete: () => { console.log('Completed') }
@@ -72,6 +74,7 @@ export class RoleEditComponent implements OnInit, OnDestroy {
   submit() {
     this.role.name = this.roleFormGroup.controls['name'].value;
     this.role.code = this.roleFormGroup.controls['code'].value;
+    this.role.description = this.roleFormGroup.controls['description'].value;
 
     const roleObserver: any = {
       next: (value: Role) => {

@@ -3,14 +3,10 @@
   <ng-template #elseBlock>
     <h1>Skill {{ id }}</h1>
   </ng-template>
-  <form
-    class="skill-form"
-    [formGroup]="skillFormGroup"
-    (ngSubmit)="submit()"
-  >
+  <form class="skill-form" [formGroup]="skillFormGroup" (ngSubmit)="submit()">
     <input formControlName="name" pInputText placeholder="Name of skill" />
     <div
-    class="validation-messages"
+      class="validation-messages"
       *ngIf="skillFormGroup.controls['name'].invalid && skillFormGroup.controls['name'].touched"
     >
       <div *ngIf="skillFormGroup.controls['name'].errors?.['required']">
@@ -23,13 +19,8 @@
         Name must be shorter than 25 characters!
       </div>
     </div>
-    <input
-      formControlName="description"
-      pInputText
-      placeholder="Description of skill"
-    />
     <div
-    class="validation-messages"
+      class="validation-messages"
       *ngIf="skillFormGroup.controls['description'].invalid && skillFormGroup.controls['description'].touched"
     >
       <div *ngIf="skillFormGroup.controls['description'].errors?.['required']">
@@ -38,13 +29,36 @@
       <div *ngIf="skillFormGroup.controls['description'].errors?.['minlength']">
         Description must be longer than 5 characters!
       </div>
-      <div
-        *ngIf="skillFormGroup.controls['description'].errors?.['maxlength']"
-      >Description must be shorter than 100 characters!</div>
+      <div *ngIf="skillFormGroup.controls['description'].errors?.['maxlength']">
+        Description must be shorter than 100 characters!
+      </div>
+    </div>
+    <input
+      formControlName="description"
+      pInputText
+      placeholder="Description of skill"
+    />
+    <div
+      class="validation-messages"
+      *ngIf="skillFormGroup.controls['description'].invalid && skillFormGroup.controls['description'].touched"
+    >
+      <div *ngIf="skillFormGroup.controls['description'].errors?.['required']">
+        Description is required!
+      </div>
+      <div *ngIf="skillFormGroup.controls['description'].errors?.['minlength']">
+        Description must be longer than 5 characters!
+      </div>
+      <div *ngIf="skillFormGroup.controls['description'].errors?.['maxlength']">
+        Description must be shorter than 100 characters!
+      </div>
     </div>
     <div class="action-buttons">
       <p-button label="Cancel" (onClick)="back()" />
-      <p-button [disabled]="skillFormGroup.invalid" label="Submit" type="submit" />
+      <p-button
+        [disabled]="skillFormGroup.invalid"
+        label="Submit"
+        type="submit"
+      />
     </div>
   </form>
 </div>

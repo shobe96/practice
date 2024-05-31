@@ -14,6 +14,7 @@ import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.models.Skill;
 import com.example.employee.repositories.EmployeeRepository;
+import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.EmployeeService;
 
 import jakarta.transaction.Transactional;
@@ -23,10 +24,12 @@ import jakarta.transaction.Transactional;
 public class EmployeeServiceImpl implements EmployeeService {
 
 	EmployeeRepository employeeRepository;
+	ProjectHistoryRepository projectHistoryRepository;
 
 	@Autowired
-	public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+	public EmployeeServiceImpl(EmployeeRepository employeeRepository, ProjectHistoryRepository projectHistoryRepository) {
 		this.employeeRepository = employeeRepository;
+		this.projectHistoryRepository = projectHistoryRepository;
 	}
 
 	@Override
@@ -71,6 +74,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	public void deleteEmployee(Integer employeeId) {
 		Employee employee = getEmployeebyId(employeeId);
 		employeeRepository.deleteEmployeeProjects(employeeId);
+		projectHistoryRepository.deleteProjectHistoryByEmployee(employeeId);
 		employeeRepository.delete(employee);
 	}
 

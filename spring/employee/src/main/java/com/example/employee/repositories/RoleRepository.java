@@ -14,7 +14,7 @@ import com.example.employee.models.Role;
 @Repository
 public interface RoleRepository extends CrudRepository<Role, Integer>, PagingAndSortingRepository<Role, Integer> {
 
-	@Query("SELECT r FROM Role as r inner join UserRole as ur on r.id = ur.role.id WHERE ur.user.id = :userId")
+	@Query("SELECT r FROM Role as r inner join UserRole as ur ON r.id = ur.role.id WHERE ur.user.id = :userId")
 	List<Role> getRolesByUserId(Integer userId);
 	
 	List<Role> findRolesByUsersId(Integer userId);

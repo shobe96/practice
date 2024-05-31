@@ -2,6 +2,7 @@ package com.example.employee.controllers;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -97,6 +98,16 @@ public class ProjectController {
 		projectService.unassignEmployee(employeeId, project);
 		return ResponseEntity.ok().body(null);
 	}
+	
+	@GetMapping("/history/{employeeId}")
+	public ResponseEntity<List<Project>> getProjectsByEmployee(@PathVariable Integer employeeId) {
+		List<Project> projects = projectService.getProjectsByEmployee(employeeId);
+		if (projects.size() > 0) {			
+			return ResponseEntity.ok().body(projects);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -128,7 +139,7 @@ public class ProjectController {
 	@ExceptionHandler(NoSuchElementException.class)
 	public Map<String, String> handleNotFoundExceptions(NoSuchElementException ex) {
 		Map<String, String> errors = new HashMap<>();
-		String message = "There is no employee with submitted id";
+		String message = "There is no project with submitted id";
 		String field = "project";
 		errors.put(field, message);
 		return errors;

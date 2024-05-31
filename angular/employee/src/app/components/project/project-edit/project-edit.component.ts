@@ -88,6 +88,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     this.projectFormGroup = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
+      startDate: [{}, [Validators.required]],
+      endDate: [{}, [Validators.required]],
       selectedSkills: [[], [Validators.required]],
       selectedEmployees: [[], [Validators.required]],
       selectedDepartment: [{}, [Validators.required]]
@@ -106,7 +108,12 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
           this.projectFormGroup.controls['selectedSkills'].setValue(skills);
           this.projectFormGroup.controls['selectedDepartment'].setValue(value.department);
           this.retrieveEmployees(skills, department);
-          this.projectFormGroup.controls['selectedEmployees'].setValue(value.employees)
+          this.projectFormGroup.controls['selectedEmployees'].setValue(value.employees);
+          console.log("typeof startDate",typeof(value.startDate));
+          const startDate = value.startDate ?? new Date();
+          const endDate = value.endDate ?? new Date();
+          this.projectFormGroup.controls['startDate'].setValue(new Date(startDate));
+          this.projectFormGroup.controls['endDate'].setValue(new Date(endDate));
         },
         error: (err: any) => { console.log(err) },
         complete: () => { console.log('Completed') }
@@ -125,12 +132,15 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
     this.project.skills = this.projectFormGroup.controls['selectedSkills'].value;
     this.project.employees = this.projectFormGroup.controls['selectedEmployees'].value;
     this.project.department = this.projectFormGroup.controls['selectedDepartment'].value;
+    this.project.startDate = this.projectFormGroup.controls['startDate'].value;
+    this.project.endDate = this.projectFormGroup.controls['endDate'].value;
     const projectObserver: any = {
       next: (value: Project) => {
         if (this.id === null) {
           this.router.navigate([`project/details/${value.id}`])
           fireToast("success", "Success", `Project ${value.name} has been created`, this.messageService);
         } else {
+          this.router.navigate([`project/details/${value.id}`])
           fireToast("success", "Success", `Project ${value.name} has been updated`, this.messageService);
         }
       },
@@ -156,7 +166,8 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   private onChanges() {
     this.projectFormGroup.valueChanges.subscribe(val => {
-      if (val.selectedSkills.length > 0 && val.selectedDepartment !== undefined) {
+      console.log(val.selectedDepartment);
+      if (val.selectedSkills.length > 0 && Object.keys(val.selectedDepartment).length > 0) {
         this.retrieveEmployees(val.selectedSkills, val.selectedDepartment);
       }
     })

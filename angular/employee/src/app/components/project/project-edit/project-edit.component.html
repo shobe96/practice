@@ -39,12 +39,12 @@
       </div>
     </div>
     <p-dropdown
-        formControlName="selectedDepartment"
-        [options]="departments"
-        optionLabel="name"
-        placeholder="Select a Department"
-        dataKey="id"
-      />
+      formControlName="selectedDepartment"
+      [options]="departments"
+      optionLabel="name"
+      placeholder="Select a Department"
+      dataKey="id"
+    />
     <p-multiSelect
       [options]="skills"
       formControlName="selectedSkills"
@@ -61,6 +61,35 @@
         Skills are required!
       </div>
     </div>
+    <label for="startDate">Start Date</label>
+    <p-calendar
+      formControlName="startDate"
+      [iconDisplay]="'input'"
+      [showIcon]="true"
+      id="startDate"
+    />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['startDate'].invalid && projectFormGroup.controls['startDate'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['startDate'].errors?.['required']">
+        Start Date is required!
+      </div></div>
+    <label for="endDate">End Date</label>
+    <p-calendar
+      formControlName="endDate"
+      [iconDisplay]="'input'"
+      [showIcon]="true"
+      id="endDate"
+    />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['endDate'].invalid && projectFormGroup.controls['endDate'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['endDate'].errors?.['required']">
+        End Date is required!
+      </div></div>
+
     <p-multiSelect
       *ngIf="employees.length > 0"
       [options]="employees"

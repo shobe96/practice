@@ -27,4 +27,7 @@ public interface ProjectRepository
 	
 	@Query("SELECT COUNT(p) FROM Project p WHERE p.active = true")
 	Long countAllActiveProjects();
+	
+	@Query("SELECT p FROM Project p LEFT JOIN ProjectHistory ph ON p.id = ph.project.id WHERE ph.employee.id =:employeeId")
+	List<Project> findAllByEmployee(Integer employeeId);
 }

@@ -45,6 +45,7 @@
         <tr>
           <th id="id">ID</th>
           <th id="name">Name</th>
+          <th id="startDate">Start Date</th>
           <th id="actions">Actions</th>
         </tr>
       </ng-template>
@@ -52,6 +53,7 @@
         <tr appTableHover>
           <td>{{ project.id }}</td>
           <td>{{ project.name }}</td>
+          <td>{{ project.startDate | date: "dd/MM/yyyy" }}</td>
           <td>
             <p-button
               icon="pi pi-eye"

@@ -8,6 +8,8 @@
       <p id="surname">{{ employee.surname }}</p>
       <label for="email">Email:</label>
       <p id="email">{{ employee.email }}</p>
+      <label for="status">Status:</label>
+      <p id="status">{{ employee.active == true ? 'Assaigned' : 'Free' }}</p>
     </p-tabPanel>
     <p-tabPanel header="Roles">
       <p-table
@@ -48,7 +50,29 @@
       </p-table>
     </p-tabPanel>
     <p-tabPanel header="Currently Assigned project"> </p-tabPanel>
-    <p-tabPanel header="Projects History"> </p-tabPanel>
+    <p-tabPanel header="Projects History">
+      <p-table
+        [value]="projectsHistory"
+        [tableStyle]="{ 'min-width': '70rem' }"
+      >
+        <ng-template pTemplate="header">
+          <tr>
+            <th id="projectName">Name</th>
+            <th id="code">Code</th>
+            <th id="endDate">Assigned on</th>
+            <th id="endDate">Unassigned on</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-projectHistory>
+          <tr appTableHover>
+            <td>{{ projectHistory.project.name }}</td>
+            <td>{{ projectHistory.project.code }}</td>
+            <td>{{ projectHistory.startDate | date: "dd/MM/yyyy" }}</td>
+            <td>{{ projectHistory.endDate | date: "dd/MM/yyyy" }}</td>
+          </tr>
+        </ng-template>
+      </p-table>
+    </p-tabPanel>
   </p-tabView>
   <div class="action-buttons">
     <p-button label="Edit" (onClick)="goToEdit()" />
