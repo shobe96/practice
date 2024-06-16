@@ -73,6 +73,8 @@
         </ng-template>
       </p-table>
     </p-tabPanel>
+    <p-tabPanel header="Department" [disabled]="!showTab"></p-tabPanel>
+    <p-tabPanel header="Department Employees" [disabled]="!showTab"></p-tabPanel>
   </p-tabView>
   <div class="action-buttons">
     <p-button label="Edit" (onClick)="goToEdit()" />

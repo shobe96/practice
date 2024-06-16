@@ -27,7 +27,7 @@ DELETE FROM
 
 DROP TABLE IF EXISTS user;
 
-CREATE TABLE `user` (
+CREATE TABLE IF NOT  `user` (
 	`user_id` bigint NOT NULL AUTO_INCREMENT,
 	`username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
 	`password` varchar(100) NOT NULL,
@@ -56,7 +56,7 @@ VALUES
 
 DROP TABLE IF EXISTS user_role;
 
-CREATE TABLE `user_role` (
+CREATE TABLE IF NOT `user_role` (
 	`user_role_id` bigint NOT NULL AUTO_INCREMENT,
 	`user_id` bigint DEFAULT NULL,
 	`role_id` bigint DEFAULT NULL,
@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `employee` (
 
 DROP TABLE IF EXISTS skill;
 
-CREATE TABLE `skill` (
+CREATE TABLE IF NOT  `skill` (
 	`skill_id` bigint NOT NULL AUTO_INCREMENT,
 	`name` varchar(25) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
 	`description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,

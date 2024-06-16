@@ -2,6 +2,7 @@ package com.example.employee.controllers;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.models.Department;
 import com.example.employee.models.DepartmentSearchResult;
+import com.example.employee.models.Employee;
 import com.example.employee.services.DepartmentService;
 
 @RestController

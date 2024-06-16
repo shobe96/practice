@@ -86,7 +86,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
 
   buildForm() {
     this.projectFormGroup = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
+      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
       startDate: [{}, [Validators.required]],
       endDate: [{}, [Validators.required]],
