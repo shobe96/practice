@@ -56,8 +56,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Page<Employee> getEmployeeByDepartmentId(Pageable pageable, Integer departmentId) {
-		return employeeRepository.findAllByDepartmentId(pageable, departmentId);
+	public EmployeeSearchResult getEmployeeByDepartmentId(Pageable pageable, Integer departmentId) {
+		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+		employeeSearchResult.setEmployees(employeeRepository.findAllByDepartmentId(pageable, departmentId).getContent());
+		Long size = (long) employeeRepository.findAllByDepartmentId(departmentId).size();
+		employeeSearchResult.setSize(size);
+		return employeeSearchResult;
 	}
 
 	@Override

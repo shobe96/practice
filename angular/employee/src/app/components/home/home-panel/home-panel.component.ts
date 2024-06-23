@@ -8,6 +8,9 @@ import { ProjectHistoryService } from '../../../services/project-history/project
 import { ProjectHistory } from '../../../models/project-history.model';
 import { Role } from '../../../models/role.model';
 import { DEPARTMENT_CHIEF } from '../../../shared/authotities-constants';
+import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
+import { PageEvent } from '../../../models/page-event.model';
+import { PaginatorState } from 'primeng/paginator';
 
 @Component({
   selector: 'app-home-panel',
@@ -20,6 +23,14 @@ export class HomePanelComponent implements OnInit {
   employee: Employee = {};
   projectsHistory: ProjectHistory[] = [];
   showTab: boolean = true;
+  employees: Employee[] = [];
+  page: PageEvent = {
+    page: 0,
+    first: 0,
+    rows: 5,
+    pageCount: 0,
+    sort: 'asc',
+  };
 
   constructor(
     private employeeService: EmployeeService,
@@ -33,7 +44,8 @@ export class HomePanelComponent implements OnInit {
       let json: AuthResponse = {};
       json = JSON.parse(authResponse);
       const roles: Role[] = json.roles ?? [];
-      this.showTab =this.checkForRoles(roles, DEPARTMENT_CHIEF);
+      this.showTab = this.checkForRoles(roles, DEPARTMENT_CHIEF);
+      
       if (json.userId !== undefined) {
         this.employeeService.findByUser(json.userId).subscribe({
           next: (value: Employee) => {
@@ -50,6 +62,9 @@ export class HomePanelComponent implements OnInit {
 
                 },
               })
+              if (this.showTab) {
+                this.getAllEmployeesByDepartment();
+              }
             }
           },
           error: (err) => { },
@@ -72,5 +87,28 @@ export class HomePanelComponent implements OnInit {
       }
     }
     return false;
+  }
+
+  onPageChange(event: PaginatorState) {
+    this.page.first = event.first ?? 0;
+    this.page.page = event.page ?? 0;
+    this.page.rows = event.rows ?? 0;
+    this.getAllEmployeesByDepartment();
+  }
+  getAllEmployeesByDepartment() {
+    if (this.employee.department?.id !== undefined) {
+      this.employeeService.findByDepartment(this.employee.department?.id, this.page).subscribe({
+        next: (value: EmployeeSearchResult) => {
+            this.employees = value.employees ?? [];
+            this.page.pageCount = value.size ?? 0;
+        },
+        error: (err) => {
+            
+        },
+        complete: () => {
+            
+        },
+      });
+    }
   }
 }

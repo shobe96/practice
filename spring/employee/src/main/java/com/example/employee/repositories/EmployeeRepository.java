@@ -17,6 +17,8 @@ public interface EmployeeRepository
 		extends PagingAndSortingRepository<Employee, Integer>, CrudRepository<Employee, Integer> {
 
 	public Page<Employee> findAllByDepartmentId(Pageable pageable, Integer departmentId);
+	
+	public List<Employee> findAllByDepartmentId(Integer departmentId);
 
 	@Query("SELECT e FROM Employee e WHERE (e.name LIKE CONCAT('%', :name, '%') OR e.name IS NULL) AND (e.surname LIKE CONCAT('%', :surname, '%') OR e.surname IS NULL) AND (e.email LIKE CONCAT('%', :email, '%') OR e.email IS NULL)")
 	public Page<Employee> searchEmployees(String name, String surname, String email, Pageable pageable);

@@ -71,10 +71,10 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/get-by-department/{departmentId}")
-	public ResponseEntity<List<Employee>> getEmployeeByDepartmentId(Pageable pageable,
+	public ResponseEntity<EmployeeSearchResult> getEmployeeByDepartmentId(Pageable pageable,
 			@PathVariable Integer departmentId) {
-		Page<Employee> employees = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
-		return ResponseEntity.ok().body(employees.getContent());
+		EmployeeSearchResult employeeSearchResult = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
+		return ResponseEntity.ok().body(employeeSearchResult);
 	}
 
 	@PostMapping("/create")

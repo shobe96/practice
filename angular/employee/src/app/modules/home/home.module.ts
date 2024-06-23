@@ -8,7 +8,7 @@ import { HomePanelComponent } from '../../components/home/home-panel/home-panel.
 @NgModule({
   declarations: [
     HomeComponent,
-    HomePanelComponent
+    HomePanelComponent,
   ],
   imports: [
     SharedModule,

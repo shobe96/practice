@@ -53,8 +53,12 @@ export class EmployeeService {
     return this.http.post<Employee[]>(`${this.backendURL}${this.baseUrl}/filter-by-active-and-skills/${department.id}`, skills);
   };
 
-  public findByUser(userId: number) {
+  public findByUser(userId: number): Observable<Employee> {
     return this.http.get<Employee>(`${this.backendURL}${this.baseUrl}/find-by-user/${userId}`);
+  }
+
+  public findByDepartment(departmentId: number, page: PageEvent): Observable<EmployeeSearchResult> {
+    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/get-by-department/${departmentId}?page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
   private errorHandler(errorRes: any) {
