@@ -73,7 +73,13 @@
         </ng-template>
       </p-table>
     </p-tabPanel>
-    <p-tabPanel header="Department" [disabled]="!showTab"></p-tabPanel>
+    <p-tabPanel header="Department" [disabled]="!showTab">
+      <div class="card" *ngIf="employee.department">
+        <h1>Department {{ employee.department.id }}</h1>
+        <label for="name">Name:</label>
+        <p id="name">{{ employee.department.name }}</p>
+      </div>
+    </p-tabPanel>
     <p-tabPanel header="Department Employees" [disabled]="!showTab">
       <div *ngIf="employees.length > 0">
         <p-table [value]="employees" [tableStyle]="{ 'min-width': '70rem' }">
