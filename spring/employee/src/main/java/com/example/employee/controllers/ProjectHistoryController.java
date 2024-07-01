@@ -39,7 +39,7 @@ public class ProjectHistoryController {
 	@GetMapping("/{employeeId}")
 	public ResponseEntity<List<ProjectHistory>> getProjectsHistoryOfEmployee(@PathVariable Integer employeeId) {
 		List<ProjectHistory> projectHistories = projectHistoryService.getProjectsHistoryOfEmployee(employeeId);
-		if (projectHistories.size() > 0) {
+		if (!projectHistories.isEmpty()) {
 			return ResponseEntity.ok().body(projectHistories);
 		} else {
 			return ResponseEntity.notFound().build();

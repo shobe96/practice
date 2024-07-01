@@ -3,7 +3,6 @@ import { EmployeeService } from '../../../services/employee/employee.service';
 import { AuthResponse } from '../../../models/auth-response.model';
 import { Employee } from '../../../models/employee.model';
 import { Router } from '@angular/router';
-import { ProjectService } from '../../../services/project/project.service';
 import { ProjectHistoryService } from '../../../services/project-history/project-history.service';
 import { ProjectHistory } from '../../../models/project-history.model';
 import { Role } from '../../../models/role.model';

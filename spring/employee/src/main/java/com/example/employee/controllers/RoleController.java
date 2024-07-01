@@ -41,7 +41,7 @@ public class RoleController {
 
 	@GetMapping()
 	public ResponseEntity<RoleSearchResult> getAllRoles(Pageable pageable, @RequestParam() Boolean all) {
-		RoleSearchResult roles = new RoleSearchResult();
+		RoleSearchResult roles;
 		if (all.equals(true)) {
 			roles = roleService.getAllRoles();
 		} else {

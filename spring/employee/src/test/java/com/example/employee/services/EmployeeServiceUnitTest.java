@@ -22,6 +22,7 @@ import com.example.employee.models.Department;
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.repositories.EmployeeRepository;
+import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.impl.EmployeeServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +33,9 @@ class EmployeeServiceUnitTest {
 
 	@Mock
 	private EmployeeRepository employeeRepository;
+	
+	@Mock
+	private ProjectHistoryRepository projectHistoryRepository;
 
 	@Test
 	void getAllEmployeesTest() {
