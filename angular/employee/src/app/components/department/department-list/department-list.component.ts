@@ -7,14 +7,14 @@ import { DepartmentService } from '../../../services/department/department.servi
 import { DepartmentSearchResult } from '../../../models/department-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-department-list',
   templateUrl: './department-list.component.html',
-  styleUrl: './department-list.component.scss'
+  styleUrl: './department-list.component.scss',
 })
 export class DepartmentListComponent implements OnInit, OnDestroy {
-
   private searchSubject = new Subject<Department>();
   private departments$!: Subscription;
   departmentId: number = 0;
@@ -23,13 +23,17 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
     first: 0,
     rows: 5,
     pageCount: 0,
-    sort: "asc"
-  }
+    sort: 'asc',
+  };
   departments: Department[] = [];
   visible: boolean = false;
   departmentSearch: Department = new Department();
 
-  constructor(private departmentService: DepartmentService, private router: Router, private messageService: MessageService) { }
+  constructor(
+    private departmentService: DepartmentService,
+    private router: Router,
+    private messageService: MessageService
+  ) { }
 
   ngOnInit(): void {
     this.getAllDepartments();
@@ -43,9 +47,9 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
           error: (err) => {
             console.log(err);
           },
-          complete: () => { }
+          complete: () => { },
         });
-      }
+      },
     });
   }
   ngOnDestroy(): void {
@@ -72,25 +76,26 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
       },
       complete: () => {
         console.log('Completed');
-      }
-    }
+      },
+    };
 
-    this.departments$ = this.departmentService.getAllDepartments(false, this.page).subscribe(departmentObserver);
+    this.departments$ = this.departmentService
+      .getAllDepartments(false, this.page)
+      .subscribe(departmentObserver);
   }
 
   public addNew() {
-    this.router.navigate(["department/new"]);
-  }
-
-  setId(departmentId: number) {
-    this.departmentId = departmentId;
+    this.router.navigate(['department/new']);
   }
 
   onPageChange(event: PaginatorState) {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
     this.page.rows = event.rows ?? 0;
-    if ((this.departmentSearch.name !== undefined && this.departmentSearch.name !== "")) {
+    if (
+      this.departmentSearch.name !== undefined &&
+      this.departmentSearch.name !== ''
+    ) {
       this.search();
     } else {
       this.getAllDepartments();
@@ -110,28 +115,51 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
     this.getAllDepartments();
   }
 
+  public refresh() {
+    if (
+      (this.departmentSearch.name !== undefined &&
+        this.departmentSearch.name !== '')
+    ) {
+      this.search();
+    } else {
+      this.getAllDepartments();
+    }
+  }
+
   delete() {
     this.departmentService.delete(this.departmentId).subscribe({
       next: (value: any) => {
-        if ((this.departmentSearch.name !== undefined && this.departmentSearch.name !== "")) {
+        if (
+          this.departmentSearch.name !== undefined &&
+          this.departmentSearch.name !== ''
+        ) {
           this.search();
         } else {
-          console.log("DELETE");
           this.getAllDepartments();
         }
+        fireToast(
+          'success',
+          'success',
+          `Department with id ${this.departmentId} has been deleted.`,
+          this.messageService
+        );
         this.showDialog(false);
-        this.fireToast("success", "success", `Department with id ${this.departmentId} has been deleted.`);
       },
-      error: (err: any) => { console.log(err); this.fireToast('error', 'Error', err.error.message); },
-      complete: () => { console.log("Completed") }
+      error: (err: any) => {
+        console.log(err);
+        fireToast('error', 'Error', err.error.message, this.messageService);
+      },
+      complete: () => {
+        console.log('Completed');
+      },
     });
-  }
-  fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 
   onKeyUp() {
-    if ((this.departmentSearch.name !== undefined && this.departmentSearch.name !== "")) {
+    if (
+      this.departmentSearch.name !== undefined &&
+      this.departmentSearch.name !== ''
+    ) {
       this.search();
     } else {
       this.getAllDepartments();

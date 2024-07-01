@@ -8,11 +8,13 @@ import { PaginatorModule } from 'primeng/paginator';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
-import { AccordionModule } from 'primeng/accordion'; 3
+import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ToastModule } from 'primeng/toast';
-
+import { TabViewModule } from 'primeng/tabview';
+import { DividerModule } from 'primeng/divider';
+import { CalendarModule } from 'primeng/calendar';
 @NgModule({
   declarations: [],
   imports: [
@@ -28,7 +30,10 @@ import { ToastModule } from 'primeng/toast';
     AccordionModule,
     TooltipModule,
     MultiSelectModule,
-    ToastModule
+    ToastModule,
+    TabViewModule,
+    DividerModule,
+    CalendarModule
   ],
   exports: [
     MenubarModule,
@@ -43,7 +48,10 @@ import { ToastModule } from 'primeng/toast';
     AccordionModule,
     TooltipModule,
     MultiSelectModule,
-    ToastModule
+    ToastModule,
+    TabViewModule,
+    DividerModule,
+    CalendarModule
   ]
 })
 export class PrimeNgModule { }

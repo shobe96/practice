@@ -4,12 +4,14 @@
 
 .action-buttons {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 15px;
 }
 
 .search-inputs {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: flex-start;
+  gap: 10px;
 }
 .validation-messages {
   display: flex;

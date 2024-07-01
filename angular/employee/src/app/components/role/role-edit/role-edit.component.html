@@ -1,0 +1,60 @@
+<div class="card">
+  <h1 *ngIf="id === null; else elseBlock">Add new Role</h1>
+  <ng-template #elseBlock>
+    <h1>Role {{ id }}</h1>
+  </ng-template>
+  <form class="role-form" [formGroup]="roleFormGroup" (ngSubmit)="submit()">
+    <input formControlName="name" pInputText placeholder="Name of role" />
+    <div
+      class="validation-messages"
+      *ngIf="roleFormGroup.controls['name'].invalid && roleFormGroup.controls['name'].touched"
+    >
+      <div *ngIf="roleFormGroup.controls['name'].errors?.['required']">
+        Name is required!
+      </div>
+      <div *ngIf="roleFormGroup.controls['name'].errors?.['minlength']">
+        Name must be longer than 5 characters!
+      </div>
+      <div *ngIf="roleFormGroup.controls['name'].errors?.['maxlength']">
+        Name must be shorter than 25 characters!
+      </div>
+    </div>
+    <input formControlName="code" pInputText placeholder="Code" />
+    <div
+      class="validation-messages"
+      *ngIf="roleFormGroup.controls['code'].invalid && roleFormGroup.controls['code'].touched"
+    >
+      <div *ngIf="roleFormGroup.controls['code'].errors?.['required']">
+        Code is required!
+      </div>
+      <div *ngIf="roleFormGroup.controls['code'].errors?.['minlength']">
+        Name must be longer than 3 characters!
+      </div>
+      <div *ngIf="roleFormGroup.controls['code'].errors?.['maxlength']">
+        Code must be shorter than 5 characters!
+      </div>
+    </div>
+    <div
+      class="validation-messages"
+      *ngIf="roleFormGroup.controls['description'].invalid && roleFormGroup.controls['description'].touched"
+    >
+      <div *ngIf="roleFormGroup.controls['description'].errors?.['required']">
+        Description is required!
+      </div>
+      <div *ngIf="roleFormGroup.controls['description'].errors?.['minlength']">
+        Description must be longer than 5 characters!
+      </div>
+      <div *ngIf="roleFormGroup.controls['description'].errors?.['maxlength']">
+        Description must be shorter than 100 characters!
+      </div>
+    </div>
+    <div class="action-buttons">
+      <p-button label="Cancel" (onClick)="back()" />
+      <p-button
+        [disabled]="roleFormGroup.invalid"
+        label="Submit"
+        type="submit"
+      />
+    </div>
+  </form>
+</div>

@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
+import com.example.employee.models.Skill;
 import com.example.employee.services.EmployeeService;
 
 import jakarta.validation.Valid;
@@ -51,29 +51,29 @@ public class EmployeeController {
 	public ResponseEntity<EmployeeSearchResult> getAllEmployees(Pageable pageable, @RequestParam() Boolean all) {
 		EmployeeSearchResult employees = new EmployeeSearchResult();
 		if (all.equals(true)) {
-			employees.setEmployees(employeeService.getAllEmployees());;
+			employees.setEmployees(employeeService.getAllEmployees());
 		} else {
 			employees = employeeService.getAllEmployees(pageable);
 		}
 		
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees);
+		return ResponseEntity.ok().body(employees);
 	}
 
 	@GetMapping("/get-one/{employeeId}")
 	public ResponseEntity<Object> getEmployeeById(@PathVariable Integer employeeId) {
 		Employee employee = employeeService.getEmployeebyId(employeeId);
 		if (employee == null) {
-			return ResponseEntity.notFound().headers(new HttpHeaders()).build();
+			return ResponseEntity.notFound().build();
 		} else {			
-			return ResponseEntity.ok().headers(new HttpHeaders()).body(employee);
+			return ResponseEntity.ok().body(employee);
 		}
 	}
 
 	@GetMapping("/get-by-department/{departmentId}")
-	public ResponseEntity<List<Employee>> getEmployeeByDepartmentId(Pageable pageable,
+	public ResponseEntity<EmployeeSearchResult> getEmployeeByDepartmentId(Pageable pageable,
 			@PathVariable Integer departmentId) {
-		Page<Employee> employees = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(employees.getContent());
+		EmployeeSearchResult employeeSearchResult = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
+		return ResponseEntity.ok().body(employeeSearchResult);
 	}
 
 	@PostMapping("/create")
@@ -81,27 +81,43 @@ public class EmployeeController {
 		Employee newEmployee = employeeService.saveEmployee(employee);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(newEmployee.getId()).toUri();
-		return ResponseEntity.created(location).headers(new HttpHeaders()).body(newEmployee);
+		return ResponseEntity.created(location).body(newEmployee);
 	}
 
 	@PutMapping("/update")
 	public ResponseEntity<Employee> updateEmployee(@Valid @RequestBody Employee employee) {
 		Employee updatedEmployee = employeeService.saveEmployee(employee);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(updatedEmployee);
+		return ResponseEntity.ok().body(updatedEmployee);
 	}
 
 	@DeleteMapping("/delete/{employeeId}")
 	public ResponseEntity<Void> deleteEmployee(@PathVariable Integer employeeId) {
 		employeeService.deleteEmployee(employeeId);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(null);
+		return ResponseEntity.ok().body(null);
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<EmployeeSearchResult> searchEMployees(@RequestParam(required = false) String name,
+	public ResponseEntity<EmployeeSearchResult> searchEmployees(@RequestParam(required = false) String name,
 			@RequestParam(required = false) String surname, @RequestParam(required = false) String email,
 			Pageable pageable) {
 		return ResponseEntity.ok().headers(new HttpHeaders())
 				.body(employeeService.searcEmployees(name, surname, email, pageable));
+	}
+	
+	@PostMapping("/filter-by-active-and-skills/{departmentId}")
+	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId, @RequestBody List<Skill> skills) {
+		return ResponseEntity.ok().headers(new HttpHeaders())
+				.body(employeeService.filterEmployeesByActiveAndSkills(skills, departmentId));
+	}
+	
+	@GetMapping("/find-by-user/{userId}")
+	public ResponseEntity<Object> findByUser(@PathVariable Integer userId) {
+		Employee employee = employeeService.findByUserId(userId);
+		if (employee == null) {
+			return ResponseEntity.notFound().build();
+		} else {			
+			return ResponseEntity.ok().body(employee);
+		}
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

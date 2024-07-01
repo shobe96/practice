@@ -4,6 +4,7 @@ import { PageEvent } from '../../models/page-event.model';
 import { UserSearchResult } from '../../models/user-search-result.model';
 import { environment } from '../../../environments/environment.development';
 import { buildPaginationParams } from '../../shared/utils';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,7 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
-  public getAllUsers(page?: PageEvent) {
-
+  public getAllUsers(page?: PageEvent): Observable<UserSearchResult> {
     return this.http.get<UserSearchResult>(`${this.backendURL}${this.baseUrl}?${buildPaginationParams(page)}`);
   }
 }

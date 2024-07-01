@@ -4,8 +4,8 @@ import { Subscription } from 'rxjs';
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DepartmentService } from '../../../services/department/department.service';
-import { Employee } from '../../../models/employee.model';
 import { MessageService } from 'primeng/api';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-department-edit',
@@ -54,7 +54,7 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
   private initFormFields() {
     if (this.id !== null) {
       const departmentObserver: any = {
-        next: (value: Employee) => {
+        next: (value: Department) => {
           this.department = value;
           this.departmentFormGroup.controls['name'].setValue(value.name);
         },
@@ -75,11 +75,11 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
     const departmentObserver: any = {
       next: (value: Department) => {
         if (this.id === null) {
-          this.fireToast("success","Success",`Department ${value.name} has been created`);
-          this.router.navigate([`department/details/${value.id}`])
+          fireToast("success","Success",`Department ${value.name} has been created`, this.messageService);
         } else {
-          this.fireToast("success","Success",`Department ${value.name} has been updated`);
+          fireToast("success","Success",`Department ${value.name} has been updated`, this.messageService);
         }
+        this.router.navigate([`department/details/${value.id}`])
       },
       error: (err: any) => { console.log(err) },
       complete: () => { },
@@ -89,9 +89,5 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
     } else {
       this.departmentService.update(this.department).subscribe(departmentObserver);
     }
-  }
-
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }

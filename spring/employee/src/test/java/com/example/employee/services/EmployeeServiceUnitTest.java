@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +22,7 @@ import com.example.employee.models.Department;
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.repositories.EmployeeRepository;
+import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.impl.EmployeeServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -33,6 +33,9 @@ class EmployeeServiceUnitTest {
 
 	@Mock
 	private EmployeeRepository employeeRepository;
+	
+	@Mock
+	private ProjectHistoryRepository projectHistoryRepository;
 
 	@Test
 	void getAllEmployeesTest() {

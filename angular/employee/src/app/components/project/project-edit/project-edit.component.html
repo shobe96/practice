@@ -1,0 +1,120 @@
+<div class="card">
+  <h1 *ngIf="id === null; else elseBlock">Add new Project</h1>
+  <ng-template #elseBlock>
+    <h1>Project {{ id }}</h1>
+  </ng-template>
+  <form
+    class="project-form"
+    [formGroup]="projectFormGroup"
+    (ngSubmit)="submit()"
+  >
+    <input formControlName="name" pInputText placeholder="Name of project" />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['name'].errors?.['required']">
+        Name is required!
+      </div>
+      <div *ngIf="projectFormGroup.controls['name'].errors?.['minlength']">
+        Name must be longer than 5 characters!
+      </div>
+      <div *ngIf="projectFormGroup.controls['name'].errors?.['maxlength']">
+        Name must be shorter than 25 characters!
+      </div>
+    </div>
+    <input formControlName="code" pInputText placeholder="Code of project" />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['code'].errors?.['required']">
+        Code is required!
+      </div>
+      <div *ngIf="projectFormGroup.controls['code'].errors?.['minlength']">
+        Code must be longer than 3 characters!
+      </div>
+      <div *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']">
+        Code must be shorter than 5 characters!
+      </div>
+    </div>
+    <p-dropdown
+      formControlName="selectedDepartment"
+      [options]="departments"
+      optionLabel="name"
+      placeholder="Select a Department"
+      dataKey="id"
+    />
+    <p-multiSelect
+      [options]="skills"
+      formControlName="selectedSkills"
+      optionLabel="name"
+      placeholder="Select Skills"
+    />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['selectedSkills'].invalid && projectFormGroup.controls['selectedSkills'].touched"
+    >
+      <div
+        *ngIf="projectFormGroup.controls['selectedSkills'].errors?.['required']"
+      >
+        Skills are required!
+      </div>
+    </div>
+    <label for="startDate">Start Date</label>
+    <p-calendar
+      formControlName="startDate"
+      [iconDisplay]="'input'"
+      [showIcon]="true"
+      id="startDate"
+    />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['startDate'].invalid && projectFormGroup.controls['startDate'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['startDate'].errors?.['required']">
+        Start Date is required!
+      </div></div>
+    <label for="endDate">End Date</label>
+    <p-calendar
+      formControlName="endDate"
+      [iconDisplay]="'input'"
+      [showIcon]="true"
+      id="endDate"
+    />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['endDate'].invalid && projectFormGroup.controls['endDate'].touched"
+    >
+      <div *ngIf="projectFormGroup.controls['endDate'].errors?.['required']">
+        End Date is required!
+      </div></div>
+
+    <p-multiSelect
+      *ngIf="employees.length > 0"
+      [options]="employees"
+      formControlName="selectedEmployees"
+      optionLabel="name"
+      placeholder="Select Employees"
+      optionDisabled="active"
+    />
+    <div
+      class="validation-messages"
+      *ngIf="projectFormGroup.controls['selectedEmployees'].invalid && projectFormGroup.controls['selectedEmployees'].touched"
+    >
+      <div
+        *ngIf="projectFormGroup.controls['selectedEmployees'].errors?.['required']"
+      >
+        Employees are required!
+      </div>
+    </div>
+    <div class="action-buttons">
+      <p-button label="Cancel" (onClick)="back()" />
+      <p-button
+        [disabled]="projectFormGroup.invalid"
+        label="Submit"
+        type="submit"
+      />
+    </div>
+  </form>
+</div>

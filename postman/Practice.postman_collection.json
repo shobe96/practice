@@ -1,0 +1,550 @@
+{
+	"info": {
+		"_postman_id": "323b117c-bf91-4dfa-a3fa-a7b99bbd1e5e",
+		"name": "Practice",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32138146"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = JSON.parse(responseBody);\r",
+									"pm.environment.set(\"token\", jsonData.token);"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"username\": \"admin\",\r\n  \"password\": \"admin\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/auth/login",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "register user",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"admin2\",\r\n    \"password\": \"Dragonforce7!\",\r\n    \"roles\": [\r\n        {\r\n            \"id\": 2,\r\n            \"code\": \"ADM\",\r\n            \"name\": \"Admin\",\r\n            \"description\": \"Employee with the highest privileges\",\r\n            \"userRoles\": [\r\n                {\r\n                    \"id\": 5,\r\n                    \"user\": {\r\n                        \"id\": 4,\r\n                        \"username\": \"admin3\",\r\n                        \"password\": \"$2a$12$b38f2doXKoCrhV7UjtV6gOYZ25GfqHP.QBvxviTqRoN0uFJCa2HD.\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": 1,\r\n                    \"user\": {\r\n                        \"id\": 1,\r\n                        \"username\": \"admin\",\r\n                        \"password\": \"$2a$12$wEVai3/pLneFmLLa68clMeAsnRMj7NnYbXf1Qywe5xkGGhxFMGrjG\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": 4,\r\n                    \"user\": {\r\n                        \"id\": 3,\r\n                        \"username\": \"testUser\",\r\n                        \"password\": \"Password2!\"\r\n                    }\r\n                },\r\n                {\r\n                    \"id\": 2,\r\n                    \"user\": {\r\n                        \"id\": 2,\r\n                        \"username\": \"admin2\",\r\n                        \"password\": \"$2a$12$onqv/m/PxOgr8WvAw8XWU.sjP1Dy77wFPhTEXthozGDmeAe/aUWb6\"\r\n                    }\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/auth/register-user",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"auth",
+								"register-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "user",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/auth/delete/6",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"auth",
+								"delete",
+								"6"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/users?page=0&size=1&sort=asc",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"users"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								},
+								{
+									"key": "sort",
+									"value": "asc"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "employee",
+			"item": [
+				{
+					"name": "employees",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/employees?page=0&size=1&sort=asc&all=false",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"employees"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								},
+								{
+									"key": "sort",
+									"value": "asc"
+								},
+								{
+									"key": "all",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "employee",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/employees/get-one/4",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"employees",
+								"get-one",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "inactive employees by skill",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": 1,\r\n        \"name\": \"Java\",\r\n        \"description\": \"Programing applications in Java program language\"\r\n    }\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/employees/filter-by-active-and-skills",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"employees",
+								"filter-by-active-and-skills"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "role",
+			"item": [
+				{
+					"name": "roles",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/roles?all=true",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0",
+									"disabled": true
+								},
+								{
+									"key": "size",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "asc",
+									"disabled": true
+								},
+								{
+									"key": "all",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "skill",
+			"item": [
+				{
+					"name": "skills",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/skills?page=0&size=1&sort=asc&all=false",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"skills"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								},
+								{
+									"key": "sort",
+									"value": "asc"
+								},
+								{
+									"key": "all",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "project",
+			"item": [
+				{
+					"name": "projects",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/projects?page=0&size=1&sort=asc&all=false",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "1"
+								},
+								{
+									"key": "sort",
+									"value": "asc"
+								},
+								{
+									"key": "all",
+									"value": "false"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n   \"name\":\"test777\",\r\n   \"code\":\"testtest\",\r\n   \"skills\":[\r\n      {\r\n         \"id\":1,\r\n         \"name\":\"Java\",\r\n         \"description\":\"Programing applications in Java program language\"\r\n      },\r\n      {\r\n         \"id\":2,\r\n         \"name\":\"Javascript\",\r\n         \"description\":\"Programing logic for web applications using Javascipt programing lanuage\"\r\n      },\r\n      {\r\n         \"id\":3,\r\n         \"name\":\"SQL\",\r\n         \"description\":\"Writing queries using SQL language\"\r\n      }\r\n   ],\r\n   \"employees\":[\r\n      {\r\n         \"id\":4,\r\n         \"name\":\"aca\",\r\n         \"surname\":\"test\",\r\n         \"addDate\":\"2024-03-05T13:58:35.000+00:00\",\r\n         \"modDate\":\"2024-03-05T13:57:39.000+00:00\",\r\n         \"addUser\":\"string\",\r\n         \"modUser\":\"string\",\r\n         \"active\":false,\r\n         \"email\":null,\r\n         \"department\":{\r\n            \"id\":1,\r\n            \"name\":\"finansije\",\r\n            \"addDate\":null,\r\n            \"modDate\":null,\r\n            \"addUser\":null,\r\n            \"modUser\":null,\r\n            \"active\":null\r\n         },\r\n         \"user\":null,\r\n         \"skills\":[\r\n            {\r\n               \"id\":1,\r\n               \"name\":\"Java\",\r\n               \"description\":\"Programing applications in Java program language\"\r\n            }\r\n         ],\r\n         \"projects\":[\r\n            {\r\n               \"id\":1,\r\n               \"name\":\"test project\",\r\n               \"code\":\"TSPR\",\r\n               \"skills\":[\r\n                  \r\n               ]\r\n            }\r\n         ]\r\n      }\r\n   ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/projects/create",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"projects",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "department",
+			"item": [
+				{
+					"name": "department",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{protocol}}://{{baseUrl}}:{{port}}/api/departments/get-one/1",
+							"protocol": "{{protocol}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"port": "{{port}}",
+							"path": [
+								"api",
+								"departments",
+								"get-one",
+								"1"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
