@@ -115,7 +115,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
           this.projectFormGroup.controls['startDate'].setValue(new Date(startDate));
           this.projectFormGroup.controls['endDate'].setValue(new Date(endDate));
         },
-        error: (err: any) => { console.log(err) },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
       this.projectSubscription$ = this.projectService.getProject(this.id).subscribe(projectObserver);
@@ -144,7 +144,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy {
           fireToast("success", "Success", `Project ${value.name} has been updated`, this.messageService);
         }
       },
-      error: (err: any) => { console.log(err) },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
     if (this.id === null) {

@@ -60,7 +60,7 @@ export class RoleEditComponent implements OnInit, OnDestroy {
           this.roleFormGroup.controls['code'].setValue(value.code);
           this.roleFormGroup.controls['description'].setValue(value.description);
         },
-        error: (err: any) => { console.log(err) },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
       this.roleSubscription$ = this.roleService.getRole(this.id).subscribe(roleObserver);
@@ -85,7 +85,7 @@ export class RoleEditComponent implements OnInit, OnDestroy {
         }
         this.router.navigate([`role/details/${value.id}`])
       },
-      error: (err: any) => { console.log(err) },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
     if (this.id === null) {

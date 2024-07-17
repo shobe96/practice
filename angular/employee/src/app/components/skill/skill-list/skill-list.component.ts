@@ -44,12 +44,12 @@ export class SkillListComponent implements OnInit, OnDestroy {
             this.page.pageCount = value.size ?? 0;
           },
           error: (err) => {
-            console.log(err);
+            fireToast('error', 'Error', err.error.message, this.messageService);
           },
         });
       },
       error: (err) => {
-        console.log(err);
+        fireToast('error', 'Error', err.error.message, this.messageService);
       },
     });
   }

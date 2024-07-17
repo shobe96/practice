@@ -57,7 +57,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
         this.departments = value.departments ?? [];
       },
       error: (err: any) => {
-        console.log(err)
+        fireToast('error', 'Error', err.error.message, this.messageService);
       },
       complete: () => { console.log("Completed") }
     });
@@ -105,7 +105,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
           this.employeeFormGroup.controls['department'].setValue(value.department);
           this.employeeFormGroup.controls['selectedSkills'].setValue(value.skills);
         },
-        error: (err: any) => { console.log(err) },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
       this.employeeSubscription$ = this.employeeService.getEmployee(this.id).subscribe(employeeObserver);
@@ -131,7 +131,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
         }
         this.router.navigate([`employee/details/${value.id}`])
       },
-      error: (err: any) => { console.log(err) },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
     if (this.id === null) {

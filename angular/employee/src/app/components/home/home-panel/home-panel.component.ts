@@ -10,6 +10,8 @@ import { DEPARTMENT_CHIEF } from '../../../shared/authotities-constants';
 import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
 import { PageEvent } from '../../../models/page-event.model';
 import { PaginatorState } from 'primeng/paginator';
+import { fireToast } from '../../../shared/utils';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-home-panel',
@@ -34,7 +36,8 @@ export class HomePanelComponent implements OnInit {
   constructor(
     private employeeService: EmployeeService,
     private router: Router,
-    private projectHistoryService: ProjectHistoryService
+    private projectHistoryService: ProjectHistoryService,
+    private messageService: MessageService
   ) { }
 
   ngOnInit(): void {
@@ -44,7 +47,7 @@ export class HomePanelComponent implements OnInit {
       json = JSON.parse(authResponse);
       const roles: Role[] = json.roles ?? [];
       this.showTab = this.checkForRoles(roles, DEPARTMENT_CHIEF);
-      
+
       if (json.userId !== undefined) {
         this.employeeService.findByUser(json.userId).subscribe({
           next: (value: Employee) => {
@@ -55,7 +58,9 @@ export class HomePanelComponent implements OnInit {
                   this.projectsHistory = value;
                 },
                 error: (err: any) => {
-
+                  if (err.status === 404) {
+                    fireToast('error', 'Error', 'No project History', this.messageService);
+                  }
                 },
                 complete: () => {
 
@@ -102,10 +107,10 @@ export class HomePanelComponent implements OnInit {
             this.page.pageCount = value.size ?? 0;
         },
         error: (err) => {
-            
+
         },
         complete: () => {
-            
+
         },
       });
     }

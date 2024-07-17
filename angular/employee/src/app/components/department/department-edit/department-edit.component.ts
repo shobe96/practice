@@ -58,7 +58,7 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
           this.department = value;
           this.departmentFormGroup.controls['name'].setValue(value.name);
         },
-        error: (err: any) => { console.log(err) },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
       this.departmentSubscription$ = this.departmentService.getDepartment(this.id).subscribe(departmentObserver);
@@ -81,7 +81,7 @@ export class DepartmentEditComponent implements OnInit, OnDestroy {
         }
         this.router.navigate([`department/details/${value.id}`])
       },
-      error: (err: any) => { console.log(err) },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
     if (this.id === null) {

@@ -45,7 +45,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
             this.page.pageCount = result.size ?? 0;
           },
           error: (err) => {
-            console.log(err);
+            fireToast('error', 'Error', err.error.message, this.messageService);
           },
           complete: () => { },
         });
@@ -72,7 +72,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
         this.page.pageCount = value.size ?? 0;
       },
       error: (err: any) => {
-        console.log(err);
+        fireToast('error', 'Error', err.error.message, this.messageService);
       },
       complete: () => {
         console.log('Completed');
@@ -146,7 +146,6 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
         this.showDialog(false);
       },
       error: (err: any) => {
-        console.log(err);
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
       complete: () => {

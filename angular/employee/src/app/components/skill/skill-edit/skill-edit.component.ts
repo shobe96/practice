@@ -58,7 +58,7 @@ export class SkillEditComponent implements OnInit, OnDestroy {
           this.skillFormGroup.controls['name'].setValue(value.name);
           this.skillFormGroup.controls['description'].setValue(value.description);
         },
-        error: (err: any) => { console.log(err) },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
       this.skillSubscription$ = this.skillService.getSkill(this.id).subscribe(skillObserver);
@@ -81,7 +81,7 @@ export class SkillEditComponent implements OnInit, OnDestroy {
         }
         this.router.navigate([`skill/details/${value.id}`])
       },
-      error: (err: any) => { console.log(err) },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
     if (this.id === null) {

@@ -116,7 +116,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
           fireToast('success', 'Success', 'Registered successfully', this.messageService);
           this.router.navigate(["user/list"]);
         },
-        error: (err: any) => { console.log(err); fireToast('error', 'Error', err.error.message, this.messageService); },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log("Complete") }
       });
     }

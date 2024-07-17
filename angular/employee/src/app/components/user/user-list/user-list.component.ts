@@ -49,7 +49,6 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.page.pageCount = value.size ?? 0;
       },
       error: (err: any) => {
-        console.log(err);
         fireToast('error', 'Error', err.message, this.messageService);
       },
       complete: () => {
@@ -74,7 +73,6 @@ export class UserListComponent implements OnInit, OnDestroy {
         this.showDialog(false);
       },
       error: (err: any) => {
-        console.log(err);
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
       complete: () => {

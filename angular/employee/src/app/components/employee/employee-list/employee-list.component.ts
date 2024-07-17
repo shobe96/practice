@@ -45,12 +45,12 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
             this.page.pageCount = value.size ?? 0;
           },
           error: (err) => {
-            console.log(err);
+            fireToast('error', 'Error', err.error.message, this.messageService);
           },
         });
       },
       error: (err) => {
-        console.log(err);
+        fireToast('error', 'Error', err.error.message, this.messageService);
       },
     });
   }
@@ -137,7 +137,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
         this.showDialog(false);
       },
       error: (err: any) => {
-        console.log(err);
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
       complete: () => {
