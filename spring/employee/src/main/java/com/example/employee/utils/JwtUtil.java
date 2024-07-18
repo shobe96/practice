@@ -74,6 +74,7 @@ public class JwtUtil {
 	}
 
 	private AuthResponse createToken(Map<String, Object> claims, String username) {
+		//TODO: add method to extract by username and password
 		User user = userRepository.findByUsername(username);
 		List<Role> roles = roleRepository.findRolesByUsersId(user.getId());
 		AuthResponse authResponse = new AuthResponse();

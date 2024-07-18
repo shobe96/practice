@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User registerUser(RegisterRequest request) {
+		//TODO: save salt for user that is registered
 		try {
 			User user = null;
 			user = userRepository.findByUsername(request.getUsername());

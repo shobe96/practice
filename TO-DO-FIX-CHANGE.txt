@@ -1,5 +1,5 @@
 TO CHANGE/FIX
-1. 
+1. try to use auth header instead of param
 2. 
 3. 
 4. 
@@ -9,7 +9,7 @@ TO CHANGE/FIX
 8. 
 9. 
 10. 
-11. fix password missmatch validation
+11. 
 12. 
 13.
 14.
@@ -20,10 +20,10 @@ TO CHANGE/FIX
 19.
 20.
 TO ADD:
-1. 
+1. add salt column to user table
 2. 
 3. 
-4. add home page for user and show UI depending on role of user
+4. 
 5. 
 6. 
 7. 
@@ -40,3 +40,4 @@ TO ADD:
 18.
 19.
 20.
+find best practice for persisting salt
