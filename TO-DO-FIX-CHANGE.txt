@@ -20,7 +20,7 @@ TO CHANGE/FIX
 19.
 20.
 TO ADD:
-1. add salt column to user table
+1. add salt column to user table ("and the output hash value is then stored with the salt in a database. The salt does not need to be encrypted, because knowing the salt would not help the attacker")
 2. 
 3. 
 4. 
