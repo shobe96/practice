@@ -1,5 +1,5 @@
 TO CHANGE/FIX
-1. try to use auth header instead of param
+1. try to use auth header instead of param (https://developer.chrome.com/docs/devtools/network/reference)
 2. 
 3. 
 4. 
