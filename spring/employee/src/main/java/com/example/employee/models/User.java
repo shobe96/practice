@@ -38,10 +38,6 @@ public class User {
 	@Size(min = 8, max = 100)
 	private String password;
 
-//	@OneToMany(mappedBy = "user")
-//	@JsonIgnoreProperties("user")
-//	private Set<UserRole> userRoles = new HashSet<>();
-
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
@@ -74,14 +70,6 @@ public class User {
 		this.password = password;
 	}
 
-//	public Set<UserRole> getUserRoles() {
-//		return userRoles;
-//	}
-//
-//	public void setUserRoles(Set<UserRole> userRoles) {
-//		this.userRoles = userRoles;
-//	}
-
 	public Employee getEmployee() {
 		return employee;
 	}
@@ -89,12 +77,6 @@ public class User {
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
 	}
-
-//	@Override
-//	public String toString() {
-//		return "User [id=" + id + ", username=" + username + ", password=" + password + ", userRoles=" + userRoles
-//				+ ", employee=" + employee + "]";
-//	}
 
 	public Set<Role> getRoles() {
 		return roles;

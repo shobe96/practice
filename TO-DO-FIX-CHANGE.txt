@@ -1,0 +1,43 @@
+TO CHANGE/FIX
+1. try to use auth header instead of param (https://developer.chrome.com/docs/devtools/network/reference)
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+8. 
+9. 
+10. 
+11. 
+12. 
+13.
+14.
+15.
+16.
+17.
+18.
+19.
+20.
+TO ADD:
+1. add salt column to user table
+2. 
+3. 
+4. 
+5. 
+6. 
+7. 
+8.
+9.
+10.
+11.
+12.
+13.
+14.
+15.
+16.
+17.
+18.
+19.
+20.
+find best practice for persisting salt

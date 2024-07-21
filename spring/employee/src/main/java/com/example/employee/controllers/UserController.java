@@ -2,7 +2,6 @@ package com.example.employee.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,9 +25,8 @@ public class UserController {
 
 	@GetMapping()
 	public ResponseEntity<UserSearchResult> getAllUsers(Pageable pageable) {
-		UserSearchResult userSearchResult = new UserSearchResult();
-		userSearchResult = userService.getAllUsers(pageable);
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(userSearchResult);
+		UserSearchResult userSearchResult = userService.getAllUsers(pageable);
+		return ResponseEntity.ok().body(userSearchResult);
 	}
 
 }

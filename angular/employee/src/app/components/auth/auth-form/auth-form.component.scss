@@ -2,6 +2,15 @@
   flex-direction: column;
   display: flex;
   gap: 15px;
+  .register-fields {
+    flex-direction: column;
+    display: flex;
+    gap: 15px;
+  }
+  .password-validation-messages {
+    flex-direction: column;
+    display: flex;
+  }
   .password-input {
     display: flex;
     flex-direction: row;

@@ -7,6 +7,8 @@ import { AuthResponse } from '../../models/auth-response.model';
 import { Router } from '@angular/router';
 import { RegisterRequest } from '../../models/register-request.model';
 import { MenuItem, PrimeIcons } from 'primeng/api';
+import { ADMIN } from '../../shared/authotities-constants';
+import { Role } from '../../models/role.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,7 +23,7 @@ export class AuthService {
     {
       label: 'Home',
       icon: PrimeIcons.HOME,
-      routerLink: "/",
+      routerLink: "/home/panel",
     },
     {
       label: 'Features',
@@ -37,7 +39,17 @@ export class AuthService {
           label: 'Departments',
           icon: PrimeIcons.SITEMAP,
           routerLink: '/department/list'
-        }
+        },
+        {
+          label: 'Skills',
+          icon: PrimeIcons.ANDROID,
+          routerLink: '/skill/list'
+        },
+        {
+          label: 'Projects',
+          icon: PrimeIcons.CODE,
+          routerLink: '/project/list'
+        },
       ]
     },
     {
@@ -48,6 +60,12 @@ export class AuthService {
           label: 'Users',
           icon: PrimeIcons.USERS,
           routerLink: '/user/list',
+          visible: false
+        },
+        {
+          label: 'Roles',
+          icon: PrimeIcons.WRENCH,
+          routerLink: '/role/list',
           visible: false
         },
         {
@@ -99,14 +117,32 @@ export class AuthService {
     return this.http.post<string>(`${this.backendURL}${this.baseUrl}/register-user`, request);
   }
 
-  public updateMenuItems(isloggedIn: boolean, role?: string): void {
-    console.log(this.items);
-    this.items[1].visible = isloggedIn;
-    this.items[2].items![0].visible = isloggedIn;
-    this.items[2].items![1].visible = !isloggedIn;
-    this.items[2].items![2].visible = isloggedIn;
-    this.items[2].items![3].visible = isloggedIn;
+  public updateMenuItems(isloggedIn: boolean, roles?: Role[]): void {
+    roles = roles ?? [];
+    if (roles.length > 0) {
+      for (const role of roles) {
+        if (role.code === ADMIN) {
+          this.items[1].visible = isloggedIn;
+          this.items[2].items![0].visible = isloggedIn;
+          this.items[2].items![1].visible = isloggedIn;
+          this.items[2].items![3].visible = isloggedIn;
+        }
+      }
+    } else {
+      this.items[1].visible = isloggedIn;
+      this.items[2].items![0].visible = isloggedIn;
+      this.items[2].items![1].visible = isloggedIn;
+      this.items[2].items![3].visible = isloggedIn;
+    }
+
+    this.items[2].items![2].visible = !isloggedIn;
+    this.items[2].items![4].visible = isloggedIn;
     localStorage.setItem('navBarState', JSON.stringify(this.items));
     this.menuItemsSubject.next(this.items);
+    console.log(this.items);
+  }
+
+  public delete(userId: number): Observable<void> {
+    return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${userId}`);
   }
 }

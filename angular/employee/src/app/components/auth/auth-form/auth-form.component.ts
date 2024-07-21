@@ -8,12 +8,13 @@ import { StrongPasswordRegx } from '../../../shared/constants.model';
 import { MessageService, PrimeIcons } from 'primeng/api';
 import { Router } from '@angular/router';
 import { RoleService } from '../../../services/role/role.service';
-import { Role } from '../../../models/role';
+import { Role } from '../../../models/role.model';
 import { RoleSearchResult } from '../../../models/role-search-result.model';
 import { RegisterRequest } from '../../../models/register-request.model';
 import { Employee } from '../../../models/employee.model';
 import { EmployeeService } from '../../../services/employee/employee.service';
-import { EmpoyeeSearchResult } from '../../../models/empoyee-search-result.model';
+import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
+import { fireToast } from '../../../shared/utils';
 
 @Component({
   selector: 'app-auth-form',
@@ -51,12 +52,12 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 
     this.isLoggin = this.router.url.includes("login");
     if (!this.isLoggin) {
-      this.employeeService.getAllEmpoloyees(true).subscribe({
-        next: (value: EmpoyeeSearchResult) => {
+      this.employeeService.getAllEmployees(true).subscribe({
+        next: (value: EmployeeSearchResult) => {
           this.employees = value.employees ?? [];
         },
         error: (err: any) => {
-          this.fireToast('error', `${err.statusText}`, 'Failed to retrieve employees.');
+          fireToast('error', `${err.statusText}`, 'Failed to retrieve employees.', this.messageService);
         },
         complete: () => {
 
@@ -68,9 +69,9 @@ export class AuthFormComponent implements OnInit, OnDestroy {
         },
         error: (err: any) => {
           if (err.status === 0) {
-            this.fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`);
+            fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
           } else {
-            this.fireToast('error', 'Error', `${err.message}`);
+            fireToast('error', 'Error', `${err.message}`, this.messageService);
           }
         },
         complete: () => { }
@@ -96,12 +97,12 @@ export class AuthFormComponent implements OnInit, OnDestroy {
         next: (value: AuthResponse) => {
           localStorage.setItem('authResponse', JSON.stringify(value));
           this.authService.autoLogout(value.expiration ?? 0);
-          this.authService.updateMenuItems(true);
-          this.router.navigate(["/"]);
-          this.fireToast('success', 'Success', `Welcome: ${value.username}`);
+          this.authService.updateMenuItems(true, value.roles);
+          this.router.navigate(["/home/panel"]);
+          fireToast('success', 'Success', `Welcome: ${value.username}`, this.messageService);
 
         },
-        error: (err: any) => { this.fireToast('error', 'Error', err.error.message); },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { }
       });
     } else {
@@ -112,9 +113,10 @@ export class AuthFormComponent implements OnInit, OnDestroy {
       registerRequest.employee = this.authFormGroup.controls['employee'].value;
       this.authService.registerUser(registerRequest).subscribe({
         next: (value: string) => {
-          this.fireToast('success', 'Success', 'Registered successfully');
+          fireToast('success', 'Success', 'Registered successfully', this.messageService);
+          this.router.navigate(["user/list"]);
         },
-        error: (err: any) => { console.log(err); this.fireToast('error', 'Error', err.error.message); },
+        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log("Complete") }
       });
     }
@@ -125,15 +127,15 @@ export class AuthFormComponent implements OnInit, OnDestroy {
     if (this.isLoggin) {
       this.authFormGroup = this.formBuilder.group({
         username: ['', [Validators.required]],
-        password: ['', [Validators.required, Validators.pattern(StrongPasswordRegx)]],
+        password: ['', [Validators.required]],
       });
     } else {
       this.authFormGroup = new FormGroup({
-        username: new FormControl('', [Validators.required]),
+        username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
         password: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
         confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
-        selectedRoles: new FormControl([]),
-        employee: new FormControl({})
+        selectedRoles: new FormControl([], [Validators.required]),
+        employee: new FormControl({}, [Validators.required])
       }, { validators: [this.passwordMissmatchTest()] });
     }
 
@@ -175,14 +177,8 @@ export class AuthFormComponent implements OnInit, OnDestroy {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.value.password;
       const confirmPassword = control.value.confirmPassword;
-      console.log(password);
-      console.log(confirmPassword);
       return password === confirmPassword ? null : { passwordMissmatch: true }
     }
 
-  }
-
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
   }
 }

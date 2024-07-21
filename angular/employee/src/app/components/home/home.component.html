@@ -1,0 +1,24 @@
+<div class="card">
+  <div *ngIf="roles.length == 0">
+    <p>
+      You're not logged in please press button below or go to menu Users to
+      login.
+    </p>
+    <p-button
+      icon="pi pi-sign-in"
+      [rounded]="true"
+      severity="danger"
+      [pTooltip]="loginTooltip"
+      tooltipPosition="top"
+      routerLink="/auth/login"
+    />
+    <ng-template #loginTooltip>
+      <div class="flex align-items-center">
+        <span>Login</span>
+      </div>
+    </ng-template>
+  </div>
+  <div *ngIf="roles.length > 0">
+    <router-outlet />
+  </div>
+</div>

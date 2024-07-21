@@ -1,7 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EmployeeService } from '../../services/employee/employee.service';
-import { Employee } from '../../models/employee.model';
-import { Observable } from 'rxjs';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-employee',

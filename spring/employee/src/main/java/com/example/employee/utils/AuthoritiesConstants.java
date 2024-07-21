@@ -6,7 +6,7 @@ public class AuthoritiesConstants {
 	}
 
 	public static final String ADMIN = "ADM";
-	public static final String EMPLOYEE = "ADM";
-	public static final String DEPARTMENT_CHIEF = "ADM";
+	public static final String EMPLOYEE = "EMP";
+	public static final String DEPARTMENT_CHIEF = "DCH";
 
 }

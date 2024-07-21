@@ -1,16 +1,23 @@
 package com.example.employee.models;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.PostUpdate;
 import jakarta.persistence.PrePersist;
@@ -53,19 +60,35 @@ public class Employee {
 	@Column(name = "active")
 	private Boolean active;
 
-	@Column(name = "email")
+	@Column(name = "email", length = 50)
 	@Email(message = "Email is not in correct format")
 	@Size(max = 50, message = "Email can't be longer than 50 characters")
+	@NotBlank(message = "Email is mandatory")
 	private String email;
+	
+	@Column(name = "assignment_date")
+	private Date assignmentDate;
 
-	@ManyToOne
+	@ManyToOne()
 	@JoinColumn(name = "department_id")
 	@JsonIgnoreProperties("employees")
 	private Department department;
 
 	@OneToOne()
-    @JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id")
 	private User user;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "employee_skill", joinColumns = @JoinColumn(name = "employee_id"), inverseJoinColumns = @JoinColumn(name = "skill_id"))
+	private Set<Skill> skills = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY, mappedBy = "employees")
+	@JsonIgnore
+	private Set<Project> projects = new HashSet<>();
+	
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<ProjectHistory> projectHistories = new HashSet<>();
 
 	public Integer getId() {
 		return id;
@@ -143,6 +166,14 @@ public class Employee {
 		this.email = email;
 	}
 
+	public Date getAssignmentDate() {
+		return assignmentDate;
+	}
+
+	public void setAssignmentDate(Date assignmentDate) {
+		this.assignmentDate = assignmentDate;
+	}
+
 	public void setDepartment(Department department) {
 		this.department = department;
 	}
@@ -155,9 +186,33 @@ public class Employee {
 		this.user = user;
 	}
 
+	public Set<Skill> getSkills() {
+		return skills;
+	}
+
+	public void setSkills(Set<Skill> skills) {
+		this.skills = skills;
+	}
+
+	public Set<Project> getProjects() {
+		return projects;
+	}
+
+	public void setProjects(Set<Project> projects) {
+		this.projects = projects;
+	}
+
+	public Set<ProjectHistory> getProjectHistories() {
+		return projectHistories;
+	}
+
+	public void setProjectHistories(Set<ProjectHistory> projectHistories) {
+		this.projectHistories = projectHistories;
+	}
+
 	@PrePersist
 	private void beforeCreate() {
-		this.active = true;
+		this.active = false;
 		this.addDate = new Date();
 	}
 

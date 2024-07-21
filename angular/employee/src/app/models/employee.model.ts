@@ -1,4 +1,6 @@
 import { Department } from './department.model';
+import { Skill } from './skill.model';
+import { User } from './user.model';
 
 export class Employee {
   id?: number;
@@ -11,6 +13,8 @@ export class Employee {
   active?: boolean;
   email?: string;
   department?: Department;
+  skills?: Skill[];
+  user?: User;
 
   constructor(
     id?: number,
@@ -22,7 +26,9 @@ export class Employee {
     modUser?: string,
     active?: boolean,
     email?: string,
-    department?: Department
+    department?: Department,
+    skills?: Skill[],
+    user?: User
   ) {
     this.id = id;
     this.name = name;
@@ -34,5 +40,7 @@ export class Employee {
     this.active = active;
     this.email = email;
     this.department = department;
+    this.skills = skills;
+    this.user = user;
   }
 }

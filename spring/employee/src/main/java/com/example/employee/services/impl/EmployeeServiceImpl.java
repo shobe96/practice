@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Employee;
 import com.example.employee.models.EmployeeSearchResult;
+import com.example.employee.models.Skill;
 import com.example.employee.repositories.EmployeeRepository;
+import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.EmployeeService;
 
 import jakarta.transaction.Transactional;
@@ -21,17 +23,24 @@ import jakarta.transaction.Transactional;
 public class EmployeeServiceImpl implements EmployeeService {
 
 	EmployeeRepository employeeRepository;
+	ProjectHistoryRepository projectHistoryRepository;
 
 	@Autowired
-	public EmployeeServiceImpl(EmployeeRepository employeeRepository) {
+	public EmployeeServiceImpl(EmployeeRepository employeeRepository, ProjectHistoryRepository projectHistoryRepository) {
 		this.employeeRepository = employeeRepository;
+		this.projectHistoryRepository = projectHistoryRepository;
 	}
 
 	@Override
 	public EmployeeSearchResult getAllEmployees(Pageable pageable) {
 		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+		List<Employee> employees = employeeRepository.findAll(pageable).getContent();
+		if (employees.isEmpty()) {
+			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
+			employees = employeeRepository.findAll(newPage).getContent();
+		}
 		employeeSearchResult.setSize(employeeRepository.count());
-		employeeSearchResult.setEmployees(employeeRepository.findAll(pageable).getContent());
+		employeeSearchResult.setEmployees(employees);
 		return employeeSearchResult;
 	}
 
@@ -46,8 +55,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public Page<Employee> getEmployeeByDepartmentId(Pageable pageable, Integer departmentId) {
-		return employeeRepository.findAllByDepartmentId(pageable, departmentId);
+	public EmployeeSearchResult getEmployeeByDepartmentId(Pageable pageable, Integer departmentId) {
+		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+		employeeSearchResult.setEmployees(employeeRepository.findAllByDepartmentId(pageable, departmentId).getContent());
+		Long size = (long) employeeRepository.findAllByDepartmentId(departmentId).size();
+		employeeSearchResult.setSize(size);
+		return employeeSearchResult;
 	}
 
 	@Override
@@ -63,6 +76,8 @@ public class EmployeeServiceImpl implements EmployeeService {
 	@Override
 	public void deleteEmployee(Integer employeeId) {
 		Employee employee = getEmployeebyId(employeeId);
+		employeeRepository.deleteEmployeeProjects(employeeId);
+		projectHistoryRepository.deleteProjectHistoryByEmployee(employeeId);
 		employeeRepository.delete(employee);
 	}
 
@@ -94,8 +109,20 @@ public class EmployeeServiceImpl implements EmployeeService {
 
 	@Override
 	public List<Employee> getAllEmployees() {
-		List<Employee> employees = new ArrayList<>();
-		employees = employeeRepository.findEmployeesWithoutUser();
-		return employees;
+		return employeeRepository.findEmployeesWithoutUser();
+	}
+
+	@Override
+	public List<Employee> filterEmployeesByActiveAndSkills(List<Skill> skills, Integer departmentId) {
+		List<Integer> skillIds = new ArrayList<>();
+		for (Skill skill : skills) {
+			skillIds.add(skill.getId());
+		}
+		return employeeRepository.filterEmployeesByActiveAndSkills(skillIds, departmentId);
+	}
+
+	@Override
+	public Employee findByUserId(Integer userId) {
+		return employeeRepository.findByUserId(userId);
 	}
 }

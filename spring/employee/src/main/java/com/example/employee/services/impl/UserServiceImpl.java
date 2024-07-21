@@ -1,5 +1,7 @@
 package com.example.employee.services.impl;
 
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User registerUser(RegisterRequest request) {
+		//TODO: save salt for user that is registered
 		try {
 			User user = null;
 			user = userRepository.findByUsername(request.getUsername());
@@ -67,5 +70,19 @@ public class UserServiceImpl implements UserService {
 		userSearchResult.setSize(userRepository.count());
 		userSearchResult.setUsers(userRepository.findAll(pageable).getContent());
 		return userSearchResult;
+	}
+
+	@Override
+	public void deleteUser(Integer userId) {
+		Optional<User> optional = userRepository.findById(userId);
+		if (optional.isPresent()) {
+			Employee employee = employeeRepository.findByUserId(userId);
+			if (employee != null) {
+				employee.setUser(null);
+				employeeRepository.save(employee);
+			}
+			userRepository.delete(optional.get());
+		}
+		
 	}
 }

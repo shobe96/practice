@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
 import { AuthResponse } from '../../models/auth-response.model';
-import { Role } from '../../models/role';
+import { Role } from '../../models/role.model';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authResponse = localStorage.getItem('authResponse');
@@ -9,7 +9,6 @@ export const authGuard: CanActivateFn = (route, state) => {
     const json: AuthResponse = JSON.parse(authResponse);
     const userRoles: Role[] = json.roles ?? [];
     const roles: string[] = route.data['roles'] ?? [];
-    console.log(roles);
     for (let userRole of userRoles) {
       for (let role of roles) {
         if (userRole.code === role) {

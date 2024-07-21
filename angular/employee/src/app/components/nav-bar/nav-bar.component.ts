@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { MenuItem } from 'primeng/api';
+import { MenuItem, MessageService } from 'primeng/api';
 import { AuthService } from '../../services/auth/auth.service';
+import { fireToast } from '../../shared/utils';
 
 @Component({
   selector: 'app-nav-bar',
@@ -10,7 +11,7 @@ import { AuthService } from '../../services/auth/auth.service';
 export class NavBarComponent implements OnInit {
   items: MenuItem[] = [];
 
-  constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService, private messageService: MessageService) { }
 
   ngOnInit(): void {
     const navBarString = localStorage.getItem("navBarState");
@@ -18,7 +19,7 @@ export class NavBarComponent implements OnInit {
       next: (value: MenuItem[]) => {
         this.items = value;
       },
-      error: (err: any) => { console.log(err) },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { }
     });
   }

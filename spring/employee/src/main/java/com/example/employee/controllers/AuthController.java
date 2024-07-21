@@ -1,11 +1,12 @@
 package com.example.employee.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -40,7 +41,7 @@ public class AuthController {
 		authenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
 		AuthResponse token = jwtUtil.generateToken(user.getUsername());
-		return ResponseEntity.ok().headers(new HttpHeaders()).body(token);
+		return ResponseEntity.ok().body(token);
 
 	}
 
@@ -50,9 +51,14 @@ public class AuthController {
 		if (user == null) {
 			RestError restError = new RestError(400, "Bad request", false, "HttpErrorResponse",
 					"Username is already taken!");
-			return ResponseEntity.badRequest().headers(new HttpHeaders()).body(restError);
+			return ResponseEntity.badRequest().body(restError);
 		} else {
-			return ResponseEntity.ok().headers(new HttpHeaders()).body(user);
+			return ResponseEntity.ok().body(user);
 		}
 	}
+	@DeleteMapping("/delete/{userId}")
+	public ResponseEntity<Void> deleteUser(@PathVariable Integer userId) {
+		userService.deleteUser(userId);
+		return ResponseEntity.ok().body(null);
+	} 
 }

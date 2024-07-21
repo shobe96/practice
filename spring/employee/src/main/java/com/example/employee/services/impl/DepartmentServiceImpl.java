@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Department;
 import com.example.employee.models.DepartmentSearchResult;
 import com.example.employee.repositories.DepartmentRepository;
+import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.DepartmentService;
 
 import jakarta.transaction.Transactional;
@@ -20,16 +22,23 @@ import jakarta.transaction.Transactional;
 public class DepartmentServiceImpl implements DepartmentService {
 
 	private DepartmentRepository departmentRepository;
+	private EmployeeRepository employeeRepository;
 
 	@Autowired
-	public DepartmentServiceImpl(DepartmentRepository departmentRepository) {
+	public DepartmentServiceImpl(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository) {
 		this.departmentRepository = departmentRepository;
+		this.employeeRepository = employeeRepository;
 	}
 
 	@Override
 	public DepartmentSearchResult getAllDepartments(Pageable pageable) {
 		DepartmentSearchResult departmentSearchResult = new DepartmentSearchResult();
-		departmentSearchResult.setDepartments(departmentRepository.findAll(pageable).getContent());
+		List<Department> departments = departmentRepository.findAll(pageable).getContent();
+		if (departments.isEmpty()) {
+			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
+			departments = departmentRepository.findAll(newPage).getContent();
+		}
+		departmentSearchResult.setDepartments(departments);
 		departmentSearchResult.setSize(departmentRepository.count());
 		return departmentSearchResult;
 	}
@@ -62,6 +71,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 	@Override
 	public void deleteDepartment(Integer departmentId) {
 		Department department = getDepartmentById(departmentId);
+		employeeRepository.unassignEmployeesFromDepartment(departmentId);
 		departmentRepository.delete(department);
 	}
 

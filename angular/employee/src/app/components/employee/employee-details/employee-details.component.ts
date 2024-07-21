@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Route, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Employee } from '../../../models/employee.model';
 
 @Component({
@@ -17,5 +17,9 @@ export class EmployeeDetailsComponent implements OnInit {
 
   back() {
     this.router.navigate(["employee/list"])
+  }
+
+  goToEdit() {
+    this.router.navigate([`employee/edit/${this.employee.id}`]);
   }
 }
