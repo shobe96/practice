@@ -10,6 +10,7 @@ import java.util.function.Function;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import com.example.employee.models.AuthResponse;
@@ -68,33 +69,48 @@ public class JwtUtil {
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
-	public AuthResponse generateToken(String username) {
+	public AuthResponse generateToken(String username, String password) {
 		Map<String, Object> claims = new HashMap<>();
-		return createToken(claims, username);
+		return createToken(claims, username, password);
 	}
 
-	private AuthResponse createToken(Map<String, Object> claims, String username) {
+	private AuthResponse createToken(Map<String, Object> claims, String username, String password) {
 		//TODO: add method to extract by username and password
-		User user = userRepository.findByUsername(username);
-		List<Role> roles = roleRepository.findRolesByUsersId(user.getId());
-		AuthResponse authResponse = new AuthResponse();
-		authResponse.setIssueDate(new Date(System.currentTimeMillis()));
-		authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
-		authResponse.setExpiration(accessTokenValidity);
-		String token = Jwts.builder().setClaims(claims).setSubject(username)
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
-				.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
-		authResponse.setToken(token);
-		authResponse.setUsername(username);
-		authResponse.setUserId(user.getId());
-		authResponse.setRoles(roles);
-		return authResponse;
+		User user = getUser(username, password);
+		if (user != null) {
+			List<Role> roles = roleRepository.findRolesByUsersId(user.getId());
+			AuthResponse authResponse = new AuthResponse();
+			authResponse.setIssueDate(new Date(System.currentTimeMillis()));
+			authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
+			authResponse.setExpiration(accessTokenValidity);
+			String token = Jwts.builder().setClaims(claims).setSubject(username)
+					.setIssuedAt(new Date(System.currentTimeMillis()))
+					.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
+					.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+			authResponse.setToken(token);
+			authResponse.setUsername(username);
+			authResponse.setUserId(user.getId());
+			authResponse.setRoles(roles);
+			return authResponse;
+		} else {
+			return null;
+		}
+		
 	}
 
 	private Key getSignKey() {
 		byte[] keyBytes = Decoders.BASE64.decode(securityKey);
 		return Keys.hmacShaKeyFor(keyBytes);
+	}
+	
+	public User getUser(String username, String password) {
+		User user = userRepository.findByUsername(username);
+		String passwordHash = BCrypt.hashpw(password, user.getSalt());
+		if (user.getPassword().equals(passwordHash)) {			
+			return user;
+		} else {
+			return null;
+		}
 	}
 
 }

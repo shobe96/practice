@@ -38,11 +38,13 @@ public class UserServiceImpl implements UserService {
 		//TODO: save salt for user that is registered
 		try {
 			User user = null;
+			String salt = BCrypt.gensalt(12);
 			user = userRepository.findByUsername(request.getUsername());
 			if (user == null) {
 				user = new User();
 				user.setUsername(request.getUsername());
-				user.setPassword(hash(request.getPassword()));
+				user.setPassword(hash(request.getPassword(), salt));
+				user.setSalt(salt);
 				user.setRoles(request.getRoles());
 				user = userRepository.save(user);
 				Employee employee = request.getEmployee();
@@ -60,8 +62,8 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	public String hash(String password) {
-		return BCrypt.hashpw(password, BCrypt.gensalt(12));
+	public String hash(String password, String salt) {
+		return BCrypt.hashpw(password, salt);
 	}
 
 	@Override
