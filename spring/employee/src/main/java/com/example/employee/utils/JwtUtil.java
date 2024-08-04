@@ -41,13 +41,11 @@ public class JwtUtil {
 	@Value("${secret.jwt.expiration.ms}")
 	private long accessTokenValidity;
 
-	private UserRepository userRepository;
 	private RoleRepository roleRepository;
 	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
-	public JwtUtil(UserRepository userRepository,RoleRepository roleRepository) {
-		this.userRepository = userRepository;
+	public JwtUtil(RoleRepository roleRepository) {
 		this.roleRepository = roleRepository;
 	}
 
