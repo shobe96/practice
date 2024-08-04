@@ -1,16 +1,23 @@
 package com.example.employee.services.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Employee;
 import com.example.employee.models.RegisterRequest;
+import com.example.employee.models.Role;
 import com.example.employee.models.User;
 import com.example.employee.models.UserSearchResult;
 import com.example.employee.repositories.EmployeeRepository;
@@ -86,5 +93,28 @@ public class UserServiceImpl implements UserService {
 			userRepository.delete(optional.get());
 		}
 		
+	}
+
+	@Override
+	public Authentication getAuthenticatedUser(Authentication authentication) {
+		User authenticateUser = userRepository.findByUsername(authentication.getName());
+		if (authenticateUser != null) {
+			String passwordHash = BCrypt.hashpw(authentication.getCredentials().toString(), authenticateUser.getSalt());
+			if (authenticateUser.getPassword().equals(passwordHash)) {			
+				List<GrantedAuthority> grantedAuthorityList = new ArrayList<>();
+				for (Role role : authenticateUser.getRoles()) {
+					grantedAuthorityList.add(new SimpleGrantedAuthority(role.getCode()));
+				}
+				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
+						authentication.getCredentials(), grantedAuthorityList);
+				authenticationToken.setDetails(authenticateUser);
+				return authenticationToken;
+			} else {
+				return null;
+			}
+			
+		} else {
+			return null;
+		}
 	}
 }

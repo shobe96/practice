@@ -7,8 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
@@ -18,6 +21,10 @@ import com.example.employee.models.Role;
 import com.example.employee.models.User;
 import com.example.employee.repositories.RoleRepository;
 import com.example.employee.repositories.UserRepository;
+import com.example.employee.services.impl.UserServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -36,6 +43,7 @@ public class JwtUtil {
 
 	private UserRepository userRepository;
 	private RoleRepository roleRepository;
+	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
 	public JwtUtil(UserRepository userRepository,RoleRepository roleRepository) {
@@ -69,26 +77,36 @@ public class JwtUtil {
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
-	public AuthResponse generateToken(String username, String password) {
+	public AuthResponse generateToken(Authentication authentication) {
 		Map<String, Object> claims = new HashMap<>();
-		return createToken(claims, username, password);
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		ObjectMapper objectMapper = new ObjectMapper();
+		User user;
+		try {
+			String json = ow.writeValueAsString(authentication.getDetails());
+			user = objectMapper.readValue(json, User.class);
+			return createToken(claims, user);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			logger.error(e.getMessage());
+			return null;
+		}
 	}
 
-	private AuthResponse createToken(Map<String, Object> claims, String username, String password) {
+	private AuthResponse createToken(Map<String, Object> claims, User user) {
 		//TODO: add method to extract by username and password
-		User user = getUser(username, password);
 		if (user != null) {
 			List<Role> roles = roleRepository.findRolesByUsersId(user.getId());
 			AuthResponse authResponse = new AuthResponse();
 			authResponse.setIssueDate(new Date(System.currentTimeMillis()));
 			authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
 			authResponse.setExpiration(accessTokenValidity);
-			String token = Jwts.builder().setClaims(claims).setSubject(username)
+			String token = Jwts.builder().setClaims(claims).setSubject(user.getUsername())
 					.setIssuedAt(new Date(System.currentTimeMillis()))
 					.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
 					.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
 			authResponse.setToken(token);
-			authResponse.setUsername(username);
+			authResponse.setUsername(user.getUsername());
 			authResponse.setUserId(user.getId());
 			authResponse.setRoles(roles);
 			return authResponse;
@@ -102,15 +120,4 @@ public class JwtUtil {
 		byte[] keyBytes = Decoders.BASE64.decode(securityKey);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
-	
-	public User getUser(String username, String password) {
-		User user = userRepository.findByUsername(username);
-		String passwordHash = BCrypt.hashpw(password, user.getSalt());
-		if (user.getPassword().equals(passwordHash)) {			
-			return user;
-		} else {
-			return null;
-		}
-	}
-
 }
