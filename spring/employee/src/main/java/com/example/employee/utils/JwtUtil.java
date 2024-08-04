@@ -87,7 +87,6 @@ public class JwtUtil {
 			user = objectMapper.readValue(json, User.class);
 			return createToken(claims, user);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			logger.error(e.getMessage());
 			return null;
 		}

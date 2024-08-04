@@ -57,12 +57,10 @@ public class UserServiceImpl implements UserService {
 				Employee employee = request.getEmployee();
 				employee.setUser(user);
 				employeeRepository.save(employee);
-				
 				return user;
 			} else {
 				return null;
 			}
-
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return null;
