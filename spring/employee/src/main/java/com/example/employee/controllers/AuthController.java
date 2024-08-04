@@ -29,15 +29,13 @@ import com.example.employee.utils.JwtUtil;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-	private AuthenticationManager authenticationManager;
 	private JwtUtil jwtUtil;
 	private UserService userService;
 	private CustomAuthenticationManager customAuthenticationManager;
 
 	@Autowired
-	public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService,
+	public AuthController(JwtUtil jwtUtil, UserService userService,
 			CustomAuthenticationManager customAuthenticationManager) {
-		this.authenticationManager = authenticationManager;
 		this.jwtUtil = jwtUtil;
 		this.userService = userService;
 		this.customAuthenticationManager = customAuthenticationManager;
