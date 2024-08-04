@@ -23,18 +23,6 @@ public class CustomAuthenticationManager implements AuthenticationManager {
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 		return userService.getAuthenticatedUser(authentication);
-		/*
-		 * Optional<User> user = userRepo.findByUserName(authentication.getName()); if
-		 * (user.isPresent()) { if
-		 * (passwordEncoder.matches(authentication.getCredentials().toString(),
-		 * user.get().getPassword())) { List<GrantedAuthority> grantedAuthorityList =
-		 * new ArrayList<>(); for (Role role : user.get().getRoleSet()) {
-		 * grantedAuthorityList.add(new SimpleGrantedAuthority(role.getName())); }
-		 * return new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
-		 * authentication.getCredentials(), grantedAuthorityList); } else { throw new
-		 * BadCredentialsException("Wrong Password"); } } else { throw new
-		 * BadCredentialsException("Wrong UserName"); } }
-		 */
 	}
 
 	public User getAuthenticateUser() {
