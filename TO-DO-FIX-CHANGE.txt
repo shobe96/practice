@@ -20,7 +20,7 @@ TO CHANGE/FIX
 19.
 20.
 TO ADD:
-1. add salt column to user table
+1. 
 2. 
 3. 
 4. 
@@ -40,4 +40,3 @@ TO ADD:
 18.
 19.
 20.
-find best practice for persisting salt
