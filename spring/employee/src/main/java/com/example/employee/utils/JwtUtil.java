@@ -77,8 +77,10 @@ public class JwtUtil {
 
 	public AuthResponse generateToken(Authentication authentication) {
 		Map<String, Object> claims = new HashMap<>();
+		//TODO: create shared method for mapping https://stackoverflow.com/questions/4952856/how-to-write-java-function-that-returns-values-of-multiple-data-types
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		ObjectMapper objectMapper = new ObjectMapper();
+//		User user = CommonUtils.mapObjectToClass(authentication.getDetails(), ClassesConstants.USER);
 		User user;
 		try {
 			String json = ow.writeValueAsString(authentication.getDetails());
@@ -91,9 +93,7 @@ public class JwtUtil {
 	}
 
 	private AuthResponse createToken(Map<String, Object> claims, User user) {
-		//TODO: add method to extract by username and password
 		if (user != null) {
-			List<Role> roles = roleRepository.findRolesByUsersId(user.getId());
 			AuthResponse authResponse = new AuthResponse();
 			authResponse.setIssueDate(new Date(System.currentTimeMillis()));
 			authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
@@ -105,7 +105,7 @@ public class JwtUtil {
 			authResponse.setToken(token);
 			authResponse.setUsername(user.getUsername());
 			authResponse.setUserId(user.getId());
-			authResponse.setRoles(roles);
+			authResponse.setRoles(user.getRoles());
 			return authResponse;
 		} else {
 			return null;

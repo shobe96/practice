@@ -19,6 +19,7 @@ import com.example.employee.models.Role;
 import com.example.employee.models.User;
 import com.example.employee.repositories.RoleRepository;
 import com.example.employee.repositories.UserRepository;
+import com.example.employee.utils.CommonUtils;
 
 @SuppressWarnings("unused")
 @Component
@@ -38,19 +39,13 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		logger.info("Searching for user with username: {}", username);
-		//TODO: extrach by username and password
 		User user = userRepository.findByUsername(username);
 		if (user == null) {
 			logger.error("User with username: {} is not found.", username);
 			throw new UsernameNotFoundException("could not found user..!!");
 		}
 		List<Role> roles = roleRepository.getRolesByUserId(user.getId());
-		List<GrantedAuthority> auths = new ArrayList<>();
-		if (roles != null && !roles.isEmpty()) {
-			for (Role role : roles) {
-				auths.add(new SimpleGrantedAuthority(role.getCode()));
-			}
-		}
+		List<GrantedAuthority> auths = CommonUtils.convetRolesToAuthorities(roles);
 		return new CustomUserDetails(user, auths);
 	}
 
