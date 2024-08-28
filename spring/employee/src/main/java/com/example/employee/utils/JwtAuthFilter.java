@@ -19,6 +19,7 @@ import com.example.employee.services.impl.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -54,7 +55,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			} else if (!checkIfLogin(request)) {
 				logger.error("Authorization header missing");
 				//TODO: find right message for this exception
-				throw new Exception("ADD AUTH HEADER OR TOKEN PARAM");
+				throw new Exception("You need to be logged in to access this feature.");
 			}
 
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
@@ -69,7 +70,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			}
 
 			filterChain.doFilter(request, response);
-		} catch (ExpiredJwtException e) {
+		} catch (ExpiredJwtException | SignatureException e) {
 			logger.error(e.getMessage());
 			handleAuthError("Token has expired. Login again.", response);
 		} catch (Exception e) {
