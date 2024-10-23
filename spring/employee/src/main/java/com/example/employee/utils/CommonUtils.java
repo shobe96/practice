@@ -31,25 +31,4 @@ public class CommonUtils {
 		}
 		return auths;
 	}
-
-	public static <T> T mapObjectToClass(Object object, String classToMap) {
-		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
-		ObjectMapper objectMapper = new ObjectMapper();
-		T result;
-		try {
-			String json = ow.writeValueAsString(object);
-			switch (classToMap) {
-			case ClassesConstants.USER: {
-				User.class.cast(object);
-				User user = objectMapper.readValue(json, User.class);
-				return (T) user;
-			}
-			default:
-				return null;
-			}
-		} catch (JsonProcessingException e) {
-			logger.error(e.getMessage());
-			return null;
-		}
-	}
 }

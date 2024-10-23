@@ -77,10 +77,8 @@ public class JwtUtil {
 
 	public AuthResponse generateToken(Authentication authentication) {
 		Map<String, Object> claims = new HashMap<>();
-		//TODO: create shared method for mapping https://stackoverflow.com/questions/4952856/how-to-write-java-function-that-returns-values-of-multiple-data-types
 		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
 		ObjectMapper objectMapper = new ObjectMapper();
-//		User user = CommonUtils.mapObjectToClass(authentication.getDetails(), ClassesConstants.USER);
 		User user;
 		try {
 			String json = ow.writeValueAsString(authentication.getDetails());

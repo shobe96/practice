@@ -54,7 +54,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 				username = jwtUtil.extractUsername(token);
 			} else if (!checkIfLogin(request)) {
 				logger.error("Authorization header missing");
-				//TODO: find right message for this exception
 				throw new Exception("You need to be logged in to access this feature.");
 			}
 
