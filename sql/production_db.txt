@@ -1,0 +1,7 @@
+https://www.freemysqlhosting.net/account/
+wesagey101@avashost.com
+Server: sql8.freemysqlhosting.net
+Name: sql8728450
+Username: sql8728450
+Password: gNnhgQShna
+Port number: 3306

@@ -17,10 +17,11 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "user", schema = "employee")
+@Table(name = "user")
 public class User {
 
 	@Id
@@ -28,15 +29,20 @@ public class User {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;
 
-	@Column(name = "username")
-	@NonNull
-	@Size(min = 5, max = 100)
+	@Column(name = "username", length = 100)
+	@NotBlank(message = "Username is mandatory")
+	@Size(min = 5, max = 100, message = "Username size must be between 5 and 25")
 	private String username;
 
 	@Column(name = "password")
-	@NonNull
-	@Size(min = 8, max = 100)
+	@NotBlank(message = "Password is mandatory")
+	@Size(min = 8, max = 100, message = "Username size must be between 8 and 100")
 	private String password;
+	
+	@Column(name = "salt")
+	@NotBlank(message = "Salt is mandatory")
+	@Size(max = 100)
+	private String salt;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
@@ -76,6 +82,14 @@ public class User {
 
 	public void setEmployee(Employee employee) {
 		this.employee = employee;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
 	}
 
 	public Set<Role> getRoles() {

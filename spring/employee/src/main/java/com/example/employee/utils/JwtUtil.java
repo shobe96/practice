@@ -7,9 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import com.example.employee.models.AuthResponse;
@@ -17,6 +21,10 @@ import com.example.employee.models.Role;
 import com.example.employee.models.User;
 import com.example.employee.repositories.RoleRepository;
 import com.example.employee.repositories.UserRepository;
+import com.example.employee.services.impl.UserServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -33,12 +41,11 @@ public class JwtUtil {
 	@Value("${secret.jwt.expiration.ms}")
 	private long accessTokenValidity;
 
-	private UserRepository userRepository;
 	private RoleRepository roleRepository;
+	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
 	@Autowired
-	public JwtUtil(UserRepository userRepository,RoleRepository roleRepository) {
-		this.userRepository = userRepository;
+	public JwtUtil(RoleRepository roleRepository) {
 		this.roleRepository = roleRepository;
 	}
 
@@ -68,33 +75,46 @@ public class JwtUtil {
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 
-	public AuthResponse generateToken(String username) {
+	public AuthResponse generateToken(Authentication authentication) {
 		Map<String, Object> claims = new HashMap<>();
-		return createToken(claims, username);
+		//TODO: create shared method for mapping https://stackoverflow.com/questions/4952856/how-to-write-java-function-that-returns-values-of-multiple-data-types
+		ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+		ObjectMapper objectMapper = new ObjectMapper();
+//		User user = CommonUtils.mapObjectToClass(authentication.getDetails(), ClassesConstants.USER);
+		User user;
+		try {
+			String json = ow.writeValueAsString(authentication.getDetails());
+			user = objectMapper.readValue(json, User.class);
+			return createToken(claims, user);
+		} catch (JsonProcessingException e) {
+			logger.error(e.getMessage());
+			return null;
+		}
 	}
 
-	private AuthResponse createToken(Map<String, Object> claims, String username) {
-		//TODO: add method to extract by username and password
-		User user = userRepository.findByUsername(username);
-		List<Role> roles = roleRepository.findRolesByUsersId(user.getId());
-		AuthResponse authResponse = new AuthResponse();
-		authResponse.setIssueDate(new Date(System.currentTimeMillis()));
-		authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
-		authResponse.setExpiration(accessTokenValidity);
-		String token = Jwts.builder().setClaims(claims).setSubject(username)
-				.setIssuedAt(new Date(System.currentTimeMillis()))
-				.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
-				.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
-		authResponse.setToken(token);
-		authResponse.setUsername(username);
-		authResponse.setUserId(user.getId());
-		authResponse.setRoles(roles);
-		return authResponse;
+	private AuthResponse createToken(Map<String, Object> claims, User user) {
+		if (user != null) {
+			AuthResponse authResponse = new AuthResponse();
+			authResponse.setIssueDate(new Date(System.currentTimeMillis()));
+			authResponse.setExpirationDate(new Date(System.currentTimeMillis() + accessTokenValidity));
+			authResponse.setExpiration(accessTokenValidity);
+			String token = Jwts.builder().setClaims(claims).setSubject(user.getUsername())
+					.setIssuedAt(new Date(System.currentTimeMillis()))
+					.setExpiration(new Date(System.currentTimeMillis() + accessTokenValidity))
+					.signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+			authResponse.setToken(token);
+			authResponse.setUsername(user.getUsername());
+			authResponse.setUserId(user.getId());
+			authResponse.setRoles(user.getRoles());
+			return authResponse;
+		} else {
+			return null;
+		}
+		
 	}
 
 	private Key getSignKey() {
 		byte[] keyBytes = Decoders.BASE64.decode(securityKey);
 		return Keys.hmacShaKeyFor(keyBytes);
 	}
-
 }

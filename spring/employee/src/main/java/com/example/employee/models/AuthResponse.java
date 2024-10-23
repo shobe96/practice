@@ -1,7 +1,7 @@
 package com.example.employee.models;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 
 public class AuthResponse {
 
@@ -11,7 +11,7 @@ public class AuthResponse {
 	private Long expiration;
 	private String username;
 	private Integer userId;
-	private List<Role> roles;
+	private Set<Role> roles;
 
 	public String getToken() {
 		return token;
@@ -61,11 +61,11 @@ public class AuthResponse {
 		this.userId = userId;
 	}
 
-	public List<Role> getRoles() {
+	public Set<Role> getRoles() {
 		return roles;
 	}
 
-	public void setRoles(List<Role> roles) {
+	public void setRoles(Set<Role> roles) {
 		this.roles = roles;
 	}
 }

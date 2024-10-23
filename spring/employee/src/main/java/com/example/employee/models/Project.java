@@ -25,7 +25,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 @Entity
-@Table(name = "project", schema = "employee")
+@Table(name = "project")
 public class Project {
 	@Id
 	@Column(name = "project_id")

@@ -1,9 +1,10 @@
 package com.example.employee.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,6 +19,7 @@ import com.example.employee.models.RegisterRequest;
 import com.example.employee.models.RestError;
 import com.example.employee.models.User;
 import com.example.employee.services.UserService;
+import com.example.employee.utils.CustomAuthenticationManager;
 import com.example.employee.utils.JwtUtil;
 
 @RestController
@@ -25,23 +27,36 @@ import com.example.employee.utils.JwtUtil;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-	private AuthenticationManager authenticationManager;
 	private JwtUtil jwtUtil;
 	private UserService userService;
+	private CustomAuthenticationManager customAuthenticationManager;
 
 	@Autowired
-	public AuthController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserService userService) {
-		this.authenticationManager = authenticationManager;
+	public AuthController(JwtUtil jwtUtil, UserService userService,
+			CustomAuthenticationManager customAuthenticationManager) {
 		this.jwtUtil = jwtUtil;
 		this.userService = userService;
+		this.customAuthenticationManager = customAuthenticationManager;
 	}
 
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@RequestBody AuthRequest user) {
-		authenticationManager
+		Authentication authentication = customAuthenticationManager
 				.authenticate(new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
-		AuthResponse token = jwtUtil.generateToken(user.getUsername());
-		return ResponseEntity.ok().body(token);
+		if (authentication != null) {
+			AuthResponse token = jwtUtil.generateToken(authentication);
+			if (token != null) {
+				return ResponseEntity.ok().body(token);
+			} else {
+				RestError restError = new RestError(401, "Unauthorized", false, "HttpErrorResponse",
+						"Wrong credentials!");
+				return new ResponseEntity<Object>(restError, HttpStatus.UNAUTHORIZED);
+			}
+		} else {
+			RestError restError = new RestError(401, "Unauthorized", false, "HttpErrorResponse",
+					"Wrong credentials!");
+			return new ResponseEntity<Object>(restError, HttpStatus.UNAUTHORIZED);
+		}
 
 	}
 
@@ -56,9 +71,10 @@ public class AuthController {
 			return ResponseEntity.ok().body(user);
 		}
 	}
+
 	@DeleteMapping("/delete/{userId}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Integer userId) {
 		userService.deleteUser(userId);
 		return ResponseEntity.ok().body(null);
-	} 
+	}
 }

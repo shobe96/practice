@@ -31,6 +31,7 @@ CREATE TABLE IF NOT  `user` (
 	`user_id` bigint NOT NULL AUTO_INCREMENT,
 	`username` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
 	`password` varchar(100) NOT NULL,
+	`salt` varchar(100) NOT NULL,
 	PRIMARY KEY (`user_id`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 19 DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci;
 

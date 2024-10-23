@@ -1,11 +1,15 @@
 package com.example.employee.services.impl;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +20,7 @@ import com.example.employee.models.UserSearchResult;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.UserRepository;
 import com.example.employee.services.UserService;
+import com.example.employee.utils.CommonUtils;
 
 import jakarta.transaction.Transactional;
 
@@ -35,33 +40,32 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User registerUser(RegisterRequest request) {
-		//TODO: save salt for user that is registered
 		try {
 			User user = null;
+			String salt = BCrypt.gensalt(12);
 			user = userRepository.findByUsername(request.getUsername());
 			if (user == null) {
 				user = new User();
 				user.setUsername(request.getUsername());
-				user.setPassword(hash(request.getPassword()));
+				user.setPassword(hash(request.getPassword(), salt));
+				user.setSalt(salt);
 				user.setRoles(request.getRoles());
 				user = userRepository.save(user);
 				Employee employee = request.getEmployee();
 				employee.setUser(user);
 				employeeRepository.save(employee);
-				
 				return user;
 			} else {
 				return null;
 			}
-
 		} catch (Exception e) {
 			logger.error(e.getMessage());
 			return null;
 		}
 	}
 
-	public String hash(String password) {
-		return BCrypt.hashpw(password, BCrypt.gensalt(12));
+	public String hash(String password, String salt) {
+		return BCrypt.hashpw(password, salt);
 	}
 
 	@Override
@@ -84,5 +88,25 @@ public class UserServiceImpl implements UserService {
 			userRepository.delete(optional.get());
 		}
 		
+	}
+
+	@Override
+	public Authentication getAuthenticatedUser(Authentication authentication) {
+		User authenticateUser = userRepository.findByUsername(authentication.getName());
+		if (authenticateUser != null) {
+			String passwordHash = BCrypt.hashpw(authentication.getCredentials().toString(), authenticateUser.getSalt());
+			if (authenticateUser.getPassword().equals(passwordHash)) {			
+				List<GrantedAuthority> grantedAuthorityList = CommonUtils.convetRolesToAuthorities(authenticateUser.getRoles());
+				UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
+						authentication.getCredentials(), grantedAuthorityList);
+				authenticationToken.setDetails(authenticateUser);
+				return authenticationToken;
+			} else {
+				return null;
+			}
+			
+		} else {
+			return null;
+		}
 	}
 }
