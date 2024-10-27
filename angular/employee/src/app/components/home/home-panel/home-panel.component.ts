@@ -87,7 +87,6 @@ export class HomePanelComponent implements OnInit {
     for (let role of roles) {
       if (role.code === searchRoleCode) {
         return true;
-        break;
       }
     }
     return false;

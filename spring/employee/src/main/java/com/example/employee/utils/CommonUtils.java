@@ -3,22 +3,20 @@ package com.example.employee.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import com.example.employee.models.Role;
-import com.example.employee.models.User;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 
 public class CommonUtils {
 
 	private static Logger logger = LoggerFactory.getLogger(CommonUtils.class);
+
+	private CommonUtils() {
+		//Add a private constructor to hide the implicit public one.
+	}
 
 	public static List<GrantedAuthority> convetRolesToAuthorities(Collection<Role> roles) {
 		List<GrantedAuthority> auths = new ArrayList<>();

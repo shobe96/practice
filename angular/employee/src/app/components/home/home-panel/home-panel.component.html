@@ -91,7 +91,6 @@
               <th id="email">Email</th>
               <th id="employmentDate">Employment Date</th>
               <th id="active">Active</th>
-              <th id="actions">Actions</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-employee>
@@ -109,47 +108,6 @@
                   <i class="pi pi-times"></i>
                 </ng-template>
               </td>
-              <td>
-                <!-- <p-button
-                  icon="pi pi-eye"
-                  [rounded]="true"
-                  (onClick)="goToDetails(employee.id)"
-                  severity="success"
-                  [pTooltip]="detailsTooltip"
-                  tooltipPosition="top"
-                />
-                <ng-template #detailsTooltip>
-                  <div class="flex align-items-center">
-                    <span>View Employee</span>
-                  </div>
-                </ng-template>
-                <p-button
-                  icon="pi pi-pencil"
-                  [rounded]="true"
-                  (onClick)="goToEdit(employee.id)"
-                  severity="warning"
-                  [pTooltip]="editTooltip"
-                  tooltipPosition="top"
-                />
-                <ng-template #editTooltip>
-                  <div class="flex align-items-center">
-                    <span>Edit Employee</span>
-                  </div>
-                </ng-template>
-                <p-button
-                  icon="pi pi-trash"
-                  [rounded]="true"
-                  (onClick)="showDialog(true, employee.id)"
-                  severity="danger"
-                  [pTooltip]="deleteTooltip"
-                  tooltipPosition="top"
-                />
-                <ng-template #deleteTooltip>
-                  <div class="flex align-items-center">
-                    <span>Delete Employee</span>
-                  </div>
-                </ng-template> -->
-              </td>
             </tr>
           </ng-template>
         </p-table>
@@ -163,33 +121,6 @@
             [rowsPerPageOptions]="[5, 10, 20, 30]"
           ></p-paginator>
         </div>
-    
-        <!-- <p-dialog
-          header="Warning"
-          [(visible)]="visible"
-          [modal]="true"
-          [style]="{ width: '35vw' }"
-          [draggable]="false"
-          [resizable]="false"
-        >
-          <p class="m-0">
-            Are you sure you want to delete employee with id: {{ employeeId}}
-          </p>
-          <div class="action-buttons">
-            <p-button
-              icon="pi pi-check"
-              [rounded]="true"
-              severity="success"
-              (onClick)="delete()"
-            ></p-button>
-            <p-button
-              icon="pi pi-times"
-              [rounded]="true"
-              severity="danger"
-              (onClick)="showDialog(false)"
-            ></p-button>
-          </div>
-        </p-dialog> -->
       </div>
     </p-tabPanel>
   </p-tabView>

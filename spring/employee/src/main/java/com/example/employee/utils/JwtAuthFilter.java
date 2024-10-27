@@ -4,14 +4,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.employee.models.RestError;
@@ -20,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.security.SignatureException;
+import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -52,10 +51,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			} else if (tokenParam != null && !tokenParam.equals("")) {
 				token = tokenParam;
 				username = jwtUtil.extractUsername(token);
-			} else if (!checkIfLogin(request)) {
-				logger.error("Authorization header missing");
-				throw new Exception("You need to be logged in to access this feature.");
+			} else {
+				checkIfLogin(request);
 			}
+			
+			
 
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
@@ -79,8 +79,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	}
 
-	private Boolean checkIfLogin(HttpServletRequest request) {
-		return request.getRequestURL().toString().contains("login");
+	private void checkIfLogin(HttpServletRequest request) throws AuthException{
+		Boolean isLogin = request.getRequestURL().toString().contains("login");
+		if (Boolean.FALSE.equals(isLogin)) {
+			logger.error("Authorization header missing");
+			throw new AuthException("You need to be logged in to access this feature.");
+		}
+		
+		
 	}
 	
 	private void handleAuthError(String message, HttpServletResponse response) {

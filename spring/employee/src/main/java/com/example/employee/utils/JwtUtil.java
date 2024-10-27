@@ -3,25 +3,18 @@ package com.example.employee.utils;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Component;
 
 import com.example.employee.models.AuthResponse;
-import com.example.employee.models.Role;
 import com.example.employee.models.User;
-import com.example.employee.repositories.RoleRepository;
-import com.example.employee.repositories.UserRepository;
-import com.example.employee.services.impl.UserServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -41,13 +34,7 @@ public class JwtUtil {
 	@Value("${secret.jwt.expiration.ms}")
 	private long accessTokenValidity;
 
-	private RoleRepository roleRepository;
-	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
-
-	@Autowired
-	public JwtUtil(RoleRepository roleRepository) {
-		this.roleRepository = roleRepository;
-	}
+	private Logger logger = LoggerFactory.getLogger(JwtUtil.class);
 
 	public String extractUsername(String token) {
 		return extractClaim(token, Claims::getSubject);

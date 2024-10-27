@@ -19,6 +19,7 @@ import com.example.employee.models.RegisterRequest;
 import com.example.employee.models.RestError;
 import com.example.employee.models.User;
 import com.example.employee.services.UserService;
+import com.example.employee.utils.ClassesConstants;
 import com.example.employee.utils.CustomAuthenticationManager;
 import com.example.employee.utils.JwtUtil;
 
@@ -48,14 +49,14 @@ public class AuthController {
 			if (token != null) {
 				return ResponseEntity.ok().body(token);
 			} else {
-				RestError restError = new RestError(401, "Unauthorized", false, "HttpErrorResponse",
+				RestError restError = new RestError(401, "Unauthorized", false, ClassesConstants.HTTP_ERROR_RESPONSE_MESSAGE,
 						"Wrong credentials!");
-				return new ResponseEntity<Object>(restError, HttpStatus.UNAUTHORIZED);
+				return new ResponseEntity<>(restError, HttpStatus.UNAUTHORIZED);
 			}
 		} else {
-			RestError restError = new RestError(401, "Unauthorized", false, "HttpErrorResponse",
+			RestError restError = new RestError(401, "Unauthorized", false, ClassesConstants.HTTP_ERROR_RESPONSE_MESSAGE,
 					"Wrong credentials!");
-			return new ResponseEntity<Object>(restError, HttpStatus.UNAUTHORIZED);
+			return new ResponseEntity<>(restError, HttpStatus.UNAUTHORIZED);
 		}
 
 	}
@@ -64,7 +65,7 @@ public class AuthController {
 	public ResponseEntity<Object> registerUser(@RequestBody() RegisterRequest request) {
 		User user = userService.registerUser(request);
 		if (user == null) {
-			RestError restError = new RestError(400, "Bad request", false, "HttpErrorResponse",
+			RestError restError = new RestError(400, "Bad request", false, ClassesConstants.HTTP_ERROR_RESPONSE_MESSAGE,
 					"Username is already taken!");
 			return ResponseEntity.badRequest().body(restError);
 		} else {

@@ -14,7 +14,6 @@ export class NavBarComponent implements OnInit {
   constructor(private authService: AuthService, private messageService: MessageService) { }
 
   ngOnInit(): void {
-    const navBarString = localStorage.getItem("navBarState");
     this.authService.menuItemsSubject.subscribe({
       next: (value: MenuItem[]) => {
         this.items = value;
