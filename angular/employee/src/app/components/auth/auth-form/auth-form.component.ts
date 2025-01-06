@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AuthRequest } from '../../../models/auth-request.model';
 import { AuthService } from '../../../services/auth/auth.service';
 import { Subject, Subscription } from 'rxjs';
@@ -27,12 +27,12 @@ export class AuthFormComponent implements OnInit, OnDestroy {
   authFormGroup!: FormGroup;
   private authSubsription$!: Subscription;
   showPassword: boolean = false;
-  icon: string = PrimeIcons.EYE;
+  icon: PrimeIcons = PrimeIcons.EYE;
   severity: string = "success";
   tooltipMessage: string = "Show Password";
   isLoggin: boolean = false;
   tooltipConfirmMessage: string = "Show Confirm Password";
-  confirmIcon: string = PrimeIcons.EYE;
+  confirmIcon: PrimeIcons = PrimeIcons.EYE;
   confirmSeverity: string = "success";
   private usernameSubject = new Subject<string>();
   roles: Role[] = [];
@@ -40,13 +40,15 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 
   @ViewChild('menubar') menuBar: any;
 
-  constructor(
-    private authService: AuthService,
-    private formBuilder: FormBuilder,
-    private router: Router,
-    private roleService: RoleService,
-    private messageService: MessageService,
-    private employeeService: EmployeeService) { }
+  private authService: AuthService = inject(AuthService);
+  private formBuilder: FormBuilder = inject(FormBuilder);
+  private router: Router = inject(Router);
+  private roleService: RoleService = inject(RoleService);
+  private messageService: MessageService = inject(MessageService);
+  private employeeService: EmployeeService = inject(EmployeeService);
+
+
+  constructor() { }
 
   ngOnInit(): void {
 
@@ -68,11 +70,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
           this.roles = value.roles ?? [];
         },
         error: (err: any) => {
-          if (err.status === 0) {
-            fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
-          } else {
-            fireToast('error', 'Error', `${err.message}`, this.messageService);
-          }
+          !err.status ? fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService) : fireToast('error', 'Error', `${err.message}`, this.messageService);
         },
         complete: () => { }
       })
@@ -83,47 +81,17 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.authSubsription$ !== undefined) {
+    if (this.authSubsription$) {
       this.authSubsription$.unsubscribe();
     }
     this.usernameSubject.complete();
   }
 
-  public submit() {
-    if (this.isLoggin) {
-      this.authRequest.username = this.authFormGroup.controls['username'].value;
-      this.authRequest.password = this.authFormGroup.controls['password'].value;
-      this.authSubsription$ = this.authService.login(this.authRequest).subscribe({
-        next: (value: AuthResponse) => {
-          localStorage.setItem('authResponse', JSON.stringify(value));
-          this.authService.autoLogout(value.expiration ?? 0);
-          this.authService.updateMenuItems(true, value.roles);
-          this.router.navigate(["/home/panel"]);
-          fireToast('success', 'Success', `Welcome: ${value.username}`, this.messageService);
-
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { }
-      });
-    } else {
-      let registerRequest: RegisterRequest = new RegisterRequest();
-      registerRequest.username = this.authFormGroup.controls['username'].value;
-      registerRequest.password = this.authFormGroup.controls['password'].value;
-      registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
-      registerRequest.employee = this.authFormGroup.controls['employee'].value;
-      this.authService.registerUser(registerRequest).subscribe({
-        next: (value: string) => {
-          fireToast('success', 'Success', 'Registered successfully', this.messageService);
-          this.router.navigate(["user/list"]);
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log("Complete") }
-      });
-    }
-
+  public submit(): void {
+    this.isLoggin ? this.loginUser() : this.registerUser();
   }
 
-  private buildForm() {
+  private buildForm(): void {
     if (this.isLoggin) {
       this.authFormGroup = this.formBuilder.group({
         username: ['', [Validators.required]],
@@ -143,42 +111,57 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 
   public togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
-    if (this.showPassword) {
-      this.icon = PrimeIcons.EYE_SLASH;
-      this.severity = "danger";
-      this.tooltipMessage = "Hide Password";
-    } else {
-      this.icon = PrimeIcons.EYE;
-      this.severity = "success";
-      this.tooltipMessage = "Show Password";
-
-    }
+    this.showPassword ? this.setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password") : this.setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
   }
 
-  public toggleConfirmPasswordVisibility() {
+  public toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
-    if (this.showConfirmPassword) {
-      this.confirmIcon = PrimeIcons.EYE_SLASH;
-      this.confirmSeverity = "danger";
-      this.tooltipConfirmMessage = "Hide Confirm Password";
-    } else {
-      this.confirmIcon = PrimeIcons.EYE;
-      this.confirmSeverity = "success";
-      this.tooltipConfirmMessage = "Show Confirm Password";
-
-    }
+    this.showConfirmPassword ? this.setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password") : this.setToggleOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
   }
 
-  public toggleIcon() {
-    return this.showPassword ? PrimeIcons.EYE_SLASH : PrimeIcons.EYE;
-  }
-
-  passwordMissmatchTest(): ValidatorFn {
+  private passwordMissmatchTest(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.value.password;
       const confirmPassword = control.value.confirmPassword;
       return password === confirmPassword ? null : { passwordMissmatch: true }
     }
 
+  }
+
+  private setToggleOptions(icon: PrimeIcons, severity: string, tooltipMessage: string): void {
+    this.icon = icon;
+    this.severity = severity;
+    this.tooltipMessage = tooltipMessage;
+  }
+
+  private registerUser(): void {
+    const registerRequest: RegisterRequest = new RegisterRequest();
+    registerRequest.username = this.authFormGroup.controls['username'].value;
+    registerRequest.password = this.authFormGroup.controls['password'].value;
+    registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
+    registerRequest.employee = this.authFormGroup.controls['employee'].value;
+    this.authSubsription$ = this.authService.registerUser(registerRequest).subscribe({
+      next: () => {
+        fireToast('success', 'Success', 'Registered successfully', this.messageService);
+        this.router.navigate(["user/list"]);
+      },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
+      complete: () => { }
+    });
+  }
+  private loginUser(): void {
+    this.authRequest.username = this.authFormGroup.controls['username'].value;
+    this.authRequest.password = this.authFormGroup.controls['password'].value;
+    this.authSubsription$ = this.authService.login(this.authRequest).subscribe({
+      next: (value: AuthResponse) => {
+        localStorage.setItem('authResponse', JSON.stringify(value));
+        this.authService.autoLogout(value.expiration ?? 0);
+        this.authService.updateMenuItems(true, value.roles);
+        this.router.navigate(["/home/panel"]);
+        fireToast('success', 'Success', `Welcome: ${value.username}`, this.messageService);
+      },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
+      complete: () => { }
+    });
   }
 }

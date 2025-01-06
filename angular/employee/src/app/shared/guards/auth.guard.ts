@@ -3,9 +3,9 @@ import { CanActivateFn, Router } from '@angular/router';
 import { AuthResponse } from '../../models/auth-response.model';
 import { Role } from '../../models/role.model';
 
-export const authGuard: CanActivateFn = (route, state) => {
+export const authGuard: CanActivateFn = (route, _state) => {
   const authResponse = localStorage.getItem('authResponse');
-  if (authResponse !== null) {
+  if (authResponse) {
     const json: AuthResponse = JSON.parse(authResponse);
     const userRoles: Role[] = json.roles ?? [];
     const roles: string[] = route.data['roles'] ?? [];

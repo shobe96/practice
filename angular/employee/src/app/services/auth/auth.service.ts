@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { AuthRequest } from '../../models/auth-request.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -18,8 +18,10 @@ export class AuthService {
   private backendURL = environment.BACKEND_URL;
   private baseUrl = "/api/auth";
   private tokenExpirationTimer: any;
+  private http: HttpClient = inject(HttpClient);
+  private router: Router = inject(Router)
 
-  items: MenuItem[] = [
+  private items: MenuItem[] = [
     {
       label: 'Home',
       icon: PrimeIcons.HOME,
@@ -93,21 +95,18 @@ export class AuthService {
 
   menuItemsSubject: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this.items);
 
-
-  constructor(private http: HttpClient, private router: Router) { }
-
   public login(request: AuthRequest): Observable<AuthResponse> {
     return this.http.post(`${this.backendURL}${this.baseUrl}/login`, request);
   }
 
-  public logout() {
+  public logout(): void {
     localStorage.removeItem("authResponse");
     clearTimeout(this.tokenExpirationTimer);
     this.updateMenuItems(false);
     this.router.navigate(['/auth/login']);
   }
 
-  public autoLogout(expiration: number) {
+  public autoLogout(expiration: number): void {
     this.tokenExpirationTimer = setTimeout(() => {
       this.logout();
     }, expiration);
@@ -139,7 +138,6 @@ export class AuthService {
     this.items[2].items![4].visible = isloggedIn;
     localStorage.setItem('navBarState', JSON.stringify(this.items));
     this.menuItemsSubject.next(this.items);
-    console.log(this.items);
   }
 
   public delete(userId: number): Observable<void> {
