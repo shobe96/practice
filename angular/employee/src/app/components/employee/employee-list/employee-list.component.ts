@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { EmployeeService } from '../../../services/employee/employee.service';
 import { Employee } from '../../../models/employee.model';
 import { Subject, Subscription, debounceTime } from 'rxjs';
@@ -17,23 +17,20 @@ import { fireToast } from '../../../shared/utils';
 export class EmployeeListComponent implements OnInit, OnDestroy {
   private employees$!: Subscription;
   private searchSubject = new Subject<Employee>();
-  employeeSearch: Employee = new Employee();
-  employeeId: number = 0;
-  page: PageEvent = {
+  private employeeService: EmployeeService = inject(EmployeeService);
+  private router: Router = inject(Router);
+  private messageService: MessageService = inject(MessageService);
+  public employeeSearch: Employee = new Employee();
+  public employeeId: number = 0;
+  public page: PageEvent = {
     page: 0,
     first: 0,
     rows: 5,
     pageCount: 0,
     sort: 'asc',
   };
-  employees: Employee[] = [];
-  visible: boolean = false;
-
-  constructor(
-    private employeeService: EmployeeService,
-    private router: Router,
-    private messageService: MessageService
-  ) { }
+  public employees: Employee[] = [];
+  public visible: boolean = false;
 
   ngOnInit(): void {
     this.getAllEmployees();
@@ -60,15 +57,15 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     this.searchSubject.complete();
   }
 
-  goToDetails(employeeId: number) {
+  public goToDetails(employeeId: number): void {
     this.router.navigate([`employee/details/$${employeeId}`]);
   }
 
-  goToEdit(employeeId: number) {
+  public goToEdit(employeeId: number): void {
     this.router.navigate([`employee/edit/${employeeId}`]);
   }
 
-  public getAllEmployees() {
+  public getAllEmployees(): void {
     const employeesObserver: any = {
       next: (value: EmployeeSearchResult) => {
         this.employees = value.employees ?? [];
@@ -86,48 +83,26 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       .subscribe(employeesObserver);
   }
 
-  public addNew() {
+  public addNew(): void {
     this.router.navigate(['employee/new']);
   }
 
-  onPageChange(event: PaginatorState) {
+  public onPageChange(event: PaginatorState): void {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
     this.page.rows = event.rows ?? 0;
-    if (
-      (this.employeeSearch.name !== undefined &&
-        this.employeeSearch.name !== '') ||
-      (this.employeeSearch.surname !== undefined &&
-        this.employeeSearch.surname !== '') ||
-      (this.employeeSearch.email !== undefined &&
-        this.employeeSearch.surname !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllEmployees();
-    }
+    this.retrieveEmployees();
   }
 
-  showDialog(visible: boolean, employeeId?: number) {
+  public showDialog(visible: boolean, employeeId?: number): void {
     this.employeeId = employeeId ?? 0;
     this.visible = visible;
   }
 
-  delete() {
+  public delete(): void {
     this.employeeService.delete(this.employeeId).subscribe({
-      next: (value: any) => {
-        if (
-          (this.employeeSearch.name !== undefined &&
-            this.employeeSearch.name !== '') ||
-          (this.employeeSearch.surname !== undefined &&
-            this.employeeSearch.surname !== '') ||
-          (this.employeeSearch.email !== undefined &&
-            this.employeeSearch.surname !== '')
-        ) {
-          this.search();
-        } else {
-          this.getAllEmployees();
-        }
+      next: () => {
+        this.retrieveEmployees();
         fireToast(
           'success',
           'success',
@@ -145,43 +120,30 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     });
   }
 
-  search() {
-    console.log(this.employeeSearch);
+  private search(): void {
     this.searchSubject.next(this.employeeSearch);
   }
 
-  onKeyUp() {
-    if (
-      (this.employeeSearch.name !== undefined &&
-        this.employeeSearch.name !== '') ||
-      (this.employeeSearch.surname !== undefined &&
-        this.employeeSearch.surname !== '') ||
-      (this.employeeSearch.email !== undefined &&
-        this.employeeSearch.email !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllEmployees();
-    }
+  public onKeyUp(): void {
+    this.retrieveEmployees();
   }
 
-  public clear() {
+  public clear(): void {
     this.employeeSearch = new Employee();
     this.getAllEmployees();
   }
 
-  public refresh() {
-    if (
-      (this.employeeSearch.name !== undefined &&
-        this.employeeSearch.name !== '') ||
-      (this.employeeSearch.surname !== undefined &&
-        this.employeeSearch.surname !== '') ||
-      (this.employeeSearch.email !== undefined &&
-        this.employeeSearch.surname !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllEmployees();
-    }
+  public refresh(): void {
+    this.retrieveEmployees();
+  }
+
+  private checkSearchFields(): boolean {
+    return Boolean(this.employeeSearch.name ||
+      this.employeeSearch.surname ||
+      this.employeeSearch.email);
+  }
+
+  private retrieveEmployees(): void {
+    this.checkSearchFields() ? this.search() : this.getAllEmployees();
   }
 }

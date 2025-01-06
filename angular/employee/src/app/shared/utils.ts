@@ -5,25 +5,23 @@ export function buildSearchParams(object: any): string {
   const keys = Object.keys(object);
   for (let i = 0; i < keys.length; i++) {
     let value = object[keys[i]];
-    if (value !== undefined) {
+    if (value) {
       params += `${keys[i]}=${value}`;
       if ((i + 1) !== length) {
         params += `&`;
       }
     }
-
   }
   return params;
 }
 
 export function buildPaginationParams(page?: PageEvent): string {
-  let queryParams: string = page?.page === undefined ? `` : `page=${page.page}`;
-  queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
-  queryParams += ``;
+  let queryParams: string = !page?.page ? `page=0` : `page=${page.page}`;
+  queryParams += !page?.rows ? `` : `&size=${page.rows}`;
   return queryParams;
 }
 
-export function fireToast(severity: string, summary: string, detail: string, messageService: any) {
+export function fireToast(severity: string, summary: string, detail: string, messageService: any): void {
   messageService.add({ severity: severity, summary: summary, detail: detail });
 }
 

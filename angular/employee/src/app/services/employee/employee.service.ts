@@ -4,7 +4,7 @@ import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { Employee } from '../../models/employee.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';
-import { buildSearchParams } from '../../shared/utils';
+import { buildPaginationParams, buildSearchParams } from '../../shared/utils';
 import { PageEvent } from '../../models/page-event.model';
 import { Skill } from '../../models/skill.model';
 import { Department } from '../../models/department.model';
@@ -46,7 +46,7 @@ export class EmployeeService {
   }
 
   public search(employee: Employee, page: PageEvent): Observable<EmployeeSearchResult> {
-    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
+    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}${buildPaginationParams(page)}`);
   }
 
   public filterEmployeesByActiveAndSkills(skills: Skill[], department: Department): Observable<Employee[]> {
@@ -60,11 +60,4 @@ export class EmployeeService {
   public findByDepartment(departmentId: number, page: PageEvent): Observable<EmployeeSearchResult> {
     return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/get-by-department/${departmentId}?page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
-
-  private errorHandler(errorRes: any) {
-    console.log(errorRes);
-    let errorMessage = 'Error occurred!';
-    return throwError(() => new Error(errorMessage));
-  }
-
 }
