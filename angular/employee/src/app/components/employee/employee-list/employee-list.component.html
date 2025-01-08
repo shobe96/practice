@@ -160,6 +160,17 @@
         ></p-button>
       </div>
     </p-dialog>
+    <p-dialog
+      [header]="modalTitle"
+      [(visible)]="editVisible"
+      [modal]="true"
+      [style]="{ width: '35vw' }"
+      [draggable]="true"
+      [resizable]="true"
+    >
+      <app-employee-edit [id]="employeeId" (cancelEmiitter)="handleCancel($event)"></app-employee-edit>
+
+    </p-dialog>
   </div>
   <div *ngIf="employees.length === 0">
     <p>

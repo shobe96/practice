@@ -8,20 +8,21 @@ import { PageEvent } from '../../../models/page-event.model';
 import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
 import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
+import { CrudOperations } from '../../../shared/crud-operations';
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
 })
-export class EmployeeListComponent implements OnInit, OnDestroy {
+export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations {
   private employees$!: Subscription;
   private searchSubject = new Subject<Employee>();
   private employeeService: EmployeeService = inject(EmployeeService);
   private router: Router = inject(Router);
   private messageService: MessageService = inject(MessageService);
   public employeeSearch: Employee = new Employee();
-  public employeeId: number = 0;
+  public employeeId: number | null = 0;
   public page: PageEvent = {
     page: 0,
     first: 0,
@@ -31,9 +32,11 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
   };
   public employees: Employee[] = [];
   public visible: boolean = false;
+  public editVisible: boolean = false;
+  public modalTitle: string = '';
 
   ngOnInit(): void {
-    this.getAllEmployees();
+    this.getAll();
     this.searchSubject.pipe(debounceTime(2000)).subscribe({
       next: (value) => {
         this.employeeService.search(value, this.page).subscribe({
@@ -57,15 +60,45 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
     this.searchSubject.complete();
   }
 
-  public goToDetails(employeeId: number): void {
-    this.router.navigate([`employee/details/$${employeeId}`]);
+  public addNew(): void {
+    this.goToEdit(null);
   }
 
-  public goToEdit(employeeId: number): void {
-    this.router.navigate([`employee/edit/${employeeId}`]);
+  public checkSearchFields(): boolean {
+    return Boolean(this.employeeSearch.name ||
+      this.employeeSearch.surname ||
+      this.employeeSearch.email);
   }
 
-  public getAllEmployees(): void {
+  public clear(): void {
+    this.employeeSearch = new Employee();
+    this.getAll();
+  }
+
+  public delete(): void {
+    if (this.employeeId) {
+      this.employeeService.delete(this.employeeId).subscribe({
+        next: () => {
+          this.retrieve();
+          fireToast(
+            'success',
+            'success',
+            `Employee with id ${this.employeeId} has been deleted.`,
+            this.messageService
+          );
+          this.showDialog(false);
+        },
+        error: (err: any) => {
+          fireToast('error', 'Error', err.error.message, this.messageService);
+        },
+        complete: () => {
+
+        },
+      });
+    }
+  }
+
+  public getAll(): void {
     const employeesObserver: any = {
       next: (value: EmployeeSearchResult) => {
         this.employees = value.employees ?? [];
@@ -83,67 +116,45 @@ export class EmployeeListComponent implements OnInit, OnDestroy {
       .subscribe(employeesObserver);
   }
 
-  public addNew(): void {
-    this.router.navigate(['employee/new']);
+  public goToDetails(id: number): void {
+    this.router.navigate([`employee/details/$${id}`]);
+  }
+
+  public goToEdit(id: number | null): void {
+    this.editVisible = true;
+    this.employeeId = id;
+    this.modalTitle = id ?  `Employee ${id}` : 'Add new Employee';
+  }
+
+  public onKeyUp(): void {
+    this.retrieve();
   }
 
   public onPageChange(event: PaginatorState): void {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
     this.page.rows = event.rows ?? 0;
-    this.retrieveEmployees();
-  }
-
-  public showDialog(visible: boolean, employeeId?: number): void {
-    this.employeeId = employeeId ?? 0;
-    this.visible = visible;
-  }
-
-  public delete(): void {
-    this.employeeService.delete(this.employeeId).subscribe({
-      next: () => {
-        this.retrieveEmployees();
-        fireToast(
-          'success',
-          'success',
-          `Employee with id ${this.employeeId} has been deleted.`,
-          this.messageService
-        );
-        this.showDialog(false);
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => {
-        console.log('Completed');
-      },
-    });
-  }
-
-  private search(): void {
-    this.searchSubject.next(this.employeeSearch);
-  }
-
-  public onKeyUp(): void {
-    this.retrieveEmployees();
-  }
-
-  public clear(): void {
-    this.employeeSearch = new Employee();
-    this.getAllEmployees();
+    this.retrieve();
   }
 
   public refresh(): void {
-    this.retrieveEmployees();
+    this.retrieve();
   }
 
-  private checkSearchFields(): boolean {
-    return Boolean(this.employeeSearch.name ||
-      this.employeeSearch.surname ||
-      this.employeeSearch.email);
+  public retrieve(): void {
+    this.checkSearchFields() ? this.search() : this.getAll();
   }
 
-  private retrieveEmployees(): void {
-    this.checkSearchFields() ? this.search() : this.getAllEmployees();
+  public search(): void {
+    this.searchSubject.next(this.employeeSearch);
+  }
+
+  public showDialog(visible: boolean, id?: number): void {
+    this.employeeId = id ?? 0;
+    this.visible = visible;
+  }
+
+  public handleCancel(event: boolean) {
+    this.editVisible = event;
   }
 }

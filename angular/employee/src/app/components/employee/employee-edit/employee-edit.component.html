@@ -1,8 +1,4 @@
 <div class="card">
-  <h1 *ngIf="id === null; else elseBlock">Add new Employee</h1>
-  <ng-template #elseBlock>
-    <h1>Employee {{ id }}</h1>
-  </ng-template>
   <form
     class="employee-form"
     [formGroup]="employeeFormGroup"
@@ -71,8 +67,9 @@
       placeholder="Select Skills"
     />
     <div class="action-buttons">
-      <p-button label="Cancel" (onClick)="back()" />
+      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
       <p-button
+        severity="success"
         [disabled]="employeeFormGroup.invalid"
         label="Submit"
         type="submit"

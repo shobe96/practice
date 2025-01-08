@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { EmployeeService } from '../../../services/employee/employee.service';
@@ -18,35 +18,39 @@ import { SkillSearchResult } from '../../../models/skill-search-result.model';
   templateUrl: './employee-edit.component.html',
   styleUrl: './employee-edit.component.scss'
 })
-export class EmployeeEditComponent implements OnInit, OnDestroy {
+export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
 
-  id: number | null = null;
+  @Input() id: number | null = null;
+  @Output() cancelEmiitter: EventEmitter<boolean> = new EventEmitter();
   private routeSubscription$!: Subscription;
   private employeeSubscription$!: Subscription;
   private departmentSubscription$!: Subscription
-  employee: Employee = new Employee();
-  employeeFormGroup!: FormGroup;
-  departments: Department[] = [];
-  skills: Skill[] = [];
+  public employee: Employee = new Employee();
+  public employeeFormGroup!: FormGroup;
+  public departments: Department[] = [];
+  public skills: Skill[] = [];
 
-  constructor(
-    private route: ActivatedRoute,
-    private employeeService: EmployeeService,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private departmentService: DepartmentService,
-    private messageService: MessageService,
-    private skillService: SkillService
-  ) { }
+  private employeeService: EmployeeService = inject(EmployeeService);
+  private router: Router = inject(Router);
+  private formBuilder: FormBuilder = inject(FormBuilder);
+  private departmentService: DepartmentService = inject(DepartmentService);
+  private messageService: MessageService = inject(MessageService);
+  private skillService: SkillService = inject(SkillService);
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    this.initFormFields();
+  }
+
   ngOnDestroy(): void {
-    if (this.routeSubscription$ !== undefined) {
+    if (this.routeSubscription$) {
       this.routeSubscription$.unsubscribe();
     }
-    if (this.employeeSubscription$ !== undefined) {
+
+    if (this.employeeSubscription$) {
       this.employeeSubscription$.unsubscribe();
     }
 
-    if (this.departmentSubscription$ !== undefined) {
+    if (this.departmentSubscription$) {
       this.departmentSubscription$.unsubscribe();
     }
   }
@@ -59,11 +63,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
-      complete: () => { console.log("Completed") }
-    });
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["employeeId"] ?? null;
-      this.initFormFields();
+      complete: () => { }
     });
 
     this.skillService.getAllSkills(true).subscribe({
@@ -71,20 +71,15 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
         this.skills = value.skills ?? [];
       },
       error: (err: any) => {
-        if (err.status === 0) {
-          fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
-        } else {
-          fireToast('error', 'Error', `${err.message}`, this.messageService);
-        }
+        !err.status ? fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService) : fireToast('error', 'Error', `${err.message}`, this.messageService);
       },
       complete: () => { }
     });
 
-
     this.buildForm();
   }
 
-  buildForm() {
+  private buildForm() {
     this.employeeFormGroup = this.formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       surname: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
@@ -95,7 +90,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
   }
 
   private initFormFields() {
-    if (this.id !== null) {
+    if (this.id) {
       const employeeObserver: any = {
         next: (value: Employee) => {
           this.employee = value;
@@ -109,14 +104,20 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
         complete: () => { console.log('Completed') }
       };
       this.employeeSubscription$ = this.employeeService.getEmployee(this.id).subscribe(employeeObserver);
+    } else {
+      this.employeeFormGroup.controls['name'].setValue('');
+      this.employeeFormGroup.controls['surname'].setValue('');
+      this.employeeFormGroup.controls['email'].setValue('');
+      this.employeeFormGroup.controls['department'].setValue({});
+      this.employeeFormGroup.controls['selectedSkills'].setValue([]);
     }
   }
 
-  back() {
-    this.router.navigate(["employee/list"]);
+  public cancel() {
+    this.cancelEmiitter.emit(false);
   }
 
-  submit() {
+  public submit() {
     this.employee.name = this.employeeFormGroup.controls['name'].value;
     this.employee.surname = this.employeeFormGroup.controls['surname'].value;
     this.employee.email = this.employeeFormGroup.controls['email'].value;
@@ -124,20 +125,12 @@ export class EmployeeEditComponent implements OnInit, OnDestroy {
     this.employee.skills = this.employeeFormGroup.controls['selectedSkills'].value;
     const employeeObserver: any = {
       next: (value: Employee) => {
-        if (this.id === null) {
-          fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been created`, this.messageService);
-        } else {
-          fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been updated`, this.messageService);
-        }
-        this.router.navigate([`employee/details/${value.id}`])
+        !this.id ? fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been created`, this.messageService) : fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been updated`, this.messageService);
+        this.cancel();
       },
       error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
-    if (this.id === null) {
-      this.employeeService.save(this.employee).subscribe(employeeObserver);
-    } else {
-      this.employeeService.update(this.employee).subscribe(employeeObserver);
-    }
+    !this.id ? this.employeeService.save(this.employee).subscribe(employeeObserver) : this.employeeService.update(this.employee).subscribe(employeeObserver);
   }
 }
