@@ -19,7 +19,6 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   private employees$!: Subscription;
   private searchSubject = new Subject<Employee>();
   private employeeService: EmployeeService = inject(EmployeeService);
-  private router: Router = inject(Router);
   private messageService: MessageService = inject(MessageService);
   public employeeSearch: Employee = new Employee();
   public employeeId: number | null = 0;
