@@ -1,42 +1,41 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Subject, Subscription, debounceTime } from 'rxjs';
 import { PageEvent } from '../../../models/page-event.model';
 import { Department } from '../../../models/department.model';
-import { Router } from '@angular/router';
 import { DepartmentService } from '../../../services/department/department.service';
 import { DepartmentSearchResult } from '../../../models/department-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
+import { CrudOperations } from '../../../shared/crud-operations';
 
 @Component({
   selector: 'app-department-list',
   templateUrl: './department-list.component.html',
   styleUrl: './department-list.component.scss',
 })
-export class DepartmentListComponent implements OnInit, OnDestroy {
+export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperations {
   private searchSubject = new Subject<Department>();
   private departments$!: Subscription;
-  departmentId: number = 0;
-  page: PageEvent = {
+  public departmentId: number | null = 0;
+  public page: PageEvent = {
     page: 0,
     first: 0,
     rows: 5,
     pageCount: 0,
     sort: 'asc',
   };
-  departments: Department[] = [];
-  visible: boolean = false;
-  departmentSearch: Department = new Department();
-
-  constructor(
-    private departmentService: DepartmentService,
-    private router: Router,
-    private messageService: MessageService
-  ) { }
+  public departments: Department[] = [];
+  public visible: boolean = false;
+  public editVisible: boolean = false;
+  public modalTitle: string = '';
+  public disable: boolean = false;
+  public departmentSearch: Department = new Department();
+  private departmentService: DepartmentService = inject(DepartmentService);
+  private messageService: MessageService = inject(MessageService);
 
   ngOnInit(): void {
-    this.getAllDepartments();
+    this.getAll();
     this.searchSubject.pipe(debounceTime(2000)).subscribe({
       next: (value) => {
         this.departmentService.search(value, this.page).subscribe({
@@ -57,15 +56,42 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
     this.searchSubject.complete();
   }
 
-  goToDetails(departmentId: number) {
-    this.router.navigate([`department/details/${departmentId}`]);
+  public addNew(): void {
+    this.goToEdit(null);
   }
 
-  goToEdit(departmentId: number) {
-    this.router.navigate([`department/edit/${departmentId}`]);
+  public checkSearchFields(): boolean {
+    return Boolean(this.departmentSearch.name);
   }
 
-  getAllDepartments() {
+  public clear(): void {
+    this.departmentSearch = new Department();
+    this.getAll();
+  }
+
+  public delete(): void {
+    if (this.departmentId) {
+      this.departmentService.delete(this.departmentId).subscribe({
+        next: () => {
+          this.retrieve();
+          fireToast(
+            'success',
+            'success',
+            `Department with id ${this.departmentId} has been deleted.`,
+            this.messageService
+          );
+          this.showDialog(false);
+        },
+        error: (err: any) => {
+          fireToast('error', 'Error', err.error.message, this.messageService);
+        },
+        complete: () => {
+        },
+      });
+    }
+  }
+
+  public getAll(): void {
     const departmentObserver: any = {
       next: (value: DepartmentSearchResult) => {
         this.departments = value.departments ?? [];
@@ -74,9 +100,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
-      complete: () => {
-        console.log('Completed');
-      },
+      complete: () => {},
     };
 
     this.departments$ = this.departmentService
@@ -84,84 +108,54 @@ export class DepartmentListComponent implements OnInit, OnDestroy {
       .subscribe(departmentObserver);
   }
 
-  public addNew() {
-    this.router.navigate(['department/new']);
+  public goToDetails(id: number): void {
+    this.setEditParams(true, id, `Department ${id}`, true);
   }
 
-  onPageChange(event: PaginatorState) {
+  public goToEdit(id: number | null): void {
+    const title = id ?  `Department ${id}` : 'Add new Department'
+    this.setEditParams(true, id, title, false);
+  }
+
+  public handleCancel(event: any): void {
+    this.editVisible = event.visible;
+    if (event.save) {
+      this.refresh();
+    }
+  }
+
+  public onKeyUp(): void {
+    this.retrieve();
+  }
+
+  public onPageChange(event: PaginatorState): void {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
     this.page.rows = event.rows ?? 0;
-    if (
-      this.departmentSearch.name !== undefined &&
-      this.departmentSearch.name !== ''
-    ) {
-      this.search();
-    } else {
-      this.getAllDepartments();
-    }
+    this.retrieve();
   }
-  search() {
+
+  public refresh(): void {
+    this.retrieve();
+  }
+
+  public retrieve(): void {
+    this.checkSearchFields() ? this.search() : this.getAll();
+  }
+
+  public search(): void {
     this.searchSubject.next(this.departmentSearch);
   }
 
-  showDialog(visible: boolean, departmentId?: number) {
-    this.departmentId = departmentId ?? 0;
+  public setEditParams(editVisible: boolean, departmentId: number | null, modalTitle: string, disable: boolean): void {
+    this.editVisible = editVisible;
+    this.departmentId = departmentId;
+    this.modalTitle = modalTitle;
+    this.disable = disable;
+  }
+
+  public showDialog(visible: boolean, id?: number): void {
+    this.departmentId = id ?? 0;
     this.visible = visible;
-  }
-
-  clear() {
-    this.departmentSearch = new Department();
-    this.getAllDepartments();
-  }
-
-  public refresh() {
-    if (
-      (this.departmentSearch.name !== undefined &&
-        this.departmentSearch.name !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllDepartments();
-    }
-  }
-
-  delete() {
-    this.departmentService.delete(this.departmentId).subscribe({
-      next: (value: any) => {
-        if (
-          this.departmentSearch.name !== undefined &&
-          this.departmentSearch.name !== ''
-        ) {
-          this.search();
-        } else {
-          this.getAllDepartments();
-        }
-        fireToast(
-          'success',
-          'success',
-          `Department with id ${this.departmentId} has been deleted.`,
-          this.messageService
-        );
-        this.showDialog(false);
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => {
-        console.log('Completed');
-      },
-    });
-  }
-
-  onKeyUp() {
-    if (
-      this.departmentSearch.name !== undefined &&
-      this.departmentSearch.name !== ''
-    ) {
-      this.search();
-    } else {
-      this.getAllDepartments();
-    }
-  }
+  };
 }

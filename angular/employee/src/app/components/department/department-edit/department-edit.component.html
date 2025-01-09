@@ -1,14 +1,10 @@
 <div class="card">
-  <h1 *ngIf="id === null; else elseBlock">Add new Department</h1>
-  <ng-template #elseBlock>
-    <h1>Department {{ id }}</h1>
-  </ng-template>
   <form
     class="department-form"
     [formGroup]="departmentFormGroup"
     (ngSubmit)="submit()"
   >
-    <input formControlName="name" pInputText placeholder="Name of department" />
+    <input [readOnly]="disable" formControlName="name" pInputText placeholder="Name of department" />
     <div
     class="validation-messages"
       *ngIf="departmentFormGroup.controls['name'].invalid && departmentFormGroup.controls['name'].touched"
@@ -24,8 +20,8 @@
       </div>
     </div>
     <div class="action-buttons">
-      <p-button label="Cancel" (onClick)="back()" />
-      <p-button [disabled]="departmentFormGroup.invalid" label="Submit" type="submit" />
+      <p-button severity="danger" label="Cancel" (onClick)="cancel(false)" />
+      <p-button severity="success" *ngIf="!disable" [disabled]="departmentFormGroup.invalid" label="Submit" type="submit" />
     </div>
   </form>
 </div>

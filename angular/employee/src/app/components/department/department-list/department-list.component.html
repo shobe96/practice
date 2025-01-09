@@ -104,7 +104,8 @@
         [totalRecords]="page.pageCount"
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
-      <p-dialog
+    </div>
+    <p-dialog
       header="Warning"
       [(visible)]="visible"
       [modal]="true"
@@ -113,7 +114,7 @@
       [resizable]="false"
     >
       <p class="m-0">
-        Are you sure you want to delete employee with id: {{ departmentId }}
+        Are you sure you want to delete department with id: {{ departmentId }}
       </p>
       <div class="action-buttons">
         <p-button
@@ -130,7 +131,20 @@
         ></p-button>
       </div>
     </p-dialog>
-    </div>
+    <p-dialog
+      [header]="modalTitle"
+      [(visible)]="editVisible"
+      [modal]="true"
+      [style]="{ width: '35vw' }"
+      [draggable]="true"
+      [resizable]="true"
+    >
+      <app-department-edit
+        [id]="departmentId"
+        (cancelEmiitter)="handleCancel($event)"
+        [disable]="disable"
+      ></app-department-edit>
+    </p-dialog>
   </div>
   <div *ngIf="departments.length === 0">
     <p>No results.</p>
