@@ -124,6 +124,10 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
     this.setEditParams(true, id, title, false);
   }
 
+  public handleCancel(event: boolean): void {
+    this.editVisible = event;
+  }
+
   public onKeyUp(): void {
     this.retrieve();
   }
@@ -147,19 +151,15 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
     this.searchSubject.next(this.employeeSearch);
   }
 
-  public showDialog(visible: boolean, id?: number): void {
-    this.employeeId = id ?? 0;
-    this.visible = visible;
-  }
-
-  public handleCancel(event: boolean) {
-    this.editVisible = event;
-  }
-
-  private setEditParams(editVisible: boolean, employeeId: number | null, modalTitle: string, disable: boolean) {
+  public setEditParams(editVisible: boolean, employeeId: number | null, modalTitle: string, disable: boolean): void {
     this.editVisible = editVisible;
     this.employeeId = employeeId;
     this.modalTitle = modalTitle;
     this.disable = disable;
+  }
+
+  public showDialog(visible: boolean, id?: number): void {
+    this.employeeId = id ?? 0;
+    this.visible = visible;
   }
 }
