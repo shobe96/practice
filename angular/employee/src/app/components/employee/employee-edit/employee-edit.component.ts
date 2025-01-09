@@ -37,7 +37,6 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
   private skillService: SkillService = inject(SkillService);
 
   ngOnChanges(_changes: SimpleChanges): void {
-    console.log(this.disable);
     this.initFormFields();
   }
 
