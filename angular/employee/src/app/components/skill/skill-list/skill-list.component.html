@@ -132,6 +132,20 @@
         ></p-button>
       </div>
     </p-dialog>
+    <p-dialog
+      [header]="modalTitle"
+      [(visible)]="editVisible"
+      [modal]="true"
+      [style]="{ width: '35vw' }"
+      [draggable]="true"
+      [resizable]="true"
+    >
+      <app-skill-edit
+        [id]="skillId"
+        (cancelEmiitter)="handleCancel($event)"
+        [disable]="disable"
+      ></app-skill-edit>
+    </p-dialog>
   </div>
   <div *ngIf="skills.length === 0">
     <p>

@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { Skill } from '../../../models/skill.model';
@@ -12,20 +12,19 @@ import { fireToast } from '../../../shared/utils';
   templateUrl: './skill-edit.component.html',
   styleUrl: './skill-edit.component.scss'
 })
-export class SkillEditComponent implements OnInit, OnDestroy {
-  id: number | null = null;
+export class SkillEditComponent implements OnInit, OnDestroy, OnChanges {
+  @Input() public id: number | null = null;
+  @Input() public disable: boolean = false;
+  @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
   private routeSubscription$!: Subscription;
   private skillSubscription$!: Subscription;
-  skill: Skill = new Skill();
-  skillFormGroup!: FormGroup;
-
-  constructor(
-    private route: ActivatedRoute,
-    private skillService: SkillService,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private messageService: MessageService
-  ) { }
+  private skill: Skill = new Skill();
+  public skillFormGroup!: FormGroup;
+  private route: ActivatedRoute = inject(ActivatedRoute);
+  private skillService: SkillService = inject(SkillService);
+  private router: Router = inject(Router);
+  private formBuilder: FormBuilder = inject(FormBuilder);
+  private messageService: MessageService = inject(MessageService);
 
   ngOnInit(): void {
     this.buildForm();
@@ -34,6 +33,7 @@ export class SkillEditComponent implements OnInit, OnDestroy {
       this.initFormFields();
     });
   }
+
   ngOnDestroy(): void {
     if (this.routeSubscription$ !== undefined) {
       this.routeSubscription$.unsubscribe();
@@ -41,6 +41,10 @@ export class SkillEditComponent implements OnInit, OnDestroy {
     if (this.skillSubscription$ !== undefined) {
       this.skillSubscription$.unsubscribe();
     }
+  }
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    this.initFormFields();
   }
 
   buildForm() {
@@ -51,47 +55,46 @@ export class SkillEditComponent implements OnInit, OnDestroy {
   }
 
   private initFormFields() {
-    if (this.id !== null) {
+    if (this.id) {
       const skillObserver: any = {
         next: (value: Skill) => {
           this.skill = value;
-          this.skillFormGroup.controls['name'].setValue(value.name);
-          this.skillFormGroup.controls['description'].setValue(value.description);
+          this.setValuesToFields(value);
         },
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
       this.skillSubscription$ = this.skillService.getSkill(this.id).subscribe(skillObserver);
+    } else {
+      this.setValuesToFields({});
     }
   }
 
-  back() {
-    this.router.navigate(["skill/list"])
+  public cancel(save: boolean) {
+    this.cancelEmiitter.emit({ visible: false, save: save });
   }
 
   submit() {
     this.skill.name = this.skillFormGroup.controls['name'].value;
     this.skill.description = this.skillFormGroup.controls['description'].value;
+
     const skillObserver: any = {
       next: (value: Skill) => {
-        if (this.id === null) {
-          fireToast("success", "Success", `Skill ${value.name} has been created`, this.messageService);
-        } else {
-          fireToast("success", "Success", `Skill ${value.name} has been updated`, this.messageService);
-        }
-        this.router.navigate([`skill/details/${value.id}`])
+        !this.id ? fireToast("success", "Success", `Skill ${value.name} has been created`, this.messageService) : fireToast("success", "Success", `Skill ${value.name} has been updated`, this.messageService);
+        this.cancel(true);
       },
       error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
-    if (this.id === null) {
-      this.skillService.save(this.skill).subscribe(skillObserver);
-    } else {
+    !this.id ?
+      this.skillService.save(this.skill).subscribe(skillObserver) :
       this.skillService.update(this.skill).subscribe(skillObserver);
-    }
   }
 
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
+  private setValuesToFields(value: Skill) {
+    const name = value.name ?? '';
+    const description = value.description ?? '';
+    this.skillFormGroup.controls['name'].setValue(name);
+    this.skillFormGroup.controls['description'].setValue(description);
   }
 }
