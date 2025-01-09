@@ -124,8 +124,11 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
     this.setEditParams(true, id, title, false);
   }
 
-  public handleCancel(event: boolean): void {
-    this.editVisible = event;
+  public handleCancel(event: any): void {
+    this.editVisible = event.visible;
+    if (event.save) {
+      this.refresh();
+    }
   }
 
   public onKeyUp(): void {

@@ -21,7 +21,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
 
   @Input() public id: number | null = null;
   @Input() public disable: boolean = false;
-  @Output() public cancelEmiitter: EventEmitter<boolean> = new EventEmitter();
+  @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
   private routeSubscription$!: Subscription;
   private employeeSubscription$!: Subscription;
   private departmentSubscription$!: Subscription
@@ -104,8 +104,8 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  public cancel() {
-    this.cancelEmiitter.emit(false);
+  public cancel(save: boolean) {
+    this.cancelEmiitter.emit({ visible: false, save: save});
   }
 
   public submit() {
@@ -117,7 +117,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
     const employeeObserver: any = {
       next: (value: Employee) => {
         !this.id ? fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been created`, this.messageService) : fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been updated`, this.messageService);
-        this.cancel();
+        this.cancel(true);
       },
       error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
