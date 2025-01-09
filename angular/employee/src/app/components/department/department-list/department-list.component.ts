@@ -147,9 +147,9 @@ export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperation
     this.searchSubject.next(this.departmentSearch);
   }
 
-  public setEditParams(editVisible: boolean, departmentId: number | null, modalTitle: string, disable: boolean): void {
+  public setEditParams(editVisible: boolean, id: number | null, modalTitle: string, disable: boolean): void {
     this.editVisible = editVisible;
-    this.departmentId = departmentId;
+    this.departmentId = id;
     this.modalTitle = modalTitle;
     this.disable = disable;
   }

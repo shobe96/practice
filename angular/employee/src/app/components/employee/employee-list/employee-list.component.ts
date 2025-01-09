@@ -154,9 +154,9 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
     this.searchSubject.next(this.employeeSearch);
   }
 
-  public setEditParams(editVisible: boolean, employeeId: number | null, modalTitle: string, disable: boolean): void {
+  public setEditParams(editVisible: boolean, id: number | null, modalTitle: string, disable: boolean): void {
     this.editVisible = editVisible;
-    this.employeeId = employeeId;
+    this.employeeId = id;
     this.modalTitle = modalTitle;
     this.disable = disable;
   }

@@ -14,6 +14,6 @@ export interface CrudOperations {
   refresh: () => void,
   retrieve: () => void,
   search: () => void,
-  setEditParams: (editVisible: boolean, employeeId: number | null, modalTitle: string, disable: boolean) => void,
+  setEditParams: (editVisible: boolean, id: number | null, modalTitle: string, disable: boolean) => void,
   showDialog: (visible: boolean, id?: number) => void,
 }
