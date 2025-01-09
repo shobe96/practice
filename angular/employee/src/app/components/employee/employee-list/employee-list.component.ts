@@ -34,6 +34,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   public visible: boolean = false;
   public editVisible: boolean = false;
   public modalTitle: string = '';
+  public disable: boolean = false;
 
   ngOnInit(): void {
     this.getAll();
@@ -117,13 +118,12 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   }
 
   public goToDetails(id: number): void {
-    this.router.navigate([`employee/details/$${id}`]);
+    this.setEditParams(true, id, `Employee ${id}`, true);
   }
 
   public goToEdit(id: number | null): void {
-    this.editVisible = true;
-    this.employeeId = id;
-    this.modalTitle = id ?  `Employee ${id}` : 'Add new Employee';
+    const title = id ?  `Employee ${id}` : 'Add new Employee'
+    this.setEditParams(true, id, title, false);
   }
 
   public onKeyUp(): void {
@@ -156,5 +156,12 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
 
   public handleCancel(event: boolean) {
     this.editVisible = event;
+  }
+
+  private setEditParams(editVisible: boolean, employeeId: number | null, modalTitle: string, disable: boolean) {
+    this.editVisible = editVisible;
+    this.employeeId = employeeId;
+    this.modalTitle = modalTitle;
+    this.disable = disable;
   }
 }

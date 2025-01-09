@@ -4,7 +4,7 @@
 
 .action-buttons {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 15px;
 }
 
@@ -13,8 +13,19 @@
   justify-content: flex-start;
   gap: 10px;
 }
+
 .validation-messages {
   display: flex;
   flex-direction: column;
   color: red;
+}
+
+.custom-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.custom-column {
+  display: flex;
+  flex-direction: column;
 }

@@ -1,5 +1,4 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { EmployeeService } from '../../../services/employee/employee.service';
 import { Employee } from '../../../models/employee.model';
@@ -20,8 +19,9 @@ import { SkillSearchResult } from '../../../models/skill-search-result.model';
 })
 export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
 
-  @Input() id: number | null = null;
-  @Output() cancelEmiitter: EventEmitter<boolean> = new EventEmitter();
+  @Input() public id: number | null = null;
+  @Input() public disable: boolean = false;
+  @Output() public cancelEmiitter: EventEmitter<boolean> = new EventEmitter();
   private routeSubscription$!: Subscription;
   private employeeSubscription$!: Subscription;
   private departmentSubscription$!: Subscription
@@ -31,13 +31,13 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
   public skills: Skill[] = [];
 
   private employeeService: EmployeeService = inject(EmployeeService);
-  private router: Router = inject(Router);
   private formBuilder: FormBuilder = inject(FormBuilder);
   private departmentService: DepartmentService = inject(DepartmentService);
   private messageService: MessageService = inject(MessageService);
   private skillService: SkillService = inject(SkillService);
 
   ngOnChanges(_changes: SimpleChanges): void {
+    console.log(this.disable);
     this.initFormFields();
   }
 
@@ -94,22 +94,14 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
       const employeeObserver: any = {
         next: (value: Employee) => {
           this.employee = value;
-          this.employeeFormGroup.controls['name'].setValue(value.name);
-          this.employeeFormGroup.controls['surname'].setValue(value.surname);
-          this.employeeFormGroup.controls['email'].setValue(value.email);
-          this.employeeFormGroup.controls['department'].setValue(value.department);
-          this.employeeFormGroup.controls['selectedSkills'].setValue(value.skills);
+          this.setValuesToFields(value);
         },
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
       this.employeeSubscription$ = this.employeeService.getEmployee(this.id).subscribe(employeeObserver);
     } else {
-      this.employeeFormGroup.controls['name'].setValue('');
-      this.employeeFormGroup.controls['surname'].setValue('');
-      this.employeeFormGroup.controls['email'].setValue('');
-      this.employeeFormGroup.controls['department'].setValue({});
-      this.employeeFormGroup.controls['selectedSkills'].setValue([]);
+      this.setValuesToFields({});
     }
   }
 
@@ -132,5 +124,18 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
       complete: () => { },
     }
     !this.id ? this.employeeService.save(this.employee).subscribe(employeeObserver) : this.employeeService.update(this.employee).subscribe(employeeObserver);
+  }
+
+  private setValuesToFields(value: Employee) {
+    const name = value.name ?? '';
+    const surname = value.surname ?? ''
+    const email = value.email ?? '';
+    const department = value.department ?? {};
+    const selectedSkills = value.skills ?? [];
+    this.employeeFormGroup.controls['name'].setValue(name);
+    this.employeeFormGroup.controls['surname'].setValue(surname);
+    this.employeeFormGroup.controls['email'].setValue(email);
+    this.employeeFormGroup.controls['department'].setValue(department);
+    this.employeeFormGroup.controls['selectedSkills'].setValue(selectedSkills);
   }
 }

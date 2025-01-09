@@ -168,7 +168,7 @@
       [draggable]="true"
       [resizable]="true"
     >
-      <app-employee-edit [id]="employeeId" (cancelEmiitter)="handleCancel($event)"></app-employee-edit>
+      <app-employee-edit [id]="employeeId" (cancelEmiitter)="handleCancel($event)" [disable]="disable"></app-employee-edit>
 
     </p-dialog>
   </div>
