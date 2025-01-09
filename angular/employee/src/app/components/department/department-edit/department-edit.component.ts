@@ -22,7 +22,6 @@ export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
   public department: Department = new Department();
   public departmentFormGroup!: FormGroup;
   private route: ActivatedRoute = inject(ActivatedRoute);
-  private router: Router = inject(Router);
   private formBuilder: FormBuilder = inject(FormBuilder);
   private departmentService: DepartmentService = inject(DepartmentService);
   private messageService: MessageService = inject(MessageService);
