@@ -108,9 +108,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
       error: (err: any) => {
         fireToast('error', 'Error', err.message, this.messageService);
       },
-      complete: () => {
-        console.log('Completed');
-      },
+      complete: () => {},
     };
     this.employees$ = this.employeeService
       .getAllEmployees(false, this.page)

@@ -7,7 +7,7 @@ export interface CrudOperations {
   delete: () => void,
   getAll: () => void,
   goToDetails: (id: number) => void,
-  goToEdit: (id: number) => void,
+  goToEdit: (id: number | null) => void,
   onKeyUp: () => void,
   onPageChange: (event: PaginatorState) => void,
   refresh: () => void,
