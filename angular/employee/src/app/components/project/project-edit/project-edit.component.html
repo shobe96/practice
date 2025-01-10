@@ -1,8 +1,4 @@
 <div class="card">
-  <h1 *ngIf="id === null; else elseBlock">Add new Project</h1>
-  <ng-template #elseBlock>
-    <h1>Project {{ id }}</h1>
-  </ng-template>
   <form
     class="project-form"
     [formGroup]="projectFormGroup"
@@ -39,17 +35,21 @@
       </div>
     </div>
     <p-dropdown
+      appendTo="body"
       formControlName="selectedDepartment"
       [options]="departments"
       optionLabel="name"
       placeholder="Select a Department"
       dataKey="id"
+      (onChange)="onChanges($event)"
     />
     <p-multiSelect
+      appendTo="body"
       [options]="skills"
       formControlName="selectedSkills"
       optionLabel="name"
       placeholder="Select Skills"
+      (onChange)="onChanges($event)"
     />
     <div
       class="validation-messages"
@@ -74,7 +74,8 @@
     >
       <div *ngIf="projectFormGroup.controls['startDate'].errors?.['required']">
         Start Date is required!
-      </div></div>
+      </div>
+    </div>
     <label for="endDate">End Date</label>
     <p-calendar
       formControlName="endDate"
@@ -88,9 +89,11 @@
     >
       <div *ngIf="projectFormGroup.controls['endDate'].errors?.['required']">
         End Date is required!
-      </div></div>
+      </div>
+    </div>
 
     <p-multiSelect
+      appendTo="body"
       *ngIf="employees.length > 0"
       [options]="employees"
       formControlName="selectedEmployees"
@@ -109,8 +112,9 @@
       </div>
     </div>
     <div class="action-buttons">
-      <p-button label="Cancel" (onClick)="back()" />
+      <p-button severity="danger" label="Cancel" (onClick)="cancel(false)" />
       <p-button
+        severity="success"
         [disabled]="projectFormGroup.invalid"
         label="Submit"
         type="submit"

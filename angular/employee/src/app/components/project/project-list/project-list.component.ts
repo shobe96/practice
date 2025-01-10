@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { PaginatorState } from 'primeng/paginator';
@@ -8,35 +8,36 @@ import { ProjectSearchResult } from '../../../models/project-search-result.model
 import { Project } from '../../../models/project.model';
 import { ProjectService } from '../../../services/project/project.service';
 import { fireToast } from '../../../shared/utils';
+import { CrudOperations } from '../../../shared/crud-operations';
 
 @Component({
   selector: 'app-project-list',
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.scss'
 })
-export class ProjectListComponent implements OnInit, OnDestroy {
-
+export class ProjectListComponent implements OnInit, OnDestroy, CrudOperations {
   private projects$!: Subscription;
   private searchSubject = new Subject<Project>();
-  projectSearch: Project = new Project();
-  projectId: number = 0;
-  page: PageEvent = {
+  public projectSearch: Project = new Project();
+  public projectId: number | null = 0;
+  public page: PageEvent = {
     page: 0,
     first: 0,
     rows: 5,
     pageCount: 0,
     sort: "asc"
   };
-  projects: Project[] = [];
-  visible: boolean = false;
-
-  constructor(
-    private projectService: ProjectService,
-    private router: Router,
-    private messageService: MessageService) { }
+  public projects: Project[] = [];
+  public visible: boolean = false;
+  public editVisible: boolean = false;
+  public modalTitle: string = '';
+  public disable: boolean = false;
+  private projectService: ProjectService = inject(ProjectService);
+  private router: Router = inject(Router);
+  private messageService: MessageService = inject(MessageService);
 
   ngOnInit(): void {
-    this.getAllProjects();
+    this.getAll();
     this.searchSubject.pipe(debounceTime(2000)).subscribe({
       next: (value) => {
         this.projectService.search(value, this.page).subscribe({
@@ -59,92 +60,107 @@ export class ProjectListComponent implements OnInit, OnDestroy {
     this.searchSubject.complete();
   }
 
-  public getAllProjects() {
-    const projectsObserver: any = {
+  public addNew(): void {
+    this.goToEdit(null);
+  }
+
+  public checkSearchFields(): boolean {
+    return Boolean(this.projectSearch.name);
+  }
+
+  public clear(): void {
+    this.projectSearch = new Project();
+    this.getAll();
+  }
+
+  public delete(): void {
+    if (this.projectId) {
+      this.projectService.delete(this.projectId).subscribe({
+        next: () => {
+          this.retrieve();
+          fireToast(
+            'success',
+            'success',
+            `Project with id ${this.projectId} has been deleted.`,
+            this.messageService
+          );
+          this.showDialog(false);
+        },
+        error: (err: any) => {
+          fireToast('error', 'Error', err.error.message, this.messageService);
+        },
+        complete: () => {
+        },
+      });
+    }
+  }
+
+  public getAll(): void {
+    const projectObserver: any = {
       next: (value: ProjectSearchResult) => {
         this.projects = value.projects ?? [];
         this.page.pageCount = value.size ?? 0;
       },
       error: (err: any) => {
-        fireToast('error', 'Error', err.message, this.messageService);
+        fireToast('error', 'Error', err.error.message, this.messageService);
       },
-      complete: () => {
-        console.log('Completed');
-      },
+      complete: () => { },
     };
-    this.projects$ = this.projectService.getAllProjects(false, this.page).subscribe(projectsObserver);
+
+    this.projects$ = this.projectService
+      .getAllProjects(false, this.page)
+      .subscribe(projectObserver);
   }
 
-  public addNew() {
-    this.router.navigate(["project/new"]);
+  public goToDetails(id: number): void {
+    this.setEditParams(true, id, `Project ${id}`, true);
   }
 
-  onPageChange(event: PaginatorState) {
+  public goToEdit(id: number | null): void {
+    const title = id ? `Project ${id}` : 'Add new Project'
+    this.setEditParams(true, id, title, false);
+  }
+
+  public handleCancel(event: any): void {
+    this.editVisible = event.visible;
+    if (event.save) {
+      this.refresh();
+    }
+  }
+
+  public onKeyUp(): void {
+    this.retrieve();
+  }
+
+  public onPageChange(event: PaginatorState): void {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
     this.page.rows = event.rows ?? 0;
-    if (this.projectSearch.name !== undefined && this.projectSearch.name !== "") {
-      this.search();
-    } else {
-      this.getAllProjects();
-    }
+    this.retrieve();
   }
 
-  showDialog(visible: boolean, projectId?: number) {
-    this.projectId = projectId ?? 0;
-    this.visible = visible;
+  public refresh(): void {
+    this.retrieve();
   }
 
-  delete() {
-    this.projectService.delete(this.projectId).subscribe({
-      next: (value: any) => {
-        if (this.projectSearch.name !== undefined && this.projectSearch.name !== "") {
-          this.search();
-        } else {
-          console.log("DELETE");
-          this.getAllProjects();
-        }
-        fireToast("success", "success", `Project with id ${this.projectId} has been deleted.`, this.messageService);
-        this.showDialog(false);
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { console.log("Completed") }
-    });
+  public retrieve(): void {
+    this.checkSearchFields() ? this.search() : this.getAll();
   }
 
-  onKeyUp() {
-    if (this.projectSearch.name !== undefined && this.projectSearch.name !== "") {
-      this.search();
-    } else {
-      this.getAllProjects();
-    }
-  }
-
-  clear() {
-    this.projectSearch = new Project();
-    this.getAllProjects();
-  }
-  public refresh() {
-    if (
-      (this.projectSearch.name !== undefined &&
-        this.projectSearch.name !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllProjects();
-    }
-  }
-  search() {
-    console.log(this.projectSearch);
+  public search(): void {
     this.searchSubject.next(this.projectSearch);
   }
 
-  goToDetails(projectId: number) {
-    this.router.navigate([`project/details/$${projectId}`]);
+  public setEditParams(editVisible: boolean, id: number | null, modalTitle: string, disable: boolean): void {
+    this.editVisible = editVisible;
+    this.projectId = id;
+    this.modalTitle = modalTitle;
+    this.disable = disable;
   }
 
-  goToEdit(projectId: number) {
-    this.router.navigate([`project/edit/${projectId}`]);
-  }
+  public showDialog(visible: boolean, id?: number): void {
+    this.projectId = id ?? 0;
+    this.visible = visible;
+  };
 
 }

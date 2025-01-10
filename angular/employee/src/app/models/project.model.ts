@@ -4,8 +4,8 @@ import { Skill } from "./skill.model";
 
 export class Project {
   id?: number;
-  name: string = "";
-  code: string = "";
+  name?: string = "";
+  code?: string = "";
   skills?: Skill[];
   employees?: Employee[];
   department?: Department;
