@@ -1,5 +1,4 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -21,7 +20,6 @@ export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
   private departmentSubscription$!: Subscription;
   public department: Department = new Department();
   public departmentFormGroup!: FormGroup;
-  private route: ActivatedRoute = inject(ActivatedRoute);
   private formBuilder: FormBuilder = inject(FormBuilder);
   private departmentService: DepartmentService = inject(DepartmentService);
   private messageService: MessageService = inject(MessageService);
@@ -38,10 +36,6 @@ export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnInit(): void {
     this.buildForm();
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["departmentId"] ?? null;;
-      this.initFormFields();
-    });
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
