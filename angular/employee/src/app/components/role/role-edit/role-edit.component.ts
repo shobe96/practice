@@ -8,9 +8,10 @@ import { RoleService } from '../../../services/role/role.service';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-  selector: 'app-role-edit',
-  templateUrl: './role-edit.component.html',
-  styleUrl: './role-edit.component.scss'
+    selector: 'app-role-edit',
+    templateUrl: './role-edit.component.html',
+    styleUrl: './role-edit.component.scss',
+    standalone: false
 })
 export class RoleEditComponent implements OnInit, OnDestroy {
   id: number | null = null;

@@ -6,9 +6,10 @@ import { fireToast } from '../../../shared/utils';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-project-details',
-  templateUrl: './project-details.component.html',
-  styleUrl: './project-details.component.scss'
+    selector: 'app-project-details',
+    templateUrl: './project-details.component.html',
+    styleUrl: './project-details.component.scss',
+    standalone: false
 })
 export class ProjectDetailsComponent implements OnInit {
 

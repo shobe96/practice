@@ -10,9 +10,10 @@ import { fireToast } from '../../../shared/utils';
 import { CrudOperations } from '../../../shared/crud-operations';
 
 @Component({
-  selector: 'app-department-list',
-  templateUrl: './department-list.component.html',
-  styleUrl: './department-list.component.scss',
+    selector: 'app-department-list',
+    templateUrl: './department-list.component.html',
+    styleUrl: './department-list.component.scss',
+    standalone: false
 })
 export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperations {
   private searchSubject = new Subject<Department>();

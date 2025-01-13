@@ -8,9 +8,10 @@ import { SkillService } from '../../../services/skill/skill.service';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-  selector: 'app-skill-edit',
-  templateUrl: './skill-edit.component.html',
-  styleUrl: './skill-edit.component.scss'
+    selector: 'app-skill-edit',
+    templateUrl: './skill-edit.component.html',
+    styleUrl: './skill-edit.component.scss',
+    standalone: false
 })
 export class SkillEditComponent implements OnInit, OnDestroy, OnChanges {
   @Input() public id: number | null = null;

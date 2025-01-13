@@ -3,9 +3,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Role } from '../../../models/role.model';
 
 @Component({
-  selector: 'app-role-details',
-  templateUrl: './role-details.component.html',
-  styleUrl: './role-details.component.scss'
+    selector: 'app-role-details',
+    templateUrl: './role-details.component.html',
+    styleUrl: './role-details.component.scss',
+    standalone: false
 })
 export class RoleDetailsComponent implements OnInit {
   role!: Role;

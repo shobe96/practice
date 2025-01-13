@@ -10,9 +10,10 @@ import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-  selector: 'app-role-list',
-  templateUrl: './role-list.component.html',
-  styleUrl: './role-list.component.scss'
+    selector: 'app-role-list',
+    templateUrl: './role-list.component.html',
+    styleUrl: './role-list.component.scss',
+    standalone: false
 })
 export class RoleListComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<Role>();

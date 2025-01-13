@@ -13,9 +13,10 @@ import { SkillService } from '../../../services/skill/skill.service';
 import { SkillSearchResult } from '../../../models/skill-search-result.model';
 
 @Component({
-  selector: 'app-employee-edit',
-  templateUrl: './employee-edit.component.html',
-  styleUrl: './employee-edit.component.scss'
+    selector: 'app-employee-edit',
+    templateUrl: './employee-edit.component.html',
+    styleUrl: './employee-edit.component.scss',
+    standalone: false
 })
 export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
 

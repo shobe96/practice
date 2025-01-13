@@ -14,9 +14,10 @@ import { fireToast } from '../../../shared/utils';
 import { MessageService } from 'primeng/api';
 
 @Component({
-  selector: 'app-home-panel',
-  templateUrl: './home-panel.component.html',
-  styleUrl: './home-panel.component.scss'
+    selector: 'app-home-panel',
+    templateUrl: './home-panel.component.html',
+    styleUrl: './home-panel.component.scss',
+    standalone: false
 })
 export class HomePanelComponent implements OnInit {
 

@@ -1,7 +1,8 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
 
 @Directive({
-  selector: '[appTableHover]'
+    selector: '[appTableHover]',
+    standalone: false
 })
 export class TableHoverDirective {
 

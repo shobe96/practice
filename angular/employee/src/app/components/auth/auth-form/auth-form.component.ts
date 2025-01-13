@@ -17,9 +17,10 @@ import { EmployeeSearchResult } from '../../../models/employee-search-result.mod
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-  selector: 'app-auth-form',
-  templateUrl: './auth-form.component.html',
-  styleUrl: './auth-form.component.scss'
+    selector: 'app-auth-form',
+    templateUrl: './auth-form.component.html',
+    styleUrl: './auth-form.component.scss',
+    standalone: false
 })
 export class AuthFormComponent implements OnInit, OnDestroy {
   showConfirmPassword: any;

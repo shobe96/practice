@@ -16,9 +16,10 @@ import { DepartmentService } from '../../../services/department/department.servi
 import { DepartmentSearchResult } from '../../../models/department-search-result.model';
 
 @Component({
-  selector: 'app-project-edit',
-  templateUrl: './project-edit.component.html',
-  styleUrl: './project-edit.component.scss'
+    selector: 'app-project-edit',
+    templateUrl: './project-edit.component.html',
+    styleUrl: './project-edit.component.scss',
+    standalone: false
 })
 export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
   @Input() public id: number | null = null;

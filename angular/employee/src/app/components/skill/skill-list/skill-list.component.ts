@@ -11,9 +11,10 @@ import { fireToast } from '../../../shared/utils';
 import { CrudOperations } from '../../../shared/crud-operations';
 
 @Component({
-  selector: 'app-skill-list',
-  templateUrl: './skill-list.component.html',
-  styleUrl: './skill-list.component.scss',
+    selector: 'app-skill-list',
+    templateUrl: './skill-list.component.html',
+    styleUrl: './skill-list.component.scss',
+    standalone: false
 })
 export class SkillListComponent implements OnInit, OnDestroy, CrudOperations {
   private skills$!: Subscription;

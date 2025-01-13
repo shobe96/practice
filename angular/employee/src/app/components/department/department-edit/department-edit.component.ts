@@ -7,9 +7,10 @@ import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-  selector: 'app-department-edit',
-  templateUrl: './department-edit.component.html',
-  styleUrl: './department-edit.component.scss'
+    selector: 'app-department-edit',
+    templateUrl: './department-edit.component.html',
+    styleUrl: './department-edit.component.scss',
+    standalone: false
 })
 export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
 

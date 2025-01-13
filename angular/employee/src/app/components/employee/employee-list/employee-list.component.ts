@@ -11,9 +11,10 @@ import { fireToast } from '../../../shared/utils';
 import { CrudOperations } from '../../../shared/crud-operations';
 
 @Component({
-  selector: 'app-employee-list',
-  templateUrl: './employee-list.component.html',
-  styleUrl: './employee-list.component.scss',
+    selector: 'app-employee-list',
+    templateUrl: './employee-list.component.html',
+    styleUrl: './employee-list.component.scss',
+    standalone: false
 })
 export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations {
   private employees$!: Subscription;

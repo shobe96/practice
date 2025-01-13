@@ -11,9 +11,10 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-  selector: 'app-user-list',
-  templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.scss',
+    selector: 'app-user-list',
+    templateUrl: './user-list.component.html',
+    styleUrl: './user-list.component.scss',
+    standalone: false
 })
 export class UserListComponent implements OnInit, OnDestroy {
   private users$!: Subscription;
