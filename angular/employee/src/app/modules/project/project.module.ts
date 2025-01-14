@@ -5,6 +5,7 @@ import { ProjectEditComponent } from '../../components/project/project-edit/proj
 import { ProjectListComponent } from '../../components/project/project-list/project-list.component';
 import { ProjectComponent } from '../../components/project/project.component';
 import { SharedModule } from '../shared/shared.module';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import { SharedModule } from '../shared/shared.module';
   ],
   imports: [
     SharedModule,
-    ProjectRoutingModule
+    ProjectRoutingModule,
+    FormsModule
   ]
 })
 export class ProjectModule { }

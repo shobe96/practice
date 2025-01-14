@@ -15,6 +15,7 @@ import { Employee } from '../../../models/employee.model';
 import { EmployeeService } from '../../../services/employee/employee.service';
 import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
 import { fireToast } from '../../../shared/utils';
+import { Severity } from '../../../shared/custom-types';
 
 @Component({
     selector: 'app-auth-form',
@@ -28,13 +29,13 @@ export class AuthFormComponent implements OnInit, OnDestroy {
   authFormGroup!: FormGroup;
   private authSubsription$!: Subscription;
   showPassword: boolean = false;
-  icon: PrimeIcons = PrimeIcons.EYE;
-  severity: string = "success";
+  icon: string = PrimeIcons.EYE;
+  severity: Severity = "success";
   tooltipMessage: string = "Show Password";
   isLoggin: boolean = false;
   tooltipConfirmMessage: string = "Show Confirm Password";
-  confirmIcon: PrimeIcons = PrimeIcons.EYE;
-  confirmSeverity: string = "success";
+  confirmIcon: string = PrimeIcons.EYE;
+  confirmSeverity: Severity = "success";
   private usernameSubject = new Subject<string>();
   roles: Role[] = [];
   employees: Employee[] = [];
@@ -129,7 +130,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 
   }
 
-  private setToggleOptions(icon: PrimeIcons, severity: string, tooltipMessage: string): void {
+  private setToggleOptions(icon: string, severity: Severity, tooltipMessage: string): void {
     this.icon = icon;
     this.severity = severity;
     this.tooltipMessage = tooltipMessage;

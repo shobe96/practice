@@ -8,14 +8,28 @@ import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@an
 import { SharedModule } from './modules/shared/shared.module';
 import { AuthFormComponent } from './components/auth/auth-form/auth-form.component';
 import { authInterceptor } from './shared/interceptors/auth/auth.interceptor';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura'
 
-@NgModule({ declarations: [
-        AppComponent,
-        NavBarComponent,
-        AuthFormComponent
-    ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
-        BrowserAnimationsModule,
-        AppRoutingModule,
-        SharedModule], providers: [provideHttpClient(withInterceptors([authInterceptor])), provideHttpClient(withInterceptorsFromDi())] })
+@NgModule({
+  declarations: [
+    AppComponent,
+    NavBarComponent,
+    AuthFormComponent
+  ],
+  bootstrap: [AppComponent],
+  imports: [BrowserModule,
+    BrowserAnimationsModule,
+    AppRoutingModule,
+    SharedModule],
+  providers: [
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptorsFromDi()),
+    providePrimeNG({
+      theme: {
+        preset: Aura
+      }
+    })
+  ]
+})
 export class AppModule { }

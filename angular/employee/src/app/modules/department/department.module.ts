@@ -4,6 +4,7 @@ import { DepartmentComponent } from '../../components/department/department.comp
 import { DepartmentListComponent } from '../../components/department/department-list/department-list.component';
 import { DepartmentEditComponent } from '../../components/department/department-edit/department-edit.component';
 import { SharedModule } from '../shared/shared.module';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -14,7 +15,8 @@ import { SharedModule } from '../shared/shared.module';
   ],
   imports: [
     DepartmentRoutingModule,
-    SharedModule
+    SharedModule,
+    FormsModule
   ]
 })
 export class DepartmentModule { }

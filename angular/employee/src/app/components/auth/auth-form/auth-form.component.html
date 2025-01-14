@@ -36,10 +36,10 @@
       />
 
       <p-button
-        icon="{{icon}}"
+        [icon]="icon"
         [rounded]="true"
         (onClick)="togglePasswordVisibility()"
-        severity="{{ severity }}"
+        [severity]="severity"
         [pTooltip]="toggleVisibilityTooltip"
         tooltipPosition="top"
       />
@@ -95,10 +95,10 @@
       />
 
       <p-button
-        icon="{{confirmIcon}}"
+        [icon]="confirmIcon"
         [rounded]="true"
         (onClick)="toggleConfirmPasswordVisibility()"
-        severity="{{ confirmSeverity }}"
+        [severity]="confirmSeverity"
         [pTooltip]="toggleConfirmVisibilityTooltip"
         tooltipPosition="top"
       />
