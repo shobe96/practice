@@ -12,46 +12,35 @@ import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { ToastModule } from 'primeng/toast';
-import { TabViewModule } from 'primeng/tabview';
 import { DividerModule } from 'primeng/divider';
-import { CalendarModule } from 'primeng/calendar';
+import { TabsModule } from 'primeng/tabs';
+import { DatePickerModule } from 'primeng/datepicker';
+
+const PRIME_MODULES = [
+  MenubarModule,
+  TableModule,
+  SplitButtonModule,
+  ButtonModule,
+  SpeedDialModule,
+  PaginatorModule,
+  DialogModule,
+  InputTextModule,
+  DropdownModule,
+  AccordionModule,
+  TooltipModule,
+  MultiSelectModule,
+  ToastModule,
+  DividerModule,
+  DatePickerModule,
+  TabsModule
+];
 @NgModule({
   declarations: [],
   imports: [
-    MenubarModule,
-    TableModule,
-    SplitButtonModule,
-    ButtonModule,
-    SpeedDialModule,
-    PaginatorModule,
-    DialogModule,
-    InputTextModule,
-    DropdownModule,
-    AccordionModule,
-    TooltipModule,
-    MultiSelectModule,
-    ToastModule,
-    TabViewModule,
-    DividerModule,
-    CalendarModule
+    PRIME_MODULES
   ],
   exports: [
-    MenubarModule,
-    TableModule,
-    SplitButtonModule,
-    ButtonModule,
-    SpeedDialModule,
-    PaginatorModule,
-    DialogModule,
-    InputTextModule,
-    DropdownModule,
-    AccordionModule,
-    TooltipModule,
-    MultiSelectModule,
-    ToastModule,
-    TabViewModule,
-    DividerModule,
-    CalendarModule
+    PRIME_MODULES
   ]
 })
 export class PrimeNgModule { }

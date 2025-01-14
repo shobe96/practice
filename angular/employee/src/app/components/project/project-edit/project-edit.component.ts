@@ -77,6 +77,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
+    console.log(this.disable)
     this.initFormFields();
   }
 
@@ -145,27 +146,28 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   public onChanges(event: any) {
-    console.log(event);
     const department = this.project.department = this.projectFormGroup.controls['selectedDepartment'].value;
     const skills = this.projectFormGroup.controls['selectedSkills'].value;
     this.retrieveEmployees(skills, department);
   }
 
   private setValuesToFields(value: Project) {
-    const name = value.name ?? '';
-    const code = value.code ?? ''
-    const startDate = value.startDate ?? new Date();
-    const endDate = value.endDate ?? new Date();
-    const employees = value.employees ?? [];
-    const department = value.department ?? {};
-    const selectedSkills = value.skills ?? [];
-    this.retrieveEmployees(selectedSkills, department);
-    this.projectFormGroup.controls['name'].setValue(name);
-    this.projectFormGroup.controls['code'].setValue(code);
-    this.projectFormGroup.controls['selectedSkills'].setValue(selectedSkills);
-    this.projectFormGroup.controls['selectedDepartment'].setValue(department);
-    this.projectFormGroup.controls['selectedEmployees'].setValue(employees);
-    this.projectFormGroup.controls['startDate'].setValue(new Date(startDate));
-    this.projectFormGroup.controls['endDate'].setValue(new Date(endDate));
+    if (this.projectFormGroup) {
+      const name = value.name ?? '';
+      const code = value.code ?? ''
+      const startDate = value.startDate ?? new Date();
+      const endDate = value.endDate ?? new Date();
+      const employees = value.employees ?? [];
+      const department = value.department ?? {};
+      const selectedSkills = value.skills ?? [];
+      this.retrieveEmployees(selectedSkills, department);
+      this.projectFormGroup.controls['name'].setValue(name);
+      this.projectFormGroup.controls['code'].setValue(code);
+      this.projectFormGroup.controls['selectedSkills'].setValue(selectedSkills);
+      this.projectFormGroup.controls['selectedDepartment'].setValue(department);
+      this.projectFormGroup.controls['selectedEmployees'].setValue(employees);
+      this.projectFormGroup.controls['startDate'].setValue(new Date(startDate));
+      this.projectFormGroup.controls['endDate'].setValue(new Date(endDate));
+    }
   }
 }

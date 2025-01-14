@@ -18,7 +18,7 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     const authResponse = localStorage.getItem("authResponse");
-    if (authResponse !== null) {
+    if (authResponse) {
       let json: AuthResponse = {};
       json = JSON.parse(authResponse);
       this.roles = json.roles ?? [];
@@ -26,7 +26,7 @@ export class HomeComponent implements OnInit {
   }
 
   goToPannel(code: string | undefined) {
-    if (code !== undefined) {
+    if (code) {
       const route = `/home/${code.toLowerCase()}`
       this.router.navigate([route]);
     }

@@ -4,116 +4,156 @@
     [formGroup]="projectFormGroup"
     (ngSubmit)="submit()"
   >
-    <input formControlName="name" pInputText placeholder="Name of project" />
-    <div
-      class="validation-messages"
-      *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].touched"
-    >
-      <div *ngIf="projectFormGroup.controls['name'].errors?.['required']">
-        Name is required!
+    <div class="custom-row">
+      <div class="custom-column">
+        <input
+          formControlName="name"
+          pInputText
+          placeholder="Name of project"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].touched"
+        >
+          <div *ngIf="projectFormGroup.controls['name'].errors?.['required']">
+            Name is required!
+          </div>
+          <div *ngIf="projectFormGroup.controls['name'].errors?.['minlength']">
+            Name must be longer than 5 characters!
+          </div>
+          <div *ngIf="projectFormGroup.controls['name'].errors?.['maxlength']">
+            Name must be shorter than 25 characters!
+          </div>
+        </div>
       </div>
-      <div *ngIf="projectFormGroup.controls['name'].errors?.['minlength']">
-        Name must be longer than 5 characters!
-      </div>
-      <div *ngIf="projectFormGroup.controls['name'].errors?.['maxlength']">
-        Name must be shorter than 25 characters!
-      </div>
-    </div>
-    <input formControlName="code" pInputText placeholder="Code of project" />
-    <div
-      class="validation-messages"
-      *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].touched"
-    >
-      <div *ngIf="projectFormGroup.controls['code'].errors?.['required']">
-        Code is required!
-      </div>
-      <div *ngIf="projectFormGroup.controls['code'].errors?.['minlength']">
-        Code must be longer than 3 characters!
-      </div>
-      <div *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']">
-        Code must be shorter than 5 characters!
-      </div>
-    </div>
-    <p-dropdown
-      appendTo="body"
-      formControlName="selectedDepartment"
-      [options]="departments"
-      optionLabel="name"
-      placeholder="Select a Department"
-      dataKey="id"
-      (onChange)="onChanges($event)"
-    />
-    <p-multiSelect
-      appendTo="body"
-      [options]="skills"
-      formControlName="selectedSkills"
-      optionLabel="name"
-      placeholder="Select Skills"
-      (onChange)="onChanges($event)"
-    />
-    <div
-      class="validation-messages"
-      *ngIf="projectFormGroup.controls['selectedSkills'].invalid && projectFormGroup.controls['selectedSkills'].touched"
-    >
-      <div
-        *ngIf="projectFormGroup.controls['selectedSkills'].errors?.['required']"
-      >
-        Skills are required!
+      <div class="custom-column">
+        <input
+          formControlName="code"
+          pInputText
+          placeholder="Code of project"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].touched"
+        >
+          <div *ngIf="projectFormGroup.controls['code'].errors?.['required']">
+            Code is required!
+          </div>
+          <div *ngIf="projectFormGroup.controls['code'].errors?.['minlength']">
+            Code must be longer than 3 characters!
+          </div>
+          <div *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']">
+            Code must be shorter than 5 characters!
+          </div>
+        </div>
       </div>
     </div>
-    <label for="startDate">Start Date</label>
-    <p-calendar
-      formControlName="startDate"
-      [iconDisplay]="'input'"
-      [showIcon]="true"
-      id="startDate"
-    />
-    <div
-      class="validation-messages"
-      *ngIf="projectFormGroup.controls['startDate'].invalid && projectFormGroup.controls['startDate'].touched"
-    >
-      <div *ngIf="projectFormGroup.controls['startDate'].errors?.['required']">
-        Start Date is required!
+    <div class="custom-row">
+      <div class="custom-column">
+        <p-dropdown
+          [disabled]="disable"
+          appendTo="body"
+          formControlName="selectedDepartment"
+          [options]="departments"
+          optionLabel="name"
+          placeholder="Select a Department"
+          dataKey="id"
+          (onChange)="onChanges($event)"
+        />
+      </div>
+      <div class="custom-column">
+        <p-multiSelect
+          [disabled]="disable"
+          appendTo="body"
+          [options]="skills"
+          formControlName="selectedSkills"
+          optionLabel="name"
+          placeholder="Select Skills"
+          (onChange)="onChanges($event)"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="projectFormGroup.controls['selectedSkills'].invalid && projectFormGroup.controls['selectedSkills'].touched"
+        >
+          <div
+            *ngIf="projectFormGroup.controls['selectedSkills'].errors?.['required']"
+          >
+            Skills are required!
+          </div>
+        </div>
       </div>
     </div>
-    <label for="endDate">End Date</label>
-    <p-calendar
-      formControlName="endDate"
-      [iconDisplay]="'input'"
-      [showIcon]="true"
-      id="endDate"
-    />
-    <div
-      class="validation-messages"
-      *ngIf="projectFormGroup.controls['endDate'].invalid && projectFormGroup.controls['endDate'].touched"
-    >
-      <div *ngIf="projectFormGroup.controls['endDate'].errors?.['required']">
-        End Date is required!
+    <div class="custom-row">
+      <div class="custom-column">
+        <label for="startDate">Start Date</label>
+        <p-datepicker
+          [disabled]="disable"
+          formControlName="startDate"
+          [iconDisplay]="'input'"
+          [showIcon]="true"
+          id="startDate"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="projectFormGroup.controls['startDate'].invalid && projectFormGroup.controls['startDate'].touched"
+        >
+          <div
+            *ngIf="projectFormGroup.controls['startDate'].errors?.['required']"
+          >
+            Start Date is required!
+          </div>
+        </div>
+      </div>
+      <div class="custom-column">
+        <label for="endDate">End Date</label>
+        <p-datepicker
+          [disabled]="disable"
+          formControlName="endDate"
+          [iconDisplay]="'input'"
+          [showIcon]="true"
+          id="endDate"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="projectFormGroup.controls['endDate'].invalid && projectFormGroup.controls['endDate'].touched"
+        >
+          <div
+            *ngIf="projectFormGroup.controls['endDate'].errors?.['required']"
+          >
+            End Date is required!
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="custom-row">
+      <div class="custom-column">
+        <p-multiSelect
+          [disabled]="disable"
+          appendTo="body"
+          *ngIf="employees.length > 0"
+          [options]="employees"
+          formControlName="selectedEmployees"
+          optionLabel="name"
+          placeholder="Select Employees"
+          optionDisabled="active"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="projectFormGroup.controls['selectedEmployees'].invalid && projectFormGroup.controls['selectedEmployees'].touched"
+        >
+          <div
+            *ngIf="projectFormGroup.controls['selectedEmployees'].errors?.['required']"
+          >
+            Employees are required!
+          </div>
+        </div>
       </div>
     </div>
 
-    <p-multiSelect
-      appendTo="body"
-      *ngIf="employees.length > 0"
-      [options]="employees"
-      formControlName="selectedEmployees"
-      optionLabel="name"
-      placeholder="Select Employees"
-      optionDisabled="active"
-    />
-    <div
-      class="validation-messages"
-      *ngIf="projectFormGroup.controls['selectedEmployees'].invalid && projectFormGroup.controls['selectedEmployees'].touched"
-    >
-      <div
-        *ngIf="projectFormGroup.controls['selectedEmployees'].errors?.['required']"
-      >
-        Employees are required!
-      </div>
-    </div>
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel(false)" />
       <p-button
+      *ngIf="disable"
         severity="success"
         [disabled]="projectFormGroup.invalid"
         label="Submit"

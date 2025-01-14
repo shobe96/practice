@@ -103,6 +103,8 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
     } else {
       this.setValuesToFields({});
     }
+
+    this.disable ? this.disableFields() : this.enableFields();
   }
 
   public cancel(save: boolean) {
@@ -137,5 +139,16 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
     this.employeeFormGroup.controls['email'].setValue(email);
     this.employeeFormGroup.controls['department'].setValue(department);
     this.employeeFormGroup.controls['selectedSkills'].setValue(selectedSkills);
+  }
+
+  private disableFields(): void {
+    this.employeeFormGroup.controls['name'].disable();
+    this.employeeFormGroup.controls['surname'].disable();
+    this.employeeFormGroup.controls['email'].disable();
+  }
+  private enableFields(): void {
+    this.employeeFormGroup.controls['name'].enable();
+    this.employeeFormGroup.controls['surname'].enable();
+    this.employeeFormGroup.controls['email'].enable();
   }
 }
