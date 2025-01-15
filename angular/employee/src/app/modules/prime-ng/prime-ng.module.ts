@@ -7,7 +7,6 @@ import { SpeedDialModule } from 'primeng/speeddial';
 import { PaginatorModule } from 'primeng/paginator';
 import { DialogModule } from 'primeng/dialog';
 import { InputTextModule } from 'primeng/inputtext';
-import { DropdownModule } from 'primeng/dropdown';
 import { AccordionModule } from 'primeng/accordion';
 import { TooltipModule } from 'primeng/tooltip';
 import { MultiSelectModule } from 'primeng/multiselect';
@@ -15,8 +14,9 @@ import { ToastModule } from 'primeng/toast';
 import { DividerModule } from 'primeng/divider';
 import { TabsModule } from 'primeng/tabs';
 import { DatePickerModule } from 'primeng/datepicker';
+import { SelectModule } from 'primeng/select';
 
-const PRIME_MODULES = [
+const PRIMENG_MODULES = [
   MenubarModule,
   TableModule,
   SplitButtonModule,
@@ -25,22 +25,22 @@ const PRIME_MODULES = [
   PaginatorModule,
   DialogModule,
   InputTextModule,
-  DropdownModule,
   AccordionModule,
   TooltipModule,
   MultiSelectModule,
   ToastModule,
   DividerModule,
   DatePickerModule,
-  TabsModule
+  TabsModule,
+  SelectModule
 ];
 @NgModule({
   declarations: [],
   imports: [
-    PRIME_MODULES
+    PRIMENG_MODULES
   ],
   exports: [
-    PRIME_MODULES
+    PRIMENG_MODULES
   ]
 })
 export class PrimeNgModule { }

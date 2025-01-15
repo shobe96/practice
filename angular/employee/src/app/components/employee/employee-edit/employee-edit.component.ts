@@ -134,21 +134,27 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
     const email = value.email ?? '';
     const department = value.department ?? {};
     const selectedSkills = value.skills ?? [];
-    this.employeeFormGroup.controls['name'].setValue(name);
-    this.employeeFormGroup.controls['surname'].setValue(surname);
-    this.employeeFormGroup.controls['email'].setValue(email);
-    this.employeeFormGroup.controls['department'].setValue(department);
-    this.employeeFormGroup.controls['selectedSkills'].setValue(selectedSkills);
+    if (this.employeeFormGroup) {
+      this.employeeFormGroup.controls['name'].setValue(name);
+      this.employeeFormGroup.controls['surname'].setValue(surname);
+      this.employeeFormGroup.controls['email'].setValue(email);
+      this.employeeFormGroup.controls['department'].setValue(department);
+      this.employeeFormGroup.controls['selectedSkills'].setValue(selectedSkills);
+    }
   }
 
   private disableFields(): void {
-    this.employeeFormGroup.controls['name'].disable();
-    this.employeeFormGroup.controls['surname'].disable();
-    this.employeeFormGroup.controls['email'].disable();
+    if (this.employeeFormGroup) {
+      this.employeeFormGroup.controls['name'].disable();
+      this.employeeFormGroup.controls['surname'].disable();
+      this.employeeFormGroup.controls['email'].disable();
+    }
   }
   private enableFields(): void {
-    this.employeeFormGroup.controls['name'].enable();
-    this.employeeFormGroup.controls['surname'].enable();
-    this.employeeFormGroup.controls['email'].enable();
+    if (this.employeeFormGroup) {
+      this.employeeFormGroup.controls['name'].enable();
+      this.employeeFormGroup.controls['surname'].enable();
+      this.employeeFormGroup.controls['email'].enable();
+    }
   }
 }

@@ -95,7 +95,9 @@ export class SkillEditComponent implements OnInit, OnDestroy, OnChanges {
   private setValuesToFields(value: Skill) {
     const name = value.name ?? '';
     const description = value.description ?? '';
-    this.skillFormGroup.controls['name'].setValue(name);
-    this.skillFormGroup.controls['description'].setValue(description);
+    if (this.skillFormGroup) {
+      this.skillFormGroup.controls['name'].setValue(name);
+      this.skillFormGroup.controls['description'].setValue(description);
+    }
   }
 }

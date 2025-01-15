@@ -87,6 +87,8 @@ export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
 
   private setValuesToFields(value: Department) {
     const name = value.name ?? '';
-    this.departmentFormGroup.controls['name'].setValue(name);
+    if (this.departmentFormGroup) {
+      this.departmentFormGroup.controls['name'].setValue(name);
+    }
   }
 }

@@ -1,42 +1,45 @@
 <div class="card">
-  <p-accordion [activeIndex]="0">
-    <p-accordionTab header="Search Filters">
-      <div class="search-inputs">
-        <input
-          [(ngModel)]="roleSearch.name"
-          pInputText
-          placeholder="Name of role"
-          (keyup)="onKeyUp()"
-        />
-        <p-button
-          icon="pi pi-trash"
-          [rounded]="true"
-          (onClick)="clear()"
-          severity="danger"
-          [pTooltip]="clearFiltersTooltip"
-          tooltipPosition="top"
-        />
-        <ng-template #clearFiltersTooltip>
-          <div class="flex align-items-center">
-            <span>Clear Filters</span>
-          </div>
-        </ng-template>
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          (onClick)="refresh()"
-          severity="success"
-          [pTooltip]="refreshTooltip"
-          tooltipPosition="top"
-        />
+  <p-accordion value="0">
+    <p-accordion-panel value="0">
+      <p-accordion-header>Search Filters</p-accordion-header>
+      <p-accordion-content>
+        <div class="search-inputs">
+          <input
+            [(ngModel)]="roleSearch.name"
+            pInputText
+            placeholder="Name of role"
+            (keyup)="onKeyUp()"
+          />
+          <p-button
+            icon="pi pi-trash"
+            [rounded]="true"
+            (onClick)="clear()"
+            severity="danger"
+            [pTooltip]="clearFiltersTooltip"
+            tooltipPosition="top"
+          />
+          <ng-template #clearFiltersTooltip>
+            <div class="flex align-items-center">
+              <span>Clear Filters</span>
+            </div>
+          </ng-template>
+          <p-button
+            icon="pi pi-refresh"
+            [rounded]="true"
+            (onClick)="refresh()"
+            severity="success"
+            [pTooltip]="refreshTooltip"
+            tooltipPosition="top"
+          />
 
-        <ng-template #refreshTooltip>
-          <div class="flex align-items-center">
-            <span>Refresh List</span>
-          </div>
-        </ng-template>
-      </div>
-    </p-accordionTab>
+          <ng-template #refreshTooltip>
+            <div class="flex align-items-center">
+              <span>Refresh List</span>
+            </div>
+          </ng-template>
+        </div>
+      </p-accordion-content>
+    </p-accordion-panel>
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
   <div *ngIf="roles.length > 0">
