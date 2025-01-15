@@ -17,19 +17,21 @@ export class NavBarComponent implements OnInit {
   private messageService: MessageService = inject(MessageService);
 
   ngOnInit(): void {
+    this.authService.menuItemsSubject$.subscribe({
+      next: (value: MenuItem[]) => {
+        this.items = value;
+      },
+      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
+      complete: () => { }
+    });
+    this.checkAuthResponse();
+  }
+
+  private checkAuthResponse() {
     const authResponse = localStorage.getItem("authResponse");
     if (authResponse) {
       const json: AuthResponse = JSON.parse(authResponse);
       this.authService.updateMenuItems(true, json.roles);
-      this.items = this.authService.menuItemsSubject.value
-    } else {
-      this.authService.menuItemsSubject.subscribe({
-        next: (value: MenuItem[]) => {
-          this.items = value;
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { }
-      });
     }
   }
 }

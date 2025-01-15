@@ -4,6 +4,7 @@ import { authGuard } from './shared/guards/auth.guard';
 import { ADMIN } from './shared/authotities-constants';
 
 const routes: Routes = [
+  { path: "", redirectTo: "home", pathMatch: "full" },
   { path: "employee", loadChildren: () => import("./modules/employee/employee.module").then(m => m.EmployeeModule), canActivate: [authGuard], data: { roles: [ADMIN] } },
   { path: "department", loadChildren: () => import("./modules/department/department.module").then(m => m.DepartmentModule), canActivate: [authGuard], data: { roles: [ADMIN] } },
   { path: "auth", loadChildren: () => import("./modules/auth/auth.module").then(m => m.AuthModule) },

@@ -36,7 +36,6 @@ export class AuthFormComponent implements OnInit, OnDestroy {
   tooltipConfirmMessage: string = "Show Confirm Password";
   confirmIcon: string = PrimeIcons.EYE;
   confirmSeverity: Severity = "success";
-  private usernameSubject = new Subject<string>();
   roles: Role[] = [];
   employees: Employee[] = [];
 
@@ -86,7 +85,6 @@ export class AuthFormComponent implements OnInit, OnDestroy {
     if (this.authSubsription$) {
       this.authSubsription$.unsubscribe();
     }
-    this.usernameSubject.complete();
   }
 
   public submit(): void {
