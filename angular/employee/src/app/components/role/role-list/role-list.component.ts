@@ -28,7 +28,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
   };
   roles: Role[] = [];
   visible: boolean = false;
-  roleSearch: Role = new Role();
+  roleSearch: Role = {};
   constructor(
     private roleService: RoleService,
     private router: Router,
@@ -111,7 +111,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
   }
 
   clear() {
-    this.roleSearch = new Role();
+    this.roleSearch = {};
     this.getAllRoles();
   }
 

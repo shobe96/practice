@@ -27,7 +27,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
   private routeSubscription$!: Subscription;
   private projectSubscription$!: Subscription;
-  public project: Project = new Project();
+  public project: Project = {};
   public projectFormGroup!: FormGroup;
   public skills: Skill[] = [];
   public employees: Employee[] = [];

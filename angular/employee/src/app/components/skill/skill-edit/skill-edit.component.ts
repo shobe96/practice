@@ -19,7 +19,7 @@ export class SkillEditComponent implements OnInit, OnDestroy, OnChanges {
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
   private routeSubscription$!: Subscription;
   private skillSubscription$!: Subscription;
-  private skill: Skill = new Skill();
+  private skill: Skill = {};
   public skillFormGroup!: FormGroup;
   private route: ActivatedRoute = inject(ActivatedRoute);
   private skillService: SkillService = inject(SkillService);

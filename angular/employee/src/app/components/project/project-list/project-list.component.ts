@@ -19,7 +19,7 @@ import { CrudOperations } from '../../../shared/crud-operations';
 export class ProjectListComponent implements OnInit, OnDestroy, CrudOperations {
   private projects$!: Subscription;
   private searchSubject = new Subject<Project>();
-  public projectSearch: Project = new Project();
+  public projectSearch: Project = {};
   public projectId: number | null = 0;
   public page: PageEvent = {
     page: 0,
@@ -70,7 +70,7 @@ export class ProjectListComponent implements OnInit, OnDestroy, CrudOperations {
   }
 
   public clear(): void {
-    this.projectSearch = new Project();
+    this.projectSearch = {};
     this.getAll();
   }
 

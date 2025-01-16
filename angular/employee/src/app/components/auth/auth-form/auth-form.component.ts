@@ -25,7 +25,7 @@ import { Severity } from '../../../shared/custom-types';
 })
 export class AuthFormComponent implements OnInit, OnDestroy {
   showConfirmPassword: any;
-  authRequest: AuthRequest = new AuthRequest();
+  authRequest: AuthRequest = {};
   authFormGroup!: FormGroup;
   private authSubsription$!: Subscription;
   showPassword: boolean = false;
@@ -135,7 +135,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
   }
 
   private registerUser(): void {
-    const registerRequest: RegisterRequest = new RegisterRequest();
+    const registerRequest: RegisterRequest = {};
     registerRequest.username = this.authFormGroup.controls['username'].value;
     registerRequest.password = this.authFormGroup.controls['password'].value;
     registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;

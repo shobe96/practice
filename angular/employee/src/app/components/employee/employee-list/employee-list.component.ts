@@ -21,7 +21,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   private searchSubject = new Subject<Employee>();
   private employeeService: EmployeeService = inject(EmployeeService);
   private messageService: MessageService = inject(MessageService);
-  public employeeSearch: Employee = new Employee();
+  public employeeSearch: Employee = {};
   public employeeId: number | null = 0;
   public page: PageEvent = {
     page: 0,
@@ -72,7 +72,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   }
 
   public clear(): void {
-    this.employeeSearch = new Employee();
+    this.employeeSearch = {};
     this.getAll();
   }
 

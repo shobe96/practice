@@ -31,7 +31,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperation
   public editVisible: boolean = false;
   public modalTitle: string = '';
   public disable: boolean = false;
-  public departmentSearch: Department = new Department();
+  public departmentSearch: Department = {};
   private departmentService: DepartmentService = inject(DepartmentService);
   private messageService: MessageService = inject(MessageService);
 
@@ -66,7 +66,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperation
   }
 
   public clear(): void {
-    this.departmentSearch = new Department();
+    this.departmentSearch = {};
     this.getAll();
   }
 

@@ -19,7 +19,7 @@ export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
   private routeSubscription$!: Subscription;
   private departmentSubscription$!: Subscription;
-  public department: Department = new Department();
+  public department: Department = {};
   public departmentFormGroup!: FormGroup;
   private formBuilder: FormBuilder = inject(FormBuilder);
   private departmentService: DepartmentService = inject(DepartmentService);

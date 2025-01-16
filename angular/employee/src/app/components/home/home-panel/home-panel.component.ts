@@ -43,7 +43,7 @@ export class HomePanelComponent implements OnInit {
 
   ngOnInit(): void {
     const authResponse = localStorage.getItem("authResponse");
-    if (authResponse !== null) {
+    if (authResponse) {
       let json: AuthResponse = {};
       json = JSON.parse(authResponse);
       const roles: Role[] = json.roles ?? [];

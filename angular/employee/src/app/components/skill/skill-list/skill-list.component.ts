@@ -19,7 +19,7 @@ import { CrudOperations } from '../../../shared/crud-operations';
 export class SkillListComponent implements OnInit, OnDestroy, CrudOperations {
   private skills$!: Subscription;
   private searchSubject = new Subject<Skill>();
-  public skillSearch: Skill = new Skill();
+  public skillSearch: Skill = {};
   public skillId: number | null = 0;
   public page: PageEvent = {
     page: 0,
@@ -70,7 +70,7 @@ export class SkillListComponent implements OnInit, OnDestroy, CrudOperations {
   }
 
   public clear(): void {
-    this.skillSearch = new Skill();
+    this.skillSearch = {};
     this.getAll();
   }
 

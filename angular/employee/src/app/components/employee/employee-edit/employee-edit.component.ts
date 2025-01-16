@@ -26,7 +26,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
   private routeSubscription$!: Subscription;
   private employeeSubscription$!: Subscription;
   private departmentSubscription$!: Subscription
-  public employee: Employee = new Employee();
+  public employee: Employee = {};
   public employeeFormGroup!: FormGroup;
   public departments: Department[] = [];
   public skills: Skill[] = [];

@@ -17,7 +17,7 @@ export class RoleEditComponent implements OnInit, OnDestroy {
   id: number | null = null;
   private routeSubscription$!: Subscription;
   private roleSubscription$!: Subscription;
-  role: Role = new Role();
+  role: Role = {};
   roleFormGroup!: FormGroup;
 
   constructor(
