@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { Subject, Subscription, debounceTime } from 'rxjs';
+import { Subject, debounceTime, switchMap, takeUntil } from 'rxjs';
 import { PageEvent } from '../../../models/page-event.model';
 import { Department } from '../../../models/department.model';
 import { DepartmentService } from '../../../services/department/department.service';
@@ -8,16 +8,16 @@ import { PaginatorState } from 'primeng/paginator';
 import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
 import { CrudOperations } from '../../../shared/crud-operations';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
-    selector: 'app-department-list',
-    templateUrl: './department-list.component.html',
-    styleUrl: './department-list.component.scss',
-    standalone: false
+  selector: 'app-department-list',
+  templateUrl: './department-list.component.html',
+  styleUrl: './department-list.component.scss',
+  standalone: false
 })
-export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperations {
+export class DepartmentListComponent extends SubscriptionCleaner implements OnInit, OnDestroy, CrudOperations {
   private searchSubject = new Subject<Department>();
-  private departments$!: Subscription;
   public departmentId: number | null = 0;
   public page: PageEvent = {
     page: 0,
@@ -37,24 +37,25 @@ export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperation
 
   ngOnInit(): void {
     this.getAll();
-    this.searchSubject.pipe(debounceTime(2000)).subscribe({
-      next: (value) => {
-        this.departmentService.search(value, this.page).subscribe({
-          next: (result) => {
-            this.departments = result.departments ?? [];
-            this.page.pageCount = result.size ?? 0;
-          },
-          error: (err) => {
-            fireToast('error', 'Error', err.error.message, this.messageService);
-          },
-          complete: () => { },
-        });
-      },
-    });
+    this.searchSubject
+      .pipe(
+        debounceTime(2000),
+        switchMap((departmentSearch: Department) => this.departmentService.search(departmentSearch, this.page)),
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .pipe().subscribe({
+        next: (value: DepartmentSearchResult) => {
+          this.departments = value.departments ?? [];
+          this.page.pageCount = value.size ?? 0;
+        },
+        error: (err) => {
+          fireToast('error', 'Error', err.error.message, this.messageService);
+        },
+        complete: () => {}
+      });
   }
   ngOnDestroy(): void {
-    this.departments$.unsubscribe();
-    this.searchSubject.complete();
+    this.unsubsribe();
   }
 
   public addNew(): void {
@@ -72,7 +73,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperation
 
   public delete(): void {
     if (this.departmentId) {
-      this.departmentService.delete(this.departmentId).subscribe({
+      this.departmentService.delete(this.departmentId).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
         next: () => {
           this.retrieve();
           fireToast(
@@ -101,11 +102,12 @@ export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperation
       error: (err: any) => {
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
-      complete: () => {},
+      complete: () => { },
     };
 
-    this.departments$ = this.departmentService
+    this.departmentService
       .getAllDepartments(false, this.page)
+      .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe(departmentObserver);
   }
 
@@ -114,7 +116,7 @@ export class DepartmentListComponent implements OnInit, OnDestroy, CrudOperation
   }
 
   public goToEdit(id: number | null): void {
-    const title = id ?  `Department ${id}` : 'Add new Department'
+    const title = id ? `Department ${id}` : 'Add new Department'
     this.setEditParams(true, id, title, false);
   }
 

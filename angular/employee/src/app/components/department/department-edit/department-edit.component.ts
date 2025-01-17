@@ -1,10 +1,11 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { DepartmentService } from '../../../services/department/department.service';
 import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { takeUntil } from 'rxjs';
 
 @Component({
     selector: 'app-department-edit',
@@ -12,27 +13,23 @@ import { fireToast } from '../../../shared/utils';
     styleUrl: './department-edit.component.scss',
     standalone: false
 })
-export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
+export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
   @Input() public id: number | null = null;
   @Input() public disable: boolean = false;
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
-  private routeSubscription$!: Subscription;
-  private departmentSubscription$!: Subscription;
   public department: Department = {};
   public departmentFormGroup!: FormGroup;
   private formBuilder: FormBuilder = inject(FormBuilder);
   private departmentService: DepartmentService = inject(DepartmentService);
   private messageService: MessageService = inject(MessageService);
 
-  ngOnDestroy(): void {
-    if (this.routeSubscription$) {
-      this.routeSubscription$.unsubscribe();
-    }
+  constructor() {
+    super();
+  }
 
-    if (this.departmentSubscription$) {
-      this.departmentSubscription$.unsubscribe();
-    }
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   ngOnInit(): void {
@@ -59,7 +56,7 @@ export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
-      this.departmentSubscription$ = this.departmentService.getDepartment(this.id).subscribe(departmentObserver);
+      this.departmentService.getDepartment(this.id).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(departmentObserver);
     } else {
       this.setValuesToFields({});
     }
@@ -81,8 +78,8 @@ export class DepartmentEditComponent implements OnInit, OnDestroy, OnChanges {
       complete: () => { },
     }
     !this.id ?
-      this.departmentService.save(this.department).subscribe(departmentObserver) :
-      this.departmentService.update(this.department).subscribe(departmentObserver);
+      this.departmentService.save(this.department).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(departmentObserver) :
+      this.departmentService.update(this.department).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(departmentObserver);
   }
 
   private setValuesToFields(value: Department) {

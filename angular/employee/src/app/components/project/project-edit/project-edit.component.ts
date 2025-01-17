@@ -1,8 +1,8 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
+import { ActivatedRoute, Params } from '@angular/router';
 import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
 import { ProjectService } from '../../../services/project/project.service';
 import { fireToast } from '../../../shared/utils';
@@ -14,19 +14,18 @@ import { EmployeeService } from '../../../services/employee/employee.service';
 import { Department } from '../../../models/department.model';
 import { DepartmentService } from '../../../services/department/department.service';
 import { DepartmentSearchResult } from '../../../models/department-search-result.model';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
-    selector: 'app-project-edit',
-    templateUrl: './project-edit.component.html',
-    styleUrl: './project-edit.component.scss',
-    standalone: false
+  selector: 'app-project-edit',
+  templateUrl: './project-edit.component.html',
+  styleUrl: './project-edit.component.scss',
+  standalone: false
 })
-export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
+export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
   @Input() public id: number | null = null;
   @Input() public disable: boolean = false;
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
-  private routeSubscription$!: Subscription;
-  private projectSubscription$!: Subscription;
   public project: Project = {};
   public projectFormGroup!: FormGroup;
   public skills: Skill[] = [];
@@ -42,7 +41,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
   private departmentService: DepartmentService = inject(DepartmentService);
 
   ngOnInit(): void {
-    this.departmentService.getAllDepartments(true).subscribe({
+    this.departmentService.getAllDepartments(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
       next: (value: DepartmentSearchResult) => {
         this.departments = value.departments ?? [];
       },
@@ -51,7 +50,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
       },
       complete: () => { }
     })
-    this.skillService.getAllSkills(true).subscribe({
+    this.skillService.getAllSkills(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
       next: (value: SkillSearchResult) => {
         this.skills = value.skills ?? [];
       },
@@ -61,19 +60,14 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
       complete: () => { }
     });
     this.buildForm();
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
+    this.route.params.pipe(takeUntil(this.componentIsDestroyed$)).subscribe((params: Params) => {
       this.id = params["projectId"] ?? null;
       this.initFormFields();
     });
   }
 
   ngOnDestroy(): void {
-    if (this.routeSubscription$) {
-      this.routeSubscription$.unsubscribe();
-    }
-    if (this.projectSubscription$) {
-      this.projectSubscription$.unsubscribe();
-    }
+    this.unsubsribe();
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
@@ -102,7 +96,7 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { }
       };
-      this.projectSubscription$ = this.projectService.getProject(this.id).subscribe(projectObserver);
+      this.projectService.getProject(this.id).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(projectObserver);
     } else {
       this.setValuesToFields({});
     }
@@ -128,14 +122,13 @@ export class ProjectEditComponent implements OnInit, OnDestroy, OnChanges {
       error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
-    !this.id ? this.projectService.save(this.project).subscribe(projectObserver) : this.projectService.update(this.project).subscribe(projectObserver);
+    !this.id ? this.projectService.save(this.project).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(projectObserver) : this.projectService.update(this.project).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(projectObserver);
   }
 
   private retrieveEmployees(skills: Skill[], department: Department) {
     if (skills.length > 0 && Object.keys(department).length > 0) {
-      this.employeeService.filterEmployeesByActiveAndSkills(skills, department).subscribe({
+      this.employeeService.filterEmployeesByActiveAndSkills(skills, department).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
         next: (value: Employee[]) => {
-          // this.projectFormGroup.controls['selectedEmployees'].setValue([]);
           this.employees = value;
         },
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },

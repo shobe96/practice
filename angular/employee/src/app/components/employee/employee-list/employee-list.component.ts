@@ -1,23 +1,23 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { EmployeeService } from '../../../services/employee/employee.service';
 import { Employee } from '../../../models/employee.model';
-import { Subject, Subscription, debounceTime } from 'rxjs';
-import { Router } from '@angular/router';
+import { Observable, Subject, debounceTime, switchMap, takeUntil } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { PageEvent } from '../../../models/page-event.model';
 import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
 import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
 import { CrudOperations } from '../../../shared/crud-operations';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
 
 @Component({
-    selector: 'app-employee-list',
-    templateUrl: './employee-list.component.html',
-    styleUrl: './employee-list.component.scss',
-    standalone: false
+  selector: 'app-employee-list',
+  templateUrl: './employee-list.component.html',
+  styleUrl: './employee-list.component.scss',
+  standalone: false
 })
-export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations {
-  private employees$!: Subscription;
+export class EmployeeListComponent extends SubscriptionCleaner implements OnInit, OnDestroy, CrudOperations {
   private searchSubject = new Subject<Employee>();
   private employeeService: EmployeeService = inject(EmployeeService);
   private messageService: MessageService = inject(MessageService);
@@ -35,30 +35,34 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   public editVisible: boolean = false;
   public modalTitle: string = '';
   public disable: boolean = false;
+  public employees$!: Observable<Employee[]>;
+  public size$!: Observable<number>;
+  public employeeResponse$!: Observable<EmployeeSearchResult>;
+  public employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
+
+  constructor() {
+    super();
+  }
 
   ngOnInit(): void {
-    this.getAll();
-    this.searchSubject.pipe(debounceTime(2000)).subscribe({
-      next: (value) => {
-        this.employeeService.search(value, this.page).subscribe({
-          next: (value) => {
-            this.employees = value.employees ?? [];
-            this.page.pageCount = value.size ?? 0;
-          },
-          error: (err) => {
-            fireToast('error', 'Error', err.error.message, this.messageService);
-          },
-        });
-      },
-      error: (err) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-    });
+    this.employeeListFacade.getAll(false, this.page);
+    this.searchSubject
+      .pipe(
+        debounceTime(2000),
+        takeUntil(this.componentIsDestroyed$)
+      ).subscribe({
+        next: (value: Employee) => {
+
+        },
+        error: (err) => {
+          fireToast('error', 'Error', err.error.message, this.messageService);
+        },
+        complete: () => { }
+      });
   }
 
   ngOnDestroy(): void {
-    this.employees$.unsubscribe();
-    this.searchSubject.complete();
+    this.unsubsribe();
   }
 
   public addNew(): void {
@@ -78,7 +82,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
 
   public delete(): void {
     if (this.employeeId) {
-      this.employeeService.delete(this.employeeId).subscribe({
+      this.employeeService.delete(this.employeeId).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
         next: () => {
           this.retrieve();
           fireToast(
@@ -108,11 +112,10 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
       error: (err: any) => {
         fireToast('error', 'Error', err.message, this.messageService);
       },
-      complete: () => {},
+      complete: () => { },
     };
-    this.employees$ = this.employeeService
-      .getAllEmployees(false, this.page)
-      .subscribe(employeesObserver);
+    this.employeeService.getAllEmployees(false, this.page);
+    this.employeeResponse$ = this.employeeService.getEmployeeResponse();
   }
 
   public goToDetails(id: number): void {
@@ -120,7 +123,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   }
 
   public goToEdit(id: number | null): void {
-    const title = id ?  `Employee ${id}` : 'Add new Employee'
+    const title = id ? `Employee ${id}` : 'Add new Employee'
     this.setEditParams(true, id, title, false);
   }
 
@@ -139,7 +142,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
     this.page.rows = event.rows ?? 0;
-    this.retrieve();
+    this.employeeListFacade.retrieve(this.employeeSearch, this.page);
   }
 
   public refresh(): void {
@@ -151,7 +154,7 @@ export class EmployeeListComponent implements OnInit, OnDestroy, CrudOperations 
   }
 
   public search(): void {
-    this.searchSubject.next(this.employeeSearch);
+    this.employeeListFacade.search(this.employeeSearch, this.page);
   }
 
   public setEditParams(editVisible: boolean, id: number | null, modalTitle: string, disable: boolean): void {

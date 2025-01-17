@@ -93,7 +93,7 @@ export class AuthService {
     }
   ];
 
-  public menuItemsSubject$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this.items);
+  private menuItemsSubject$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this.items);
 
   public login(request: AuthRequest): Observable<AuthResponse> {
     return this.http.post(`${this.backendURL}${this.baseUrl}/login`, request);
@@ -136,11 +136,14 @@ export class AuthService {
 
     this.items[2].items![2].visible = !isloggedIn;
     this.items[2].items![4].visible = isloggedIn;
-    localStorage.setItem('navBarState', JSON.stringify(this.items));
     this.menuItemsSubject$.next(this.items);
   }
 
   public delete(userId: number): Observable<void> {
     return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${userId}`);
+  }
+
+  public getMenuItems(): Observable<MenuItem[]> {
+    return this.menuItemsSubject$;
   }
 }

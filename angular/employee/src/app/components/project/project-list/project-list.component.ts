@@ -114,7 +114,8 @@ export class ProjectListComponent implements OnInit, OnDestroy, CrudOperations {
   }
 
   public goToDetails(id: number): void {
-    this.setEditParams(true, id, `Project ${id}`, true);
+    const route = `/project/details/${id}`
+    this.router.navigate([route]);
   }
 
   public goToEdit(id: number | null): void {

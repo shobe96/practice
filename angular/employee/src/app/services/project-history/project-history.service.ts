@@ -14,7 +14,7 @@ export class ProjectHistoryService {
 
   constructor(private http: HttpClient) { }
 
-  public getProjectsHistoryOfEmployee(employeeId: number): Observable<ProjectHistory[]> {
+  public getProjectsHistoryOfEmployee(employeeId: number | undefined): Observable<ProjectHistory[]> {
     return this.http.get<ProjectHistory[]>(`${this.backendURL}${this.baseUrl}/${employeeId}`);
   }
 }

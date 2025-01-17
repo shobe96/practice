@@ -166,8 +166,9 @@
         </div>
       </div>
       <p-select
+        *ngIf="employeeResponse$ | async as data"
         formControlName="employee"
-        [options]="employees"
+        [options]="data.employees"
         optionLabel="name"
         placeholder="Select a Employee"
         dataKey="id"

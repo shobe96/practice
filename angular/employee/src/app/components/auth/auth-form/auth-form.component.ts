@@ -1,7 +1,7 @@
-import { Component, inject, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { AuthRequest } from '../../../models/auth-request.model';
 import { AuthService } from '../../../services/auth/auth.service';
-import { Subject, Subscription } from 'rxjs';
+import { Observable, takeUntil } from 'rxjs';
 import { AuthResponse } from '../../../models/auth-response.model';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { StrongPasswordRegx } from '../../../shared/constants.model';
@@ -16,30 +16,28 @@ import { EmployeeService } from '../../../services/employee/employee.service';
 import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
 import { fireToast } from '../../../shared/utils';
 import { Severity } from '../../../shared/custom-types';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
-    selector: 'app-auth-form',
-    templateUrl: './auth-form.component.html',
-    styleUrl: './auth-form.component.scss',
-    standalone: false
+  selector: 'app-auth-form',
+  templateUrl: './auth-form.component.html',
+  styleUrl: './auth-form.component.scss',
+  standalone: false
 })
-export class AuthFormComponent implements OnInit, OnDestroy {
-  showConfirmPassword: any;
-  authRequest: AuthRequest = {};
-  authFormGroup!: FormGroup;
-  private authSubsription$!: Subscription;
-  showPassword: boolean = false;
-  icon: string = PrimeIcons.EYE;
-  severity: Severity = "success";
-  tooltipMessage: string = "Show Password";
-  isLoggin: boolean = false;
-  tooltipConfirmMessage: string = "Show Confirm Password";
-  confirmIcon: string = PrimeIcons.EYE;
-  confirmSeverity: Severity = "success";
-  roles: Role[] = [];
-  employees: Employee[] = [];
-
-  @ViewChild('menubar') menuBar: any;
+export class AuthFormComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+  public showConfirmPassword: any;
+  public authRequest: AuthRequest = {};
+  public authFormGroup!: FormGroup;
+  public showPassword: boolean = false;
+  public icon: string = PrimeIcons.EYE;
+  public severity: Severity = "success";
+  public tooltipMessage: string = "Show Password";
+  public isLoggin: boolean = false;
+  public tooltipConfirmMessage: string = "Show Confirm Password";
+  public confirmIcon: string = PrimeIcons.EYE;
+  public confirmSeverity: Severity = "success";
+  public roles: Role[] = [];
+  public employees: Employee[] = [];
 
   private authService: AuthService = inject(AuthService);
   private formBuilder: FormBuilder = inject(FormBuilder);
@@ -47,26 +45,19 @@ export class AuthFormComponent implements OnInit, OnDestroy {
   private roleService: RoleService = inject(RoleService);
   private messageService: MessageService = inject(MessageService);
   private employeeService: EmployeeService = inject(EmployeeService);
+  public employeeResponse$!: Observable<EmployeeSearchResult>;
 
-
-  constructor() { }
+  constructor() {
+    super();
+  }
 
   ngOnInit(): void {
 
     this.isLoggin = this.router.url.includes("login");
     if (!this.isLoggin) {
-      this.employeeService.getAllEmployees(true).subscribe({
-        next: (value: EmployeeSearchResult) => {
-          this.employees = value.employees ?? [];
-        },
-        error: (err: any) => {
-          fireToast('error', `${err.statusText}`, 'Failed to retrieve employees.', this.messageService);
-        },
-        complete: () => {
-
-        },
-      });
-      this.roleService.getAllRoles(true).subscribe({
+      this.employeeService.getAllEmployees(true);
+      this.employeeResponse$ = this.employeeService.getEmployeeResponse();
+      this.roleService.getAllRoles(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
         next: (value: RoleSearchResult) => {
           this.roles = value.roles ?? [];
         },
@@ -82,9 +73,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
 
 
   ngOnDestroy(): void {
-    if (this.authSubsription$) {
-      this.authSubsription$.unsubscribe();
-    }
+    this.unsubsribe();
   }
 
   public submit(): void {
@@ -140,7 +129,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
     registerRequest.password = this.authFormGroup.controls['password'].value;
     registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
     registerRequest.employee = this.authFormGroup.controls['employee'].value;
-    this.authSubsription$ = this.authService.registerUser(registerRequest).subscribe({
+    this.authService.registerUser(registerRequest).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
       next: () => {
         fireToast('success', 'Success', 'Registered successfully', this.messageService);
         this.router.navigate(["user/list"]);
@@ -152,7 +141,7 @@ export class AuthFormComponent implements OnInit, OnDestroy {
   private loginUser(): void {
     this.authRequest.username = this.authFormGroup.controls['username'].value;
     this.authRequest.password = this.authFormGroup.controls['password'].value;
-    this.authSubsription$ = this.authService.login(this.authRequest).subscribe({
+    this.authService.login(this.authRequest).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
       next: (value: AuthResponse) => {
         localStorage.setItem('authResponse', JSON.stringify(value));
         this.authService.autoLogout(value.expiration ?? 0);

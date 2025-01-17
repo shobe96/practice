@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { EmployeeService } from '../../../services/employee/employee.service';
 import { Employee } from '../../../models/employee.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
@@ -11,6 +11,7 @@ import { fireToast } from '../../../shared/utils';
 import { Skill } from '../../../models/skill.model';
 import { SkillService } from '../../../services/skill/skill.service';
 import { SkillSearchResult } from '../../../models/skill-search-result.model';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
     selector: 'app-employee-edit',
@@ -18,14 +19,11 @@ import { SkillSearchResult } from '../../../models/skill-search-result.model';
     styleUrl: './employee-edit.component.scss',
     standalone: false
 })
-export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
+export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
   @Input() public id: number | null = null;
   @Input() public disable: boolean = false;
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
-  private routeSubscription$!: Subscription;
-  private employeeSubscription$!: Subscription;
-  private departmentSubscription$!: Subscription
   public employee: Employee = {};
   public employeeFormGroup!: FormGroup;
   public departments: Department[] = [];
@@ -42,21 +40,11 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    if (this.routeSubscription$) {
-      this.routeSubscription$.unsubscribe();
-    }
-
-    if (this.employeeSubscription$) {
-      this.employeeSubscription$.unsubscribe();
-    }
-
-    if (this.departmentSubscription$) {
-      this.departmentSubscription$.unsubscribe();
-    }
+    this.unsubsribe();
   }
 
   ngOnInit(): void {
-    this.departmentSubscription$ = this.departmentService.getAllDepartments(true).subscribe({
+    this.departmentService.getAllDepartments(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
       next: (value: DepartmentSearchResult) => {
         this.departments = value.departments ?? [];
       },
@@ -66,7 +54,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
       complete: () => { }
     });
 
-    this.skillService.getAllSkills(true).subscribe({
+    this.skillService.getAllSkills(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
       next: (value: SkillSearchResult) => {
         this.skills = value.skills ?? [];
       },
@@ -99,7 +87,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
         complete: () => { console.log('Completed') }
       };
-      this.employeeSubscription$ = this.employeeService.getEmployee(this.id).subscribe(employeeObserver);
+      this.employeeService.getEmployee(this.id).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(employeeObserver);
     } else {
       this.setValuesToFields({});
     }
@@ -125,7 +113,7 @@ export class EmployeeEditComponent implements OnInit, OnDestroy, OnChanges {
       error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
       complete: () => { },
     }
-    !this.id ? this.employeeService.save(this.employee).subscribe(employeeObserver) : this.employeeService.update(this.employee).subscribe(employeeObserver);
+    !this.id ? this.employeeService.save(this.employee).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(employeeObserver) : this.employeeService.update(this.employee).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(employeeObserver);
   }
 
   private setValuesToFields(value: Employee) {
