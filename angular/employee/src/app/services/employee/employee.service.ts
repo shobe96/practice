@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
+import { inject, Injectable } from '@angular/core';
+import { BehaviorSubject, Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { Employee } from '../../models/employee.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';
@@ -14,19 +14,17 @@ import { Department } from '../../models/department.model';
 })
 export class EmployeeService {
   private backendURL = environment.BACKEND_URL;
-  private baseUrl = "/api/employees"
+  private baseUrl = "/api/employees";
+  private employeeResponseSubject$: BehaviorSubject<EmployeeSearchResult> = new BehaviorSubject<EmployeeSearchResult>({});
 
-  constructor(private http: HttpClient) { }
+  private http: HttpClient = inject(HttpClient);
 
   public getAllEmployees(all: boolean, page?: PageEvent): Observable<EmployeeSearchResult> {
-    if (all) {
-      return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}?all=${all}`)
-    } else {
-      let queryParams: string = page?.page === undefined ? `` : `page=${page.page}`;
-      queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
-      queryParams += ``;
-      return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
-    }
+    const url =
+      all
+        ? `${this.backendURL}${this.baseUrl}?all=${all}` :
+        `${this.backendURL}${this.baseUrl}?${buildPaginationParams(page)}&sort=asc&all=${all}`;
+    return this.http.get<EmployeeSearchResult>(url);
   }
 
   public getEmployee(employeeId: number): Observable<Employee> {
@@ -59,5 +57,9 @@ export class EmployeeService {
 
   public findByDepartment(departmentId: number, page: PageEvent): Observable<EmployeeSearchResult> {
     return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/get-by-department/${departmentId}?page=${page.page}&size=${page.rows}&sort=${page.sort}`);
+  }
+
+  public getEmployeeResponse() {
+    return this.employeeResponseSubject$;
   }
 }
