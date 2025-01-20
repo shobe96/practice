@@ -15,7 +15,6 @@ import { Department } from '../../models/department.model';
 export class EmployeeService {
   private backendURL = environment.BACKEND_URL;
   private baseUrl = "/api/employees";
-  private employeeResponseSubject$: BehaviorSubject<EmployeeSearchResult> = new BehaviorSubject<EmployeeSearchResult>({});
 
   private http: HttpClient = inject(HttpClient);
 
@@ -57,9 +56,5 @@ export class EmployeeService {
 
   public findByDepartment(departmentId: number, page: PageEvent): Observable<EmployeeSearchResult> {
     return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/get-by-department/${departmentId}?page=${page.page}&size=${page.rows}&sort=${page.sort}`);
-  }
-
-  public getEmployeeResponse() {
-    return this.employeeResponseSubject$;
   }
 }

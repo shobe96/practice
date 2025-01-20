@@ -56,7 +56,6 @@ export class AuthFormComponent extends SubscriptionCleaner implements OnInit, On
     this.isLoggin = this.router.url.includes("login");
     if (!this.isLoggin) {
       this.employeeService.getAllEmployees(true);
-      this.employeeResponse$ = this.employeeService.getEmployeeResponse();
       this.roleService.getAllRoles(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
         next: (value: RoleSearchResult) => {
           this.roles = value.roles ?? [];

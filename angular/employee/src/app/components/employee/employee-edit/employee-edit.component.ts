@@ -14,10 +14,10 @@ import { SkillSearchResult } from '../../../models/skill-search-result.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
-    selector: 'app-employee-edit',
-    templateUrl: './employee-edit.component.html',
-    styleUrl: './employee-edit.component.scss',
-    standalone: false
+  selector: 'app-employee-edit',
+  templateUrl: './employee-edit.component.html',
+  styleUrl: './employee-edit.component.scss',
+  standalone: false
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
@@ -85,7 +85,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
           this.setValuesToFields(value);
         },
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
+        complete: () => { }
       };
       this.employeeService.getEmployee(this.id).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(employeeObserver);
     } else {
@@ -96,7 +96,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   }
 
   public cancel(save: boolean) {
-    this.cancelEmiitter.emit({ visible: false, save: save});
+    this.cancelEmiitter.emit({ visible: false, save: save });
   }
 
   public submit() {

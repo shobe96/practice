@@ -3,6 +3,7 @@ import { Skill } from './skill.model';
 import { User } from './user.model';
 
 export interface Employee {
+  [key: string]: number | string | boolean | undefined | Department | Skill[];
   id?: number;
   name?: string;
   surname?: string;
