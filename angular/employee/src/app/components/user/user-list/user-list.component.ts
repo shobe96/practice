@@ -11,10 +11,10 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-    selector: 'app-user-list',
-    templateUrl: './user-list.component.html',
-    styleUrl: './user-list.component.scss',
-    standalone: false
+  selector: 'app-user-list',
+  templateUrl: './user-list.component.html',
+  styleUrl: './user-list.component.scss',
+  standalone: false
 })
 export class UserListComponent implements OnInit, OnDestroy {
   private users$!: Subscription;
@@ -34,7 +34,7 @@ export class UserListComponent implements OnInit, OnDestroy {
     private router: Router,
     private messageService: MessageService,
     private authService: AuthService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.getAllUsers();
@@ -52,9 +52,7 @@ export class UserListComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         fireToast('error', 'Error', err.message, this.messageService);
       },
-      complete: () => {
-        console.log('Completed');
-      },
+      complete: () => { },
     };
     this.users$ = this.userService
       .getAllUsers(this.page)
@@ -76,9 +74,7 @@ export class UserListComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
-      complete: () => {
-        console.log('Completed');
-      },
+      complete: () => { },
     });
   }
   onPageChange(event: PaginatorState) {

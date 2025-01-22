@@ -66,18 +66,16 @@
           [disabled]="disable"
           appendTo="body"
           [options]="skills"
-          formControlName="selectedSkills"
+          formControlName="skills"
           optionLabel="name"
           placeholder="Select Skills"
           (onChange)="onChanges($event)"
         />
         <div
           class="validation-messages"
-          *ngIf="projectFormGroup.controls['selectedSkills'].invalid && projectFormGroup.controls['selectedSkills'].touched"
+          *ngIf="projectFormGroup.controls['skills'].invalid && projectFormGroup.controls['skills'].touched"
         >
-          <div
-            *ngIf="projectFormGroup.controls['selectedSkills'].errors?.['required']"
-          >
+          <div *ngIf="projectFormGroup.controls['skills'].errors?.['required']">
             Skills are required!
           </div>
         </div>
@@ -153,7 +151,7 @@
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel(false)" />
       <p-button
-      *ngIf="disable"
+        *ngIf="disable"
         severity="success"
         [disabled]="projectFormGroup.invalid"
         label="Submit"

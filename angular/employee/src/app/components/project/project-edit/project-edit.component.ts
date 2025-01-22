@@ -80,7 +80,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
       startDate: [{}, [Validators.required]],
       endDate: [{}, [Validators.required]],
-      selectedSkills: [[], [Validators.required]],
+      skills: [[], [Validators.required]],
       selectedEmployees: [[], [Validators.required]],
       selectedDepartment: [{}, [Validators.required]]
     });
@@ -109,7 +109,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
   public submit() {
     this.project.name = this.projectFormGroup.controls['name'].value;
     this.project.code = this.projectFormGroup.controls['code'].value;
-    this.project.skills = this.projectFormGroup.controls['selectedSkills'].value;
+    this.project.skills = this.projectFormGroup.controls['skills'].value;
     this.project.employees = this.projectFormGroup.controls['selectedEmployees'].value;
     this.project.department = this.projectFormGroup.controls['selectedDepartment'].value;
     this.project.startDate = this.projectFormGroup.controls['startDate'].value;
@@ -139,7 +139,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
 
   public onChanges(_event: any) {
     const department = this.project.department = this.projectFormGroup.controls['selectedDepartment'].value;
-    const skills = this.projectFormGroup.controls['selectedSkills'].value;
+    const skills = this.projectFormGroup.controls['skills'].value;
     this.retrieveEmployees(skills, department);
   }
 
@@ -151,12 +151,12 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
       const endDate = value.endDate ?? new Date();
       const employees = value.employees ?? [];
       const department = value.department ?? {};
-      const selectedSkills = value.skills ?? [];
-      this.retrieveEmployees(selectedSkills, department);
+      const skills = value.skills ?? [];
+      this.retrieveEmployees(skills, department);
       if (this.projectFormGroup) {
         this.projectFormGroup.controls['name'].setValue(name);
         this.projectFormGroup.controls['code'].setValue(code);
-        this.projectFormGroup.controls['selectedSkills'].setValue(selectedSkills);
+        this.projectFormGroup.controls['skills'].setValue(skills);
         this.projectFormGroup.controls['selectedDepartment'].setValue(department);
         this.projectFormGroup.controls['selectedEmployees'].setValue(employees);
         this.projectFormGroup.controls['startDate'].setValue(new Date(startDate));

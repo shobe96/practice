@@ -78,27 +78,33 @@
           </div>
         </div>
       </div>
-      <div class="custom-column">
-        <p-select
-          [disabled]="disable"
-          [virtualScroll]="true"
-          appendTo="body"
-          formControlName="department"
-          [options]="departments"
-          optionLabel="name"
-          placeholder="Select a Department"
-          dataKey="id"
-        />
+    </div>
+    <div *ngIf="employeeEditFacade.viewModel$ | async as data">
+      <div class="custom-row">
+        <div class="custom-column">
+          <p-select
+            [disabled]="disable"
+            [virtualScroll]="true"
+            appendTo="body"
+            formControlName="department"
+            [options]="data.departments"
+            optionLabel="name"
+            placeholder="Select a Department"
+            dataKey="id"
+          />
+        </div>
+        <div class="custom-column">
+          <p-multiSelect
+            [disabled]="disable"
+            appendTo="body"
+            [options]="data.skills"
+            formControlName="skills"
+            optionLabel="name"
+            placeholder="Select Skills"
+          />
+        </div>
       </div>
     </div>
-    <p-multiSelect
-      [disabled]="disable"
-      appendTo="body"
-      [options]="skills"
-      formControlName="selectedSkills"
-      optionLabel="name"
-      placeholder="Select Skills"
-    />
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel(false)" />
       <p-button

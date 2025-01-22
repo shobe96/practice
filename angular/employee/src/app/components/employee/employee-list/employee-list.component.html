@@ -88,7 +88,7 @@
             <p-button
               icon="pi pi-eye"
               [rounded]="true"
-              (onClick)="goToDetails(employee.id)"
+              (onClick)="goToDetails(employee)"
               severity="success"
               [pTooltip]="detailsTooltip"
               tooltipPosition="top"
@@ -101,7 +101,7 @@
             <p-button
               icon="pi pi-pencil"
               [rounded]="true"
-              (onClick)="goToEdit(employee.id)"
+              (onClick)="goToEdit(employee)"
               severity="warn"
               [pTooltip]="editTooltip"
               tooltipPosition="top"
@@ -176,6 +176,7 @@
         [id]="data.dialogOptions.employeeId"
         (cancelEmiitter)="handleCancel($event)"
         [disable]="data.dialogOptions.disable"
+        [employee]="data.dialogOptions.employee"
       ></app-employee-edit>
     </p-dialog>
   </div>

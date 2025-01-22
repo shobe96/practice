@@ -65,38 +65,20 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
 
   public delete(): void {
     this.employeeListFacade.delete(this.employeeId, this.employeeSearch);
-    // if (this.employeeId) {
-    //   this.employeeService.delete(this.employeeId).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
-    //     next: () => {
-    //       // this.retrieve();
-    //       fireToast(
-    //         'success',
-    //         'success',
-    //         `Employee with id ${this.employeeId} has been deleted.`,
-    //         this.messageService
-    //       );
-    //       this.showDeleteDialog(false);
-    //     },
-    //     error: (err: any) => {
-    //       fireToast('error', 'Error', err.error.message, this.messageService);
-    //     },
-    //     complete: () => { },
-    //   });
-    // }
   }
 
-  public goToDetails(id: number): void {
-    this.employeeListFacade.setDialogParams(id, `Employee ${id}`, true, false, false);
+  public goToDetails(employee: Employee): void {
+    this.employeeListFacade.setDialogParams(employee, `Employee ${employee.id}`, true, false, true);
   }
 
-  public goToEdit(id: number | null): void {
-    const title = id ? `Employee ${id}` : 'Add new Employee';
-    this.employeeListFacade.setDialogParams(id, title, true, false, false);
+  public goToEdit(employee: Employee | null): void {
+    const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
+    this.employeeListFacade.setDialogParams(employee, title, true, false, false);
   }
 
   public handleCancel(event: any): void {
-    this.editVisible = event.visible;
     if (event.save) {
+      this.employeeListFacade.setDialogParams(null, '', event.visible, false, false);
       this.refresh();
     }
   }
@@ -111,7 +93,7 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
 
   public showDeleteDialog(visible: boolean, id?: number): void {
     this.employeeId = id ?? 0;
-    this.employeeListFacade.setDialogParams(this.employeeId, 'Warning', false, visible, false);
+    this.employeeListFacade.setDialogParams(null, 'Warning', false, visible, false);
   }
 
   private subsribeToFormGroup() {

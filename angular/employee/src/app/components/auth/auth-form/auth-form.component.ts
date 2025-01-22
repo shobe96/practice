@@ -4,7 +4,7 @@ import { AuthService } from '../../../services/auth/auth.service';
 import { Observable, takeUntil } from 'rxjs';
 import { AuthResponse } from '../../../models/auth-response.model';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { StrongPasswordRegx } from '../../../shared/constants.model';
+import { enumSeverity, StrongPasswordRegx } from '../../../shared/constants.model';
 import { MessageService, PrimeIcons } from 'primeng/api';
 import { Router } from '@angular/router';
 import { RoleService } from '../../../services/role/role.service';
@@ -61,7 +61,7 @@ export class AuthFormComponent extends SubscriptionCleaner implements OnInit, On
           this.roles = value.roles ?? [];
         },
         error: (err: any) => {
-          !err.status ? fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService) : fireToast('error', 'Error', `${err.message}`, this.messageService);
+          !err.status ? fireToast(enumSeverity.error, `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService) : fireToast('error', 'Error', `${err.message}`, this.messageService);
         },
         complete: () => { }
       })

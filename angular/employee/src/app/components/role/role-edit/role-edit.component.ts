@@ -8,10 +8,10 @@ import { RoleService } from '../../../services/role/role.service';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-    selector: 'app-role-edit',
-    templateUrl: './role-edit.component.html',
-    styleUrl: './role-edit.component.scss',
-    standalone: false
+  selector: 'app-role-edit',
+  templateUrl: './role-edit.component.html',
+  styleUrl: './role-edit.component.scss',
+  standalone: false
 })
 export class RoleEditComponent implements OnInit, OnDestroy {
   id: number | null = null;
@@ -62,7 +62,7 @@ export class RoleEditComponent implements OnInit, OnDestroy {
           this.roleFormGroup.controls['description'].setValue(value.description);
         },
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
+        complete: () => { }
       };
       this.roleSubscription$ = this.roleService.getRole(this.id).subscribe(roleObserver);
     }

@@ -8,10 +8,10 @@ import { SkillService } from '../../../services/skill/skill.service';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-    selector: 'app-skill-edit',
-    templateUrl: './skill-edit.component.html',
-    styleUrl: './skill-edit.component.scss',
-    standalone: false
+  selector: 'app-skill-edit',
+  templateUrl: './skill-edit.component.html',
+  styleUrl: './skill-edit.component.scss',
+  standalone: false
 })
 export class SkillEditComponent implements OnInit, OnDestroy, OnChanges {
   @Input() public id: number | null = null;
@@ -63,7 +63,7 @@ export class SkillEditComponent implements OnInit, OnDestroy, OnChanges {
           this.setValuesToFields(value);
         },
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
+        complete: () => { }
       };
       this.skillSubscription$ = this.skillService.getSkill(this.id).subscribe(skillObserver);
     } else {

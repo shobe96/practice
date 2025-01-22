@@ -29,7 +29,6 @@ export class DepartmentService {
     }
   }
   private errorHandler(errorRes: HttpErrorResponse) {
-    console.log(errorRes);
     let errorMessage = 'Error occurred!';
     return throwError(() => new Error(errorMessage));
   }

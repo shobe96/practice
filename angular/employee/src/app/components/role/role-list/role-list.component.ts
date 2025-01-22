@@ -10,10 +10,10 @@ import { MessageService } from 'primeng/api';
 import { fireToast } from '../../../shared/utils';
 
 @Component({
-    selector: 'app-role-list',
-    templateUrl: './role-list.component.html',
-    styleUrl: './role-list.component.scss',
-    standalone: false
+  selector: 'app-role-list',
+  templateUrl: './role-list.component.html',
+  styleUrl: './role-list.component.scss',
+  standalone: false
 })
 export class RoleListComponent implements OnInit, OnDestroy {
   private searchSubject = new Subject<Role>();
@@ -74,9 +74,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
-      complete: () => {
-        console.log('Completed');
-      },
+      complete: () => { },
     };
 
     this.roles$ = this.roleService
@@ -148,9 +146,7 @@ export class RoleListComponent implements OnInit, OnDestroy {
       error: (err: any) => {
         fireToast('error', 'Error', err.error.message, this.messageService);
       },
-      complete: () => {
-        console.log('Completed');
-      },
+      complete: () => { },
     });
   }
 

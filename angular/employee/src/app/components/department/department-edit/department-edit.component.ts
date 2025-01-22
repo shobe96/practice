@@ -8,10 +8,10 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';
 
 @Component({
-    selector: 'app-department-edit',
-    templateUrl: './department-edit.component.html',
-    styleUrl: './department-edit.component.scss',
-    standalone: false
+  selector: 'app-department-edit',
+  templateUrl: './department-edit.component.html',
+  styleUrl: './department-edit.component.scss',
+  standalone: false
 })
 export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
@@ -54,7 +54,7 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
           this.setValuesToFields(value);
         },
         error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
+        complete: () => { }
       };
       this.departmentService.getDepartment(this.id).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(departmentObserver);
     } else {
@@ -63,7 +63,7 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
   }
 
   public cancel(save: boolean) {
-    this.cancelEmiitter.emit({ visible: false, save: save});
+    this.cancelEmiitter.emit({ visible: false, save: save });
   }
 
   submit() {

@@ -1,17 +1,14 @@
 import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
-import { takeUntil } from 'rxjs';
-import { EmployeeService } from '../../../services/employee/employee.service';
 import { Employee } from '../../../models/employee.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Department } from '../../../models/department.model';
-import { DepartmentService } from '../../../services/department/department.service';
-import { DepartmentSearchResult } from '../../../models/department-search-result.model';
-import { MessageService } from 'primeng/api';
-import { fireToast } from '../../../shared/utils';
 import { Skill } from '../../../models/skill.model';
-import { SkillService } from '../../../services/skill/skill.service';
-import { SkillSearchResult } from '../../../models/skill-search-result.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { EmployeeEditFacadeService } from '../../../services/employee/employee-edit.facade.service';
+import { takeUntil } from 'rxjs';
+import { fireToast } from '../../../shared/utils';
+import { enumSeverity } from '../../../shared/constants.model';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-employee-edit',
@@ -21,19 +18,14 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
-  @Input() public id: number | null = null;
+  @Input() public employee: Employee | null = {};
   @Input() public disable: boolean = false;
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
-  public employee: Employee = {};
   public employeeFormGroup!: FormGroup;
-  public departments: Department[] = [];
-  public skills: Skill[] = [];
+  employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
 
-  private employeeService: EmployeeService = inject(EmployeeService);
   private formBuilder: FormBuilder = inject(FormBuilder);
-  private departmentService: DepartmentService = inject(DepartmentService);
   private messageService: MessageService = inject(MessageService);
-  private skillService: SkillService = inject(SkillService);
 
   ngOnChanges(_changes: SimpleChanges): void {
     this.initFormFields();
@@ -44,26 +36,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   }
 
   ngOnInit(): void {
-    this.departmentService.getAllDepartments(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
-      next: (value: DepartmentSearchResult) => {
-        this.departments = value.departments ?? [];
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => { }
-    });
-
-    this.skillService.getAllSkills(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
-      next: (value: SkillSearchResult) => {
-        this.skills = value.skills ?? [];
-      },
-      error: (err: any) => {
-        !err.status ? fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService) : fireToast('error', 'Error', `${err.message}`, this.messageService);
-      },
-      complete: () => { }
-    });
-
+    this.employeeEditFacade.loadSelectOptions();
     this.buildForm();
   }
 
@@ -73,25 +46,12 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
       surname: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       email: ['', [Validators.required, Validators.maxLength(50), Validators.email]],
       department: [{}],
-      selectedSkills: [[]]
+      skills: [[]]
     });
   }
 
   private initFormFields() {
-    if (this.id) {
-      const employeeObserver: any = {
-        next: (value: Employee) => {
-          this.employee = value;
-          this.setValuesToFields(value);
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { }
-      };
-      this.employeeService.getEmployee(this.id).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(employeeObserver);
-    } else {
-      this.setValuesToFields({});
-    }
-
+    this.setValuesToFields();
     this.disable ? this.disableFields() : this.enableFields();
   }
 
@@ -100,34 +60,33 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   }
 
   public submit() {
-    this.employee.name = this.employeeFormGroup.controls['name'].value;
-    this.employee.surname = this.employeeFormGroup.controls['surname'].value;
-    this.employee.email = this.employeeFormGroup.controls['email'].value;
-    this.employee.department = this.employeeFormGroup.controls['department'].value;
-    this.employee.skills = this.employeeFormGroup.controls['selectedSkills'].value;
-    const employeeObserver: any = {
-      next: (value: Employee) => {
-        !this.id ? fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been created`, this.messageService) : fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been updated`, this.messageService);
-        this.cancel(true);
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { },
-    }
-    !this.id ? this.employeeService.save(this.employee).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(employeeObserver) : this.employeeService.update(this.employee).pipe(takeUntil(this.componentIsDestroyed$)).subscribe(employeeObserver);
+    this.employee = this.getFormValues();
+    this.employeeEditFacade.submit(this.employee)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe((value: Employee) => {
+        if (value) {
+          fireToast(enumSeverity.success, 'Success', 'Action performed successfully', this.messageService)
+          this.cancel(true);
+        } else {
+          fireToast(enumSeverity.success, 'Error', 'Action failed', this.messageService);
+        }
+      });
   }
 
-  private setValuesToFields(value: Employee) {
-    const name = value.name ?? '';
-    const surname = value.surname ?? ''
-    const email = value.email ?? '';
-    const department = value.department ?? {};
-    const selectedSkills = value.skills ?? [];
-    if (this.employeeFormGroup) {
-      this.employeeFormGroup.controls['name'].setValue(name);
-      this.employeeFormGroup.controls['surname'].setValue(surname);
-      this.employeeFormGroup.controls['email'].setValue(email);
-      this.employeeFormGroup.controls['department'].setValue(department);
-      this.employeeFormGroup.controls['selectedSkills'].setValue(selectedSkills);
+  private setValuesToFields() {
+    if (this.employee) {
+      const name = this.employee.name ?? '';
+      const surname = this.employee.surname ?? ''
+      const email = this.employee.email ?? '';
+      const department = this.employee.department ?? {};
+      const skills = this.employee.skills ?? [];
+      if (this.employeeFormGroup) {
+        this.employeeFormGroup.controls['name'].setValue(name);
+        this.employeeFormGroup.controls['surname'].setValue(surname);
+        this.employeeFormGroup.controls['email'].setValue(email);
+        this.employeeFormGroup.controls['department'].setValue(department);
+        this.employeeFormGroup.controls['skills'].setValue(skills);
+      }
     }
   }
 
@@ -144,5 +103,13 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
       this.employeeFormGroup.controls['surname'].enable();
       this.employeeFormGroup.controls['email'].enable();
     }
+  }
+
+  private getFormValues(): Employee {
+    const employee: Employee = { ...this.employee };
+    for (const field in this.employeeFormGroup.controls) {
+      employee[field] = this.employeeFormGroup.controls[field].value;
+    }
+    return employee;
   }
 }
