@@ -2,11 +2,10 @@ import { Component } from '@angular/core';
 import { MessageService } from 'primeng/api';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrl: './app.component.scss',
-    providers: [MessageService],
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.scss',
+  standalone: false
 })
 export class AppComponent {
   title = 'employee';

@@ -74,12 +74,7 @@ export class EmployeeListFacadeService {
   search(employeeSearch: Employee): void {
     this._employeeService.search(employeeSearch, this._defaultPage)
       .pipe(
-        debounceTime(2000),
-        repeat(),
-        first((value: EmployeeSearchResult) => {
-          const length = !value.employees?.length;
-          return length;
-        })
+        debounceTime(2000)
       )
       .subscribe((value: EmployeeSearchResult) => {
         this._emitValues(value);

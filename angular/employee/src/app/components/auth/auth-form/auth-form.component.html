@@ -1,8 +1,8 @@
-<div class="card">
-  <h1 *ngIf="isLoggin; else elseBlock">Login</h1>
+<div class="card" *ngIf="authFacade.viewModel$ | async as data">
+  <h1 *ngIf="data.isLoggin; else elseBlock">Login</h1>
   <ng-template #elseBlock>
     <h1>
-      Register new user {{ authFormGroup.errors?.['passwordMissmatch'] }}
+      Register new user
     </h1>
   </ng-template>
   <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="submit()">
@@ -150,7 +150,7 @@
     </div>
     <div *ngIf="!isLoggin" class="register-fields">
       <p-multiSelect
-        [options]="roles"
+        [options]="data.roles"
         formControlName="selectedRoles"
         optionLabel="name"
         placeholder="Select Roles"
@@ -166,7 +166,6 @@
         </div>
       </div>
       <p-select
-        *ngIf="employeeResponse$ | async as data"
         formControlName="employee"
         [options]="data.employees"
         optionLabel="name"
@@ -186,3 +185,4 @@
     <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
   </form>
 </div>
+<p-toast [life]="3000" />

@@ -4,22 +4,22 @@ import { TableHoverDirective } from '../../shared/directives/table-hover.directi
 import { PrimeNgModule } from '../prime-ng/prime-ng.module';
 import { ReactiveFormsModule } from '@angular/forms';
 
-
+const MODULES = [
+  PrimeNgModule,
+  CommonModule,
+  ReactiveFormsModule
+];
 
 @NgModule({
   declarations: [
     TableHoverDirective,
   ],
   imports: [
-    CommonModule,
-    PrimeNgModule,
-    ReactiveFormsModule
+    MODULES
   ],
   exports: [
     TableHoverDirective,
-    PrimeNgModule,
-    CommonModule,
-    ReactiveFormsModule
+    MODULES
   ]
 })
 export class SharedModule { }

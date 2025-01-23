@@ -1,22 +1,12 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AuthRequest } from '../../../models/auth-request.model';
-import { AuthService } from '../../../services/auth/auth.service';
-import { Observable, takeUntil } from 'rxjs';
-import { AuthResponse } from '../../../models/auth-response.model';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { enumSeverity, StrongPasswordRegx } from '../../../shared/constants.model';
-import { MessageService, PrimeIcons } from 'primeng/api';
+import { StrongPasswordRegx } from '../../../shared/constants.model';
+import { PrimeIcons } from 'primeng/api';
 import { Router } from '@angular/router';
-import { RoleService } from '../../../services/role/role.service';
-import { Role } from '../../../models/role.model';
-import { RoleSearchResult } from '../../../models/role-search-result.model';
 import { RegisterRequest } from '../../../models/register-request.model';
-import { Employee } from '../../../models/employee.model';
-import { EmployeeService } from '../../../services/employee/employee.service';
-import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
-import { fireToast } from '../../../shared/utils';
 import { Severity } from '../../../shared/custom-types';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
 
 @Component({
   selector: 'app-auth-form',
@@ -24,7 +14,7 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
   styleUrl: './auth-form.component.scss',
   standalone: false
 })
-export class AuthFormComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class AuthFormComponent implements OnInit {
   public showConfirmPassword: any;
   public authRequest: AuthRequest = {};
   public authFormGroup!: FormGroup;
@@ -36,43 +26,15 @@ export class AuthFormComponent extends SubscriptionCleaner implements OnInit, On
   public tooltipConfirmMessage: string = "Show Confirm Password";
   public confirmIcon: string = PrimeIcons.EYE;
   public confirmSeverity: Severity = "success";
-  public roles: Role[] = [];
-  public employees: Employee[] = [];
 
-  private authService: AuthService = inject(AuthService);
   private formBuilder: FormBuilder = inject(FormBuilder);
-  private router: Router = inject(Router);
-  private roleService: RoleService = inject(RoleService);
-  private messageService: MessageService = inject(MessageService);
-  private employeeService: EmployeeService = inject(EmployeeService);
-  public employeeResponse$!: Observable<EmployeeSearchResult>;
-
-  constructor() {
-    super();
-  }
+  private _router: Router = inject(Router);
+  authFacade: AuthFacadeService = inject(AuthFacadeService);
 
   ngOnInit(): void {
-
-    this.isLoggin = this.router.url.includes("login");
-    if (!this.isLoggin) {
-      this.employeeService.getAllEmployees(true);
-      this.roleService.getAllRoles(true).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
-        next: (value: RoleSearchResult) => {
-          this.roles = value.roles ?? [];
-        },
-        error: (err: any) => {
-          !err.status ? fireToast(enumSeverity.error, `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService) : fireToast('error', 'Error', `${err.message}`, this.messageService);
-        },
-        complete: () => { }
-      })
-    }
-
+    this.isLoggin = this._router.url.includes("login");
+    this.authFacade.loadSelectOptions(this.isLoggin);
     this.buildForm();
-  }
-
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   public submit(): void {
@@ -113,7 +75,6 @@ export class AuthFormComponent extends SubscriptionCleaner implements OnInit, On
       const confirmPassword = control.value.confirmPassword;
       return password === confirmPassword ? null : { passwordMissmatch: true }
     }
-
   }
 
   private setToggleOptions(icon: string, severity: Severity, tooltipMessage: string): void {
@@ -123,33 +84,22 @@ export class AuthFormComponent extends SubscriptionCleaner implements OnInit, On
   }
 
   private registerUser(): void {
+    const registerRequest: RegisterRequest = this.getFormValues();
+    this.authFacade.registerUser(registerRequest);
+  }
+  private loginUser(): void {
+    const registerRequest: RegisterRequest = this.getFormValues();
+    this.authFacade.loginUser(registerRequest);
+  }
+
+  private getFormValues(): RegisterRequest {
     const registerRequest: RegisterRequest = {};
     registerRequest.username = this.authFormGroup.controls['username'].value;
     registerRequest.password = this.authFormGroup.controls['password'].value;
-    registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
-    registerRequest.employee = this.authFormGroup.controls['employee'].value;
-    this.authService.registerUser(registerRequest).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
-      next: () => {
-        fireToast('success', 'Success', 'Registered successfully', this.messageService);
-        this.router.navigate(["user/list"]);
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { }
-    });
-  }
-  private loginUser(): void {
-    this.authRequest.username = this.authFormGroup.controls['username'].value;
-    this.authRequest.password = this.authFormGroup.controls['password'].value;
-    this.authService.login(this.authRequest).pipe(takeUntil(this.componentIsDestroyed$)).subscribe({
-      next: (value: AuthResponse) => {
-        localStorage.setItem('authResponse', JSON.stringify(value));
-        this.authService.autoLogout(value.expiration ?? 0);
-        this.authService.updateMenuItems(true, value.roles);
-        this.router.navigate(["/home/panel"]);
-        fireToast('success', 'Success', `Welcome: ${value.username}`, this.messageService);
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { }
-    });
+    if (!this.isLoggin) {
+      registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
+      registerRequest.employee = this.authFormGroup.controls['employee'].value;
+    }
+    return registerRequest;
   }
 }

@@ -15,6 +15,7 @@ import { DividerModule } from 'primeng/divider';
 import { TabsModule } from 'primeng/tabs';
 import { DatePickerModule } from 'primeng/datepicker';
 import { SelectModule } from 'primeng/select';
+import { MessageService } from 'primeng/api';
 
 const PRIMENG_MODULES = [
   MenubarModule,
@@ -41,6 +42,7 @@ const PRIMENG_MODULES = [
   ],
   exports: [
     PRIMENG_MODULES
-  ]
+  ],
+  providers: [MessageService]
 })
 export class PrimeNgModule { }
