@@ -1,7 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { ListFacade } from '../../shared/list-facade';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, combineLatest, debounceTime, first, map, Observable, repeat, retry, take, throwError } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounceTime, Observable } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeService } from './employee.service';
 import { PageEvent } from '../../models/page-event.model';
@@ -68,7 +67,9 @@ export class EmployeeListFacadeService {
   }
 
   retrieve(employeeSearch: Employee): void {
-    this.checkSearchFields(employeeSearch) ? this.search(employeeSearch) : this.getAll(false);
+    if (this.checkSearchFields(employeeSearch))
+      this.search(employeeSearch)
+    else this.getAll(false);
   }
 
   search(employeeSearch: Employee): void {

@@ -1,40 +1,23 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { EmployeeService } from '../../../services/employee/employee.service';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
-import { Observable, Subject, debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
-import { PageEvent } from '../../../models/page-event.model';
-import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
-import { MessageService } from 'primeng/api';
-import { fireToast } from '../../../shared/utils';
-import { CrudOperations } from '../../../shared/crud-operations';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
-import { AbstractControl, FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmployeeListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
-  private messageService: MessageService = inject(MessageService);
+export class EmployeeListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   public employeeFormGroup!: FormGroup;
   public employeeSearch: Employee = {};
   public employeeId: number | null = 0;
-  public employees: Employee[] = [];
-  public visible: boolean = false;
-  public editVisible: boolean = false;
-  public modalTitle: string = '';
-  public disable: boolean = false;
-  public employeeResponse$!: Observable<EmployeeSearchResult>;
   public employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
-
-  constructor() {
-    super();
-  }
 
   ngOnInit(): void {
     this.buildForm();
@@ -48,10 +31,6 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
       surname: [''],
       email: [''],
     });
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   public addNew(): void {

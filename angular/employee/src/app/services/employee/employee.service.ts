@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { Employee } from '../../models/employee.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';

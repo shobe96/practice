@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from './employee.service';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, catchError, combineLatest, map, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
 import { SkillService } from '../skill/skill.service';
 import { DepartmentService } from '../department/department.service';
 import { Skill } from '../../models/skill.model';

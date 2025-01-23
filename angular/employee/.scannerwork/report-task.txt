@@ -1,6 +1,6 @@
 projectKey=practice-frontend
 serverUrl=http://localhost:9000
-serverVersion=10.6.0.92116
+serverVersion=10.4.1.88267
 dashboardUrl=http://localhost:9000/dashboard?id=practice-frontend
-ceTaskId=fc10368d-4fc5-45fd-a92d-b8feb9e3c64c
-ceTaskUrl=http://localhost:9000/api/ce/task?id=fc10368d-4fc5-45fd-a92d-b8feb9e3c64c
+ceTaskId=b365f530-0870-4f18-9fa4-03d8cb726c63
+ceTaskUrl=http://localhost:9000/api/ce/task?id=b365f530-0870-4f18-9fa4-03d8cb726c63
