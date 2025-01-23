@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { AuthRequest } from '../../../models/auth-request.model';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { StrongPasswordRegx } from '../../../shared/constants.model';
@@ -12,19 +12,20 @@ import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
   selector: 'app-auth-form',
   templateUrl: './auth-form.component.html',
   styleUrl: './auth-form.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthFormComponent implements OnInit {
-  public showConfirmPassword: any;
+  public showConfirmPassword = false;
   public authRequest: AuthRequest = {};
   public authFormGroup!: FormGroup;
-  public showPassword: boolean = false;
+  public showPassword = false;
   public icon: string = PrimeIcons.EYE;
   public severity: Severity = "success";
-  public tooltipMessage: string = "Show Password";
-  public isLoggin: boolean = false;
-  public tooltipConfirmMessage: string = "Show Confirm Password";
-  public confirmIcon: string = PrimeIcons.EYE;
+  public tooltipMessage = "Show Password";
+  public isLoggin = false;
+  public tooltipConfirmMessage = "Show Confirm Password";
+  public confirmIcon = PrimeIcons.EYE;
   public confirmSeverity: Severity = "success";
 
   private formBuilder: FormBuilder = inject(FormBuilder);
@@ -38,7 +39,8 @@ export class AuthFormComponent implements OnInit {
   }
 
   public submit(): void {
-    this.isLoggin ? this.loginUser() : this.registerUser();
+    if (this.isLoggin) this.loginUser();
+    else this.registerUser();
   }
 
   private buildForm(): void {
@@ -61,12 +63,16 @@ export class AuthFormComponent implements OnInit {
 
   public togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
-    this.showPassword ? this.setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password") : this.setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
+    if (this.showPassword)
+      this.setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password")
+    else this.setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
   }
 
   public toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
-    this.showConfirmPassword ? this.setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password") : this.setToggleOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
+    if (this.showConfirmPassword)
+      this.setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password")
+    else this.setToggleConfirmOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
   }
 
   private passwordMissmatchTest(): ValidatorFn {
@@ -81,6 +87,12 @@ export class AuthFormComponent implements OnInit {
     this.icon = icon;
     this.severity = severity;
     this.tooltipMessage = tooltipMessage;
+  }
+
+  private setToggleConfirmOptions(icon: string, severity: Severity, tooltipMessage: string): void {
+    this.confirmIcon = icon;
+    this.confirmSeverity = severity;
+    this.tooltipConfirmMessage = tooltipMessage;
   }
 
   private registerUser(): void {
