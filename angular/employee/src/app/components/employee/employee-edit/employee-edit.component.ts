@@ -1,31 +1,26 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Department } from '../../../models/department.model';
-import { Skill } from '../../../models/skill.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { EmployeeEditFacadeService } from '../../../services/employee/employee-edit.facade.service';
 import { takeUntil } from 'rxjs';
-import { fireToast } from '../../../shared/utils';
-import { enumSeverity } from '../../../shared/constants.model';
-import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-employee-edit',
   templateUrl: './employee-edit.component.html',
   styleUrl: './employee-edit.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
   @Input() public employee: Employee | null = {};
   @Input() public disable: boolean = false;
   @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
-  public employeeFormGroup!: FormGroup;
+  employeeFormGroup!: FormGroup;
   employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
 
   private formBuilder: FormBuilder = inject(FormBuilder);
-  private messageService: MessageService = inject(MessageService);
 
   ngOnChanges(_changes: SimpleChanges): void {
     this.initFormFields();
@@ -64,11 +59,8 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     this.employeeEditFacade.submit(this.employee)
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Employee) => {
-        if (value) {
-          fireToast(enumSeverity.success, 'Success', 'Action performed successfully', this.messageService)
+        if (Object.keys(value)) {
           this.cancel(true);
-        } else {
-          fireToast(enumSeverity.success, 'Error', 'Action failed', this.messageService);
         }
       });
   }

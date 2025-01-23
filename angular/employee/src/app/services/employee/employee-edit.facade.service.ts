@@ -1,13 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from './employee.service';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, catchError, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, Observable } from 'rxjs';
 import { SkillService } from '../skill/skill.service';
 import { DepartmentService } from '../department/department.service';
 import { Skill } from '../../models/skill.model';
 import { Department } from '../../models/department.model';
 import { SkillSearchResult } from '../../models/skill-search-result.model';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
+import { MessageService } from 'primeng/api';
+import { fireToast } from '../../shared/utils';
+import { enumSeverity } from '../../shared/constants.model';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +22,7 @@ export class EmployeeEditFacadeService {
   private _departmentService: DepartmentService = inject(DepartmentService);
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _departments: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
+  private _messageService: MessageService = inject(MessageService);
 
   viewModel$: Observable<any> = combineLatest({
     skills: this._skills.asObservable(),
@@ -26,9 +30,17 @@ export class EmployeeEditFacadeService {
   })
 
   submit(employee: Employee): Observable<Employee> {
-    return !employee.id ?
+    const subscription = !employee.id ?
       this._employeeService.save(employee) :
       this._employeeService.update(employee);
+    return subscription.pipe(map((value: Employee) => {
+      if (value) {
+        fireToast(enumSeverity.success, 'Success', 'Action perforemd successfully', this._messageService);
+        return value;
+      } else {
+        return {};
+      }
+    }))
   }
 
   loadSelectOptions(): void {
