@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { AuthRequest } from '../../../models/auth-request.model';
 import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { StrongPasswordRegx } from '../../../shared/constants.model';
+import { StrongPasswordRegx, messageLife } from '../../../shared/constants.model';
 import { PrimeIcons } from 'primeng/api';
 import { Router } from '@angular/router';
 import { RegisterRequest } from '../../../models/register-request.model';
@@ -16,36 +16,37 @@ import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthFormComponent implements OnInit {
-  public showConfirmPassword = false;
-  public authRequest: AuthRequest = {};
-  public authFormGroup!: FormGroup;
-  public showPassword = false;
-  public icon: string = PrimeIcons.EYE;
-  public severity: Severity = "success";
-  public tooltipMessage = "Show Password";
-  public isLoggin = false;
-  public tooltipConfirmMessage = "Show Confirm Password";
-  public confirmIcon = PrimeIcons.EYE;
-  public confirmSeverity: Severity = "success";
+  showConfirmPassword = false;
+  authRequest: AuthRequest = {};
+  authFormGroup!: FormGroup;
+  showPassword = false;
+  icon: string = PrimeIcons.EYE;
+  severity: Severity = "success";
+  tooltipMessage = "Show Password";
+  isLoggin = false;
+  tooltipConfirmMessage = "Show Confirm Password";
+  confirmIcon = PrimeIcons.EYE;
+  confirmSeverity: Severity = "success";
 
-  private formBuilder: FormBuilder = inject(FormBuilder);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
   authFacade: AuthFacadeService = inject(AuthFacadeService);
+  life = messageLife;
 
   ngOnInit(): void {
     this.isLoggin = this._router.url.includes("login");
     this.authFacade.loadSelectOptions(this.isLoggin);
-    this.buildForm();
+    this._buildForm();
   }
 
-  public submit(): void {
-    if (this.isLoggin) this.loginUser();
-    else this.registerUser();
+  submit(): void {
+    if (this.isLoggin) this._loginUser();
+    else this._registerUser();
   }
 
-  private buildForm(): void {
+  private _buildForm(): void {
     if (this.isLoggin) {
-      this.authFormGroup = this.formBuilder.group({
+      this.authFormGroup = this._formBuilder.group({
         username: ['', [Validators.required]],
         password: ['', [Validators.required]],
       });
@@ -56,26 +57,26 @@ export class AuthFormComponent implements OnInit {
         confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
         selectedRoles: new FormControl([], [Validators.required]),
         employee: new FormControl({}, [Validators.required])
-      }, { validators: [this.passwordMissmatchTest()] });
+      }, { validators: [this._passwordMissmatchTest()] });
     }
 
   }
 
-  public togglePasswordVisibility() {
+  togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
     if (this.showPassword)
-      this.setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password")
-    else this.setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
+      this._setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password")
+    else this._setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
   }
 
-  public toggleConfirmPasswordVisibility(): void {
+  toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
     if (this.showConfirmPassword)
-      this.setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password")
-    else this.setToggleConfirmOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
+      this._setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password")
+    else this._setToggleConfirmOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
   }
 
-  private passwordMissmatchTest(): ValidatorFn {
+  private _passwordMissmatchTest(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const password = control.value.password;
       const confirmPassword = control.value.confirmPassword;
@@ -83,28 +84,28 @@ export class AuthFormComponent implements OnInit {
     }
   }
 
-  private setToggleOptions(icon: string, severity: Severity, tooltipMessage: string): void {
+  private _setToggleOptions(icon: string, severity: Severity, tooltipMessage: string): void {
     this.icon = icon;
     this.severity = severity;
     this.tooltipMessage = tooltipMessage;
   }
 
-  private setToggleConfirmOptions(icon: string, severity: Severity, tooltipMessage: string): void {
+  private _setToggleConfirmOptions(icon: string, severity: Severity, tooltipMessage: string): void {
     this.confirmIcon = icon;
     this.confirmSeverity = severity;
     this.tooltipConfirmMessage = tooltipMessage;
   }
 
-  private registerUser(): void {
-    const registerRequest: RegisterRequest = this.getFormValues();
+  private _registerUser(): void {
+    const registerRequest: RegisterRequest = this._getFormValues();
     this.authFacade.registerUser(registerRequest);
   }
-  private loginUser(): void {
-    const registerRequest: RegisterRequest = this.getFormValues();
+  private _loginUser(): void {
+    const registerRequest: RegisterRequest = this._getFormValues();
     this.authFacade.loginUser(registerRequest);
   }
 
-  private getFormValues(): RegisterRequest {
+  private _getFormValues(): RegisterRequest {
     const registerRequest: RegisterRequest = {};
     registerRequest.username = this.authFormGroup.controls['username'].value;
     registerRequest.password = this.authFormGroup.controls['password'].value;

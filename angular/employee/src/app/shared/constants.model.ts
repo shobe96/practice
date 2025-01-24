@@ -3,6 +3,8 @@ export const StrongPasswordRegx: RegExp =
 
 export const rowsPerPage = [5, 10, 20, 30];
 
+export const messageLife = 3000;
+
 export enum enumSeverity {
   success = 'success',
   info = 'info',
