@@ -1,34 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AuthResponse } from '../../models/auth-response.model';
 import { Role } from '../../models/role.model';
-import { Router } from '@angular/router';
+
+import { messageLife } from '../../shared/constants.model';
+import { HomeFacadeService } from '../../services/home.facade.service';
 
 @Component({
-    selector: 'app-home',
-    templateUrl: './home.component.html',
-    styleUrl: './home.component.scss',
-    standalone: false
+  selector: 'app-home',
+  templateUrl: './home.component.html',
+  styleUrl: './home.component.scss',
+  standalone: false
 })
 export class HomeComponent implements OnInit {
 
-
-  roles: Role[] = [];
-
-  constructor(private router: Router) { }
+  homeFacade: HomeFacadeService = inject(HomeFacadeService);
+  life = messageLife;
 
   ngOnInit(): void {
-    const authResponse = localStorage.getItem("authResponse");
-    if (authResponse) {
-      let json: AuthResponse = {};
-      json = JSON.parse(authResponse);
-      this.roles = json.roles ?? [];
-    }
-  }
-
-  goToPannel(code: string | undefined) {
-    if (code) {
-      const route = `/home/${code.toLowerCase()}`
-      this.router.navigate([route]);
-    }
+    this.homeFacade.getRoles();
   }
 }
