@@ -14,10 +14,10 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class EmployeeListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
-  public employeeFormGroup!: FormGroup;
-  public employeeSearch: Employee = {};
-  public employeeId: number | null = 0;
-  public employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
+  employeeFormGroup!: FormGroup;
+  employeeSearch: Employee = {};
+  employeeId: number | null = 0;
+  employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
 
   ngOnInit(): void {
     this.buildForm();
@@ -33,44 +33,44 @@ export class EmployeeListComponent implements OnInit {
     });
   }
 
-  public addNew(): void {
+  addNew(): void {
     this.goToEdit(null);
   }
 
-  public clear(): void {
+  clear(): void {
     this.clearSearchFields();
     this.employeeListFacade.clear();
   }
 
-  public delete(): void {
+  delete(): void {
     this.employeeListFacade.delete(this.employeeId, this.employeeSearch);
   }
 
-  public goToDetails(employee: Employee): void {
+  goToDetails(employee: Employee): void {
     this.employeeListFacade.setDialogParams(employee, `Employee ${employee.id}`, true, false, true);
   }
 
-  public goToEdit(employee: Employee | null): void {
+  goToEdit(employee: Employee | null): void {
     const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
     this.employeeListFacade.setDialogParams(employee, title, true, false, false);
   }
 
-  public handleCancel(event: any): void {
+  handleCancel(event: any): void {
     if (event.save) {
       this.employeeListFacade.setDialogParams(null, '', event.visible, false, false);
       this.refresh();
     }
   }
 
-  public onPageChange(event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     this.employeeListFacade.onPageChange(this.employeeSearch, event);
   }
 
-  public refresh(): void {
+  refresh(): void {
     this.employeeListFacade.retrieve(this.employeeSearch);
   }
 
-  public showDeleteDialog(visible: boolean, id?: number): void {
+  showDeleteDialog(visible: boolean, id?: number): void {
     this.employeeId = id ?? 0;
     this.employeeListFacade.setDialogParams(null, 'Warning', false, visible, false);
   }

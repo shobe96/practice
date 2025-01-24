@@ -25,7 +25,7 @@ export class EmployeeListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
-  public viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<any> = combineLatest({
     employees: this._employees.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable(),

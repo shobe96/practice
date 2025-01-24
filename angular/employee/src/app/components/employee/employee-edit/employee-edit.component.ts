@@ -14,9 +14,9 @@ import { takeUntil } from 'rxjs';
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
-  @Input() public employee: Employee | null = {};
-  @Input() public disable: boolean = false;
-  @Output() public cancelEmiitter: EventEmitter<any> = new EventEmitter();
+  @Input() employee: Employee | null = {};
+  @Input() disable: boolean = false;
+  @Output() cancelEmiitter: EventEmitter<any> = new EventEmitter();
   employeeFormGroup!: FormGroup;
   employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
 
@@ -50,11 +50,11 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     this.disable ? this.disableFields() : this.enableFields();
   }
 
-  public cancel(save: boolean) {
+  cancel(save: boolean) {
     this.cancelEmiitter.emit({ visible: false, save: save });
   }
 
-  public submit() {
+  submit() {
     this.employee = this.getFormValues();
     this.employeeEditFacade.submit(this.employee)
       .pipe(takeUntil(this.componentIsDestroyed$))
