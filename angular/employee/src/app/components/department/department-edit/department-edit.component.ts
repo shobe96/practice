@@ -15,8 +15,8 @@ import { DepartmentEditFacadeService } from '../../../services/department/depart
 export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
   @Input() department: Department | null = {};
-  @Input() disable: boolean = false;
-  @Output() cancelEmiitter: EventEmitter<any> = new EventEmitter();
+  @Input() disable = false;
+  @Output() cancelEmiitter = new EventEmitter<any>();
   departmentFormGroup!: FormGroup;
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
@@ -45,7 +45,8 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
 
   private _initFormFields() {
     this._setValuesToFields();
-    this.disable ? this._disableFields() : this._enableFields();
+    if (this.disable) this._disableFields();
+    else this._enableFields();
   }
 
   cancel(save: boolean) {

@@ -28,10 +28,6 @@ export class DepartmentService {
       return this.http.get<DepartmentSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
     }
   }
-  private errorHandler(errorRes: HttpErrorResponse) {
-    let errorMessage = 'Error occurred!';
-    return throwError(() => new Error(errorMessage));
-  }
 
   search(departmentSearch: Department, page: PageEvent): Observable<DepartmentSearchResult> {
     return this.http.get<DepartmentSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(departmentSearch)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
