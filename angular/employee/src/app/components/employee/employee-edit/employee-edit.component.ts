@@ -22,6 +22,9 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
 
   private _formBuilder: FormBuilder = inject(FormBuilder);
 
+  constructor() {
+    super();
+  }
   ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
   }
