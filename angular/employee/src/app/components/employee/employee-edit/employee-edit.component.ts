@@ -20,10 +20,10 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   employeeFormGroup!: FormGroup;
   employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
 
-  private formBuilder: FormBuilder = inject(FormBuilder);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
 
   ngOnChanges(_changes: SimpleChanges): void {
-    this.initFormFields();
+    this._initFormFields();
   }
 
   ngOnDestroy(): void {
@@ -32,11 +32,11 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
 
   ngOnInit(): void {
     this.employeeEditFacade.loadSelectOptions();
-    this.buildForm();
+    this._buildForm();
   }
 
-  private buildForm() {
-    this.employeeFormGroup = this.formBuilder.group({
+  private _buildForm() {
+    this.employeeFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       surname: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       email: ['', [Validators.required, Validators.maxLength(50), Validators.email]],
@@ -45,9 +45,9 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     });
   }
 
-  private initFormFields() {
-    this.setValuesToFields();
-    this.disable ? this.disableFields() : this.enableFields();
+  private _initFormFields() {
+    this._setValuesToFields();
+    this.disable ? this._disableFields() : this._enableFields();
   }
 
   cancel(save: boolean) {
@@ -55,7 +55,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   }
 
   submit() {
-    this.employee = this.getFormValues();
+    this.employee = this._getFormValues();
     this.employeeEditFacade.submit(this.employee)
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Employee) => {
@@ -65,7 +65,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
       });
   }
 
-  private setValuesToFields() {
+  private _setValuesToFields() {
     if (this.employee) {
       const name = this.employee.name ?? '';
       const surname = this.employee.surname ?? ''
@@ -82,14 +82,14 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     }
   }
 
-  private disableFields(): void {
+  private _disableFields(): void {
     if (this.employeeFormGroup) {
       this.employeeFormGroup.controls['name'].disable();
       this.employeeFormGroup.controls['surname'].disable();
       this.employeeFormGroup.controls['email'].disable();
     }
   }
-  private enableFields(): void {
+  private _enableFields(): void {
     if (this.employeeFormGroup) {
       this.employeeFormGroup.controls['name'].enable();
       this.employeeFormGroup.controls['surname'].enable();
@@ -97,7 +97,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     }
   }
 
-  private getFormValues(): Employee {
+  private _getFormValues(): Employee {
     const employee: Employee = { ...this.employee };
     for (const field in this.employeeFormGroup.controls) {
       employee[field] = this.employeeFormGroup.controls[field].value;

@@ -14,18 +14,18 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class EmployeeListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
-  employeeFormGroup!: FormGroup;
-  employeeSearch: Employee = {};
-  employeeId: number | null = 0;
-  employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
+  public employeeFormGroup!: FormGroup;
+  public employeeSearch: Employee = {};
+  public employeeId: number | null = 0;
+  public employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
 
   ngOnInit(): void {
-    this.buildForm();
+    this._buildForm();
     this.employeeListFacade.getAll(false);
-    this.subsribeToFormGroup();
+    this._subsribeToFormGroup();
   }
 
-  private buildForm() {
+  private _buildForm() {
     this.employeeFormGroup = this._formBuilder.group({
       name: [''],
       surname: [''],
@@ -33,49 +33,49 @@ export class EmployeeListComponent implements OnInit {
     });
   }
 
-  addNew(): void {
+  public addNew(): void {
     this.goToEdit(null);
   }
 
-  clear(): void {
-    this.clearSearchFields();
+  public clear(): void {
+    this._clearSearchFields();
     this.employeeListFacade.clear();
   }
 
-  delete(): void {
+  public delete(): void {
     this.employeeListFacade.delete(this.employeeId, this.employeeSearch);
   }
 
-  goToDetails(employee: Employee): void {
+  public goToDetails(employee: Employee): void {
     this.employeeListFacade.setDialogParams(employee, `Employee ${employee.id}`, true, false, true);
   }
 
-  goToEdit(employee: Employee | null): void {
+  public goToEdit(employee: Employee | null): void {
     const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
     this.employeeListFacade.setDialogParams(employee, title, true, false, false);
   }
 
-  handleCancel(event: any): void {
+  public handleCancel(event: any): void {
     if (event.save) {
       this.employeeListFacade.setDialogParams(null, '', event.visible, false, false);
       this.refresh();
     }
   }
 
-  onPageChange(event: PaginatorState): void {
+  public onPageChange(event: PaginatorState): void {
     this.employeeListFacade.onPageChange(this.employeeSearch, event);
   }
 
-  refresh(): void {
+  public refresh(): void {
     this.employeeListFacade.retrieve(this.employeeSearch);
   }
 
-  showDeleteDialog(visible: boolean, id?: number): void {
+  public showDeleteDialog(visible: boolean, id?: number): void {
     this.employeeId = id ?? 0;
     this.employeeListFacade.setDialogParams(null, 'Warning', false, visible, false);
   }
 
-  private subsribeToFormGroup() {
+  private _subsribeToFormGroup() {
     this.employeeFormGroup
       .valueChanges
       .pipe(
@@ -90,7 +90,7 @@ export class EmployeeListComponent implements OnInit {
       });
   }
 
-  private clearSearchFields() {
+  private _clearSearchFields() {
     this.employeeFormGroup.controls['name'].setValue('');
     this.employeeFormGroup.controls['surname'].setValue('');
     this.employeeFormGroup.controls['email'].setValue('');
