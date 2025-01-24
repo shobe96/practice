@@ -4,9 +4,9 @@
     [formGroup]="departmentFormGroup"
     (ngSubmit)="submit()"
   >
-    <input [readOnly]="disable" formControlName="name" pInputText placeholder="Name of department" />
+    <input formControlName="name" pInputText placeholder="Name of department" />
     <div
-    class="validation-messages"
+      class="validation-messages"
       *ngIf="departmentFormGroup.controls['name'].invalid && departmentFormGroup.controls['name'].touched"
     >
       <div *ngIf="departmentFormGroup.controls['name'].errors?.['required']">
@@ -21,7 +21,13 @@
     </div>
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel(false)" />
-      <p-button severity="success" *ngIf="!disable" [disabled]="departmentFormGroup.invalid" label="Submit" type="submit" />
+      <p-button
+        severity="success"
+        *ngIf="!disable"
+        [disabled]="departmentFormGroup.invalid"
+        label="Submit"
+        type="submit"
+      />
     </div>
   </form>
 </div>
