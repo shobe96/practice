@@ -56,8 +56,8 @@ export class EmployeeListComponent implements OnInit {
   }
 
   handleCancel(event: any): void {
+    this.employeeListFacade.setDialogParams(null, '', event.visible, false, false);
     if (event.save) {
-      this.employeeListFacade.setDialogParams(null, '', event.visible, false, false);
       this.refresh();
     }
   }
