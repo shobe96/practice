@@ -11,10 +11,10 @@ import { fireToast } from '../../../shared/utils';
 import { CrudOperations } from '../../../shared/crud-operations';
 
 @Component({
-    selector: 'app-project-list',
-    templateUrl: './project-list.component.html',
-    styleUrl: './project-list.component.scss',
-    standalone: false
+  selector: 'app-project-list',
+  templateUrl: './project-list.component.html',
+  styleUrl: './project-list.component.scss',
+  standalone: false
 })
 export class ProjectListComponent implements OnInit, OnDestroy, CrudOperations {
   private projects$!: Subscription;

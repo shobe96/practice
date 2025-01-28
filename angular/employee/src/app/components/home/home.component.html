@@ -20,7 +20,13 @@
   </div>
   <div>
     <ng-template #elseBlock>
-      <router-outlet />
+      <app-home-panel
+        [employee]="data.employee"
+        [projectsHistory]="data.projectsHistory"
+        [departmentEmployees]="data.departmentEmployees"
+        [page]="data.page"
+        [activeProject]="data.activeProject"
+      />
     </ng-template>
   </div>
 </div>

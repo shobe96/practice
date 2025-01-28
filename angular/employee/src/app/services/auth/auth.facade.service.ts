@@ -173,7 +173,7 @@ export class AuthFacadeService {
       this._autoLogout(value.expiration ?? 0);
       this._updateMenuItems(true, value.roles);
       fireToast(enumSeverity.success, 'Success', `Welcome ${value.username}`, this._messageService);
-      this._router.navigate(["/home/panel"]);
+      this._router.navigate(["/home"]);
     });
   }
 

@@ -1,7 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { AuthResponse } from '../../models/auth-response.model';
-import { Role } from '../../models/role.model';
-
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { messageLife } from '../../shared/constants.model';
 import { HomeFacadeService } from '../../services/home.facade.service';
 
@@ -9,7 +6,8 @@ import { HomeFacadeService } from '../../services/home.facade.service';
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
 
@@ -18,5 +16,8 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.homeFacade.getRoles();
+    // this.homeFacade.getProjectHistory();
+    // this.homeFacade.getAllEmployeesByDepartment();
+    this.homeFacade.getPanelData();
   }
 }
