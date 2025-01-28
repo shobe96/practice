@@ -148,4 +148,9 @@ public class ProjectServiceImpl implements ProjectService {
 		projectHistory.setEndDate(new Date());
 		projectHistoryRepository.save(projectHistory);
 	}
+
+	@Override
+	public Project getByEmployeeId(Integer employeeId) {
+		return projectRepository.findByEmployeeId(employeeId);
+	}
 }
