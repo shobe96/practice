@@ -41,7 +41,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public ProjectSearchResult getAllProjects(Pageable pageable) {
 		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
 		List<Project> projects = projectRepository.findAllByActive(true, pageable).getContent();
-		if (projects.isEmpty()) {
+		if (!projects.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			projects = projectRepository.findAllByActive(true, newPage).getContent();
 		}
@@ -85,10 +85,15 @@ public class ProjectServiceImpl implements ProjectService {
 	@Override
 	public void deleteProject(Integer projectId) {
 		Project project = getProjectbyId(projectId);
-		for (Employee employee : project.getEmployees()) {
-			employee.setActive(false);
-			employeeRepository.save(employee);
+		List<Employee> employees = new ArrayList<>(project.getEmployees());
+		if (employees.size() != 0) {
+			for (Employee employee : employees) {
+				employee.setActive(false);
+				employeeRepository.save(employee);
+				unassignEmployee(employee, project);
+			}
 		}
+
 		project.setActive(false);
 		projectRepository.save(project);
 
@@ -131,4 +136,16 @@ public class ProjectServiceImpl implements ProjectService {
 		return projectRepository.findAllByEmployee(employeeId);
 	}
 
+	public void unassignEmployee(Employee employee, Project project) {
+		project.getEmployees().remove(employee);
+		projectRepository.save(project);
+		employee.setActive(false);
+		employeeRepository.save(employee);
+		ProjectHistory projectHistory = new ProjectHistory();
+		projectHistory.setEmployee(employee);
+		projectHistory.setProject(project);
+		projectHistory.setStartDate(employee.getAssignmentDate());
+		projectHistory.setEndDate(new Date());
+		projectHistoryRepository.save(projectHistory);
+	}
 }
