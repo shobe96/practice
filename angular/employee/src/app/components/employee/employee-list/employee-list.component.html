@@ -53,7 +53,7 @@
     </p-accordion-panel>
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
-  <div *ngIf="employeeListFacade.viewModel$ | async as data; noResult">
+  <div *ngIf="employeeListFacade.viewModel$ | async as data; else noResult">
     <p-table
       [value]="data.employees ? data.employees : []"
       [tableStyle]="{ 'min-width': '70rem' }"
