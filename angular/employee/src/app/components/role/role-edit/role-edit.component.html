@@ -1,8 +1,4 @@
 <div class="card">
-  <h1 *ngIf="id === null; else elseBlock">Add new Role</h1>
-  <ng-template #elseBlock>
-    <h1>Role {{ id }}</h1>
-  </ng-template>
   <form class="role-form" [formGroup]="roleFormGroup" (ngSubmit)="submit()">
     <input formControlName="name" pInputText placeholder="Name of role" />
     <div
@@ -34,6 +30,7 @@
         Code must be shorter than 5 characters!
       </div>
     </div>
+    <input formControlName="description" pInputText placeholder="Description" />
     <div
       class="validation-messages"
       *ngIf="roleFormGroup.controls['description'].invalid && roleFormGroup.controls['description'].touched"
@@ -49,8 +46,10 @@
       </div>
     </div>
     <div class="action-buttons">
-      <p-button label="Cancel" (onClick)="back()" />
+      <p-button severity="danger" label="Cancel" (onClick)="cancel(false)" />
       <p-button
+        *ngIf="!disable"
+        severity="success"
         [disabled]="roleFormGroup.invalid"
         label="Submit"
         type="submit"
