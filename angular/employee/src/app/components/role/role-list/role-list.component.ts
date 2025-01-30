@@ -1,13 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subject, Subscription, debounceTime } from 'rxjs';
-import { PageEvent } from '../../../models/page-event.model';
-import { Role } from '../../../models/role.model';
-import { Router } from '@angular/router';
-import { RoleService } from '../../../services/role/role.service';
-import { RoleSearchResult } from '../../../models/role-search-result.model';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
-import { MessageService } from 'primeng/api';
-import { fireToast } from '../../../shared/utils';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { Role } from '../../../models/role.model';
+import { RoleListFacadeService } from '../../../services/role/role-list.facade.service';
 
 @Component({
   selector: 'app-role-list',
@@ -15,151 +11,85 @@ import { fireToast } from '../../../shared/utils';
   styleUrl: './role-list.component.scss',
   standalone: false
 })
-export class RoleListComponent implements OnInit, OnDestroy {
-  private searchSubject = new Subject<Role>();
-  private roles$!: Subscription;
-  roleId: number = 0;
-  page: PageEvent = {
-    page: 0,
-    first: 0,
-    rows: 5,
-    pageCount: 0,
-    sort: 'asc',
-  };
-  roles: Role[] = [];
-  visible: boolean = false;
+export class RoleListComponent implements OnInit {
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  roleFormGroup!: FormGroup;
   roleSearch: Role = {};
-  constructor(
-    private roleService: RoleService,
-    private router: Router,
-    private messageService: MessageService
-  ) { }
+  roleId: number | null = 0;
+  roleListFacade: RoleListFacadeService = inject(RoleListFacadeService);
 
   ngOnInit(): void {
-    this.getAllRoles();
-    this.searchSubject.pipe(debounceTime(2000)).subscribe({
-      next: (value) => {
-        this.roleService.search(value, this.page).subscribe({
-          next: (result) => {
-            this.roles = result.roles ?? [];
-            this.page.pageCount = result.size ?? 0;
-          },
-          error: (err) => {
-            fireToast('error', 'Error', err.error.message, this.messageService);
-          },
-          complete: () => { },
-        });
-      },
+    this._buildForm();
+    this.roleListFacade.getAll(false);
+    this._subsribeToFormGroup();
+  }
+
+  private _buildForm() {
+    this.roleFormGroup = this._formBuilder.group({
+      name: ['']
     });
   }
-  ngOnDestroy(): void {
-    this.roles$.unsubscribe();
-    this.searchSubject.complete();
+
+  addNew(): void {
+    this.goToEdit(null);
   }
 
-  goToDetails(roleId: number) {
-    this.router.navigate([`role/details/${roleId}`]);
+  clear(): void {
+    this._clearSearchFields();
+    this.roleListFacade.clear();
   }
 
-  goToEdit(roleId: number) {
-    this.router.navigate([`role/edit/${roleId}`]);
+  delete(): void {
+    this.roleListFacade.delete(this.roleId, this.roleSearch);
   }
 
-  getAllRoles() {
-    const roleObserver: any = {
-      next: (value: RoleSearchResult) => {
-        this.roles = value.roles ?? [];
-        this.page.pageCount = value.size ?? 0;
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => { },
-    };
-
-    this.roles$ = this.roleService
-      .getAllRoles(false, this.page)
-      .subscribe(roleObserver);
+  goToDetails(role: Role): void {
+    this.roleListFacade.setDialogParams(role, `Role ${role.id}`, true, false, true);
   }
 
-  public addNew() {
-    this.router.navigate(['role/new']);
+  goToEdit(role: Role | null): void {
+    const title = role ? `Role ${role.id}` : 'Add new Role';
+    this.roleListFacade.setDialogParams(role, title, true, false, false);
   }
 
-  onPageChange(event: PaginatorState) {
-    this.page.first = event.first ?? 0;
-    this.page.page = event.page ?? 0;
-    this.page.rows = event.rows ?? 0;
-    if (
-      this.roleSearch.name !== undefined &&
-      this.roleSearch.name !== ''
-    ) {
-      this.search();
-    } else {
-      this.getAllRoles();
-    }
-  }
-  search() {
-    this.searchSubject.next(this.roleSearch);
-  }
-
-  showDialog(visible: boolean, roleId?: number) {
-    this.roleId = roleId ?? 0;
-    this.visible = visible;
-  }
-
-  clear() {
-    this.roleSearch = {};
-    this.getAllRoles();
-  }
-
-  public refresh() {
-    if (
-      (this.roleSearch.name !== undefined &&
-        this.roleSearch.name !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllRoles();
+  handleCancel(event: any): void {
+    this.roleListFacade.setDialogParams(null, '', event.visible, false, false);
+    if (event.save) {
+      this.refresh();
     }
   }
 
-  delete() {
-    this.roleService.delete(this.roleId).subscribe({
-      next: (value: any) => {
-        if (
-          this.roleSearch.name !== undefined &&
-          this.roleSearch.name !== ''
-        ) {
-          this.search();
-        } else {
-          this.getAllRoles();
+  onPageChange(event: PaginatorState): void {
+    this.roleListFacade.onPageChange(this.roleSearch, event);
+  }
+
+  refresh(): void {
+    this.roleListFacade.retrieve(this.roleSearch);
+  }
+
+  showDeleteDialog(visible: boolean, id?: number): void {
+    this.roleId = id ?? 0;
+    this.roleListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  }
+
+  private _subsribeToFormGroup() {
+    this.roleFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: Role) => {
+        if (value.name) {
+          this.roleSearch = value;
+          this.roleListFacade.search(value);
         }
-        fireToast(
-          'success',
-          'success',
-          `Role with id ${this.roleId} has been deleted.`,
-          this.messageService
-        );
-        this.showDialog(false);
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => { },
-    });
+      });
   }
 
-  onKeyUp() {
-    if (
-      this.roleSearch.name !== undefined &&
-      this.roleSearch.name !== ''
-    ) {
-      this.search();
-    } else {
-      this.getAllRoles();
-    }
+  private _clearSearchFields() {
+    this.roleFormGroup.controls['name'].setValue('');
+    this.roleSearch = {};
   }
-
 }
 
