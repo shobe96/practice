@@ -60,11 +60,11 @@ export class HomeFacadeService {
     }
   }
 
-  getProjectHistory(employee: Employee): Observable<ProjectHistory[] | null> {
+  private _getProjectHistory(employee: Employee): Observable<ProjectHistory[] | null> {
     return this._projectHistoryService.getProjectsHistoryOfEmployee(employee.id).pipe(catchError(_err => of(null)));
   }
 
-  getAllEmployeesByDepartment(employee: Employee): Observable<EmployeeSearchResult | null> {
+  private _getAllEmployeesByDepartment(employee: Employee): Observable<EmployeeSearchResult | null> {
     if (employee.department?.id)
       return this._employeeService.findByDepartment(employee.department?.id, this._defaultPage).pipe(catchError(_err => of(null)));
     else return of(null);
@@ -84,8 +84,8 @@ export class HomeFacadeService {
         switchMap((employee: Employee) => {
           this._employee.next(employee);
           return forkJoin([
-            this.getProjectHistory(employee),
-            this.getAllEmployeesByDepartment(employee),
+            this._getProjectHistory(employee),
+            this._getAllEmployeesByDepartment(employee),
             this._getActiveProject(employee)
           ]);
 

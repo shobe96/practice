@@ -16,8 +16,6 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
     this.homeFacade.getRoles();
-    // this.homeFacade.getProjectHistory();
-    // this.homeFacade.getAllEmployeesByDepartment();
     this.homeFacade.getPanelData();
   }
 }
