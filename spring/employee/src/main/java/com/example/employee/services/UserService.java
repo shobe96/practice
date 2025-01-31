@@ -16,4 +16,6 @@ public interface UserService {
 	public void deleteUser(Integer userId);
 	
 	public Authentication getAuthenticatedUser(Authentication authentication);
+
+	public UserSearchResult searchUsers(String username, Pageable pageable);
 }
