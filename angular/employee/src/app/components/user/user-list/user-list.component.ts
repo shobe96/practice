@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
 import { PageEvent } from '../../../models/page-event.model';
 import { User } from '../../../models/user.model';
 import { UserService } from '../../../services/user/user.service';
@@ -9,6 +9,8 @@ import { UserSearchResult } from '../../../models/user-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
 import { AuthService } from '../../../services/auth/auth.service';
 import { fireToast } from '../../../shared/utils';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { UserListFacadeService } from '../../../services/user/user-list.facade.service';
 
 @Component({
   selector: 'app-user-list',
@@ -16,75 +18,63 @@ import { fireToast } from '../../../shared/utils';
   styleUrl: './user-list.component.scss',
   standalone: false
 })
-export class UserListComponent implements OnInit, OnDestroy {
-  private users$!: Subscription;
-  userId: number = 0;
-  page: PageEvent = {
-    page: 0,
-    first: 0,
-    rows: 5,
-    pageCount: 0,
-    sort: 'asc',
-  };
-  users: User[] = [];
-  visible: boolean = false;
-
-  constructor(
-    private userService: UserService,
-    private router: Router,
-    private messageService: MessageService,
-    private authService: AuthService
-  ) { }
+export class UserListComponent implements OnInit {
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  userFormGroup!: FormGroup;
+  userSearch: User = {};
+  userId: number | null = 0;
+  userListFacade: UserListFacadeService = inject(UserListFacadeService);
 
   ngOnInit(): void {
-    this.getAllUsers();
-  }
-  ngOnDestroy(): void {
-    this.users$.unsubscribe();
+    this._buildForm();
+    this.userListFacade.getAll();
+    this._subsribeToFormGroup();
   }
 
-  public getAllUsers() {
-    const usersObserver: any = {
-      next: (value: UserSearchResult) => {
-        this.users = value.users ?? [];
-        this.page.pageCount = value.size ?? 0;
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.message, this.messageService);
-      },
-      complete: () => { },
-    };
-    this.users$ = this.userService
-      .getAllUsers(this.page)
-      .subscribe(usersObserver);
+  private _buildForm() {
+    this.userFormGroup = this._formBuilder.group({
+      username: [''],
+    });
   }
 
   delete() {
-    this.authService.delete(this.userId).subscribe({
-      next: (value: any) => {
-        this.getAllUsers();
-        fireToast(
-          'success',
-          'success',
-          `Employee with id ${this.userId} has been deleted.`,
-          this.messageService
-        );
-        this.showDialog(false);
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => { },
-    });
+    this.userListFacade.delete(this.userId, this.userSearch);
   }
   onPageChange(event: PaginatorState) {
-    this.page.first = event.first ?? 0;
-    this.page.page = event.page ?? 0;
-    this.page.rows = event.rows ?? 0;
-    this.getAllUsers();
+    this.userListFacade.onPageChange(this.userSearch, event);
   }
-  showDialog(visible: boolean, userId?: number) {
-    this.userId = userId ?? 0;
-    this.visible = visible;
+
+  clear(): void {
+    this._clearSearchFields();
+    this.userListFacade.clear();
+  }
+
+  refresh(): void {
+    this.userListFacade.retrieve(this.userSearch);
+  }
+
+  showDeleteDialog(visible: boolean, id?: number): void {
+    this.userId = id ?? 0;
+    this.userListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  }
+
+  private _subsribeToFormGroup() {
+    this.userFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: User) => {
+        if (value.username) {
+          this.userSearch = value;
+          this.userListFacade.search(value);
+        }
+      });
+  }
+
+  private _clearSearchFields() {
+    this.userFormGroup.controls['username'].setValue('');
+    this.userSearch = {};
   }
 }

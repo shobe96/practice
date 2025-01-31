@@ -1,6 +1,49 @@
 <div class="card">
-  <div *ngIf="users.length > 0">
-    <p-table [value]="users" [tableStyle]="{ 'min-width': '70rem' }">
+  <p-accordion value="0">
+    <p-accordion-panel value="0">
+      <p-accordion-header>Search Filters</p-accordion-header>
+      <p-accordion-content>
+        <form [formGroup]="userFormGroup">
+          <div class="search-inputs">
+            <input
+              formControlName="username"
+              pInputText
+              placeholder="Username"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              (onClick)="clear()"
+              severity="danger"
+              [pTooltip]="clearFiltersTooltip"
+              tooltipPosition="top"
+            />
+            <ng-template #clearFiltersTooltip>
+              <div class="flex align-items-center">
+                <span>Clear Filters</span>
+              </div>
+            </ng-template>
+            <p-button
+              icon="pi pi-refresh"
+              [rounded]="true"
+              (onClick)="refresh()"
+              severity="success"
+              [pTooltip]="refreshTooltip"
+              tooltipPosition="top"
+            />
+
+            <ng-template #refreshTooltip>
+              <div class="flex align-items-center">
+                <span>Refresh List</span>
+              </div>
+            </ng-template>
+          </div>
+        </form>
+      </p-accordion-content>
+    </p-accordion-panel>
+  </p-accordion>
+  <div *ngIf="userListFacade.viewModel$ | async as data">
+    <p-table [value]="data.users" [tableStyle]="{ 'min-width': '70rem' }">
       <ng-template pTemplate="header">
         <tr>
           <th id="id">ID</th>
@@ -16,14 +59,14 @@
             <p-button
               icon="pi pi-trash"
               [rounded]="true"
-              (onClick)="showDialog(true, user.id)"
+              (onClick)="showDeleteDialog(true, user.id)"
               severity="danger"
               [pTooltip]="deleteTooltip"
               tooltipPosition="top"
             />
             <ng-template #deleteTooltip>
               <div class="flex align-items-center">
-                <span>Delete Employee</span>
+                <span>Delete User</span>
               </div>
             </ng-template>
           </td>
@@ -34,16 +77,16 @@
     <div class="card flex justify-content-center">
       <p-paginator
         (onPageChange)="onPageChange($event)"
-        [first]="page.first"
-        [rows]="page.rows"
-        [totalRecords]="page.pageCount"
+        [first]="data.page.first"
+        [rows]="data.page.rows"
+        [totalRecords]="data.page.pageCount"
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
     </div>
 
     <p-dialog
       header="Warning"
-      [(visible)]="visible"
+      [(visible)]="data.dialogOptions.deleteVisible"
       [modal]="true"
       [style]="{ width: '35vw' }"
       [draggable]="false"
@@ -63,7 +106,7 @@
           icon="pi pi-times"
           [rounded]="true"
           severity="danger"
-          (onClick)="showDialog(false)"
+          (onClick)="showDeleteDialog(false)"
         ></p-button>
       </div>
     </p-dialog>
