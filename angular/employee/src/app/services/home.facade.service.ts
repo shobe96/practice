@@ -83,7 +83,7 @@ export class HomeFacadeService {
       this._employeeService.findByUser(this.authResponse.userId).pipe(
         switchMap((employee: Employee) => {
           this._employee.next(employee);
-          return forkJoin([
+          return combineLatest([
             this._getProjectHistory(employee),
             this._getAllEmployeesByDepartment(employee),
             this._getActiveProject(employee)

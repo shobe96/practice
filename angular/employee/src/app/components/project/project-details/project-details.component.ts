@@ -6,6 +6,7 @@ import { fireToast } from '../../../shared/utils';
 import { MessageService } from 'primeng/api';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';
+import { ProjectDetailsFacadeService } from '../../../services/project/project-details.facade.service';
 
 @Component({
   selector: 'app-project-details',
@@ -19,6 +20,7 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
   private router: Router = inject(Router)
   private projectService: ProjectService = inject(ProjectService)
   private messageService: MessageService = inject(MessageService);
+  projectDetailsFacade: ProjectDetailsFacadeService = inject(ProjectDetailsFacadeService);
 
   project!: Project;
   employeeId: number = 0;
@@ -29,6 +31,9 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
 
   ngOnInit(): void {
     this.project = this.route.snapshot.data['project'];
+    this.route.params.subscribe((params: any) => {
+      this.projectDetailsFacade.getProject(params.projectId);
+    })
   }
 
   ngOnDestroy(): void {
@@ -41,26 +46,10 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
 
   showDialog(visible: boolean, employeeId?: number) {
     this.employeeId = employeeId ?? 0;
-    this.visible = visible;
+    this.projectDetailsFacade.showDialog(visible);
   }
 
-  unassignEmployee() {
-    this.projectService.unassignEmployee(this.employeeId, this.project)
-      .pipe(
-        takeUntil(this.componentIsDestroyed$),
-      )
-      .subscribe({
-        next: () => {
-          this.project.employees = this.project.employees?.filter(val => {
-            return val.id !== this.employeeId;
-          });
-          fireToast('success', 'Success', 'Employee unassigned successfully', this.messageService);
-          this.showDialog(false);
-        },
-        error: (err: any) => {
-          fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
-        },
-        complete: () => { }
-      })
+  unassignEmployee(project: Project) {
+    this.projectDetailsFacade.unassignEmployee(this.employeeId, project);
   }
 }
