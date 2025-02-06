@@ -6,6 +6,17 @@ import { ProjectListComponent } from '../../components/project/project-list/proj
 import { ProjectComponent } from '../../components/project/project.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
+import { AccordionModule } from 'primeng/accordion';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { PaginatorModule } from 'primeng/paginator';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { TabsModule } from 'primeng/tabs';
+import { SelectModule } from 'primeng/select';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { DatePickerModule } from 'primeng/datepicker';
+import { InputTextModule } from 'primeng/inputtext';
 
 
 @NgModule({
@@ -18,7 +29,18 @@ import { FormsModule } from '@angular/forms';
   imports: [
     SharedModule,
     ProjectRoutingModule,
-    FormsModule
+    FormsModule,
+    AccordionModule,
+    ButtonModule,
+    TooltipModule,
+    TableModule,
+    PaginatorModule,
+    DialogModule,
+    TabsModule,
+    SelectModule,
+    MultiSelectModule,
+    DatePickerModule,
+    InputTextModule,
   ]
 })
 export class ProjectModule { }

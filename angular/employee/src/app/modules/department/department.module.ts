@@ -5,6 +5,14 @@ import { DepartmentListComponent } from '../../components/department/department-
 import { DepartmentEditComponent } from '../../components/department/department-edit/department-edit.component';
 import { SharedModule } from '../shared/shared.module';
 import { FormsModule } from '@angular/forms';
+import { AccordionModule } from 'primeng/accordion';
+import { ButtonModule } from 'primeng/button';
+import { DialogModule } from 'primeng/dialog';
+import { PaginatorModule } from 'primeng/paginator';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { ToastModule } from 'primeng/toast';
+import { InputTextModule } from 'primeng/inputtext';
 
 
 @NgModule({
@@ -16,7 +24,15 @@ import { FormsModule } from '@angular/forms';
   imports: [
     DepartmentRoutingModule,
     SharedModule,
-    FormsModule
+    FormsModule,
+    AccordionModule,
+    ButtonModule,
+    TooltipModule,
+    TableModule,
+    PaginatorModule,
+    DialogModule,
+    ToastModule,
+    InputTextModule,
   ]
 })
 export class DepartmentModule { }

@@ -1,11 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableHoverDirective } from '../../shared/directives/table-hover.directive';
-import { PrimeNgModule } from '../prime-ng/prime-ng.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MessageService } from 'primeng/api';
 
 const MODULES = [
-  PrimeNgModule,
   CommonModule,
   ReactiveFormsModule
 ];
@@ -20,6 +19,7 @@ const MODULES = [
   exports: [
     TableHoverDirective,
     MODULES
-  ]
+  ],
+  providers: [MessageService]
 })
 export class SharedModule { }

@@ -9,6 +9,8 @@ import { SharedModule } from './modules/shared/shared.module';
 import { authInterceptor } from './shared/interceptors/auth/auth.interceptor';
 import { providePrimeNG } from 'primeng/config';
 import Aura from '@primeng/themes/aura'
+import { ToastModule } from 'primeng/toast';
+import { MenubarModule } from 'primeng/menubar';
 
 @NgModule({
   declarations: [
@@ -20,7 +22,9 @@ import Aura from '@primeng/themes/aura'
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    SharedModule
+    SharedModule,
+    ToastModule,
+    MenubarModule,
   ],
   providers: [
     provideHttpClient(withInterceptors([authInterceptor])),
