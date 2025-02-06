@@ -7,7 +7,7 @@
     <input formControlName="name" pInputText placeholder="Name of department" />
     <div
       class="validation-messages"
-      *ngIf="departmentFormGroup.controls['name'].invalid && departmentFormGroup.controls['name'].touched"
+      *ngIf="departmentFormGroup.controls['name'].invalid && departmentFormGroup.controls['name'].dirty"
     >
       <div *ngIf="departmentFormGroup.controls['name'].errors?.['required']">
         Name is required!

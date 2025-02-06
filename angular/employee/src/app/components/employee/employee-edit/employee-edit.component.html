@@ -13,7 +13,7 @@
         />
         <div
           class="validation-messages"
-          *ngIf="employeeFormGroup.controls['name'].invalid && employeeFormGroup.controls['name'].touched"
+          *ngIf="employeeFormGroup.controls['name'].invalid && employeeFormGroup.controls['name'].dirty"
         >
           <div *ngIf="employeeFormGroup.controls['name'].errors?.['required']">
             Name is required!
@@ -34,7 +34,7 @@
         />
         <div
           class="validation-messages"
-          *ngIf="employeeFormGroup.controls['surname'].invalid && employeeFormGroup.controls['surname'].touched"
+          *ngIf="employeeFormGroup.controls['surname'].invalid && employeeFormGroup.controls['surname'].dirty"
         >
           <div
             *ngIf="employeeFormGroup.controls['surname'].errors?.['required']"
@@ -63,7 +63,7 @@
         />
         <div
           class="validation-messages"
-          *ngIf="employeeFormGroup.controls['email'].invalid && employeeFormGroup.controls['email'].touched"
+          *ngIf="employeeFormGroup.controls['email'].invalid && employeeFormGroup.controls['email'].dirty"
         >
           <div *ngIf="employeeFormGroup.controls['email'].errors?.['required']">
             Email address is required!

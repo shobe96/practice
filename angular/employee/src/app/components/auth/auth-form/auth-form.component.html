@@ -9,7 +9,7 @@
     <input formControlName="username" pInputText placeholder="Username" />
     <div
       class="validation-messages"
-      *ngIf="authFormGroup.controls['username']?.invalid && authFormGroup.controls['username']?.touched"
+      *ngIf="authFormGroup.controls['username']?.invalid && authFormGroup.controls['username']?.dirty"
     >
       <span
         class="block"
@@ -51,7 +51,7 @@
     </div>
     <div
       class="validation-messages"
-      *ngIf="authFormGroup.controls['password']?.invalid && authFormGroup.controls['password']?.touched"
+      *ngIf="authFormGroup.controls['password']?.invalid && authFormGroup.controls['password']?.dirty"
     >
       <span
         class="block"
@@ -110,7 +110,7 @@
     </div>
     <div
       class="validation-messages"
-      *ngIf="authFormGroup.controls['confirmPassword']?.invalid && authFormGroup.controls['confirmPassword']?.touched"
+      *ngIf="authFormGroup.controls['confirmPassword']?.invalid && authFormGroup.controls['confirmPassword']?.dirty"
     >
       <span
         class="block"
@@ -157,7 +157,7 @@
       />
       <div
         class="validation-messages"
-        *ngIf="authFormGroup.controls['selectedRoles'].invalid && authFormGroup.controls['selectedRoles'].touched"
+        *ngIf="authFormGroup.controls['selectedRoles'].invalid && authFormGroup.controls['selectedRoles'].dirty"
       >
         <div
           *ngIf="authFormGroup.controls['selectedRoles'].errors?.['required']"
@@ -174,7 +174,7 @@
       />
       <div
         class="validation-messages"
-        *ngIf="authFormGroup.controls['employee'].invalid && authFormGroup.controls['employee'].touched"
+        *ngIf="authFormGroup.controls['employee'].invalid && authFormGroup.controls['employee'].dirty"
       >
         <div *ngIf="authFormGroup.controls['employee'].errors?.['required']">
           Employee is required!

@@ -13,7 +13,7 @@
         />
         <div
           class="validation-messages"
-          *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].touched"
+          *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].dirty"
         >
           <div *ngIf="projectFormGroup.controls['name'].errors?.['required']">
             Name is required!
@@ -34,7 +34,7 @@
         />
         <div
           class="validation-messages"
-          *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].touched"
+          *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].dirty"
         >
           <div *ngIf="projectFormGroup.controls['code'].errors?.['required']">
             Code is required!
@@ -72,7 +72,7 @@
           />
           <div
             class="validation-messages"
-            *ngIf="projectFormGroup.controls['skills'].invalid && projectFormGroup.controls['skills'].touched"
+            *ngIf="projectFormGroup.controls['skills'].invalid && projectFormGroup.controls['skills'].dirty"
           >
             <div
               *ngIf="projectFormGroup.controls['skills'].errors?.['required']"
@@ -95,7 +95,7 @@
           />
           <div
             class="validation-messages"
-            *ngIf="projectFormGroup.controls['employees'].invalid && projectFormGroup.controls['employees'].touched"
+            *ngIf="projectFormGroup.controls['employees'].invalid && projectFormGroup.controls['employees'].dirty"
           >
             <div
               *ngIf="projectFormGroup.controls['employees'].errors?.['required']"
@@ -118,7 +118,7 @@
         />
         <div
           class="validation-messages"
-          *ngIf="projectFormGroup.controls['startDate'].invalid && projectFormGroup.controls['startDate'].touched"
+          *ngIf="projectFormGroup.controls['startDate'].invalid && projectFormGroup.controls['startDate'].dirty"
         >
           <div
             *ngIf="projectFormGroup.controls['startDate'].errors?.['required']"
@@ -138,7 +138,7 @@
         />
         <div
           class="validation-messages"
-          *ngIf="projectFormGroup.controls['endDate'].invalid && projectFormGroup.controls['endDate'].touched"
+          *ngIf="projectFormGroup.controls['endDate'].invalid && projectFormGroup.controls['endDate'].dirty"
         >
           <div
             *ngIf="projectFormGroup.controls['endDate'].errors?.['required']"

@@ -3,7 +3,7 @@
     <input formControlName="name" pInputText placeholder="Name of role" />
     <div
       class="validation-messages"
-      *ngIf="roleFormGroup.controls['name'].invalid && roleFormGroup.controls['name'].touched"
+      *ngIf="roleFormGroup.controls['name'].invalid && roleFormGroup.controls['name'].dirty"
     >
       <div *ngIf="roleFormGroup.controls['name'].errors?.['required']">
         Name is required!
@@ -18,7 +18,7 @@
     <input formControlName="code" pInputText placeholder="Code" />
     <div
       class="validation-messages"
-      *ngIf="roleFormGroup.controls['code'].invalid && roleFormGroup.controls['code'].touched"
+      *ngIf="roleFormGroup.controls['code'].invalid && roleFormGroup.controls['code'].dirty"
     >
       <div *ngIf="roleFormGroup.controls['code'].errors?.['required']">
         Code is required!
@@ -33,7 +33,7 @@
     <input formControlName="description" pInputText placeholder="Description" />
     <div
       class="validation-messages"
-      *ngIf="roleFormGroup.controls['description'].invalid && roleFormGroup.controls['description'].touched"
+      *ngIf="roleFormGroup.controls['description'].invalid && roleFormGroup.controls['description'].dirty"
     >
       <div *ngIf="roleFormGroup.controls['description'].errors?.['required']">
         Description is required!
