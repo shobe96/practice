@@ -23,14 +23,13 @@ export class ProjectListComponent implements OnInit {
   ngOnInit(): void {
     this._buildForm();
     this.projectListFacade.getAll(false);
-    this._subsribeToFormGroup();
+    this._subscribeToFormGroup();
   }
 
   private _buildForm() {
     this.projectFormGroup = this._formBuilder.group({
       name: [''],
-      surname: [''],
-      email: [''],
+      code: ['']
     });
   }
 
@@ -44,7 +43,7 @@ export class ProjectListComponent implements OnInit {
   }
 
   delete(): void {
-    this.projectListFacade.delete(this.projectId, this.projectSearch);
+    this.projectListFacade.delete(this.projectId);
   }
 
   goToDetails(id: number): void {
@@ -64,11 +63,11 @@ export class ProjectListComponent implements OnInit {
   }
 
   onPageChange(event: PaginatorState): void {
-    this.projectListFacade.onPageChange(this.projectSearch, event);
+    this.projectListFacade.onPageChange(event);
   }
 
   refresh(): void {
-    this.projectListFacade.retrieve(this.projectSearch);
+    this.projectListFacade.retrieve();
   }
 
   showDeleteDialog(visible: boolean, id?: number): void {
@@ -76,7 +75,7 @@ export class ProjectListComponent implements OnInit {
     this.projectListFacade.setDialogParams(null, 'Warning', false, visible, false);
   }
 
-  private _subsribeToFormGroup() {
+  private _subscribeToFormGroup() {
     this.projectFormGroup
       .valueChanges
       .pipe(
@@ -85,8 +84,7 @@ export class ProjectListComponent implements OnInit {
       )
       .subscribe((value: Project) => {
         if (value.name || value.code) {
-          this.projectSearch = value;
-          this.projectListFacade.search(value);
+          this._router.navigate([], { queryParams: { name: value.name, code: value.code }, queryParamsHandling: 'merge' })
         }
       });
   }
@@ -94,6 +92,6 @@ export class ProjectListComponent implements OnInit {
   private _clearSearchFields() {
     this.projectFormGroup.controls['name'].setValue('');
     this.projectFormGroup.controls['code'].setValue('');
+    this._router.navigate([], { queryParams: { name: '', code: '' }, queryParamsHandling: 'merge' })
   }
-
 }

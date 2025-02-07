@@ -9,5 +9,4 @@ import { messageLife } from '../../shared/constants.model';
 })
 export class DepartmentComponent {
   life = messageLife;
-
 }

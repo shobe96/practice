@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-employee-list',
@@ -14,16 +15,7 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 })
 export class EmployeeListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
-  employeeFormGroup!: FormGroup;
-  employeeSearch: Employee = {};
-  employeeId: number | null = 0;
-  employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
-
-  ngOnInit(): void {
-    this._buildForm();
-    this.employeeListFacade.getAll(false);
-    this._subsribeToFormGroup();
-  }
+  private _router: Router = inject(Router);
 
   private _buildForm() {
     this.employeeFormGroup = this._formBuilder.group({
@@ -31,6 +23,38 @@ export class EmployeeListComponent implements OnInit {
       surname: [''],
       email: [''],
     });
+  }
+
+  private _subscribeToFormGroup() {
+    this.employeeFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: Employee) => {
+        if (value.name || value.surname || value.email) {
+          this._router.navigate([], { queryParams: { name: value.name, surname: value.surname, email: value.email }, queryParamsHandling: 'merge' })
+        }
+      });
+  }
+
+  private _clearSearchFields() {
+    this.employeeFormGroup.controls['name'].setValue('');
+    this.employeeFormGroup.controls['surname'].setValue('');
+    this.employeeFormGroup.controls['email'].setValue('');
+    this._router.navigate([], { queryParams: { name: '', surname: '', email: '' }, queryParamsHandling: 'merge' })
+  }
+
+  employeeFormGroup!: FormGroup;
+  employeeSearch: Employee = {};
+  employeeId: number | null = 0;
+  employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
+
+  ngOnInit(): void {
+    this._buildForm();
+    this.employeeListFacade.retrieve();
+    this._subscribeToFormGroup();
   }
 
   addNew(): void {
@@ -43,7 +67,7 @@ export class EmployeeListComponent implements OnInit {
   }
 
   delete(): void {
-    this.employeeListFacade.delete(this.employeeId, this.employeeSearch);
+    this.employeeListFacade.delete(this.employeeId);
   }
 
   goToDetails(employee: Employee): void {
@@ -63,37 +87,15 @@ export class EmployeeListComponent implements OnInit {
   }
 
   onPageChange(event: PaginatorState): void {
-    this.employeeListFacade.onPageChange(this.employeeSearch, event);
+    this.employeeListFacade.onPageChange(event);
   }
 
   refresh(): void {
-    this.employeeListFacade.retrieve(this.employeeSearch);
+    this.employeeListFacade.retrieve();
   }
 
   showDeleteDialog(visible: boolean, id?: number): void {
     this.employeeId = id ?? 0;
     this.employeeListFacade.setDialogParams(null, 'Warning', false, visible, false);
-  }
-
-  private _subsribeToFormGroup() {
-    this.employeeFormGroup
-      .valueChanges
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-      )
-      .subscribe((value: Employee) => {
-        if (value.name || value.surname || value.email) {
-          this.employeeSearch = value;
-          this.employeeListFacade.search(value);
-        }
-      });
-  }
-
-  private _clearSearchFields() {
-    this.employeeFormGroup.controls['name'].setValue('');
-    this.employeeFormGroup.controls['surname'].setValue('');
-    this.employeeFormGroup.controls['email'].setValue('');
-    this.employeeSearch = {};
   }
 }

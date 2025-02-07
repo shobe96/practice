@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest, debounceTime } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, debounceTime, switchMap } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { SkillSearchResult } from '../../models/skill-search-result.model';
 import { Skill } from '../../models/skill.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { SkillService } from './skill.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,8 @@ import { SkillService } from './skill.service';
 export class SkillListFacadeService {
 
   private _skillService = inject(SkillService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -24,6 +27,7 @@ export class SkillListFacadeService {
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private _skillSearch: Skill = {}
 
   viewModel$: Observable<any> = combineLatest({
     skills: this._skills.asObservable(),
@@ -32,8 +36,12 @@ export class SkillListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  checkSearchFields(skill: Skill): boolean {
-    return Boolean(skill.name)
+  constructor() {
+    this.search();
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._skillSearch.name);
   }
 
   clear(): void {
@@ -45,7 +53,7 @@ export class SkillListFacadeService {
   delete(id: number | null, skillSearch: Skill): void {
     if (id) {
       this._skillService.delete(id).subscribe(() => {
-        this.retrieve(skillSearch);
+        this.retrieve();
         this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
@@ -57,27 +65,37 @@ export class SkillListFacadeService {
     });
   }
 
-  onPageChange(skillSearch: Skill, event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     this._defaultPage.first = event.first ?? 0;
     this._defaultPage.page = event.page ?? 0;
     this._defaultPage.rows = event.rows ?? 0;
-    this.retrieve(skillSearch);
+    this.retrieve();
   }
 
-  retrieve(skillSearch: Skill): void {
-    if (this.checkSearchFields(skillSearch))
-      this.search(skillSearch)
+  retrieve(): void {
+    if (this._checkSearchFields())
+      this._skillService.search(this._skillSearch, this._defaultPage).subscribe((value: SkillSearchResult) => this._emitValues(value));
     else this.getAll(false);
   }
 
-  search(skillSearch: Skill): void {
-    this._skillService.search(skillSearch, this._defaultPage)
+  search(): void {
+    this._activatedRoute.queryParams
       .pipe(
-        debounceTime(2000)
+        switchMap((params: any) => {
+          this._skillSearch = {
+            name: params.name
+          }
+          if (this._checkSearchFields()) {
+            return this._skillService.search(this._skillSearch, this._defaultPage);
+          } else {
+            return [];
+          }
+
+        })
       )
       .subscribe((value: SkillSearchResult) => {
         this._emitValues(value);
-      })
+      });
   }
 
   setDialogParams(skill: Skill | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {

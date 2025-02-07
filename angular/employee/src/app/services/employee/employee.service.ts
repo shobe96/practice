@@ -43,7 +43,7 @@ export class EmployeeService {
   }
 
   public search(employee: Employee, page: PageEvent): Observable<EmployeeSearchResult> {
-    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}${buildPaginationParams(page)}`);
+    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&${buildPaginationParams(page)}`);
   }
 
   public filterEmployeesByActiveAndSkills(skills: Skill[], department: Department): Observable<Employee[]> {

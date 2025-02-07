@@ -1,9 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Department } from '../../../models/department.model';
 import { PaginatorState } from 'primeng/paginator';
 import { DepartmentListFacadeService } from '../../../services/department/department-list.facade.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-department-list',
@@ -13,7 +15,35 @@ import { FormBuilder, FormGroup } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepartmentListComponent implements OnInit {
+
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+
+  private _buildForm() {
+    this.departmentFormGroup = this._formBuilder.group({
+      name: ['']
+    });
+  }
+
+  private _subscribeToFormGroup() {
+    this.departmentFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: Department) => {
+        if (value.name) {
+          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
+        }
+      });
+  }
+
+  private _clearSearchFields() {
+    this.departmentFormGroup.controls['name'].setValue('');
+    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
+  }
+
   departmentFormGroup!: FormGroup;
   departmentSearch: Department = {};
   departmentId: number | null = 0;
@@ -22,13 +52,7 @@ export class DepartmentListComponent implements OnInit {
   ngOnInit(): void {
     this._buildForm();
     this.departmentListFacade.getAll(false);
-    this._subsribeToFormGroup();
-  }
-
-  private _buildForm() {
-    this.departmentFormGroup = this._formBuilder.group({
-      name: ['']
-    });
+    this._subscribeToFormGroup();
   }
 
   addNew(): void {
@@ -41,7 +65,7 @@ export class DepartmentListComponent implements OnInit {
   }
 
   delete(): void {
-    this.departmentListFacade.delete(this.departmentId, this.departmentSearch);
+    this.departmentListFacade.delete(this.departmentId);
   }
 
   goToDetails(department: Department): void {
@@ -61,35 +85,15 @@ export class DepartmentListComponent implements OnInit {
   }
 
   onPageChange(event: PaginatorState): void {
-    this.departmentListFacade.onPageChange(this.departmentSearch, event);
+    this.departmentListFacade.onPageChange(event);
   }
 
   refresh(): void {
-    this.departmentListFacade.retrieve(this.departmentSearch);
+    this.departmentListFacade.retrieve();
   }
 
   showDeleteDialog(visible: boolean, id?: number): void {
     this.departmentId = id ?? 0;
     this.departmentListFacade.setDialogParams(null, 'Warning', false, visible, false);
-  }
-
-  private _subsribeToFormGroup() {
-    this.departmentFormGroup
-      .valueChanges
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-      )
-      .subscribe((value: Department) => {
-        if (value.name) {
-          this.departmentSearch = value;
-          this.departmentListFacade.search(value);
-        }
-      });
-  }
-
-  private _clearSearchFields() {
-    this.departmentFormGroup.controls['name'].setValue('');
-    this.departmentSearch = {};
   }
 }

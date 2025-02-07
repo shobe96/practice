@@ -22,6 +22,6 @@ export class UserService {
   }
 
   public search(user: User, page: PageEvent): Observable<UserSearchResult> {
-    return this.http.get<UserSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(user)}${buildPaginationParams(page)}`);
+    return this.http.get<UserSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(user)}&${buildPaginationParams(page)}`);
   }
 }

@@ -1,18 +1,21 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, combineLatest, debounceTime, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, switchMap } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeService } from './employee.service';
 import { PageEvent } from '../../models/page-event.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';
 import { rowsPerPage } from '../../shared/constants.model';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class EmployeeListFacadeService {
 
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _employeeService = inject(EmployeeService);
+
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -24,6 +27,23 @@ export class EmployeeListFacadeService {
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private _employeeSearch: Employee = {}
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._employeeSearch.name ||
+      this._employeeSearch.surname ||
+      this._employeeSearch.email);
+  }
+
+  private _emitValues(value: EmployeeSearchResult): void {
+    if (value.employees) {
+      this._employees.next(value.employees);
+    }
+    if (value.size) {
+      this._defaultPage.pageCount = value.size;
+      this._page.next(this._defaultPage);
+    }
+  }
 
   viewModel$: Observable<any> = combineLatest({
     employees: this._employees.asObservable(),
@@ -32,10 +52,8 @@ export class EmployeeListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  checkSearchFields(employee: Employee): boolean {
-    return Boolean(employee.name ||
-      employee.surname ||
-      employee.email);
+  constructor() {
+    this.search();
   }
 
   clear(): void {
@@ -44,10 +62,10 @@ export class EmployeeListFacadeService {
     this.getAll(false);
   }
 
-  delete(id: number | null, employeeSearch: Employee): void {
+  delete(id: number | null): void {
     if (id) {
       this._employeeService.delete(id).subscribe(() => {
-        this.retrieve(employeeSearch);
+        this.retrieve();
         this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
@@ -59,27 +77,38 @@ export class EmployeeListFacadeService {
     });
   }
 
-  onPageChange(employeeSearch: Employee, event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     this._defaultPage.first = event.first ?? 0;
     this._defaultPage.page = event.page ?? 0;
     this._defaultPage.rows = event.rows ?? 0;
-    this.retrieve(employeeSearch);
+    this.retrieve();
   }
 
-  retrieve(employeeSearch: Employee): void {
-    if (this.checkSearchFields(employeeSearch))
-      this.search(employeeSearch)
+  retrieve(): void {
+    if (this._checkSearchFields())
+      this._employeeService.search(this._employeeSearch, this._defaultPage).subscribe((value: EmployeeSearchResult) => this._emitValues(value));
     else this.getAll(false);
   }
 
-  search(employeeSearch: Employee): void {
-    this._employeeService.search(employeeSearch, this._defaultPage)
+  search(): void {
+    this._activatedRoute.queryParams
       .pipe(
-        debounceTime(2000)
+        switchMap((params: any) => {
+          this._employeeSearch = {
+            name: params.name,
+            surname: params.surname,
+            email: params.email
+          }
+          if (this._checkSearchFields()) {
+            return this._employeeService.search(this._employeeSearch, this._defaultPage)
+          } else {
+            return [];
+          }
+        })
       )
       .subscribe((value: EmployeeSearchResult) => {
         this._emitValues(value);
-      })
+      });
   }
 
   setDialogParams(employee: Employee | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
@@ -90,15 +119,5 @@ export class EmployeeListFacadeService {
     dialogOptions.deleteVisible = deleteVisible;
     dialogOptions.employee = employee ?? {};
     this._dialogOptions.next(dialogOptions);
-  }
-
-  private _emitValues(value: EmployeeSearchResult): void {
-    if (value.employees) {
-      this._employees.next(value.employees);
-    }
-    if (value.size) {
-      this._defaultPage.pageCount = value.size;
-      this._page.next(this._defaultPage);
-    }
   }
 }

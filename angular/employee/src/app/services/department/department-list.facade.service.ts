@@ -1,17 +1,21 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, OnDestroy } from '@angular/core';
 import { DepartmentService } from './department.service';
-import { BehaviorSubject, combineLatest, debounceTime, Observable } from 'rxjs';
+import { BehaviorSubject, combineLatest, debounce, debounceTime, distinctUntilChanged, exhaustMap, first, Observable, Subscription, switchMap, take, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Department } from '../../models/department.model';
 import { PageEvent } from '../../models/page-event.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DepartmentListFacadeService {
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _departmentService: DepartmentService = inject(DepartmentService);
+
+  private _departmentSearch: Department = {}
   private _departments: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -24,15 +28,29 @@ export class DepartmentListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
-  public viewModel$: Observable<any> = combineLatest({
+  private _emitValues(value: DepartmentSearchResult): void {
+    if (value.departments) {
+      this._departments.next(value.departments);
+    }
+    if (value.size) {
+      this._defaultPage.pageCount = value.size;
+      this._page.next(this._defaultPage);
+    }
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._departmentSearch.name);
+  }
+
+  viewModel$: Observable<any> = combineLatest({
     departments: this._departments.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable(),
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  public checkSearchFields(department: Department): boolean {
-    return Boolean(department.name);
+  constructor() {
+    this.search();
   }
 
   clear(): void {
@@ -47,10 +65,10 @@ export class DepartmentListFacadeService {
     });
   }
 
-  delete(id: number | null, departmentSearch: Department): void {
+  delete(id: number | null): void {
     if (id) {
       this._departmentService.delete(id).subscribe(() => {
-        this.retrieve(departmentSearch);
+        this.retrieve();
         this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
@@ -66,36 +84,36 @@ export class DepartmentListFacadeService {
     this._dialogOptions.next(dialogOptions);
   }
 
-  onPageChange(departmentSearch: Department, event: PaginatorState): void {
+  onPageChange(event: PaginatorState): void {
     this._defaultPage.first = event.first ?? 0;
     this._defaultPage.page = event.page ?? 0;
     this._defaultPage.rows = event.rows ?? 0;
-    this.retrieve(departmentSearch);
+    this.retrieve();
   }
 
-  retrieve(departmentSearch: Department): void {
-    if (this.checkSearchFields(departmentSearch))
-      this.search(departmentSearch)
+  retrieve(): void {
+    if (this._checkSearchFields())
+      this._departmentService.search(this._departmentSearch, this._defaultPage).subscribe((value: DepartmentSearchResult) => this._emitValues(value));
     else this.getAll(false);
   }
 
-  search(departmentSearch: Department): void {
-    this._departmentService.search(departmentSearch, this._defaultPage)
+  search(): void {
+    this._activatedRoute.queryParams
       .pipe(
-        debounceTime(2000)
+        switchMap((params: any) => {
+          this._departmentSearch = {
+            name: params.name
+          }
+          if (this._checkSearchFields()) {
+            return this._departmentService.search(this._departmentSearch, this._defaultPage);
+          } else {
+            return [];
+          }
+
+        })
       )
       .subscribe((value: DepartmentSearchResult) => {
         this._emitValues(value);
-      })
-  }
-
-  private _emitValues(value: DepartmentSearchResult): void {
-    if (value.departments) {
-      this._departments.next(value.departments);
-    }
-    if (value.size) {
-      this._defaultPage.pageCount = value.size;
-      this._page.next(this._defaultPage);
-    }
+      });
   }
 }

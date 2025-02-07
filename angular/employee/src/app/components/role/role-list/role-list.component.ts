@@ -4,6 +4,7 @@ import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Role } from '../../../models/role.model';
 import { RoleListFacadeService } from '../../../services/role/role-list.facade.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-role-list',
@@ -13,6 +14,8 @@ import { RoleListFacadeService } from '../../../services/role/role-list.facade.s
 })
 export class RoleListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+
   roleFormGroup!: FormGroup;
   roleSearch: Role = {};
   roleId: number | null = 0;
@@ -21,7 +24,7 @@ export class RoleListComponent implements OnInit {
   ngOnInit(): void {
     this._buildForm();
     this.roleListFacade.getAll(false);
-    this._subsribeToFormGroup();
+    this._subscribeToFormGroup();
   }
 
   private _buildForm() {
@@ -40,7 +43,7 @@ export class RoleListComponent implements OnInit {
   }
 
   delete(): void {
-    this.roleListFacade.delete(this.roleId, this.roleSearch);
+    this.roleListFacade.delete(this.roleId);
   }
 
   goToDetails(role: Role): void {
@@ -60,11 +63,11 @@ export class RoleListComponent implements OnInit {
   }
 
   onPageChange(event: PaginatorState): void {
-    this.roleListFacade.onPageChange(this.roleSearch, event);
+    this.roleListFacade.onPageChange(event);
   }
 
   refresh(): void {
-    this.roleListFacade.retrieve(this.roleSearch);
+    this.roleListFacade.retrieve();
   }
 
   showDeleteDialog(visible: boolean, id?: number): void {
@@ -72,7 +75,7 @@ export class RoleListComponent implements OnInit {
     this.roleListFacade.setDialogParams(null, 'Warning', false, visible, false);
   }
 
-  private _subsribeToFormGroup() {
+  private _subscribeToFormGroup() {
     this.roleFormGroup
       .valueChanges
       .pipe(
@@ -81,15 +84,14 @@ export class RoleListComponent implements OnInit {
       )
       .subscribe((value: Role) => {
         if (value.name) {
-          this.roleSearch = value;
-          this.roleListFacade.search(value);
+          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
         }
       });
   }
 
   private _clearSearchFields() {
     this.roleFormGroup.controls['name'].setValue('');
-    this.roleSearch = {};
+    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
   }
 }
 

@@ -4,6 +4,7 @@ import { Skill } from '../../../models/skill.model';
 import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SkillListFacadeService } from '../../../services/skill/skill-list.facade.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-skill-list',
@@ -14,6 +15,8 @@ import { SkillListFacadeService } from '../../../services/skill/skill-list.facad
 })
 export class SkillListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+
   skillFormGroup!: FormGroup;
   skillSearch: Skill = {};
   skillId: number | null = 0;
@@ -22,7 +25,7 @@ export class SkillListComponent implements OnInit {
   ngOnInit(): void {
     this._buildForm();
     this.skillListFacade.getAll(false);
-    this._subsribeToFormGroup();
+    this._subscribeToFormGroup();
   }
 
   private _buildForm() {
@@ -61,11 +64,11 @@ export class SkillListComponent implements OnInit {
   }
 
   onPageChange(event: PaginatorState): void {
-    this.skillListFacade.onPageChange(this.skillSearch, event);
+    this.skillListFacade.onPageChange(event);
   }
 
   refresh(): void {
-    this.skillListFacade.retrieve(this.skillSearch);
+    this.skillListFacade.retrieve();
   }
 
   showDeleteDialog(visible: boolean, id?: number): void {
@@ -73,7 +76,7 @@ export class SkillListComponent implements OnInit {
     this.skillListFacade.setDialogParams(null, 'Warning', false, visible, false);
   }
 
-  private _subsribeToFormGroup() {
+  private _subscribeToFormGroup() {
     this.skillFormGroup
       .valueChanges
       .pipe(
@@ -82,14 +85,13 @@ export class SkillListComponent implements OnInit {
       )
       .subscribe((value: Skill) => {
         if (value.name) {
-          this.skillSearch = value;
-          this.skillListFacade.search(value);
+          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
         }
       });
   }
 
   private _clearSearchFields() {
     this.skillFormGroup.controls['name'].setValue('');
-    this.skillSearch = {};
+    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
   }
 }

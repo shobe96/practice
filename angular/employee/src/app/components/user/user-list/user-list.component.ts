@@ -20,6 +20,8 @@ import { UserListFacadeService } from '../../../services/user/user-list.facade.s
 })
 export class UserListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+
   userFormGroup!: FormGroup;
   userSearch: User = {};
   userId: number | null = 0;
@@ -28,7 +30,7 @@ export class UserListComponent implements OnInit {
   ngOnInit(): void {
     this._buildForm();
     this.userListFacade.getAll();
-    this._subsribeToFormGroup();
+    this._subscribeToFormGroup();
   }
 
   private _buildForm() {
@@ -40,8 +42,9 @@ export class UserListComponent implements OnInit {
   delete() {
     this.userListFacade.delete(this.userId, this.userSearch);
   }
+
   onPageChange(event: PaginatorState) {
-    this.userListFacade.onPageChange(this.userSearch, event);
+    this.userListFacade.onPageChange(event);
   }
 
   clear(): void {
@@ -50,7 +53,7 @@ export class UserListComponent implements OnInit {
   }
 
   refresh(): void {
-    this.userListFacade.retrieve(this.userSearch);
+    this.userListFacade.retrieve();
   }
 
   showDeleteDialog(visible: boolean, id?: number): void {
@@ -58,7 +61,7 @@ export class UserListComponent implements OnInit {
     this.userListFacade.setDialogParams(null, 'Warning', false, visible, false);
   }
 
-  private _subsribeToFormGroup() {
+  private _subscribeToFormGroup() {
     this.userFormGroup
       .valueChanges
       .pipe(
@@ -67,14 +70,13 @@ export class UserListComponent implements OnInit {
       )
       .subscribe((value: User) => {
         if (value.username) {
-          this.userSearch = value;
-          this.userListFacade.search(value);
+          this._router.navigate([], { queryParams: { username: value.username }, queryParamsHandling: 'merge' })
         }
       });
   }
 
   private _clearSearchFields() {
     this.userFormGroup.controls['username'].setValue('');
-    this.userSearch = {};
+    this._router.navigate([], { queryParams: { username: '' }, queryParamsHandling: 'merge' })
   }
 }

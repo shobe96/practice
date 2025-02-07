@@ -1,18 +1,21 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest, debounceTime } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, debounceTime, switchMap } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { ProjectSearchResult } from '../../models/project-search-result.model';
 import { Project } from '../../models/project.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { ProjectService } from './project.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectListFacadeService {
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private _projectService: ProjectService = inject(ProjectService);
 
-  private _projectService = inject(ProjectService);
+  private _projectSearch: Project = {}
   private _projects: BehaviorSubject<Project[]> = new BehaviorSubject<Project[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -25,6 +28,20 @@ export class ProjectListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
+  private _emitValues(value: ProjectSearchResult): void {
+    if (value.projects) {
+      this._projects.next(value.projects);
+    }
+    if (value.size) {
+      this._defaultPage.pageCount = value.size;
+      this._page.next(this._defaultPage);
+    }
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._projectSearch.name || this._projectSearch.code);
+  }
+
   viewModel$: Observable<any> = combineLatest({
     projects: this._projects.asObservable(),
     page: this._page.asObservable(),
@@ -32,9 +49,8 @@ export class ProjectListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  checkSearchFields(project: Project): boolean {
-    return Boolean(project.name ||
-      project.code);
+  constructor() {
+    this.search();
   }
 
   clear(): void {
@@ -43,42 +59,19 @@ export class ProjectListFacadeService {
     this.getAll(false);
   }
 
-  delete(id: number | null, projectSearch: Project): void {
-    if (id) {
-      this._projectService.delete(id).subscribe(() => {
-        this.retrieve(projectSearch);
-        this.setDialogParams(null, 'Warning', false, false, false);
-      });
-    }
-  }
-
   getAll(all: boolean): void {
     this._projectService.getAllProjects(all, this._defaultPage).subscribe((value: ProjectSearchResult) => {
       this._emitValues(value);
     });
   }
 
-  onPageChange(projectSearch: Project, event: PaginatorState): void {
-    this._defaultPage.first = event.first ?? 0;
-    this._defaultPage.page = event.page ?? 0;
-    this._defaultPage.rows = event.rows ?? 0;
-    this.retrieve(projectSearch);
-  }
-
-  retrieve(projectSearch: Project): void {
-    if (this.checkSearchFields(projectSearch))
-      this.search(projectSearch)
-    else this.getAll(false);
-  }
-
-  search(projectSearch: Project): void {
-    this._projectService.search(projectSearch, this._defaultPage)
-      .pipe(
-        debounceTime(2000)
-      )
-      .subscribe((value: ProjectSearchResult) => {
-        this._emitValues(value);
-      })
+  delete(id: number | null): void {
+    if (id) {
+      this._projectService.delete(id).subscribe(() => {
+        this.retrieve();
+        this.setDialogParams(null, 'Warning', false, false, false);
+      });
+    }
   }
 
   setDialogParams(project: Project | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
@@ -91,13 +84,37 @@ export class ProjectListFacadeService {
     this._dialogOptions.next(dialogOptions);
   }
 
-  private _emitValues(value: ProjectSearchResult): void {
-    if (value.projects) {
-      this._projects.next(value.projects);
-    }
-    if (value.size) {
-      this._defaultPage.pageCount = value.size;
-      this._page.next(this._defaultPage);
-    }
+  onPageChange(event: PaginatorState): void {
+    this._defaultPage.first = event.first ?? 0;
+    this._defaultPage.page = event.page ?? 0;
+    this._defaultPage.rows = event.rows ?? 0;
+    this.retrieve();
+  }
+
+  retrieve(): void {
+    if (this._checkSearchFields())
+      this._projectService.search(this._projectSearch, this._defaultPage).subscribe((value: ProjectSearchResult) => this._emitValues(value));
+    else this.getAll(false);
+  }
+
+  search(): void {
+    this._activatedRoute.queryParams
+      .pipe(
+        switchMap((params: any) => {
+          this._projectSearch = {
+            name: params.name,
+            code: params.code
+          }
+          if (this._checkSearchFields()) {
+            return this._projectService.search(this._projectSearch, this._defaultPage);
+          } else {
+            return [];
+          }
+
+        })
+      )
+      .subscribe((value: ProjectSearchResult) => {
+        this._emitValues(value);
+      });
   }
 }

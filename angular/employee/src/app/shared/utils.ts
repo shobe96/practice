@@ -7,7 +7,7 @@ export function buildSearchParams(object: any): string {
     let value = object[keys[i]];
     if (value) {
       params += `${keys[i]}=${value}`;
-      if ((i + 1) !== length) {
+      if ((i + 1) !== keys.length) {
         params += `&`;
       }
     }
