@@ -1,7 +1,13 @@
-<div class="card">
-  <p-menubar [model]="items">
-      <ng-template pTemplate="start">
-          <img src="https://primefaces.org/cdn/primeng/images/primeng.svg" height="40" class="mr-2" alt="primeng.svg" />
-      </ng-template>
+<div class="card" *ngIf="authFacade.viewModel$ | async as data">
+  <p-menubar [model]="data.menuItems">
+    <ng-template pTemplate="start">
+      <img
+        src="https://primefaces.org/cdn/primeng/images/primeng.svg"
+        height="40"
+        class="mr-2"
+        alt="primeng.svg"
+      />
+    </ng-template>
   </p-menubar>
 </div>
+<p-toast [life]="life" />

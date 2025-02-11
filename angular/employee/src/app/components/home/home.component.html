@@ -1,5 +1,5 @@
-<div class="card">
-  <div *ngIf="roles.length == 0">
+<div class="card" *ngIf="homeFacade.viewModel$ | async as data">
+  <div *ngIf="!data.roles.length; else elseBlock">
     <p>
       You're not logged in please press button below or go to menu Users to
       login.
@@ -18,7 +18,16 @@
       </div>
     </ng-template>
   </div>
-  <div *ngIf="roles.length > 0">
-    <router-outlet />
+  <div>
+    <ng-template #elseBlock>
+      <app-home-panel
+        [employee]="data.employee"
+        [projectsHistory]="data.projectsHistory"
+        [departmentEmployees]="data.departmentEmployees"
+        [page]="data.page"
+        [activeProject]="data.activeProject"
+      />
+    </ng-template>
   </div>
 </div>
+<p-toast [life]="life" />

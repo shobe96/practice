@@ -109,4 +109,16 @@ public class UserServiceImpl implements UserService {
 			return null;
 		}
 	}
+
+	@Override
+	public UserSearchResult searchUsers(String username, Pageable pageable) {
+		if (username == null) {
+			username = "";
+		}
+		UserSearchResult userSearchResult = new UserSearchResult();
+		List<User> users = userRepository.searchUsers(username, pageable).getContent();
+		userSearchResult.setUsers(users);
+		userSearchResult.setSize(userRepository.searchResultCount(username));
+		return userSearchResult;
+	}
 }

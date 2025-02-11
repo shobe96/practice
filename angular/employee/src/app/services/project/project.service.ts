@@ -55,4 +55,7 @@ export class ProjectService {
   public getEmployeeProjectHisotry(employeeId: number): Observable<Project[]> {
     return this.http.get<Project[]>(`${this.backendURL}${this.baseUrl}/history/${employeeId}`);
   }
+  public getProjectByEmployee(employeeId: number): Observable<Project> {
+    return this.http.get<Project>(`${this.backendURL}${this.baseUrl}/get-project/${employeeId}`);
+  }
 }

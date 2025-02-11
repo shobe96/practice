@@ -1,163 +1,97 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription, Subject, debounceTime } from 'rxjs';
-import { PageEvent } from '../../../models/page-event.model';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Skill } from '../../../models/skill.model';
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { SkillService } from '../../../services/skill/skill.service';
-import { SkillSearchResult } from '../../../models/skill-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
-import { fireToast } from '../../../shared/utils';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { SkillListFacadeService } from '../../../services/skill/skill-list.facade.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-skill-list',
   templateUrl: './skill-list.component.html',
   styleUrl: './skill-list.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SkillListComponent implements OnInit, OnDestroy {
-  private skills$!: Subscription;
-  private searchSubject = new Subject<Skill>();
-  skillSearch: Skill = new Skill();
-  skillId: number = 0;
-  page: PageEvent = {
-    page: 0,
-    first: 0,
-    rows: 5,
-    pageCount: 0,
-    sort: 'asc',
-  };
-  skills: Skill[] = [];
-  visible: boolean = false;
+export class SkillListComponent implements OnInit {
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
 
-  constructor(
-    private skillService: SkillService,
-    private router: Router,
-    private messageService: MessageService
-  ) { }
+  skillFormGroup!: FormGroup;
+  skillSearch: Skill = {};
+  skillId: number | null = 0;
+  skillListFacade: SkillListFacadeService = inject(SkillListFacadeService);
+
   ngOnInit(): void {
-    this.getAllSkills();
-    this.searchSubject.pipe(debounceTime(2000)).subscribe({
-      next: (value) => {
-        this.skillService.search(value, this.page).subscribe({
-          next: (value) => {
-            this.skills = value.skills ?? [];
-            this.page.pageCount = value.size ?? 0;
-          },
-          error: (err) => {
-            fireToast('error', 'Error', err.error.message, this.messageService);
-          },
-        });
-      },
-      error: (err) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
+    this._buildForm();
+    this.skillListFacade.getAll(false);
+    this._subscribeToFormGroup();
+  }
+
+  private _buildForm() {
+    this.skillFormGroup = this._formBuilder.group({
+      name: ['']
     });
   }
-  ngOnDestroy(): void {
-    this.skills$.unsubscribe();
-    this.searchSubject.complete();
+
+  addNew(): void {
+    this.goToEdit(null);
   }
 
-  public getAllSkills() {
-    const skillsObserver: any = {
-      next: (value: SkillSearchResult) => {
-        this.skills = value.skills ?? [];
-        this.page.pageCount = value.size ?? 0;
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.message, this.messageService);
-      },
-      complete: () => {
-        console.log('Completed');
-      },
-    };
-    this.skills$ = this.skillService
-      .getAllSkills(false, this.page)
-      .subscribe(skillsObserver);
+  clear(): void {
+    this._clearSearchFields();
+    this.skillListFacade.clear();
   }
 
-  public addNew() {
-    this.router.navigate(['skill/new']);
+  delete(): void {
+    this.skillListFacade.delete(this.skillId, this.skillSearch);
   }
 
-  onPageChange(event: PaginatorState) {
-    this.page.first = event.first ?? 0;
-    this.page.page = event.page ?? 0;
-    this.page.rows = event.rows ?? 0;
-    if (this.skillSearch.name !== undefined && this.skillSearch.name !== '') {
-      this.search();
-    } else {
-      this.getAllSkills();
+  goToDetails(skill: Skill): void {
+    this.skillListFacade.setDialogParams(skill, `Skill ${skill.id}`, true, false, true);
+  }
+
+  goToEdit(skill: Skill | null): void {
+    const title = skill ? `Skill ${skill.id}` : 'Add new Skill';
+    this.skillListFacade.setDialogParams(skill, title, true, false, false);
+  }
+
+  handleCancel(event: any): void {
+    this.skillListFacade.setDialogParams(null, '', event.visible, false, false);
+    if (event.save) {
+      this.refresh();
     }
   }
 
-  showDialog(visible: boolean, skillId?: number) {
-    this.skillId = skillId ?? 0;
-    this.visible = visible;
+  onPageChange(event: PaginatorState): void {
+    this.skillListFacade.onPageChange(event);
   }
 
-  delete() {
-    this.skillService.delete(this.skillId).subscribe({
-      next: (value: any) => {
-        if (
-          this.skillSearch.name !== undefined &&
-          this.skillSearch.name !== ''
-        ) {
-          this.search();
-        } else {
-          this.getAllSkills();
+  refresh(): void {
+    this.skillListFacade.retrieve();
+  }
+
+  showDeleteDialog(visible: boolean, id?: number): void {
+    this.skillId = id ?? 0;
+    this.skillListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  }
+
+  private _subscribeToFormGroup() {
+    this.skillFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: Skill) => {
+        if (value.name) {
+          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
         }
-        fireToast(
-          'success',
-          'success',
-          `Skill with id ${this.skillId} has been deleted.`,
-          this.messageService
-        );
-        this.showDialog(false);
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => {
-        console.log('Completed');
-      },
-    });
+      });
   }
 
-  onKeyUp() {
-    if (this.skillSearch.name !== undefined && this.skillSearch.name !== '') {
-      this.search();
-    } else {
-      this.getAllSkills();
-    }
-  }
-
-  clear() {
-    this.skillSearch = new Skill();
-    this.getAllSkills();
-  }
-
-  public refresh() {
-    if (
-      (this.skillSearch.name !== undefined &&
-        this.skillSearch.name !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllSkills();
-    }
-  }
-
-  search() {
-    console.log(this.skillSearch);
-    this.searchSubject.next(this.skillSearch);
-  }
-
-  goToDetails(skillId: number) {
-    this.router.navigate([`skill/details/$${skillId}`]);
-  }
-
-  goToEdit(skillId: number) {
-    this.router.navigate([`skill/edit/${skillId}`]);
+  private _clearSearchFields() {
+    this.skillFormGroup.controls['name'].setValue('');
+    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
   }
 }

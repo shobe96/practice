@@ -71,6 +71,7 @@ public class SecurityConfig {
 						.requestMatchers("/api/departments/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/roles/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/skills/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/projects/get-project/**").hasAnyAuthority(AuthoritiesConstants.ADMIN, AuthoritiesConstants.DEPARTMENT_CHIEF, AuthoritiesConstants.EMPLOYEE)
 						.requestMatchers("/api/projects/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/project-history/**").hasAnyAuthority(AuthoritiesConstants.ADMIN, AuthoritiesConstants.DEPARTMENT_CHIEF, AuthoritiesConstants.EMPLOYEE)
 				)

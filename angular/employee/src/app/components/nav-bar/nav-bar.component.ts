@@ -1,25 +1,20 @@
-import { Component, OnInit } from '@angular/core';
-import { MenuItem, MessageService } from 'primeng/api';
-import { AuthService } from '../../services/auth/auth.service';
-import { fireToast } from '../../shared/utils';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { AuthFacadeService } from '../../services/auth/auth.facade.service';
+import { messageLife } from '../../shared/constants.model';
 
 @Component({
   selector: 'app-nav-bar',
   templateUrl: './nav-bar.component.html',
-  styleUrl: './nav-bar.component.scss'
+  styleUrl: './nav-bar.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NavBarComponent implements OnInit {
-  items: MenuItem[] = [];
 
-  constructor(private authService: AuthService, private messageService: MessageService) { }
+  authFacade: AuthFacadeService = inject(AuthFacadeService);
+  life = messageLife;
 
   ngOnInit(): void {
-    this.authService.menuItemsSubject.subscribe({
-      next: (value: MenuItem[]) => {
-        this.items = value;
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { }
-    });
+    this.authFacade.checkAuthResponse();
   }
 }

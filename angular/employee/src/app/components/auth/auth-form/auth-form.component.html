@@ -1,15 +1,15 @@
-<div class="card">
-  <h1 *ngIf="isLoggin; else elseBlock">Login</h1>
+<div class="card" *ngIf="authFacade.viewModel$ | async as data">
+  <h1 *ngIf="data.isLoggin; else elseBlock">Login</h1>
   <ng-template #elseBlock>
     <h1>
-      Register new user {{ authFormGroup.errors?.['passwordMissmatch'] }}
+      Register new user
     </h1>
   </ng-template>
   <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="submit()">
     <input formControlName="username" pInputText placeholder="Username" />
     <div
       class="validation-messages"
-      *ngIf="authFormGroup.controls['username']?.invalid && authFormGroup.controls['username']?.touched"
+      *ngIf="authFormGroup.controls['username']?.invalid && authFormGroup.controls['username']?.dirty"
     >
       <span
         class="block"
@@ -36,10 +36,10 @@
       />
 
       <p-button
-        icon="{{icon}}"
+        [icon]="icon"
         [rounded]="true"
         (onClick)="togglePasswordVisibility()"
-        severity="{{ severity }}"
+        [severity]="severity"
         [pTooltip]="toggleVisibilityTooltip"
         tooltipPosition="top"
       />
@@ -51,7 +51,7 @@
     </div>
     <div
       class="validation-messages"
-      *ngIf="authFormGroup.controls['password']?.invalid && authFormGroup.controls['password']?.touched"
+      *ngIf="authFormGroup.controls['password']?.invalid && authFormGroup.controls['password']?.dirty"
     >
       <span
         class="block"
@@ -95,10 +95,10 @@
       />
 
       <p-button
-        icon="{{confirmIcon}}"
+        [icon]="confirmIcon"
         [rounded]="true"
         (onClick)="toggleConfirmPasswordVisibility()"
-        severity="{{ confirmSeverity }}"
+        [severity]="confirmSeverity"
         [pTooltip]="toggleConfirmVisibilityTooltip"
         tooltipPosition="top"
       />
@@ -110,7 +110,7 @@
     </div>
     <div
       class="validation-messages"
-      *ngIf="authFormGroup.controls['confirmPassword']?.invalid && authFormGroup.controls['confirmPassword']?.touched"
+      *ngIf="authFormGroup.controls['confirmPassword']?.invalid && authFormGroup.controls['confirmPassword']?.dirty"
     >
       <span
         class="block"
@@ -150,14 +150,14 @@
     </div>
     <div *ngIf="!isLoggin" class="register-fields">
       <p-multiSelect
-        [options]="roles"
+        [options]="data.roles"
         formControlName="selectedRoles"
         optionLabel="name"
         placeholder="Select Roles"
       />
       <div
         class="validation-messages"
-        *ngIf="authFormGroup.controls['selectedRoles'].invalid && authFormGroup.controls['selectedRoles'].touched"
+        *ngIf="authFormGroup.controls['selectedRoles'].invalid && authFormGroup.controls['selectedRoles'].dirty"
       >
         <div
           *ngIf="authFormGroup.controls['selectedRoles'].errors?.['required']"
@@ -165,16 +165,16 @@
           Roles are required!
         </div>
       </div>
-      <p-dropdown
+      <p-select
         formControlName="employee"
-        [options]="employees"
+        [options]="data.employees"
         optionLabel="name"
         placeholder="Select a Employee"
         dataKey="id"
       />
       <div
         class="validation-messages"
-        *ngIf="authFormGroup.controls['employee'].invalid && authFormGroup.controls['employee'].touched"
+        *ngIf="authFormGroup.controls['employee'].invalid && authFormGroup.controls['employee'].dirty"
       >
         <div *ngIf="authFormGroup.controls['employee'].errors?.['required']">
           Employee is required!
@@ -185,3 +185,4 @@
     <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
   </form>
 </div>
+<p-toast [life]="life" />

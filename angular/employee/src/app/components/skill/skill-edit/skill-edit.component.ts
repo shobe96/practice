@@ -1,97 +1,95 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { Skill } from '../../../models/skill.model';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { SkillService } from '../../../services/skill/skill.service';
-import { fireToast } from '../../../shared/utils';
+import { SkillEditFacadeService } from '../../../services/skill/skill-edit.facade.service';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-skill-edit',
   templateUrl: './skill-edit.component.html',
-  styleUrl: './skill-edit.component.scss'
+  styleUrl: './skill-edit.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SkillEditComponent implements OnInit, OnDestroy {
-  id: number | null = null;
-  private routeSubscription$!: Subscription;
-  private skillSubscription$!: Subscription;
-  skill: Skill = new Skill();
+export class SkillEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
+  @Input() skill: Skill | null = {};
+  @Input() disable = false;
+  @Output() cancelEmiitter = new EventEmitter<any>();
   skillFormGroup!: FormGroup;
+  skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private skillService: SkillService,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private messageService: MessageService
-  ) { }
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    this._initFormFields();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
+  }
 
   ngOnInit(): void {
-    this.buildForm();
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["skillId"] ?? null;
-      this.initFormFields();
-    });
-  }
-  ngOnDestroy(): void {
-    if (this.routeSubscription$ !== undefined) {
-      this.routeSubscription$.unsubscribe();
-    }
-    if (this.skillSubscription$ !== undefined) {
-      this.skillSubscription$.unsubscribe();
-    }
+    this._buildForm();
   }
 
-  buildForm() {
-    this.skillFormGroup = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(1)]],
-      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
+  private _buildForm() {
+    this.skillFormGroup = this._formBuilder.group({
+      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
+      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]],
     });
   }
 
-  private initFormFields() {
-    if (this.id !== null) {
-      const skillObserver: any = {
-        next: (value: Skill) => {
-          this.skill = value;
-          this.skillFormGroup.controls['name'].setValue(value.name);
-          this.skillFormGroup.controls['description'].setValue(value.description);
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
-      };
-      this.skillSubscription$ = this.skillService.getSkill(this.id).subscribe(skillObserver);
-    }
+  private _initFormFields() {
+    this._setValuesToFields();
+    if (this.disable) this._disableFields();
+    else this._enableFields();
   }
 
-  back() {
-    this.router.navigate(["skill/list"])
+  cancel(save: boolean) {
+    this.cancelEmiitter.emit({ visible: false, save: save });
   }
 
   submit() {
-    this.skill.name = this.skillFormGroup.controls['name'].value;
-    this.skill.description = this.skillFormGroup.controls['description'].value;
-    const skillObserver: any = {
-      next: (value: Skill) => {
-        if (this.id === null) {
-          fireToast("success", "Success", `Skill ${value.name} has been created`, this.messageService);
-        } else {
-          fireToast("success", "Success", `Skill ${value.name} has been updated`, this.messageService);
+    this.skill = this._getFormValues();
+    this.skillEditFacade.submit(this.skill)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe((value: Skill) => {
+        if (Object.keys(value)) {
+          this.cancel(true);
         }
-        this.router.navigate([`skill/details/${value.id}`])
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { },
-    }
-    if (this.id === null) {
-      this.skillService.save(this.skill).subscribe(skillObserver);
-    } else {
-      this.skillService.update(this.skill).subscribe(skillObserver);
+      });
+  }
+
+  private _setValuesToFields() {
+    if (this.skill) {
+      const name = this.skill.name ?? '';
+      const description = this.skill.description ?? ''
+      if (this.skillFormGroup) {
+        this.skillFormGroup.controls['name'].setValue(name);
+        this.skillFormGroup.controls['description'].setValue(description);
+      }
     }
   }
 
-  private fireToast(severity: string, summary: string, detail: string) {
-    this.messageService.add({ severity: severity, summary: summary, detail: detail });
+  private _disableFields(): void {
+    if (this.skillFormGroup) {
+      this.skillFormGroup.controls['name'].disable();
+      this.skillFormGroup.controls['description'].disable();
+    }
+  }
+  private _enableFields(): void {
+    if (this.skillFormGroup) {
+      this.skillFormGroup.controls['name'].enable();
+      this.skillFormGroup.controls['description'].enable();
+    }
+  }
+
+  private _getFormValues(): Skill {
+    const skill: Skill = { ...this.skill };
+    for (const field in this.skillFormGroup.controls) {
+      skill[field] = this.skillFormGroup.controls[field].value;
+    }
+    return skill;
   }
 }

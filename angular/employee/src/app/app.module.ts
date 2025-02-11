@@ -4,25 +4,36 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
-import { HttpClientModule, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { SharedModule } from './modules/shared/shared.module';
-import { AuthFormComponent } from './components/auth/auth-form/auth-form.component';
 import { authInterceptor } from './shared/interceptors/auth/auth.interceptor';
+import { providePrimeNG } from 'primeng/config';
+import Aura from '@primeng/themes/aura'
+import { ToastModule } from 'primeng/toast';
+import { MenubarModule } from 'primeng/menubar';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NavBarComponent,
-    AuthFormComponent
+    NavBarComponent
   ],
+  bootstrap: [AppComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     AppRoutingModule,
-    HttpClientModule,
-    SharedModule
+    SharedModule,
+    ToastModule,
+    MenubarModule,
   ],
-  providers: [provideHttpClient(withInterceptors([authInterceptor]))],
-  bootstrap: [AppComponent]
+  providers: [
+    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptorsFromDi()),
+    providePrimeNG({
+      theme: {
+        preset: Aura
+      }
+    })
+  ]
 })
 export class AppModule { }

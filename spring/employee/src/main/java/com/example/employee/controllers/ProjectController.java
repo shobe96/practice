@@ -108,6 +108,16 @@ public class ProjectController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+	
+	@GetMapping("/get-project/{employeeId}")
+	public ResponseEntity<Project> getProjectByEmployee(@PathVariable Integer employeeId) {
+		Project project = projectService.getByEmployeeId(employeeId);
+		if (project != null) {			
+			return ResponseEntity.ok().body(project);
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)

@@ -1,150 +1,97 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { PaginatorState } from 'primeng/paginator';
-import { Subscription, Subject, debounceTime } from 'rxjs';
-import { PageEvent } from '../../../models/page-event.model';
-import { ProjectSearchResult } from '../../../models/project-search-result.model';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Project } from '../../../models/project.model';
-import { ProjectService } from '../../../services/project/project.service';
-import { fireToast } from '../../../shared/utils';
+import { ProjectListFacadeService } from '../../../services/project/project-list.facade.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-project-list',
   templateUrl: './project-list.component.html',
-  styleUrl: './project-list.component.scss'
+  styleUrl: './project-list.component.scss',
+  standalone: false
 })
-export class ProjectListComponent implements OnInit, OnDestroy {
-
-  private projects$!: Subscription;
-  private searchSubject = new Subject<Project>();
-  projectSearch: Project = new Project();
-  projectId: number = 0;
-  page: PageEvent = {
-    page: 0,
-    first: 0,
-    rows: 5,
-    pageCount: 0,
-    sort: "asc"
-  };
-  projects: Project[] = [];
-  visible: boolean = false;
-
-  constructor(
-    private projectService: ProjectService,
-    private router: Router,
-    private messageService: MessageService) { }
+export class ProjectListComponent implements OnInit {
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+  projectFormGroup!: FormGroup;
+  projectSearch: Project = {};
+  projectId: number | null = 0;
+  projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
 
   ngOnInit(): void {
-    this.getAllProjects();
-    this.searchSubject.pipe(debounceTime(2000)).subscribe({
-      next: (value) => {
-        this.projectService.search(value, this.page).subscribe({
-          next: (value) => {
-            this.projects = value.projects ?? [];
-            this.page.pageCount = value.size ?? 0;
-          },
-          error: (err) => {
-            fireToast('error', 'Error', err.error.message, this.messageService);
-          }
-        })
-      },
-      error: (err) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      }
+    this._buildForm();
+    this.projectListFacade.getAll(false);
+    this._subscribeToFormGroup();
+  }
+
+  private _buildForm() {
+    this.projectFormGroup = this._formBuilder.group({
+      name: [''],
+      code: ['']
     });
   }
-  ngOnDestroy(): void {
-    this.projects$.unsubscribe();
-    this.searchSubject.complete();
+
+  addNew(): void {
+    this.goToEdit(null);
   }
 
-  public getAllProjects() {
-    const projectsObserver: any = {
-      next: (value: ProjectSearchResult) => {
-        this.projects = value.projects ?? [];
-        this.page.pageCount = value.size ?? 0;
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.message, this.messageService);
-      },
-      complete: () => {
-        console.log('Completed');
-      },
-    };
-    this.projects$ = this.projectService.getAllProjects(false, this.page).subscribe(projectsObserver);
+  clear(): void {
+    this._clearSearchFields();
+    this.projectListFacade.clear();
   }
 
-  public addNew() {
-    this.router.navigate(["project/new"]);
+  delete(): void {
+    this.projectListFacade.delete(this.projectId);
   }
 
-  onPageChange(event: PaginatorState) {
-    this.page.first = event.first ?? 0;
-    this.page.page = event.page ?? 0;
-    this.page.rows = event.rows ?? 0;
-    if (this.projectSearch.name !== undefined && this.projectSearch.name !== "") {
-      this.search();
-    } else {
-      this.getAllProjects();
+  goToDetails(id: number): void {
+    this._router.navigate([`/project/details/${id}`])
+  }
+
+  goToEdit(project: Project | null): void {
+    const title = project ? `Project ${project.id}` : 'Add new Project';
+    this.projectListFacade.setDialogParams(project, title, true, false, false);
+  }
+
+  handleCancel(event: any): void {
+    this.projectListFacade.setDialogParams(null, '', event.visible, false, false);
+    if (event.save) {
+      this.refresh();
     }
   }
 
-  showDialog(visible: boolean, projectId?: number) {
-    this.projectId = projectId ?? 0;
-    this.visible = visible;
+  onPageChange(event: PaginatorState): void {
+    this.projectListFacade.onPageChange(event);
   }
 
-  delete() {
-    this.projectService.delete(this.projectId).subscribe({
-      next: (value: any) => {
-        if (this.projectSearch.name !== undefined && this.projectSearch.name !== "") {
-          this.search();
-        } else {
-          console.log("DELETE");
-          this.getAllProjects();
+  refresh(): void {
+    this.projectListFacade.retrieve();
+  }
+
+  showDeleteDialog(visible: boolean, id?: number): void {
+    this.projectId = id ?? 0;
+    this.projectListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  }
+
+  private _subscribeToFormGroup() {
+    this.projectFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: Project) => {
+        if (value.name || value.code) {
+          this._router.navigate([], { queryParams: { name: value.name, code: value.code }, queryParamsHandling: 'merge' })
         }
-        fireToast("success", "success", `Project with id ${this.projectId} has been deleted.`, this.messageService);
-        this.showDialog(false);
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { console.log("Completed") }
-    });
+      });
   }
 
-  onKeyUp() {
-    if (this.projectSearch.name !== undefined && this.projectSearch.name !== "") {
-      this.search();
-    } else {
-      this.getAllProjects();
-    }
+  private _clearSearchFields() {
+    this.projectFormGroup.controls['name'].setValue('');
+    this.projectFormGroup.controls['code'].setValue('');
+    this._router.navigate([], { queryParams: { name: '', code: '' }, queryParamsHandling: 'merge' })
   }
-
-  clear() {
-    this.projectSearch = new Project();
-    this.getAllProjects();
-  }
-  public refresh() {
-    if (
-      (this.projectSearch.name !== undefined &&
-        this.projectSearch.name !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllProjects();
-    }
-  }
-  search() {
-    console.log(this.projectSearch);
-    this.searchSubject.next(this.projectSearch);
-  }
-
-  goToDetails(projectId: number) {
-    this.router.navigate([`project/details/$${projectId}`]);
-  }
-
-  goToEdit(projectId: number) {
-    this.router.navigate([`project/edit/${projectId}`]);
-  }
-
 }

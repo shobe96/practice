@@ -1,143 +1,111 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { EmployeeService } from '../../../services/employee/employee.service';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Department } from '../../../models/department.model';
-import { DepartmentService } from '../../../services/department/department.service';
-import { DepartmentSearchResult } from '../../../models/department-search-result.model';
-import { MessageService } from 'primeng/api';
-import { fireToast } from '../../../shared/utils';
-import { Skill } from '../../../models/skill.model';
-import { SkillService } from '../../../services/skill/skill.service';
-import { SkillSearchResult } from '../../../models/skill-search-result.model';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { EmployeeEditFacadeService } from '../../../services/employee/employee-edit.facade.service';
+import { takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-employee-edit',
   templateUrl: './employee-edit.component.html',
-  styleUrl: './employee-edit.component.scss'
+  styleUrl: './employee-edit.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmployeeEditComponent implements OnInit, OnDestroy {
+export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
-  id: number | null = null;
-  private routeSubscription$!: Subscription;
-  private employeeSubscription$!: Subscription;
-  private departmentSubscription$!: Subscription
-  employee: Employee = new Employee();
+  @Input() employee: Employee | null = {};
+  @Input() disable = false;
+  @Output() cancelEmiitter = new EventEmitter<any>();
   employeeFormGroup!: FormGroup;
-  departments: Department[] = [];
-  skills: Skill[] = [];
+  employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
 
-  constructor(
-    private route: ActivatedRoute,
-    private employeeService: EmployeeService,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private departmentService: DepartmentService,
-    private messageService: MessageService,
-    private skillService: SkillService
-  ) { }
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+
+  constructor() {
+    super();
+  }
+  ngOnChanges(_changes: SimpleChanges): void {
+    this._initFormFields();
+  }
+
   ngOnDestroy(): void {
-    if (this.routeSubscription$ !== undefined) {
-      this.routeSubscription$.unsubscribe();
-    }
-    if (this.employeeSubscription$ !== undefined) {
-      this.employeeSubscription$.unsubscribe();
-    }
-
-    if (this.departmentSubscription$ !== undefined) {
-      this.departmentSubscription$.unsubscribe();
-    }
+    this.unsubsribe();
   }
 
   ngOnInit(): void {
-    this.departmentSubscription$ = this.departmentService.getAllDepartments(true).subscribe({
-      next: (value: DepartmentSearchResult) => {
-        this.departments = value.departments ?? [];
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-      complete: () => { console.log("Completed") }
-    });
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["employeeId"] ?? null;
-      this.initFormFields();
-    });
-
-    this.skillService.getAllSkills(true).subscribe({
-      next: (value: SkillSearchResult) => {
-        this.skills = value.skills ?? [];
-      },
-      error: (err: any) => {
-        if (err.status === 0) {
-          fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
-        } else {
-          fireToast('error', 'Error', `${err.message}`, this.messageService);
-        }
-      },
-      complete: () => { }
-    });
-
-
-    this.buildForm();
+    this.employeeEditFacade.loadSelectOptions();
+    this._buildForm();
   }
 
-  buildForm() {
-    this.employeeFormGroup = this.formBuilder.group({
+  private _buildForm() {
+    this.employeeFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       surname: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       email: ['', [Validators.required, Validators.maxLength(50), Validators.email]],
       department: [{}],
-      selectedSkills: [[]]
+      skills: [[]]
     });
   }
 
-  private initFormFields() {
-    if (this.id !== null) {
-      const employeeObserver: any = {
-        next: (value: Employee) => {
-          this.employee = value;
-          this.employeeFormGroup.controls['name'].setValue(value.name);
-          this.employeeFormGroup.controls['surname'].setValue(value.surname);
-          this.employeeFormGroup.controls['email'].setValue(value.email);
-          this.employeeFormGroup.controls['department'].setValue(value.department);
-          this.employeeFormGroup.controls['selectedSkills'].setValue(value.skills);
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
-      };
-      this.employeeSubscription$ = this.employeeService.getEmployee(this.id).subscribe(employeeObserver);
-    }
+  private _initFormFields() {
+    this._setValuesToFields();
+    if (this.disable) this._disableFields();
+    else this._enableFields();
   }
 
-  back() {
-    this.router.navigate(["employee/list"]);
+  cancel(save: boolean) {
+    this.cancelEmiitter.emit({ visible: false, save: save });
   }
 
   submit() {
-    this.employee.name = this.employeeFormGroup.controls['name'].value;
-    this.employee.surname = this.employeeFormGroup.controls['surname'].value;
-    this.employee.email = this.employeeFormGroup.controls['email'].value;
-    this.employee.department = this.employeeFormGroup.controls['department'].value;
-    this.employee.skills = this.employeeFormGroup.controls['selectedSkills'].value;
-    const employeeObserver: any = {
-      next: (value: Employee) => {
-        if (this.id === null) {
-          fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been created`, this.messageService);
-        } else {
-          fireToast("success", "Success", `Employee ${value.name} ${value.surname} has been updated`, this.messageService);
+    this.employee = this._getFormValues();
+    this.employeeEditFacade.submit(this.employee)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe((value: Employee) => {
+        if (Object.keys(value)) {
+          this.cancel(true);
         }
-        this.router.navigate([`employee/details/${value.id}`])
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { },
+      });
+  }
+
+  private _setValuesToFields() {
+    if (this.employee) {
+      const name = this.employee.name ?? '';
+      const surname = this.employee.surname ?? ''
+      const email = this.employee.email ?? '';
+      const department = this.employee.department ?? {};
+      const skills = this.employee.skills ?? [];
+      if (this.employeeFormGroup) {
+        this.employeeFormGroup.controls['name'].setValue(name);
+        this.employeeFormGroup.controls['surname'].setValue(surname);
+        this.employeeFormGroup.controls['email'].setValue(email);
+        this.employeeFormGroup.controls['department'].setValue(department);
+        this.employeeFormGroup.controls['skills'].setValue(skills);
+      }
     }
-    if (this.id === null) {
-      this.employeeService.save(this.employee).subscribe(employeeObserver);
-    } else {
-      this.employeeService.update(this.employee).subscribe(employeeObserver);
+  }
+
+  private _disableFields(): void {
+    if (this.employeeFormGroup) {
+      this.employeeFormGroup.controls['name'].disable();
+      this.employeeFormGroup.controls['surname'].disable();
+      this.employeeFormGroup.controls['email'].disable();
     }
+  }
+  private _enableFields(): void {
+    if (this.employeeFormGroup) {
+      this.employeeFormGroup.controls['name'].enable();
+      this.employeeFormGroup.controls['surname'].enable();
+      this.employeeFormGroup.controls['email'].enable();
+    }
+  }
+
+  private _getFormValues(): Employee {
+    const employee: Employee = { ...this.employee };
+    for (const field in this.employeeFormGroup.controls) {
+      employee[field] = this.employeeFormGroup.controls[field].value;
+    }
+    return employee;
   }
 }

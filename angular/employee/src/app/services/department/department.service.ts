@@ -5,7 +5,7 @@ import { Observable, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { PageEvent } from '../../models/page-event.model';
-import { buildSearchParams } from '../../shared/utils';
+import { buildPaginationParams, buildSearchParams } from '../../shared/utils';
 
 @Injectable({
   providedIn: 'root'
@@ -28,14 +28,9 @@ export class DepartmentService {
       return this.http.get<DepartmentSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
     }
   }
-  private errorHandler(errorRes: HttpErrorResponse) {
-    console.log(errorRes);
-    let errorMessage = 'Error occurred!';
-    return throwError(() => new Error(errorMessage));
-  }
 
   search(departmentSearch: Department, page: PageEvent): Observable<DepartmentSearchResult> {
-    return this.http.get<DepartmentSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(departmentSearch)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
+    return this.http.get<DepartmentSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(departmentSearch)}&${buildPaginationParams(page)}`);
   }
 
   getDepartment(departmentId: number): Observable<Department> {
