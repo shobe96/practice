@@ -16,3 +16,9 @@ export enum enumSeverity {
   contrast = 'contrast',
   error = 'error'
 }
+
+export enum enumRoles {
+  ADMIN = "ADM",
+  EMPLOYEE = "EMP",
+  DEPARTMENT_CHIEF = "DCH"
+}

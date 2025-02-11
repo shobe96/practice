@@ -9,11 +9,10 @@ import { RoleService } from '../role/role.service';
 import { Role } from '../../models/role.model';
 import { RoleSearchResult } from '../../models/role-search-result.model';
 import { MenuItem, MessageService, PrimeIcons } from 'primeng/api';
-import { ADMIN } from '../../shared/authotities-constants';
 import { AuthResponse } from '../../models/auth-response.model';
 import { AuthRequest } from '../../models/auth-request.model';
 import { fireToast } from '../../shared/utils';
-import { enumSeverity } from '../../shared/constants.model';
+import { enumRoles, enumSeverity } from '../../shared/constants.model';
 
 @Injectable({
   providedIn: 'root'
@@ -140,7 +139,7 @@ export class AuthFacadeService {
     roles = roles ?? [];
     if (roles.length > 0) {
       for (const role of roles) {
-        if (role.code === ADMIN) {
+        if (role.code === enumRoles.ADMIN) {
           this.items[1].visible = isloggedIn;
           this.items[2].items![0].visible = isloggedIn;
           this.items[2].items![1].visible = isloggedIn;

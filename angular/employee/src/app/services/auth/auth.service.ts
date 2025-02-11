@@ -2,13 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
 import { AuthRequest } from '../../models/auth-request.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { AuthResponse } from '../../models/auth-response.model';
-import { Router } from '@angular/router';
 import { RegisterRequest } from '../../models/register-request.model';
-import { MenuItem, PrimeIcons } from 'primeng/api';
-import { ADMIN } from '../../shared/authotities-constants';
-import { Role } from '../../models/role.model';
 
 @Injectable({
   providedIn: 'root'
