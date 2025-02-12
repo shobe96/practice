@@ -25,6 +25,6 @@ export class SkillEditFacadeService {
       } else {
         return {};
       }
-    }))
+    }));
   }
 }

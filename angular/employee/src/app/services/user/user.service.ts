@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { PageEvent } from '../../models/page-event.model';
 import { UserSearchResult } from '../../models/user-search-result.model';
 import { environment } from '../../../environments/environment.development';
@@ -12,16 +12,15 @@ import { User } from '../../models/user.model';
 })
 export class UserService {
 
-  private backendURL = environment.BACKEND_URL;
-  private baseUrl = "/api/users"
+  private _backendURL = environment.BACKEND_URL;
+  private _baseUrl = "/api/users"
+  private _http: HttpClient = inject(HttpClient);
 
-  constructor(private http: HttpClient) { }
-
-  public getAllUsers(page?: PageEvent): Observable<UserSearchResult> {
-    return this.http.get<UserSearchResult>(`${this.backendURL}${this.baseUrl}?${buildPaginationParams(page)}`);
+  getAllUsers(page?: PageEvent): Observable<UserSearchResult> {
+    return this._http.get<UserSearchResult>(`${this._backendURL}${this._baseUrl}?${buildPaginationParams(page)}`);
   }
 
-  public search(user: User, page: PageEvent): Observable<UserSearchResult> {
-    return this.http.get<UserSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(user)}&${buildPaginationParams(page)}`);
+  search(user: User, page: PageEvent): Observable<UserSearchResult> {
+    return this._http.get<UserSearchResult>(`${this._backendURL}${this._baseUrl}/search?${buildSearchParams(user)}&${buildPaginationParams(page)}`);
   }
 }

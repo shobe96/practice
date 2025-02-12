@@ -1,13 +1,7 @@
-import { Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { MessageService } from 'primeng/api';
 import { takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
-import { fireToast } from '../../../shared/utils';
-import { Skill } from '../../../models/skill.model';
-import { Employee } from '../../../models/employee.model';
-import { EmployeeService } from '../../../services/employee/employee.service';
-import { Department } from '../../../models/department.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditFacadeService } from '../../../services/project/project-edit.facade.service';
 
@@ -15,24 +9,26 @@ import { ProjectEditFacadeService } from '../../../services/project/project-edit
   selector: 'app-project-edit',
   templateUrl: './project-edit.component.html',
   styleUrl: './project-edit.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
-  @Input() id: number | null = null;
-  @Input() project: Project = {};
-  @Output() cancelEmiitter: EventEmitter<any> = new EventEmitter();
 
-  projectEditFacade: ProjectEditFacadeService = inject(ProjectEditFacadeService);
   projectFormGroup!: FormGroup;
 
+  @Input() id: number | null = null;
+  @Input() project: Project = {};
+  @Output() private _cancelEmiitter: EventEmitter<any> = new EventEmitter();
+
+  projectEditFacade: ProjectEditFacadeService = inject(ProjectEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
+
+  constructor() {
+    super();
+  }
 
   ngOnInit(): void {
     this.buildForm();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   ngOnChanges(_changes: SimpleChanges): void {
@@ -40,8 +36,8 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
     this.projectEditFacade.loadSelectOptions();
   }
 
-  constructor() {
-    super();
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   buildForm() {
@@ -56,12 +52,8 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
     });
   }
 
-  private _initFormFields() {
-    this._setValuesToFields();
-  }
-
   cancel(save: boolean) {
-    this.cancelEmiitter.emit({ visible: false, save: save });
+    this._cancelEmiitter.emit({ visible: false, save: save });
   }
 
   submit() {
@@ -83,7 +75,6 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
   }
 
   private _setValuesToFields() {
-
     if (this.project) {
       const name = this.project.name ?? '';
       const code = this.project.code ?? ''
@@ -103,6 +94,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
         this.projectFormGroup.controls['endDate'].setValue(endDate);
         this.projectFormGroup.controls['employees'].setValue(employees);
       }
+
       if (Object.keys(this.project)?.length === 1) this.projectEditFacade.clearEmployees();
     }
   }
@@ -113,5 +105,9 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
       project[field] = this.projectFormGroup.controls[field].value;
     }
     return project;
+  }
+
+  private _initFormFields() {
+    this._setValuesToFields();
   }
 }

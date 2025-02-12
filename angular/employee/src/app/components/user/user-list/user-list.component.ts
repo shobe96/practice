@@ -1,14 +1,8 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged, Subscription } from 'rxjs';
-import { PageEvent } from '../../../models/page-event.model';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { User } from '../../../models/user.model';
-import { UserService } from '../../../services/user/user.service';
 import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { UserSearchResult } from '../../../models/user-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
-import { AuthService } from '../../../services/auth/auth.service';
-import { fireToast } from '../../../shared/utils';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserListFacadeService } from '../../../services/user/user-list.facade.service';
 
@@ -16,27 +10,22 @@ import { UserListFacadeService } from '../../../services/user/user-list.facade.s
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserListComponent implements OnInit {
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
-
   userFormGroup!: FormGroup;
   userSearch: User = {};
   userId: number | null = 0;
+
   userListFacade: UserListFacadeService = inject(UserListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
 
   ngOnInit(): void {
     this._buildForm();
     this.userListFacade.getAll();
     this._subscribeToFormGroup();
-  }
-
-  private _buildForm() {
-    this.userFormGroup = this._formBuilder.group({
-      username: [''],
-    });
   }
 
   delete() {
@@ -78,5 +67,11 @@ export class UserListComponent implements OnInit {
   private _clearSearchFields() {
     this.userFormGroup.controls['username'].setValue('');
     this._router.navigate([], { queryParams: { username: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _buildForm() {
+    this.userFormGroup = this._formBuilder.group({
+      username: [''],
+    });
   }
 }

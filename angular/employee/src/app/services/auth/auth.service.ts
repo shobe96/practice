@@ -11,21 +11,19 @@ import { RegisterRequest } from '../../models/register-request.model';
 })
 export class AuthService {
 
-  private backendURL = environment.BACKEND_URL;
-  private baseUrl = "/api/auth";
-  private http: HttpClient = inject(HttpClient);
+  private _backendURL = environment.BACKEND_URL;
+  private _baseUrl = "/api/auth";
+  private _http: HttpClient = inject(HttpClient);
 
-  public login(request: AuthRequest): Observable<AuthResponse> {
-    return this.http.post(`${this.backendURL}${this.baseUrl}/login`, request);
+  login(request: AuthRequest): Observable<AuthResponse> {
+    return this._http.post(`${this._backendURL}${this._baseUrl}/login`, request);
   }
 
-  public registerUser(request: RegisterRequest): Observable<string> {
-    return this.http.post<string>(`${this.backendURL}${this.baseUrl}/register-user`, request);
+  registerUser(request: RegisterRequest): Observable<string> {
+    return this._http.post<string>(`${this._backendURL}${this._baseUrl}/register-user`, request);
   }
 
-
-
-  public delete(userId: number): Observable<void> {
-    return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${userId}`);
+  delete(userId: number): Observable<void> {
+    return this._http.delete<void>(`${this._backendURL}${this._baseUrl}/delete/${userId}`);
   }
 }

@@ -20,14 +20,15 @@ import { enumRoles, enumSeverity } from '../../shared/constants.model';
 export class AuthFacadeService {
 
   private _router: Router = inject(Router);
-  private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _authService: AuthService = inject(AuthService);
   private _roleService: RoleService = inject(RoleService);
   private _employeeService: EmployeeService = inject(EmployeeService);
+  private _messageService: MessageService = inject(MessageService);
+
+  private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _isLoggin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _roles: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
   private _tokenExpirationTimer: any;
-  private _messageService: MessageService = inject(MessageService);
 
   private items: MenuItem[] = [
     {
@@ -103,12 +104,12 @@ export class AuthFacadeService {
 
   private _menuItems: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this.items);
 
-  public viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<any> = combineLatest({
     employees: this._employees.asObservable(),
     roles: this._roles.asObservable(),
     isLoggin: this._isLoggin.asObservable(),
     menuItems: this._menuItems.asObservable()
-  })
+  });
 
   loadSelectOptions(isLoggin: boolean) {
     this._isLoggin.next(isLoggin);
@@ -116,6 +117,44 @@ export class AuthFacadeService {
       this._getEmployees();
       this._getRoles();
     }
+  }
+
+  checkAuthResponse() {
+    const authResponse = localStorage.getItem("authResponse");
+    if (authResponse) {
+      const json: AuthResponse = JSON.parse(authResponse);
+      this._updateMenuItems(true, json.roles);
+    }
+  }
+
+  loginUser(authRequest: AuthRequest) {
+    this._authService.login(authRequest).subscribe((value: AuthResponse) => {
+      localStorage.setItem('authResponse', JSON.stringify(value));
+      this._autoLogout(value.expiration ?? 0);
+      this._updateMenuItems(true, value.roles);
+      fireToast(enumSeverity.success, 'Success', `Welcome ${value.username}`, this._messageService);
+      this._router.navigate(["/home"]);
+    });
+  }
+
+  registerUser(authRequest: AuthRequest) {
+    this._authService.registerUser(authRequest).subscribe(() => {
+      fireToast(enumSeverity.success, 'Success', 'User registered', this._messageService);
+      this._router.navigate(["user/list"]);
+    });
+  }
+
+  logout(): void {
+    localStorage.removeItem("authResponse");
+    clearTimeout(this._tokenExpirationTimer);
+    this._updateMenuItems(false);
+    this._router.navigate(['/auth/login']);
+  }
+
+  private _autoLogout(expiration: number): void {
+    this._tokenExpirationTimer = setTimeout(() => {
+      this.logout();
+    }, expiration);
   }
 
   private _getEmployees() {
@@ -156,43 +195,5 @@ export class AuthFacadeService {
     this.items[2].items![2].visible = !isloggedIn;
     this.items[2].items![4].visible = isloggedIn;
     this._menuItems.next(this.items);
-  }
-
-  checkAuthResponse() {
-    const authResponse = localStorage.getItem("authResponse");
-    if (authResponse) {
-      const json: AuthResponse = JSON.parse(authResponse);
-      this._updateMenuItems(true, json.roles);
-    }
-  }
-
-  loginUser(authRequest: AuthRequest) {
-    this._authService.login(authRequest).subscribe((value: AuthResponse) => {
-      localStorage.setItem('authResponse', JSON.stringify(value));
-      this._autoLogout(value.expiration ?? 0);
-      this._updateMenuItems(true, value.roles);
-      fireToast(enumSeverity.success, 'Success', `Welcome ${value.username}`, this._messageService);
-      this._router.navigate(["/home"]);
-    });
-  }
-
-  registerUser(authRequest: AuthRequest) {
-    this._authService.registerUser(authRequest).subscribe(() => {
-      fireToast(enumSeverity.success, 'Success', 'User registered', this._messageService);
-      this._router.navigate(["user/list"]);
-    });
-  }
-
-  logout(): void {
-    localStorage.removeItem("authResponse");
-    clearTimeout(this._tokenExpirationTimer);
-    this._updateMenuItems(false);
-    this._router.navigate(['/auth/login']);
-  }
-
-  private _autoLogout(expiration: number): void {
-    this._tokenExpirationTimer = setTimeout(() => {
-      this.logout();
-    }, expiration);
   }
 }

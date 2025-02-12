@@ -27,10 +27,10 @@ export class HomePanelComponent {
     sort: 'asc',
   };
 
-  private router: Router = inject(Router);
+  private _router: Router = inject(Router);
 
-  public goToEdit() {
-    this.router.navigate([`/employee/edit/${this.employee.id}`])
+  goToEdit() {
+    this._router.navigate([`/employee/edit/${this.employee.id}`])
   }
 
   onPageChange(event: PaginatorState) {

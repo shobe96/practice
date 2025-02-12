@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router, Params } from '@angular/router';
 import { MessageService } from 'primeng/api';
@@ -13,16 +13,26 @@ import { takeUntil } from 'rxjs';
   selector: 'app-role-edit',
   templateUrl: './role-edit.component.html',
   styleUrl: './role-edit.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoleEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+  roleFormGroup!: FormGroup;
+
   @Input() role: Role | null = {};
   @Input() disable = false;
   @Output() cancelEmiitter = new EventEmitter<any>();
-  roleFormGroup!: FormGroup;
-  roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
 
+  roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
+
+  constructor() {
+    super();
+  }
+
+  ngOnInit(): void {
+    this._buildForm();
+  }
 
   ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
@@ -32,30 +42,12 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
     this.unsubsribe();
   }
 
-  ngOnInit(): void {
-    this._buildForm();
-  }
-  private _buildForm() {
-    this.roleFormGroup = this._formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
-      code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
-      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
-    });
-  }
-
-  private _initFormFields() {
-    this._setValuesToFields();
-    if (this.disable) this._disableFields();
-    else this._enableFields();
-  }
-
   cancel(save: boolean) {
     this.cancelEmiitter.emit({ visible: false, save: save });
   }
 
   submit() {
     this.role = this._getFormValues();
-
     this.roleEditFacade.submit(this.role)
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Role) => {
@@ -99,5 +91,19 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
       role[field] = this.roleFormGroup.controls[field].value;
     }
     return role;
+  }
+
+  private _buildForm() {
+    this.roleFormGroup = this._formBuilder.group({
+      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
+      code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
+      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
+    });
+  }
+
+  private _initFormFields() {
+    this._setValuesToFields();
+    if (this.disable) this._disableFields();
+    else this._enableFields();
   }
 }

@@ -17,17 +17,18 @@ import { enumSeverity } from '../../shared/constants.model';
 })
 export class EmployeeEditFacadeService {
 
-  private _employeeService = inject(EmployeeService);
-  private _skillService: SkillService = inject(SkillService);
-  private _departmentService: DepartmentService = inject(DepartmentService);
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _departments: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
-  private _messageService: MessageService = inject(MessageService);
 
   viewModel$: Observable<any> = combineLatest({
     skills: this._skills.asObservable(),
     departments: this._departments.asObservable(),
-  })
+  });
+
+  private _employeeService = inject(EmployeeService);
+  private _skillService: SkillService = inject(SkillService);
+  private _departmentService: DepartmentService = inject(DepartmentService);
+  private _messageService: MessageService = inject(MessageService);
 
   submit(employee: Employee): Observable<Employee> {
     const subscription = !employee.id ?
@@ -40,7 +41,7 @@ export class EmployeeEditFacadeService {
       } else {
         return {};
       }
-    }))
+    }));
   }
 
   loadSelectOptions(): void {

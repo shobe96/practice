@@ -11,8 +11,9 @@ import { HomeFacadeService } from '../../services/home.facade.service';
 })
 export class HomeComponent implements OnInit {
 
-  homeFacade: HomeFacadeService = inject(HomeFacadeService);
   life = messageLife;
+
+  homeFacade: HomeFacadeService = inject(HomeFacadeService);
 
   ngOnInit(): void {
     this.homeFacade.getRoles();

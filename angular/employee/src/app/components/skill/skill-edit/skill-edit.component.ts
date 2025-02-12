@@ -13,13 +13,18 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SkillEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
+  skillFormGroup!: FormGroup;
+
   @Input() skill: Skill | null = {};
   @Input() disable = false;
   @Output() cancelEmiitter = new EventEmitter<any>();
-  skillFormGroup!: FormGroup;
-  skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
 
+  skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
+
+  ngOnInit(): void {
+    this._buildForm();
+  }
 
   ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
@@ -27,23 +32,6 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
 
   ngOnDestroy(): void {
     this.unsubsribe();
-  }
-
-  ngOnInit(): void {
-    this._buildForm();
-  }
-
-  private _buildForm() {
-    this.skillFormGroup = this._formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
-      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]],
-    });
-  }
-
-  private _initFormFields() {
-    this._setValuesToFields();
-    if (this.disable) this._disableFields();
-    else this._enableFields();
   }
 
   cancel(save: boolean) {
@@ -91,5 +79,18 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
       skill[field] = this.skillFormGroup.controls[field].value;
     }
     return skill;
+  }
+
+  private _buildForm() {
+    this.skillFormGroup = this._formBuilder.group({
+      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
+      description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]],
+    });
+  }
+
+  private _initFormFields() {
+    this._setValuesToFields();
+    if (this.disable) this._disableFields();
+    else this._enableFields();
   }
 }

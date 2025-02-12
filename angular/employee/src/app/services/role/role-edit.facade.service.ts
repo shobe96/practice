@@ -25,6 +25,6 @@ export class RoleEditFacadeService {
       } else {
         return {};
       }
-    }))
+    }));
   }
 }

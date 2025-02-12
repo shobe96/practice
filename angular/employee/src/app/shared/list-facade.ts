@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 export abstract class ListFacade<T> {
   private data: BehaviorSubject<T[]> = new BehaviorSubject<T[]>([]);
 
-  public viewModel: Observable<any> = combineLatest({
+  viewModel: Observable<any> = combineLatest({
     data: this.data.asObservable(),
   })
   addNew(): void { }

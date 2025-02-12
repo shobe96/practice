@@ -14,10 +14,6 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class UserListFacadeService {
 
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  private _userService = inject(UserService);
-  private _authService = inject(AuthService);
-
   private _users: BehaviorSubject<User[]> = new BehaviorSubject<User[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -38,9 +34,9 @@ export class UserListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  private _checkSearchFields(): boolean {
-    return Boolean(this._userSearch.username);
-  }
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private _userService = inject(UserService);
+  private _authService = inject(AuthService);
 
   constructor() {
     this.search();
@@ -118,5 +114,9 @@ export class UserListFacadeService {
       this._defaultPage.pageCount = value.size;
       this._page.next(this._defaultPage);
     }
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._userSearch.username);
   }
 }

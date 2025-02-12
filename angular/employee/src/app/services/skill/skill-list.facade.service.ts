@@ -13,9 +13,6 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class SkillListFacadeService {
 
-  private _skillService = inject(SkillService);
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -36,12 +33,11 @@ export class SkillListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
+  private _skillService = inject(SkillService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+
   constructor() {
     this.search();
-  }
-
-  private _checkSearchFields(): boolean {
-    return Boolean(this._skillSearch.name);
   }
 
   clear(): void {
@@ -116,5 +112,9 @@ export class SkillListFacadeService {
       this._defaultPage.pageCount = value.size;
       this._page.next(this._defaultPage);
     }
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._skillSearch.name);
   }
 }

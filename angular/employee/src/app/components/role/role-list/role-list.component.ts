@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -10,27 +10,22 @@ import { Router } from '@angular/router';
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoleListComponent implements OnInit {
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
-
   roleFormGroup!: FormGroup;
   roleSearch: Role = {};
   roleId: number | null = 0;
+
   roleListFacade: RoleListFacadeService = inject(RoleListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
 
   ngOnInit(): void {
     this._buildForm();
     this.roleListFacade.getAll(false);
     this._subscribeToFormGroup();
-  }
-
-  private _buildForm() {
-    this.roleFormGroup = this._formBuilder.group({
-      name: ['']
-    });
   }
 
   addNew(): void {
@@ -92,6 +87,12 @@ export class RoleListComponent implements OnInit {
   private _clearSearchFields() {
     this.roleFormGroup.controls['name'].setValue('');
     this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _buildForm() {
+    this.roleFormGroup = this._formBuilder.group({
+      name: ['']
+    });
   }
 }
 

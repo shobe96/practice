@@ -13,48 +13,48 @@ import { Department } from '../../models/department.model';
   providedIn: 'root',
 })
 export class EmployeeService {
-  private backendURL = environment.BACKEND_URL;
-  private baseUrl = "/api/employees";
 
-  private http: HttpClient = inject(HttpClient);
+  private _backendURL = environment.BACKEND_URL;
+  private _baseUrl = "/api/employees";
+  private _http: HttpClient = inject(HttpClient);
 
-  public getAllEmployees(all: boolean, page?: PageEvent): Observable<EmployeeSearchResult> {
+  getAllEmployees(all: boolean, page?: PageEvent): Observable<EmployeeSearchResult> {
     const url =
       all
-        ? `${this.backendURL}${this.baseUrl}?all=${all}` :
-        `${this.backendURL}${this.baseUrl}?${buildPaginationParams(page)}&sort=asc&all=${all}`;
-    return this.http.get<EmployeeSearchResult>(url);
+        ? `${this._backendURL}${this._baseUrl}?all=${all}` :
+        `${this._backendURL}${this._baseUrl}?${buildPaginationParams(page)}&sort=asc&all=${all}`;
+    return this._http.get<EmployeeSearchResult>(url);
   }
 
-  public getEmployee(employeeId: number): Observable<Employee> {
-    return this.http.get<Employee>(`${this.backendURL}${this.baseUrl}/get-one/${employeeId}`);
+  getEmployee(employeeId: number): Observable<Employee> {
+    return this._http.get<Employee>(`${this._backendURL}${this._baseUrl}/get-one/${employeeId}`);
   }
 
-  public save(employee: Employee | null): Observable<Employee> {
-    return this.http.post<Employee>(`${this.backendURL}${this.baseUrl}/create`, employee);
+  save(employee: Employee | null): Observable<Employee> {
+    return this._http.post<Employee>(`${this._backendURL}${this._baseUrl}/create`, employee);
   }
 
-  public update(employee: Employee): Observable<Employee> {
-    return this.http.put<Employee>(`${this.backendURL}${this.baseUrl}/update`, employee);
+  update(employee: Employee): Observable<Employee> {
+    return this._http.put<Employee>(`${this._backendURL}${this._baseUrl}/update`, employee);
   }
 
-  public delete(employeeId: number): Observable<void> {
-    return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${employeeId}`);
+  delete(employeeId: number): Observable<void> {
+    return this._http.delete<void>(`${this._backendURL}${this._baseUrl}/delete/${employeeId}`);
   }
 
-  public search(employee: Employee, page: PageEvent): Observable<EmployeeSearchResult> {
-    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(employee)}&${buildPaginationParams(page)}`);
+  search(employee: Employee, page: PageEvent): Observable<EmployeeSearchResult> {
+    return this._http.get<EmployeeSearchResult>(`${this._backendURL}${this._baseUrl}/search?${buildSearchParams(employee)}&${buildPaginationParams(page)}`);
   }
 
-  public filterEmployeesByActiveAndSkills(skills: Skill[], department: Department): Observable<Employee[]> {
-    return this.http.post<Employee[]>(`${this.backendURL}${this.baseUrl}/filter-by-active-and-skills/${department.id}`, skills);
+  filterEmployeesByActiveAndSkills(skills: Skill[], department: Department): Observable<Employee[]> {
+    return this._http.post<Employee[]>(`${this._backendURL}${this._baseUrl}/filter-by-active-and-skills/${department.id}`, skills);
   };
 
-  public findByUser(userId: number): Observable<Employee> {
-    return this.http.get<Employee>(`${this.backendURL}${this.baseUrl}/find-by-user/${userId}`);
+  findByUser(userId: number): Observable<Employee> {
+    return this._http.get<Employee>(`${this._backendURL}${this._baseUrl}/find-by-user/${userId}`);
   }
 
-  public findByDepartment(departmentId: number, page: PageEvent): Observable<EmployeeSearchResult> {
-    return this.http.get<EmployeeSearchResult>(`${this.backendURL}${this.baseUrl}/get-by-department/${departmentId}?page=${page.page}&size=${page.rows}&sort=${page.sort}`);
+  findByDepartment(departmentId: number, page: PageEvent): Observable<EmployeeSearchResult> {
+    return this._http.get<EmployeeSearchResult>(`${this._backendURL}${this._baseUrl}/get-by-department/${departmentId}?page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 }

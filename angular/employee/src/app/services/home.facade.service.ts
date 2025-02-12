@@ -16,9 +16,7 @@ import { Project } from '../models/project.model';
 })
 export class HomeFacadeService {
 
-  private _projectHistoryService: ProjectHistoryService = inject(ProjectHistoryService);
-  private _projectService: ProjectService = inject(ProjectService);
-  private _employeeService: EmployeeService = inject(EmployeeService);
+  private _authResponse: AuthResponse | null = {};
   private _roles: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _projectsHistory: BehaviorSubject<ProjectHistory[]> = new BehaviorSubject<ProjectHistory[]>([]);
@@ -32,6 +30,7 @@ export class HomeFacadeService {
     sort: 'asc',
   };
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
+
   viewModel$: Observable<any> = combineLatest({
     roles: this._roles.asObservable(),
     page: this._page.asObservable(),
@@ -41,22 +40,37 @@ export class HomeFacadeService {
     activeProject: this._project.asObservable()
   });
 
-  private authResponse: AuthResponse | null = {};
+  private _projectHistoryService: ProjectHistoryService = inject(ProjectHistoryService);
+  private _projectService: ProjectService = inject(ProjectService);
+  private _employeeService: EmployeeService = inject(EmployeeService);
 
-  private _getAuthResponse(): AuthResponse | null {
-    const authResponse = localStorage.getItem("authResponse");
-    if (authResponse) {
-      const json: AuthResponse = JSON.parse(authResponse);
-      return json;
-    } else {
-      return null;
+  getRoles() {
+    if (this._authResponse) {
+      const roles = this._authResponse.roles ?? [];
+      this._roles.next(roles);
     }
   }
 
-  getRoles() {
-    if (this.authResponse) {
-      const roles = this.authResponse.roles ?? [];
-      this._roles.next(roles);
+  getPanelData() {
+    this._authResponse = this._getAuthResponse();
+    this.getRoles();
+    if (this._authResponse && this._authResponse.userId) {
+      this._employeeService.findByUser(this._authResponse.userId).pipe(
+        switchMap((employee: Employee) => {
+          this._employee.next(employee);
+          return combineLatest([
+            this._getProjectHistory(employee),
+            this._getAllEmployeesByDepartment(employee),
+            this._getActiveProject(employee)
+          ]);
+
+        })).subscribe(([projectHistory, departmentEmployees, activeProject]) => {
+          this._projectsHistory.next(projectHistory ?? []);
+          this._defaultPage.pageCount = departmentEmployees?.size ?? 0;
+          this._page.next(this._defaultPage);
+          this._employees.next(departmentEmployees?.employees ?? []);
+          this._project.next(activeProject ?? {});
+        })
     }
   }
 
@@ -76,26 +90,13 @@ export class HomeFacadeService {
     else return of(null)
   }
 
-  getPanelData() {
-    this.authResponse = this._getAuthResponse();
-    this.getRoles();
-    if (this.authResponse && this.authResponse.userId) {
-      this._employeeService.findByUser(this.authResponse.userId).pipe(
-        switchMap((employee: Employee) => {
-          this._employee.next(employee);
-          return combineLatest([
-            this._getProjectHistory(employee),
-            this._getAllEmployeesByDepartment(employee),
-            this._getActiveProject(employee)
-          ]);
-
-        })).subscribe(([projectHistory, departmentEmployees, activeProject]) => {
-          this._projectsHistory.next(projectHistory ?? []);
-          this._defaultPage.pageCount = departmentEmployees?.size ?? 0;
-          this._page.next(this._defaultPage);
-          this._employees.next(departmentEmployees?.employees ?? []);
-          this._project.next(activeProject ?? {});
-        })
+  private _getAuthResponse(): AuthResponse | null {
+    const authResponse = localStorage.getItem("authResponse");
+    if (authResponse) {
+      const json: AuthResponse = JSON.parse(authResponse);
+      return json;
+    } else {
+      return null;
     }
   }
 }

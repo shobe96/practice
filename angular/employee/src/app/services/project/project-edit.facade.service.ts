@@ -19,20 +19,21 @@ import { Project } from '../../models/project.model';
 })
 export class ProjectEditFacadeService {
 
-  private _employeeService = inject(EmployeeService);
-  private _skillService: SkillService = inject(SkillService);
-  private _departmentService: DepartmentService = inject(DepartmentService);
-  private _projectService: ProjectService = inject(ProjectService);
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _departments: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
-  private _messageService: MessageService = inject(MessageService);
 
   viewModel$: Observable<any> = combineLatest({
     skills: this._skills.asObservable(),
     departments: this._departments.asObservable(),
     employees: this._employees.asObservable()
-  })
+  });
+
+  private _employeeService = inject(EmployeeService);
+  private _skillService: SkillService = inject(SkillService);
+  private _departmentService: DepartmentService = inject(DepartmentService);
+  private _projectService: ProjectService = inject(ProjectService);
+  private _messageService: MessageService = inject(MessageService);
 
   submit(project: Project): Observable<Project> {
     const subscription = !project.id ?
@@ -53,22 +54,6 @@ export class ProjectEditFacadeService {
     this._getDepartments();
   }
 
-  private _getSkills(): void {
-    this._skillService.getAllSkills(true).subscribe((value: SkillSearchResult) => {
-      if (value.skills) {
-        this._skills.next(value.skills);
-      }
-    })
-  }
-
-  private _getDepartments(): void {
-    this._departmentService.getAllDepartments(true).subscribe((value: DepartmentSearchResult) => {
-      if (value.departments) {
-        this._departments.next(value.departments);
-      }
-    })
-  }
-
   getEmployees(skills: Skill[], department: Department) {
     if (skills.length > 0 && Object.keys(department).length > 0) {
       this._employeeService.filterEmployeesByActiveAndSkills(skills, department).subscribe((value: Employee[]) => {
@@ -84,4 +69,21 @@ export class ProjectEditFacadeService {
   clearEmployees() {
     this._employees.next([]);
   }
+
+  private _getSkills(): void {
+    this._skillService.getAllSkills(true).subscribe((value: SkillSearchResult) => {
+      if (value.skills) {
+        this._skills.next(value.skills);
+      }
+    });
+  }
+
+  private _getDepartments(): void {
+    this._departmentService.getAllDepartments(true).subscribe((value: DepartmentSearchResult) => {
+      if (value.departments) {
+        this._departments.next(value.departments);
+      }
+    });
+  }
+
 }

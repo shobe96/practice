@@ -25,6 +25,6 @@ export class DepartmentEditFacadeService {
       } else {
         return {};
       }
-    }))
+    }));
   }
 }

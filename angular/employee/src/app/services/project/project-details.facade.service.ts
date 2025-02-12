@@ -11,10 +11,6 @@ import { fireToast } from '../../shared/utils';
 })
 export class ProjectDetailsFacadeService {
 
-  private _route: ActivatedRoute = inject(ActivatedRoute);
-  private _router: Router = inject(Router)
-  private _projectService: ProjectService = inject(ProjectService)
-  private _messageService: MessageService = inject(MessageService);
   private _project: BehaviorSubject<Project> = new BehaviorSubject<Project>({});
   private _showDialog: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -22,6 +18,9 @@ export class ProjectDetailsFacadeService {
     project: this._project.asObservable(),
     showDialog: this._showDialog.asObservable()
   });
+
+  private _projectService: ProjectService = inject(ProjectService)
+  private _messageService: MessageService = inject(MessageService);
 
   getProject(id: number) {
     this._projectService.getProject(id).subscribe((value: Project) => {
@@ -44,6 +43,6 @@ export class ProjectDetailsFacadeService {
           this._project.next(project);
           this._showDialog.next(false);
         }
-      )
+      );
   }
 }

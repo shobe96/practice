@@ -11,8 +11,9 @@ import { messageLife } from '../../shared/constants.model';
 })
 export class NavBarComponent implements OnInit {
 
-  authFacade: AuthFacadeService = inject(AuthFacadeService);
   life = messageLife;
+
+  authFacade: AuthFacadeService = inject(AuthFacadeService);
 
   ngOnInit(): void {
     this.authFacade.checkAuthResponse();

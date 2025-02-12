@@ -14,17 +14,24 @@ import { takeUntil } from 'rxjs';
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
+  employeeFormGroup!: FormGroup;
+
   @Input() employee: Employee | null = {};
   @Input() disable = false;
-  @Output() cancelEmiitter = new EventEmitter<any>();
-  employeeFormGroup!: FormGroup;
-  employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
+  @Output() private _cancelEmiitter = new EventEmitter<any>();
 
+  employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
 
   constructor() {
     super();
   }
+
+  ngOnInit(): void {
+    this.employeeEditFacade.loadSelectOptions();
+    this._buildForm();
+  }
+
   ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
   }
@@ -33,9 +40,19 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     this.unsubsribe();
   }
 
-  ngOnInit(): void {
-    this.employeeEditFacade.loadSelectOptions();
-    this._buildForm();
+  cancel(save: boolean) {
+    this._cancelEmiitter.emit({ visible: false, save: save });
+  }
+
+  submit() {
+    this.employee = this._getFormValues();
+    this.employeeEditFacade.submit(this.employee)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe((value: Employee) => {
+        if (Object.keys(value)) {
+          this.cancel(true);
+        }
+      });
   }
 
   private _buildForm() {
@@ -52,21 +69,6 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     this._setValuesToFields();
     if (this.disable) this._disableFields();
     else this._enableFields();
-  }
-
-  cancel(save: boolean) {
-    this.cancelEmiitter.emit({ visible: false, save: save });
-  }
-
-  submit() {
-    this.employee = this._getFormValues();
-    this.employeeEditFacade.submit(this.employee)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe((value: Employee) => {
-        if (Object.keys(value)) {
-          this.cancel(true);
-        }
-      });
   }
 
   private _setValuesToFields() {

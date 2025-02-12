@@ -16,6 +16,7 @@ import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthFormComponent implements OnInit {
+
   showConfirmPassword = false;
   authRequest: AuthRequest = {};
   authFormGroup!: FormGroup;
@@ -27,11 +28,11 @@ export class AuthFormComponent implements OnInit {
   tooltipConfirmMessage = "Show Confirm Password";
   confirmIcon = PrimeIcons.EYE;
   confirmSeverity: Severity = "success";
+  life = messageLife;
 
+  authFacade: AuthFacadeService = inject(AuthFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
-  authFacade: AuthFacadeService = inject(AuthFacadeService);
-  life = messageLife;
 
   ngOnInit(): void {
     this.isLoggin = this._router.url.includes("login");
@@ -42,6 +43,20 @@ export class AuthFormComponent implements OnInit {
   submit(): void {
     if (this.isLoggin) this._loginUser();
     else this._registerUser();
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+    if (this.showPassword)
+      this._setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password")
+    else this._setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+    if (this.showConfirmPassword)
+      this._setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password")
+    else this._setToggleConfirmOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
   }
 
   private _buildForm(): void {
@@ -59,21 +74,6 @@ export class AuthFormComponent implements OnInit {
         employee: new FormControl({}, [Validators.required])
       }, { validators: [this._passwordMissmatchTest()] });
     }
-
-  }
-
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-    if (this.showPassword)
-      this._setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password")
-    else this._setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
-  }
-
-  toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
-    if (this.showConfirmPassword)
-      this._setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password")
-    else this._setToggleConfirmOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
   }
 
   private _passwordMissmatchTest(): ValidatorFn {

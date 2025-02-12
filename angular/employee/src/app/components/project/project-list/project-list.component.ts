@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { PaginatorState } from 'primeng/paginator';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
@@ -10,27 +10,23 @@ import { Router } from '@angular/router';
   selector: 'app-project-list',
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.scss',
-  standalone: false
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectListComponent implements OnInit {
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
+
   projectFormGroup!: FormGroup;
   projectSearch: Project = {};
   projectId: number | null = 0;
+
   projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
 
   ngOnInit(): void {
     this._buildForm();
     this.projectListFacade.getAll(false);
     this._subscribeToFormGroup();
-  }
-
-  private _buildForm() {
-    this.projectFormGroup = this._formBuilder.group({
-      name: [''],
-      code: ['']
-    });
   }
 
   addNew(): void {
@@ -93,5 +89,12 @@ export class ProjectListComponent implements OnInit {
     this.projectFormGroup.controls['name'].setValue('');
     this.projectFormGroup.controls['code'].setValue('');
     this._router.navigate([], { queryParams: { name: '', code: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _buildForm() {
+    this.projectFormGroup = this._formBuilder.group({
+      name: [''],
+      code: ['']
+    });
   }
 }

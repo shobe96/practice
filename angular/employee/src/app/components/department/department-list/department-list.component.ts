@@ -1,11 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Department } from '../../../models/department.model';
 import { PaginatorState } from 'primeng/paginator';
 import { DepartmentListFacadeService } from '../../../services/department/department-list.facade.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-department-list',
@@ -16,38 +15,13 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 })
 export class DepartmentListComponent implements OnInit {
 
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
-
-  private _buildForm() {
-    this.departmentFormGroup = this._formBuilder.group({
-      name: ['']
-    });
-  }
-
-  private _subscribeToFormGroup() {
-    this.departmentFormGroup
-      .valueChanges
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-      )
-      .subscribe((value: Department) => {
-        if (value.name) {
-          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
-        }
-      });
-  }
-
-  private _clearSearchFields() {
-    this.departmentFormGroup.controls['name'].setValue('');
-    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
-  }
-
   departmentFormGroup!: FormGroup;
   departmentSearch: Department = {};
   departmentId: number | null = 0;
+
   departmentListFacade: DepartmentListFacadeService = inject(DepartmentListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
 
   ngOnInit(): void {
     this._buildForm();
@@ -95,5 +69,30 @@ export class DepartmentListComponent implements OnInit {
   showDeleteDialog(visible: boolean, id?: number): void {
     this.departmentId = id ?? 0;
     this.departmentListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  }
+
+  private _buildForm() {
+    this.departmentFormGroup = this._formBuilder.group({
+      name: ['']
+    });
+  }
+
+  private _subscribeToFormGroup() {
+    this.departmentFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: Department) => {
+        if (value.name) {
+          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
+        }
+      });
+  }
+
+  private _clearSearchFields() {
+    this.departmentFormGroup.controls['name'].setValue('');
+    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
   }
 }

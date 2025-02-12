@@ -14,42 +14,14 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EmployeeListComponent implements OnInit {
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
-
-  private _buildForm() {
-    this.employeeFormGroup = this._formBuilder.group({
-      name: [''],
-      surname: [''],
-      email: [''],
-    });
-  }
-
-  private _subscribeToFormGroup() {
-    this.employeeFormGroup
-      .valueChanges
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged()
-      )
-      .subscribe((value: Employee) => {
-        if (value.name || value.surname || value.email) {
-          this._router.navigate([], { queryParams: { name: value.name, surname: value.surname, email: value.email }, queryParamsHandling: 'merge' })
-        }
-      });
-  }
-
-  private _clearSearchFields() {
-    this.employeeFormGroup.controls['name'].setValue('');
-    this.employeeFormGroup.controls['surname'].setValue('');
-    this.employeeFormGroup.controls['email'].setValue('');
-    this._router.navigate([], { queryParams: { name: '', surname: '', email: '' }, queryParamsHandling: 'merge' })
-  }
 
   employeeFormGroup!: FormGroup;
   employeeSearch: Employee = {};
   employeeId: number | null = 0;
+
   employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
 
   ngOnInit(): void {
     this._buildForm();
@@ -97,5 +69,34 @@ export class EmployeeListComponent implements OnInit {
   showDeleteDialog(visible: boolean, id?: number): void {
     this.employeeId = id ?? 0;
     this.employeeListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  }
+
+  private _buildForm() {
+    this.employeeFormGroup = this._formBuilder.group({
+      name: [''],
+      surname: [''],
+      email: [''],
+    });
+  }
+
+  private _subscribeToFormGroup() {
+    this.employeeFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged()
+      )
+      .subscribe((value: Employee) => {
+        if (value.name || value.surname || value.email) {
+          this._router.navigate([], { queryParams: { name: value.name, surname: value.surname, email: value.email }, queryParamsHandling: 'merge' })
+        }
+      });
+  }
+
+  private _clearSearchFields() {
+    this.employeeFormGroup.controls['name'].setValue('');
+    this.employeeFormGroup.controls['surname'].setValue('');
+    this.employeeFormGroup.controls['email'].setValue('');
+    this._router.navigate([], { queryParams: { name: '', surname: '', email: '' }, queryParamsHandling: 'merge' })
   }
 }

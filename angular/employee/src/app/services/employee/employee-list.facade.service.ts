@@ -13,8 +13,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class EmployeeListFacadeService {
 
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  private _employeeService = inject(EmployeeService);
+
 
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _defaultPage: PageEvent = {
@@ -29,28 +28,15 @@ export class EmployeeListFacadeService {
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
   private _employeeSearch: Employee = {}
 
-  private _checkSearchFields(): boolean {
-    return Boolean(this._employeeSearch.name ||
-      this._employeeSearch.surname ||
-      this._employeeSearch.email);
-  }
-
-  private _emitValues(value: EmployeeSearchResult): void {
-    if (value.employees) {
-      this._employees.next(value.employees);
-    }
-    if (value.size) {
-      this._defaultPage.pageCount = value.size;
-      this._page.next(this._defaultPage);
-    }
-  }
-
   viewModel$: Observable<any> = combineLatest({
     employees: this._employees.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable(),
     dialogOptions: this._dialogOptions.asObservable()
   });
+
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private _employeeService = inject(EmployeeService);
 
   constructor() {
     this.search();
@@ -119,5 +105,21 @@ export class EmployeeListFacadeService {
     dialogOptions.deleteVisible = deleteVisible;
     dialogOptions.employee = employee ?? {};
     this._dialogOptions.next(dialogOptions);
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._employeeSearch.name ||
+      this._employeeSearch.surname ||
+      this._employeeSearch.email);
+  }
+
+  private _emitValues(value: EmployeeSearchResult): void {
+    if (value.employees) {
+      this._employees.next(value.employees);
+    }
+    if (value.size) {
+      this._defaultPage.pageCount = value.size;
+      this._page.next(this._defaultPage);
+    }
   }
 }

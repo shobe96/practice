@@ -12,8 +12,6 @@ import { ActivatedRoute } from '@angular/router';
   providedIn: 'root'
 })
 export class ProjectListFacadeService {
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-  private _projectService: ProjectService = inject(ProjectService);
 
   private _projectSearch: Project = {}
   private _projects: BehaviorSubject<Project[]> = new BehaviorSubject<Project[]>([]);
@@ -28,26 +26,15 @@ export class ProjectListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
-  private _emitValues(value: ProjectSearchResult): void {
-    if (value.projects) {
-      this._projects.next(value.projects);
-    }
-    if (value.size) {
-      this._defaultPage.pageCount = value.size;
-      this._page.next(this._defaultPage);
-    }
-  }
-
-  private _checkSearchFields(): boolean {
-    return Boolean(this._projectSearch.name || this._projectSearch.code);
-  }
-
   viewModel$: Observable<any> = combineLatest({
     projects: this._projects.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable(),
     dialogOptions: this._dialogOptions.asObservable()
   });
+
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private _projectService: ProjectService = inject(ProjectService);
 
   constructor() {
     this.search();
@@ -116,5 +103,19 @@ export class ProjectListFacadeService {
       .subscribe((value: ProjectSearchResult) => {
         this._emitValues(value);
       });
+  }
+
+  private _emitValues(value: ProjectSearchResult): void {
+    if (value.projects) {
+      this._projects.next(value.projects);
+    }
+    if (value.size) {
+      this._defaultPage.pageCount = value.size;
+      this._page.next(this._defaultPage);
+    }
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._projectSearch.name || this._projectSearch.code);
   }
 }

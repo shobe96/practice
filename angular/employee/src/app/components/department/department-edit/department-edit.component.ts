@@ -14,8 +14,52 @@ import { DepartmentEditFacadeService } from '../../../services/department/depart
 })
 export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
 
+  departmentFormGroup!: FormGroup;
+
+  @Input() department: Department | null = {};
+  @Input() disable = false;
+
+  @Output() private _cancelEmiitter = new EventEmitter<any>();
+
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
+
+  constructor() {
+    super();
+  }
+
+  ngOnInit(): void {
+    this.buildForm();
+  }
+
+  ngOnChanges(_changes: SimpleChanges): void {
+    this._initFormFields();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
+  }
+
+  buildForm() {
+    this.departmentFormGroup = this._formBuilder.group({
+      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]]
+    });
+  }
+
+  cancel(save: boolean) {
+    this._cancelEmiitter.emit({ visible: false, save: save });
+  }
+
+  submit() {
+    this.department = this._getFormValues();
+    this._departmentEditFacade.submit(this.department)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe((value: Department) => {
+        if (Object.keys(value)) {
+          this.cancel(true);
+        }
+      });
+  }
 
   private _setValuesToFields() {
     if (this.department) {
@@ -39,6 +83,7 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
       this.departmentFormGroup.controls['name'].disable();
     }
   }
+
   private _enableFields(): void {
     if (this.departmentFormGroup) {
       this.departmentFormGroup.controls['name'].enable();
@@ -49,47 +94,5 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
     this._setValuesToFields();
     if (this.disable) this._disableFields();
     else this._enableFields();
-  }
-
-  @Input() department: Department | null = {};
-  @Input() disable = false;
-  @Output() cancelEmiitter = new EventEmitter<any>();
-  departmentFormGroup!: FormGroup;
-
-  constructor() {
-    super();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
-  }
-
-  ngOnInit(): void {
-    this.buildForm();
-  }
-
-  ngOnChanges(_changes: SimpleChanges): void {
-    this._initFormFields();
-  }
-
-  buildForm() {
-    this.departmentFormGroup = this._formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]]
-    });
-  }
-
-  cancel(save: boolean) {
-    this.cancelEmiitter.emit({ visible: false, save: save });
-  }
-
-  submit() {
-    this.department = this._getFormValues();
-    this._departmentEditFacade.submit(this.department)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe((value: Department) => {
-        if (Object.keys(value)) {
-          this.cancel(true);
-        }
-      });
   }
 }

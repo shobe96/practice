@@ -28,20 +28,6 @@ export class DepartmentListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
-  private _emitValues(value: DepartmentSearchResult): void {
-    if (value.departments) {
-      this._departments.next(value.departments);
-    }
-    if (value.size) {
-      this._defaultPage.pageCount = value.size;
-      this._page.next(this._defaultPage);
-    }
-  }
-
-  private _checkSearchFields(): boolean {
-    return Boolean(this._departmentSearch.name);
-  }
-
   viewModel$: Observable<any> = combineLatest({
     departments: this._departments.asObservable(),
     page: this._page.asObservable(),
@@ -115,5 +101,19 @@ export class DepartmentListFacadeService {
       .subscribe((value: DepartmentSearchResult) => {
         this._emitValues(value);
       });
+  }
+
+  private _emitValues(value: DepartmentSearchResult): void {
+    if (value.departments) {
+      this._departments.next(value.departments);
+    }
+    if (value.size) {
+      this._defaultPage.pageCount = value.size;
+      this._page.next(this._defaultPage);
+    }
+  }
+
+  private _checkSearchFields(): boolean {
+    return Boolean(this._departmentSearch.name);
   }
 }

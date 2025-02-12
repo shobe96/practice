@@ -14,13 +14,13 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SkillListComponent implements OnInit {
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
-
   skillFormGroup!: FormGroup;
   skillSearch: Skill = {};
   skillId: number | null = 0;
+
   skillListFacade: SkillListFacadeService = inject(SkillListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
 
   ngOnInit(): void {
     this._buildForm();
@@ -28,11 +28,7 @@ export class SkillListComponent implements OnInit {
     this._subscribeToFormGroup();
   }
 
-  private _buildForm() {
-    this.skillFormGroup = this._formBuilder.group({
-      name: ['']
-    });
-  }
+
 
   addNew(): void {
     this.goToEdit(null);
@@ -93,5 +89,11 @@ export class SkillListComponent implements OnInit {
   private _clearSearchFields() {
     this.skillFormGroup.controls['name'].setValue('');
     this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _buildForm() {
+    this.skillFormGroup = this._formBuilder.group({
+      name: ['']
+    });
   }
 }
