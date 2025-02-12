@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-employee-list',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmployeeListComponent implements OnInit {
+export class EmployeeListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   employeeFormGroup!: FormGroup;
   employeeSearch: Employee = {};
@@ -23,10 +24,18 @@ export class EmployeeListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
     this._buildForm();
     this.employeeListFacade.retrieve();
     this._subscribeToFormGroup();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   addNew(): void {
@@ -84,7 +93,8 @@ export class EmployeeListComponent implements OnInit {
       .valueChanges
       .pipe(
         debounceTime(2000),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
       )
       .subscribe((value: Employee) => {
         if (value.name || value.surname || value.email) {

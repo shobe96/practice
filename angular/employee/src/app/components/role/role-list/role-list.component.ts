@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Role } from '../../../models/role.model';
 import { RoleListFacadeService } from '../../../services/role/role-list.facade.service';
 import { Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-role-list',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RoleListComponent implements OnInit {
+export class RoleListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   roleFormGroup!: FormGroup;
   roleSearch: Role = {};
   roleId: number | null = 0;
@@ -22,10 +23,18 @@ export class RoleListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
     this._buildForm();
     this.roleListFacade.getAll(false);
     this._subscribeToFormGroup();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   addNew(): void {
@@ -75,7 +84,8 @@ export class RoleListComponent implements OnInit {
       .valueChanges
       .pipe(
         debounceTime(2000),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
       )
       .subscribe((value: Role) => {
         if (value.name) {

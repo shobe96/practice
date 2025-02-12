@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Department } from '../../../models/department.model';
 import { PaginatorState } from 'primeng/paginator';
 import { DepartmentListFacadeService } from '../../../services/department/department-list.facade.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-department-list',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepartmentListComponent implements OnInit {
+export class DepartmentListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   departmentFormGroup!: FormGroup;
   departmentSearch: Department = {};
@@ -23,10 +24,18 @@ export class DepartmentListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
     this._buildForm();
     this.departmentListFacade.getAll(false);
     this._subscribeToFormGroup();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   addNew(): void {
@@ -82,7 +91,8 @@ export class DepartmentListComponent implements OnInit {
       .valueChanges
       .pipe(
         debounceTime(2000),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
       )
       .subscribe((value: Department) => {
         if (value.name) {

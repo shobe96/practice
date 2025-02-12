@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Skill } from '../../../models/skill.model';
 import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SkillListFacadeService } from '../../../services/skill/skill-list.facade.service';
 import { Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-skill-list',
@@ -13,7 +14,8 @@ import { Router } from '@angular/router';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SkillListComponent implements OnInit {
+export class SkillListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+
   skillFormGroup!: FormGroup;
   skillSearch: Skill = {};
   skillId: number | null = 0;
@@ -22,13 +24,19 @@ export class SkillListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
     this._buildForm();
     this.skillListFacade.getAll(false);
     this._subscribeToFormGroup();
   }
 
-
+  ngOnDestroy(): void {
+    this.unsubsribe();
+  }
 
   addNew(): void {
     this.goToEdit(null);
@@ -77,7 +85,8 @@ export class SkillListComponent implements OnInit {
       .valueChanges
       .pipe(
         debounceTime(2000),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
       )
       .subscribe((value: Skill) => {
         if (value.name) {

@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { PaginatorState } from 'primeng/paginator';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
 import { ProjectListFacadeService } from '../../../services/project/project-list.facade.service';
 import { Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-project-list',
@@ -13,7 +14,7 @@ import { Router } from '@angular/router';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectListComponent implements OnInit {
+export class ProjectListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   projectFormGroup!: FormGroup;
   projectSearch: Project = {};
@@ -23,10 +24,18 @@ export class ProjectListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
     this._buildForm();
     this.projectListFacade.getAll(false);
     this._subscribeToFormGroup();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   addNew(): void {
@@ -76,7 +85,8 @@ export class ProjectListComponent implements OnInit {
       .valueChanges
       .pipe(
         debounceTime(2000),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
       )
       .subscribe((value: Project) => {
         if (value.name || value.code) {

@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { User } from '../../../models/user.model';
 import { Router } from '@angular/router';
 import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserListFacadeService } from '../../../services/user/user-list.facade.service';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 
 @Component({
   selector: 'app-user-list',
@@ -13,7 +14,7 @@ import { UserListFacadeService } from '../../../services/user/user-list.facade.s
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   userFormGroup!: FormGroup;
   userSearch: User = {};
   userId: number | null = 0;
@@ -22,10 +23,18 @@ export class UserListComponent implements OnInit {
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
 
+  constructor() {
+    super();
+  }
+
   ngOnInit(): void {
     this._buildForm();
     this.userListFacade.getAll();
     this._subscribeToFormGroup();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   delete() {
@@ -55,7 +64,8 @@ export class UserListComponent implements OnInit {
       .valueChanges
       .pipe(
         debounceTime(2000),
-        distinctUntilChanged()
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
       )
       .subscribe((value: User) => {
         if (value.username) {
