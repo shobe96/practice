@@ -45,7 +45,11 @@
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
   <div *ngIf="roleListFacade.viewModel$ | async as data; else elseBlock">
-    <p-table [value]="data.roles" [tableStyle]="{ 'min-width': '70rem' }">
+    <p-table
+      [rowHover]="true"
+      [value]="data.roles"
+      [tableStyle]="{ 'min-width': '70rem' }"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th id="role_id">ID</th>
@@ -54,7 +58,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-role>
-        <tr appTableHover>
+        <tr>
           <td>{{ role.id }}</td>
           <td>{{ role.name }}</td>
           <td>

@@ -1,4 +1,3 @@
-
 @import "primeicons/primeicons.css";
 
 .action-buttons {
@@ -27,4 +26,11 @@
 .custom-column {
   display: flex;
   flex-direction: column;
+}
+
+.p-datatable-hoverable
+  .p-datatable-tbody
+  > tr:not(.p-datatable-row-selected):hover {
+  background: #2563eb !important;
+  color: white !important;
 }

@@ -15,6 +15,7 @@
       </p-tabpanel>
       <p-tabpanel value="1">
         <p-table
+          [rowHover]="true"
           [value]="data.project.skills ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
         >
@@ -25,7 +26,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-skill>
-            <tr appTableHover>
+            <tr>
               <td>{{ skill.name }}</td>
               <td>{{ skill.description }}</td>
             </tr>
@@ -34,6 +35,7 @@
       </p-tabpanel>
       <p-tabpanel value="2">
         <p-table
+          [rowHover]="true"
           [value]="data.project.employees ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
         >
@@ -45,7 +47,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-employee>
-            <tr appTableHover>
+            <tr>
               <td>{{ employee.name }}</td>
               <td>{{ employee.surname }}</td>
               <td>

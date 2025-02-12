@@ -49,7 +49,11 @@
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
   <div *ngIf="projectListFacade.viewModel$ | async as data; noResult">
-    <p-table [value]="data.projects" [tableStyle]="{ 'min-width': '70rem' }">
+    <p-table
+      [rowHover]="true"
+      [value]="data.projects"
+      [tableStyle]="{ 'min-width': '70rem' }"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th id="id">ID</th>
@@ -60,7 +64,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-project>
-        <tr appTableHover>
+        <tr>
           <td>{{ project.id }}</td>
           <td>{{ project.name }}</td>
           <td>{{ project.startDate | date: "dd/MM/yyyy" }}</td>

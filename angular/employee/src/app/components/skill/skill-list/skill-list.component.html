@@ -43,7 +43,11 @@
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
   <div *ngIf="skillListFacade.viewModel$ | async as data; else elseBlock">
-    <p-table [value]="data.skills" [tableStyle]="{ 'min-width': '70rem' }">
+    <p-table
+      [rowHover]="true"
+      [value]="data.skills"
+      [tableStyle]="{ 'min-width': '70rem' }"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th id="id">ID</th>
@@ -52,7 +56,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-skill>
-        <tr appTableHover>
+        <tr>
           <td>{{ skill.id }}</td>
           <td>{{ skill.name }}</td>
           <td>

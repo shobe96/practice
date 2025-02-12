@@ -23,6 +23,7 @@
       </p-tabpanel>
       <p-tabpanel value="1">
         <p-table
+          [rowHover]="true"
           [value]="employee.user?.roles ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
         >
@@ -33,7 +34,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-role>
-            <tr appTableHover>
+            <tr>
               <td>{{ role.name }}</td>
               <td>{{ role.description }}</td>
             </tr>
@@ -42,6 +43,7 @@
       </p-tabpanel>
       <p-tabpanel value="2">
         <p-table
+          [rowHover]="true"
           [value]="employee.skills ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
         >
@@ -52,7 +54,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-skill>
-            <tr appTableHover>
+            <tr>
               <td>{{ skill.name }}</td>
               <td>{{ skill.description }}</td>
             </tr>
@@ -71,6 +73,7 @@
       </p-tabpanel>
       <p-tabpanel value="4">
         <p-table
+          [rowHover]="true"
           [value]="projectsHistory"
           [tableStyle]="{ 'min-width': '70rem' }"
         >
@@ -83,7 +86,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-projectHistory>
-            <tr appTableHover>
+            <tr>
               <td>{{ projectHistory.project.name }}</td>
               <td>{{ projectHistory.project.code }}</td>
               <td>{{ projectHistory.startDate | date: "dd/MM/yyyy" }}</td>
@@ -101,6 +104,7 @@
       </p-tabpanel>
       <p-tabpanel value="6">
         <p-table
+          [rowHover]="true"
           [value]="departmentEmployees"
           [tableStyle]="{ 'min-width': '70rem' }"
         >
@@ -115,7 +119,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-employee>
-            <tr appTableHover>
+            <tr>
               <td>{{ employee.id }}</td>
               <td>{{ employee.name }}</td>
               <td>{{ employee.surname }}</td>

@@ -43,7 +43,11 @@
     </p-accordion-panel>
   </p-accordion>
   <div *ngIf="userListFacade.viewModel$ | async as data">
-    <p-table [value]="data.users" [tableStyle]="{ 'min-width': '70rem' }">
+    <p-table
+      [rowHover]="true"
+      [value]="data.users"
+      [tableStyle]="{ 'min-width': '70rem' }"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th id="id">ID</th>
@@ -52,7 +56,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-user>
-        <tr appTableHover>
+        <tr>
           <td>{{ user.id }}</td>
           <td>{{ user.username }}</td>
           <td>

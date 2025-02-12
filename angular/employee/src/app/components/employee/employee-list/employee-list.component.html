@@ -55,6 +55,7 @@
   <p-button label="Add New" (onClick)="addNew()" />
   <div *ngIf="employeeListFacade.viewModel$ | async as data; else noResult">
     <p-table
+      [rowHover]="true"
       [value]="data.employees ? data.employees : []"
       [tableStyle]="{ 'min-width': '70rem' }"
     >
@@ -70,7 +71,7 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-employee>
-        <tr appTableHover>
+        <tr>
           <td>{{ employee.id }}</td>
           <td>{{ employee.name }}</td>
           <td>{{ employee.surname }}</td>
