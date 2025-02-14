@@ -46,7 +46,7 @@ export class SkillListFacadeService {
     this.getAll(false);
   }
 
-  delete(id: number | null, skillSearch: Skill): void {
+  delete(id: number | null): void {
     if (id) {
       this._skillService.delete(id).subscribe(() => {
         this.retrieve();

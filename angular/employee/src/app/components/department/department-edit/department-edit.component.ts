@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';
 import { DepartmentEditFacadeService } from '../../../services/department/department-edit.facade.service';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-department-edit',
@@ -12,27 +13,22 @@ import { DepartmentEditFacadeService } from '../../../services/department/depart
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
+export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   departmentFormGroup!: FormGroup;
 
   @Input() department: Department | null = {};
   @Input() disable = false;
 
-  @Output() private _cancelEmiitter = new EventEmitter<any>();
-
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
-
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
   constructor() {
     super();
   }
 
   ngOnInit(): void {
     this.buildForm();
-  }
-
-  ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
   }
 
@@ -46,8 +42,8 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
     });
   }
 
-  cancel(save: boolean) {
-    this._cancelEmiitter.emit({ visible: false, save: save });
+  cancel() {
+    this._dialogRef.close();
   }
 
   submit() {
@@ -56,7 +52,7 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Department) => {
         if (Object.keys(value)) {
-          this.cancel(true);
+          this.cancel();
         }
       });
   }

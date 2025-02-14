@@ -48,7 +48,7 @@ export class UserListFacadeService {
     this.getAll();
   }
 
-  delete(id: number | null, userSearch: User): void {
+  delete(id: number | null): void {
     if (id) {
       this._authService.delete(id).subscribe(() => {
         this.retrieve();

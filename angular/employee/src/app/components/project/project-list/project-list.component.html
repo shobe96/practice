@@ -86,7 +86,7 @@
             <p-button
               icon="pi pi-pencil"
               [rounded]="true"
-              (onClick)="goToEdit(project)"
+              (onClick)="goToEdit(project, false)"
               severity="warn"
               [pTooltip]="editTooltip"
               tooltipPosition="top"
@@ -99,7 +99,7 @@
             <p-button
               icon="pi pi-trash"
               [rounded]="true"
-              (onClick)="showDeleteDialog(true, project.id)"
+              (onClick)="showDeleteDialog(project.id)"
               severity="danger"
               [pTooltip]="deleteTooltip"
               tooltipPosition="top"
@@ -122,45 +122,6 @@
         [totalRecords]="data.page.pageCount"
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
-      <p-dialog
-        header="Warning"
-        [(visible)]="data.dialogOptions.deleteVisible"
-        [modal]="true"
-        [style]="{ width: '35vw' }"
-        [draggable]="false"
-        [resizable]="false"
-      >
-        <p class="m-0">
-          Are you sure you want to delete project with id: {{ projectId}}
-        </p>
-        <div class="action-buttons">
-          <p-button
-            icon="pi pi-check"
-            [rounded]="true"
-            severity="success"
-            (onClick)="delete()"
-          ></p-button>
-          <p-button
-            icon="pi pi-times"
-            [rounded]="true"
-            severity="danger"
-            (onClick)="showDeleteDialog(false)"
-          ></p-button>
-        </div>
-      </p-dialog>
-      <p-dialog
-        [header]="data.dialogOptions.modalTitle"
-        [(visible)]="data.dialogOptions.editVisible"
-        [modal]="true"
-        [style]="{ width: '35vw' }"
-        [draggable]="true"
-        [resizable]="true"
-      >
-        <app-project-edit
-          (cancelEmiitter)="handleCancel($event)"
-          [project]="data.dialogOptions.project"
-        ></app-project-edit>
-      </p-dialog>
     </div>
   </div>
   <ng-template #noResult>

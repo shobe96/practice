@@ -8,6 +8,7 @@ import { fireToast } from '../../../shared/utils';
 import { RoleEditFacadeService } from '../../../services/role/role-edit.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-role-edit',
@@ -25,6 +26,7 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
 
   roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
 
   constructor() {
     super();
@@ -32,9 +34,6 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
 
   ngOnInit(): void {
     this._buildForm();
-  }
-
-  ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
   }
 
@@ -42,8 +41,8 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
     this.unsubsribe();
   }
 
-  cancel(save: boolean) {
-    this.cancelEmiitter.emit({ visible: false, save: save });
+  cancel() {
+    this._dialogRef.close();
   }
 
   submit() {
@@ -52,7 +51,7 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Role) => {
         if (Object.keys(value)) {
-          this.cancel(true);
+          this.cancel();
         }
       });
   }

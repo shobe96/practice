@@ -6,6 +6,9 @@ import { DepartmentListFacadeService } from '../../../services/department/depart
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { DialogService } from 'primeng/dynamicdialog';
+import { DepartmentEditComponent } from '../department-edit/department-edit.component';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-department-list',
@@ -23,9 +26,12 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
   departmentListFacade: DepartmentListFacadeService = inject(DepartmentListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {
     super();
+    this.departmentListFacade.search();
   }
 
   ngOnInit(): void {
@@ -36,10 +42,11 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
 
   ngOnDestroy(): void {
     this.unsubsribe();
+    this.departmentListFacade.unsubscribe();
   }
 
   addNew(): void {
-    this.goToEdit(null);
+    this.goToEdit(null, false);
   }
 
   clear(): void {
@@ -52,19 +59,23 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
   }
 
   goToDetails(department: Department): void {
-    this.departmentListFacade.setDialogParams(department, `Department ${department.id}`, true, false, true);
+    this.goToEdit(department, true);
   }
 
-  goToEdit(department: Department | null): void {
+  goToEdit(department: Department | null, disable: boolean): void {
     const title = department ? `Department ${department.id}` : 'Add new Department';
-    this.departmentListFacade.setDialogParams(department, title, true, false, false);
-  }
-
-  handleCancel(event: any): void {
-    this.departmentListFacade.setDialogParams(null, '', event.visible, false, false);
-    if (event.save) {
-      this.refresh();
-    }
+    this._dialogService.open(DepartmentEditComponent, {
+      header: title,
+      modal: true,
+      width: '35vw',
+      contentStyle: { overflow: 'auto' },
+      inputValues: {
+        department: department,
+        disable: disable
+      },
+      baseZIndex: 10000,
+      maximizable: true
+    });
   }
 
   onPageChange(event: PaginatorState): void {
@@ -75,9 +86,24 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
     this.departmentListFacade.retrieve();
   }
 
-  showDeleteDialog(visible: boolean, id?: number): void {
-    this.departmentId = id ?? 0;
-    this.departmentListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete department with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.departmentListFacade.delete(id);
+      },
+    });
   }
 
   private _buildForm() {

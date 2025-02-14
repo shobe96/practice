@@ -1,12 +1,10 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Project } from '../../../models/project.model';
-import { ProjectService } from '../../../services/project/project.service';
-import { fireToast } from '../../../shared/utils';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { takeUntil } from 'rxjs';
 import { ProjectDetailsFacadeService } from '../../../services/project/project-details.facade.service';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-project-details',
@@ -23,6 +21,8 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
   projectDetailsFacade: ProjectDetailsFacadeService = inject(ProjectDetailsFacadeService);
   private _route: ActivatedRoute = inject(ActivatedRoute);
   private _router: Router = inject(Router)
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {
     super();
@@ -43,12 +43,23 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
     this._router.navigate(["project/list"])
   }
 
-  showDialog(visible: boolean, employeeId?: number) {
-    this.employeeId = employeeId ?? 0;
-    this.projectDetailsFacade.showDialog(visible);
-  }
-
-  unassignEmployee(project: Project) {
-    this.projectDetailsFacade.unassignEmployee(this.employeeId, project);
+  unassignEmployee(employeeId: number, project: Project) {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to unassign employee with id: ${employeeId} from project ${project.name}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Unassign',
+      },
+      accept: () => {
+        this.projectDetailsFacade.unassignEmployee(employeeId, project);
+      },
+    });
   }
 }

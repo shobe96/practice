@@ -6,6 +6,7 @@ import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserListFacadeService } from '../../../services/user/user-list.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-user-list',
@@ -22,6 +23,7 @@ export class UserListComponent extends SubscriptionCleaner implements OnInit, On
   userListFacade: UserListFacadeService = inject(UserListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {
     super();
@@ -38,7 +40,7 @@ export class UserListComponent extends SubscriptionCleaner implements OnInit, On
   }
 
   delete() {
-    this.userListFacade.delete(this.userId, this.userSearch);
+    this.userListFacade.delete(this.userId);
   }
 
   onPageChange(event: PaginatorState) {
@@ -54,9 +56,24 @@ export class UserListComponent extends SubscriptionCleaner implements OnInit, On
     this.userListFacade.retrieve();
   }
 
-  showDeleteDialog(visible: boolean, id?: number): void {
-    this.userId = id ?? 0;
-    this.userListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete project with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.userListFacade.delete(id);
+      },
+    });
   }
 
   private _subscribeToFormGroup() {

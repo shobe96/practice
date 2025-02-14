@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditFacadeService } from '../../../services/project/project-edit.facade.service';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-project-edit',
@@ -12,28 +13,25 @@ import { ProjectEditFacadeService } from '../../../services/project/project-edit
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
+export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   projectFormGroup!: FormGroup;
 
   @Input() id: number | null = null;
   @Input() project: Project = {};
-  @Output() private _cancelEmiitter: EventEmitter<any> = new EventEmitter();
 
   projectEditFacade: ProjectEditFacadeService = inject(ProjectEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
 
   constructor() {
     super();
   }
 
   ngOnInit(): void {
-    this.buildForm();
-  }
-
-  ngOnChanges(_changes: SimpleChanges): void {
-    this._initFormFields();
     this.projectEditFacade.loadSelectOptions();
+    this.buildForm();
+    this._initFormFields();
   }
 
   ngOnDestroy(): void {
@@ -52,8 +50,8 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
     });
   }
 
-  cancel(save: boolean) {
-    this._cancelEmiitter.emit({ visible: false, save: save });
+  cancel() {
+    this._dialogRef.close();
   }
 
   submit() {
@@ -62,7 +60,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Project) => {
         if (Object.keys(value)) {
-          this.cancel(true);
+          this.cancel();
         }
       });
   }

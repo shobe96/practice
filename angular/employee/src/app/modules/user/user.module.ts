@@ -11,7 +11,8 @@ import { PaginatorModule } from 'primeng/paginator';
 import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { InputTextModule } from 'primeng/inputtext';
-
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -26,8 +27,9 @@ import { InputTextModule } from 'primeng/inputtext';
     TooltipModule,
     TableModule,
     PaginatorModule,
-    DialogModule,
     InputTextModule,
+    DynamicDialogModule,
+    ConfirmDialog
   ]
 })
 export class UserModule { }

@@ -10,12 +10,12 @@ import { ButtonModule } from 'primeng/button';
 import { TooltipModule } from 'primeng/tooltip';
 import { TableModule } from 'primeng/table';
 import { PaginatorModule } from 'primeng/paginator';
-import { DialogModule } from 'primeng/dialog';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { SelectModule } from 'primeng/select';
 import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
-
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -32,11 +32,12 @@ import { InputTextModule } from 'primeng/inputtext';
     TooltipModule,
     TableModule,
     PaginatorModule,
-    DialogModule,
     SelectModule,
     MultiSelectModule,
     ToastModule,
     InputTextModule,
+    DynamicDialogModule,
+    ConfirmDialogModule
   ]
 })
 export class EmployeeModule { }

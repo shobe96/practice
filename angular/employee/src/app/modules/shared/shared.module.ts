@@ -1,20 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ButtonModule } from 'primeng/button';
 
 const MODULES = [
   CommonModule,
-  ReactiveFormsModule
+  ReactiveFormsModule,
 ];
 
 @NgModule({
   imports: [
-    MODULES
+    MODULES,
+    ButtonModule
   ],
   exports: [
     MODULES
   ],
-  providers: [MessageService]
+  providers: [MessageService, DialogService, ConfirmationService],
 })
 export class SharedModule { }

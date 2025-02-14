@@ -6,6 +6,9 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { SkillListFacadeService } from '../../../services/skill/skill-list.facade.service';
 import { Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { SkillEditComponent } from '../skill-edit/skill-edit.component';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-skill-list',
@@ -23,6 +26,8 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
   skillListFacade: SkillListFacadeService = inject(SkillListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {
     super();
@@ -39,7 +44,7 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
   }
 
   addNew(): void {
-    this.goToEdit(null);
+    this.goToEdit(null, false);
   }
 
   clear(): void {
@@ -47,17 +52,24 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
     this.skillListFacade.clear();
   }
 
-  delete(): void {
-    this.skillListFacade.delete(this.skillId, this.skillSearch);
-  }
-
   goToDetails(skill: Skill): void {
-    this.skillListFacade.setDialogParams(skill, `Skill ${skill.id}`, true, false, true);
+    this.goToEdit(skill, true);
   }
 
-  goToEdit(skill: Skill | null): void {
+  goToEdit(skill: Skill | null, disable: boolean): void {
     const title = skill ? `Skill ${skill.id}` : 'Add new Skill';
-    this.skillListFacade.setDialogParams(skill, title, true, false, false);
+    this._dialogService.open(SkillEditComponent, {
+      header: title,
+      modal: true,
+      width: '35vw',
+      contentStyle: { overflow: 'auto' },
+      inputValues: {
+        skill: skill,
+        disable: disable
+      },
+      baseZIndex: 10000,
+      maximizable: true
+    });
   }
 
   handleCancel(event: any): void {
@@ -75,9 +87,24 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
     this.skillListFacade.retrieve();
   }
 
-  showDeleteDialog(visible: boolean, id?: number): void {
-    this.skillId = id ?? 0;
-    this.skillListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete skill with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.skillListFacade.delete(id);
+      },
+    });
   }
 
   private _subscribeToFormGroup() {

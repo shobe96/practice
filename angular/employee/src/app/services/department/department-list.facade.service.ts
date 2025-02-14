@@ -27,6 +27,7 @@ export class DepartmentListFacadeService {
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
+  private _routeSubscription: Subscription | undefined;
 
   viewModel$: Observable<any> = combineLatest({
     departments: this._departments.asObservable(),
@@ -35,8 +36,9 @@ export class DepartmentListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  constructor() {
-    this.search();
+  unsubscribe() {
+    if (this._routeSubscription)
+      this._routeSubscription.unsubscribe();
   }
 
   clear(): void {
@@ -84,7 +86,7 @@ export class DepartmentListFacadeService {
   }
 
   search(): void {
-    this._activatedRoute.queryParams
+    this._routeSubscription = this._activatedRoute.queryParams
       .pipe(
         switchMap((params: any) => {
           this._departmentSearch = {

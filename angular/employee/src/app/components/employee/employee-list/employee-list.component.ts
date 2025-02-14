@@ -6,6 +6,9 @@ import { EmployeeListFacadeService } from '../../../services/employee/employee-l
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { DialogService } from 'primeng/dynamicdialog';
+import { EmployeeEditComponent } from '../employee-edit/employee-edit.component';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-employee-list',
@@ -23,9 +26,12 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
   employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {
     super();
+    this.employeeListFacade.search();
   }
 
   ngOnInit(): void {
@@ -36,10 +42,11 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
 
   ngOnDestroy(): void {
     this.unsubsribe();
+    this.employeeListFacade.unsubscribe();
   }
 
   addNew(): void {
-    this.goToEdit(null);
+    this.goToEdit(null, false);
   }
 
   clear(): void {
@@ -47,17 +54,24 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
     this.employeeListFacade.clear();
   }
 
-  delete(): void {
-    this.employeeListFacade.delete(this.employeeId);
-  }
-
   goToDetails(employee: Employee): void {
-    this.employeeListFacade.setDialogParams(employee, `Employee ${employee.id}`, true, false, true);
+    this.goToEdit(employee, true);
   }
 
-  goToEdit(employee: Employee | null): void {
+  goToEdit(employee: Employee | null, disable: boolean): void {
     const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
-    this.employeeListFacade.setDialogParams(employee, title, true, false, false);
+    this._dialogService.open(EmployeeEditComponent, {
+      header: title,
+      modal: true,
+      width: '35vw',
+      contentStyle: { overflow: 'auto' },
+      inputValues: {
+        employee: employee,
+        disable: disable
+      },
+      baseZIndex: 10000,
+      maximizable: true
+    });
   }
 
   handleCancel(event: any): void {
@@ -75,9 +89,24 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
     this.employeeListFacade.retrieve();
   }
 
-  showDeleteDialog(visible: boolean, id?: number): void {
-    this.employeeId = id ?? 0;
-    this.employeeListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete employee with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.employeeListFacade.delete(id);
+      },
+    });
   }
 
   private _buildForm() {
@@ -92,9 +121,9 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
     this.employeeFormGroup
       .valueChanges
       .pipe(
+        takeUntil(this.componentIsDestroyed$),
         debounceTime(2000),
         distinctUntilChanged(),
-        takeUntil(this.componentIsDestroyed$)
       )
       .subscribe((value: Employee) => {
         if (value.name || value.surname || value.email) {

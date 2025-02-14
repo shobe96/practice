@@ -6,6 +6,9 @@ import { Role } from '../../../models/role.model';
 import { RoleListFacadeService } from '../../../services/role/role-list.facade.service';
 import { Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { RoleEditComponent } from '../role-edit/role-edit.component';
+import { ConfirmationService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-role-list',
@@ -22,6 +25,8 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
   roleListFacade: RoleListFacadeService = inject(RoleListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {
     super();
@@ -38,7 +43,7 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
   }
 
   addNew(): void {
-    this.goToEdit(null);
+    this.goToEdit(null, false);
   }
 
   clear(): void {
@@ -51,12 +56,23 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
   }
 
   goToDetails(role: Role): void {
-    this.roleListFacade.setDialogParams(role, `Role ${role.id}`, true, false, true);
+    this.goToEdit(role, true);
   }
 
-  goToEdit(role: Role | null): void {
+  goToEdit(role: Role | null, disable: boolean): void {
     const title = role ? `Role ${role.id}` : 'Add new Role';
-    this.roleListFacade.setDialogParams(role, title, true, false, false);
+    this._dialogService.open(RoleEditComponent, {
+      header: title,
+      modal: true,
+      width: '35vw',
+      contentStyle: { overflow: 'auto' },
+      inputValues: {
+        role: role,
+        disable: disable
+      },
+      baseZIndex: 10000,
+      maximizable: true
+    });
   }
 
   handleCancel(event: any): void {

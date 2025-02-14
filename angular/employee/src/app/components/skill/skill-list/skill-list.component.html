@@ -76,7 +76,7 @@
             <p-button
               icon="pi pi-pencil"
               [rounded]="true"
-              (onClick)="goToEdit(skill)"
+              (onClick)="goToEdit(skill, false)"
               severity="warn"
               [pTooltip]="editTooltip"
               tooltipPosition="top"
@@ -89,7 +89,7 @@
             <p-button
               icon="pi pi-trash"
               [rounded]="true"
-              (onClick)="showDeleteDialog(true, skill.id)"
+              (onClick)="showDeleteDialog(skill.id)"
               severity="danger"
               [pTooltip]="deleteTooltip"
               tooltipPosition="top"
@@ -113,47 +113,6 @@
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
     </div>
-
-    <p-dialog
-      header="Warning"
-      [(visible)]="data.dialogOptions.deleteVisible"
-      [modal]="true"
-      [style]="{ width: '35vw' }"
-      [draggable]="false"
-      [resizable]="false"
-    >
-      <p class="m-0">
-        Are you sure you want to delete skill with id: {{ skillId}}
-      </p>
-      <div class="action-buttons">
-        <p-button
-          icon="pi pi-check"
-          [rounded]="true"
-          severity="success"
-          (onClick)="delete()"
-        ></p-button>
-        <p-button
-          icon="pi pi-times"
-          [rounded]="true"
-          severity="danger"
-          (onClick)="showDeleteDialog(false)"
-        ></p-button>
-      </div>
-    </p-dialog>
-    <p-dialog
-      [header]="data.dialogOptions.modalTitle"
-      [(visible)]="data.dialogOptions.editVisible"
-      [modal]="true"
-      [style]="{ width: '35vw' }"
-      [draggable]="true"
-      [resizable]="true"
-    >
-      <app-skill-edit
-        [skill]="data.dialogOptions.skill"
-        (cancelEmiitter)="handleCancel($event)"
-        [disable]="data.dialogOptions.disable"
-      ></app-skill-edit>
-    </p-dialog>
   </div>
   <ng-template #elseBlock>
     <p>

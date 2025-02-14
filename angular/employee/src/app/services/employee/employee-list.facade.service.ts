@@ -1,12 +1,13 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, combineLatest, Observable, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subscription, switchMap, take, takeUntil } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeService } from './employee.service';
 import { PageEvent } from '../../models/page-event.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { ActivatedRoute } from '@angular/router';
+import { SubscriptionCleaner } from '../../shared/subscription-cleaner ';
 
 @Injectable({
   providedIn: 'root'
@@ -27,6 +28,7 @@ export class EmployeeListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
   private _employeeSearch: Employee = {}
+  private _routeSubscription: Subscription | undefined;
 
   viewModel$: Observable<any> = combineLatest({
     employees: this._employees.asObservable(),
@@ -37,10 +39,6 @@ export class EmployeeListFacadeService {
 
   private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _employeeService = inject(EmployeeService);
-
-  constructor() {
-    this.search();
-  }
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -77,7 +75,7 @@ export class EmployeeListFacadeService {
   }
 
   search(): void {
-    this._activatedRoute.queryParams
+    this._routeSubscription = this._activatedRoute.queryParams
       .pipe(
         switchMap((params: any) => {
           this._employeeSearch = {
@@ -105,6 +103,11 @@ export class EmployeeListFacadeService {
     dialogOptions.deleteVisible = deleteVisible;
     dialogOptions.employee = employee ?? {};
     this._dialogOptions.next(dialogOptions);
+  }
+
+  unsubscribe() {
+    if (this._routeSubscription)
+      this._routeSubscription.unsubscribe();
   }
 
   private _checkSearchFields(): boolean {

@@ -102,7 +102,7 @@
             <p-button
               icon="pi pi-pencil"
               [rounded]="true"
-              (onClick)="goToEdit(employee)"
+              (onClick)="goToEdit(employee, false)"
               severity="warn"
               [pTooltip]="editTooltip"
               tooltipPosition="top"
@@ -115,7 +115,7 @@
             <p-button
               icon="pi pi-trash"
               [rounded]="true"
-              (onClick)="showDeleteDialog(true, employee.id)"
+              (onClick)="showDeleteDialog(employee.id)"
               severity="danger"
               [pTooltip]="deleteTooltip"
               tooltipPosition="top"
@@ -138,47 +138,6 @@
         [rowsPerPageOptions]="data.rowsPerPage"
       ></p-paginator>
     </div>
-
-    <p-dialog
-      header="Warning"
-      [(visible)]="data.dialogOptions.deleteVisible"
-      [modal]="true"
-      [style]="{ width: '35vw' }"
-      [draggable]="false"
-      [resizable]="false"
-    >
-      <p class="m-0">
-        Are you sure you want to delete employee with id: {{ employeeId }}
-      </p>
-      <div class="action-buttons">
-        <p-button
-          icon="pi pi-check"
-          [rounded]="true"
-          severity="success"
-          (onClick)="delete()"
-        ></p-button>
-        <p-button
-          icon="pi pi-times"
-          [rounded]="true"
-          severity="danger"
-          (onClick)="showDeleteDialog(false)"
-        ></p-button>
-      </div>
-    </p-dialog>
-    <p-dialog
-      [header]="data.dialogOptions.modalTitle"
-      [(visible)]="data.dialogOptions.editVisible"
-      [modal]="true"
-      [style]="{ width: '35vw' }"
-      [draggable]="true"
-      [resizable]="true"
-    >
-      <app-employee-edit
-        (cancelEmiitter)="handleCancel($event)"
-        [disable]="data.dialogOptions.disable"
-        [employee]="data.dialogOptions.employee"
-      ></app-employee-edit>
-    </p-dialog>
   </div>
   <ng-template #noResult>
     <p>

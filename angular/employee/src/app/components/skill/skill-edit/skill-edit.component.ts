@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { Skill } from '../../../models/skill.model';
 import { SkillEditFacadeService } from '../../../services/skill/skill-edit.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-skill-edit',
@@ -12,7 +13,7 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SkillEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
+export class SkillEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   skillFormGroup!: FormGroup;
 
   @Input() skill: Skill | null = {};
@@ -21,12 +22,10 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
 
   skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
 
   ngOnInit(): void {
     this._buildForm();
-  }
-
-  ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
   }
 
@@ -34,8 +33,8 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
     this.unsubsribe();
   }
 
-  cancel(save: boolean) {
-    this.cancelEmiitter.emit({ visible: false, save: save });
+  cancel() {
+    this._dialogRef.close();
   }
 
   submit() {
@@ -44,7 +43,7 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Skill) => {
         if (Object.keys(value)) {
-          this.cancel(true);
+          this.cancel();
         }
       });
   }

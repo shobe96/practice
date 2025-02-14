@@ -13,6 +13,8 @@ import { TableModule } from 'primeng/table';
 import { TooltipModule } from 'primeng/tooltip';
 import { ToastModule } from 'primeng/toast';
 import { InputTextModule } from 'primeng/inputtext';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
@@ -30,9 +32,10 @@ import { InputTextModule } from 'primeng/inputtext';
     TooltipModule,
     TableModule,
     PaginatorModule,
-    DialogModule,
     ToastModule,
     InputTextModule,
+    DynamicDialogModule,
+    ConfirmDialogModule
   ]
 })
 export class DepartmentModule { }

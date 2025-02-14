@@ -6,6 +6,9 @@ import { Project } from '../../../models/project.model';
 import { ProjectListFacadeService } from '../../../services/project/project-list.facade.service';
 import { Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { ProjectEditComponent } from '../project-edit/project-edit.component';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-project-list',
@@ -23,6 +26,8 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
   projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {
     super();
@@ -39,7 +44,7 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
   }
 
   addNew(): void {
-    this.goToEdit(null);
+    this.goToEdit(null, false);
   }
 
   clear(): void {
@@ -55,9 +60,20 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
     this._router.navigate([`/project/details/${id}`])
   }
 
-  goToEdit(project: Project | null): void {
+  goToEdit(project: Project | null, disable: boolean): void {
     const title = project ? `Project ${project.id}` : 'Add new Project';
-    this.projectListFacade.setDialogParams(project, title, true, false, false);
+    this._dialogService.open(ProjectEditComponent, {
+      header: title,
+      modal: true,
+      width: '35vw',
+      contentStyle: { overflow: 'auto' },
+      inputValues: {
+        project: project,
+        disable: disable
+      },
+      baseZIndex: 10000,
+      maximizable: true
+    });
   }
 
   handleCancel(event: any): void {
@@ -75,9 +91,24 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
     this.projectListFacade.retrieve();
   }
 
-  showDeleteDialog(visible: boolean, id?: number): void {
-    this.projectId = id ?? 0;
-    this.projectListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete project with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.projectListFacade.delete(id);
+      },
+    });
   }
 
   private _subscribeToFormGroup() {

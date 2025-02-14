@@ -54,7 +54,7 @@
                 <p-button
                   icon="pi pi-trash"
                   [rounded]="true"
-                  (onClick)="showDialog(true, employee.id)"
+                  (onClick)="unassignEmployee(employee.id, data.project)"
                   severity="danger"
                   [pTooltip]="deleteTooltip"
                   tooltipPosition="top"
@@ -68,32 +68,6 @@
             </tr>
           </ng-template>
         </p-table>
-        <p-dialog
-          header="Warning"
-          [(visible)]="data.showDialog"
-          [modal]="true"
-          [style]="{ width: '35vw' }"
-          [draggable]="false"
-          [resizable]="false"
-        >
-          <p class="m-0">
-            Are you sure you want to delete employee with id: {{ employeeId }}
-          </p>
-          <div class="action-buttons">
-            <p-button
-              icon="pi pi-check"
-              [rounded]="true"
-              severity="success"
-              (onClick)="unassignEmployee(data.project)"
-            ></p-button>
-            <p-button
-              icon="pi pi-times"
-              [rounded]="true"
-              severity="danger"
-              (onClick)="showDialog(false)"
-            ></p-button>
-          </div>
-        </p-dialog>
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>

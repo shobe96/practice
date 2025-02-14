@@ -63,7 +63,7 @@
             <p-button
               icon="pi pi-trash"
               [rounded]="true"
-              (onClick)="showDeleteDialog(true, user.id)"
+              (onClick)="showDeleteDialog(user.id)"
               severity="danger"
               [pTooltip]="deleteTooltip"
               tooltipPosition="top"
@@ -87,32 +87,5 @@
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
     </div>
-
-    <p-dialog
-      header="Warning"
-      [(visible)]="data.dialogOptions.deleteVisible"
-      [modal]="true"
-      [style]="{ width: '35vw' }"
-      [draggable]="false"
-      [resizable]="false"
-    >
-      <p class="m-0">
-        Are you sure you want to delete employee with id: {{ userId}}
-      </p>
-      <div class="action-buttons">
-        <p-button
-          icon="pi pi-check"
-          [rounded]="true"
-          severity="success"
-          (onClick)="delete()"
-        ></p-button>
-        <p-button
-          icon="pi pi-times"
-          [rounded]="true"
-          severity="danger"
-          (onClick)="showDeleteDialog(false)"
-        ></p-button>
-      </div>
-    </p-dialog>
   </div>
 </div>

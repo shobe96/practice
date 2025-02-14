@@ -1,9 +1,10 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { EmployeeEditFacadeService } from '../../../services/employee/employee-edit.facade.service';
 import { takeUntil } from 'rxjs';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-employee-edit',
@@ -12,16 +13,16 @@ import { takeUntil } from 'rxjs';
   standalone: false,
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy, OnChanges {
+export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   employeeFormGroup!: FormGroup;
 
   @Input() employee: Employee | null = {};
   @Input() disable = false;
-  @Output() private _cancelEmiitter = new EventEmitter<any>();
 
   employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
 
   constructor() {
     super();
@@ -30,9 +31,6 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   ngOnInit(): void {
     this.employeeEditFacade.loadSelectOptions();
     this._buildForm();
-  }
-
-  ngOnChanges(_changes: SimpleChanges): void {
     this._initFormFields();
   }
 
@@ -40,8 +38,8 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
     this.unsubsribe();
   }
 
-  cancel(save: boolean) {
-    this._cancelEmiitter.emit({ visible: false, save: save });
+  cancel() {
+    this._dialogRef.close();
   }
 
   submit() {
@@ -50,7 +48,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
       .pipe(takeUntil(this.componentIsDestroyed$))
       .subscribe((value: Employee) => {
         if (Object.keys(value)) {
-          this.cancel(true);
+          this.cancel();
         }
       });
   }
