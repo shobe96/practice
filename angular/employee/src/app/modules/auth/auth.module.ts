@@ -9,12 +9,16 @@ import { MultiSelectModule } from 'primeng/multiselect';
 import { ToastModule } from 'primeng/toast';
 import { SelectModule } from 'primeng/select';
 import { InputTextModule } from 'primeng/inputtext';
+import { RegisterComponent } from '../../components/auth/register/register.component';
+import { LoginComponent } from '../../components/auth/login/login.component';
 
 
 @NgModule({
   declarations: [
     AuthComponent,
-    AuthFormComponent
+    AuthFormComponent,
+    LoginComponent,
+    RegisterComponent
   ],
   imports: [
     SharedModule,

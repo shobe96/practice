@@ -111,12 +111,9 @@ export class AuthFacadeService {
     menuItems: this._menuItems.asObservable()
   });
 
-  loadSelectOptions(isLoggin: boolean) {
-    this._isLoggin.next(isLoggin);
-    if (!isLoggin) {
-      this._getEmployees();
-      this._getRoles();
-    }
+  loadSelectOptions() {
+    this._getEmployees();
+    this._getRoles();
   }
 
   checkAuthResponse() {

@@ -1,22 +1,20 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
-import { AuthRequest } from '../../../models/auth-request.model';
-import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
-import { StrongPasswordRegx, messageLife } from '../../../shared/constants.model';
+import { Component, inject, OnInit } from '@angular/core';
+import { FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, ValidationErrors } from '@angular/forms';
 import { PrimeIcons } from 'primeng/api';
-import { Router } from '@angular/router';
+import { AuthRequest } from '../../../models/auth-request.model';
 import { RegisterRequest } from '../../../models/register-request.model';
-import { Severity } from '../../../shared/custom-types';
 import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
+import { messageLife, StrongPasswordRegx } from '../../../shared/constants.model';
+import { Severity } from '../../../shared/custom-types';
 
 @Component({
-  selector: 'app-auth-form',
-  templateUrl: './auth-form.component.html',
-  styleUrl: './auth-form.component.scss',
+  selector: 'app-register',
   standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
-})
-export class AuthFormComponent implements OnInit {
 
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.scss'
+})
+export class RegisterComponent implements OnInit {
   showConfirmPassword = false;
   authRequest: AuthRequest = {};
   authFormGroup!: FormGroup;
@@ -31,18 +29,14 @@ export class AuthFormComponent implements OnInit {
   life = messageLife;
 
   authFacade: AuthFacadeService = inject(AuthFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
 
   ngOnInit(): void {
-    this.isLoggin = this._router.url.includes("login");
     this.authFacade.loadSelectOptions();
     this._buildForm();
   }
 
   submit(): void {
-    if (this.isLoggin) this._loginUser();
-    else this._registerUser();
+    this._registerUser();
   }
 
   togglePasswordVisibility() {
@@ -60,20 +54,13 @@ export class AuthFormComponent implements OnInit {
   }
 
   private _buildForm(): void {
-    if (this.isLoggin) {
-      this.authFormGroup = this._formBuilder.group({
-        username: ['', [Validators.required]],
-        password: ['', [Validators.required]],
-      });
-    } else {
-      this.authFormGroup = new FormGroup({
-        username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
-        password: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
-        confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
-        selectedRoles: new FormControl([], [Validators.required]),
-        employee: new FormControl({}, [Validators.required])
-      }, { validators: [this._passwordMissmatchTest()] });
-    }
+    this.authFormGroup = new FormGroup({
+      username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
+      password: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
+      confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
+      selectedRoles: new FormControl([], [Validators.required]),
+      employee: new FormControl({}, [Validators.required])
+    }, { validators: [this._passwordMissmatchTest()] });
   }
 
   private _passwordMissmatchTest(): ValidatorFn {
@@ -99,10 +86,6 @@ export class AuthFormComponent implements OnInit {
   private _registerUser(): void {
     const registerRequest: RegisterRequest = this._getFormValues();
     this.authFacade.registerUser(registerRequest);
-  }
-  private _loginUser(): void {
-    const registerRequest: RegisterRequest = this._getFormValues();
-    this.authFacade.loginUser(registerRequest);
   }
 
   private _getFormValues(): RegisterRequest {
