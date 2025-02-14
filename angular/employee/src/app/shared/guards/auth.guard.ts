@@ -9,8 +9,8 @@ export const authGuard: CanActivateFn = (route, _state) => {
     const json: AuthResponse = JSON.parse(authResponse);
     const userRoles: Role[] = json.roles ?? [];
     const roles: string[] = route.data['roles'] ?? [];
-    for (let userRole of userRoles) {
-      for (let role of roles) {
+    for (const userRole of userRoles) {
+      for (const role of roles) {
         if (userRole.code === role) {
           return true;
         }

@@ -1,13 +1,12 @@
-import { inject, Injectable, OnDestroy } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, combineLatest, Observable, Subscription, switchMap, take, takeUntil } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subscription, switchMap } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeService } from './employee.service';
 import { PageEvent } from '../../models/page-event.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { ActivatedRoute } from '@angular/router';
-import { SubscriptionCleaner } from '../../shared/subscription-cleaner ';
 
 @Injectable({
   providedIn: 'root'

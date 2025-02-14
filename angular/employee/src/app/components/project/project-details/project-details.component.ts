@@ -15,8 +15,8 @@ import { DialogService } from 'primeng/dynamicdialog';
 export class ProjectDetailsComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   project!: Project;
-  employeeId: number = 0;
-  visible: boolean = false;
+  employeeId = 0;
+  visible = false;
 
   projectDetailsFacade: ProjectDetailsFacadeService = inject(ProjectDetailsFacadeService);
   private _route: ActivatedRoute = inject(ActivatedRoute);

@@ -1,6 +1,6 @@
-import { inject, Injectable, OnDestroy } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { DepartmentService } from './department.service';
-import { BehaviorSubject, combineLatest, debounce, debounceTime, distinctUntilChanged, exhaustMap, first, Observable, Subscription, switchMap, take, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable, Subscription, switchMap } from 'rxjs';
 import { Department } from '../../models/department.model';
 import { PageEvent } from '../../models/page-event.model';
 import { rowsPerPage } from '../../shared/constants.model';

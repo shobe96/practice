@@ -1,7 +1,7 @@
 import { PageEvent } from "../models/page-event.model";
 
 export function buildSearchParams(object: any): string {
-  let params: string = "";
+  let params = "";
   const keys = Object.keys(object);
   for (let i = 0; i < keys.length; i++) {
     const value = object[keys[i]];

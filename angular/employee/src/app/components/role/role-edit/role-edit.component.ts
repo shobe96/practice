@@ -1,10 +1,6 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
-import { MessageService } from 'primeng/api';
 import { Role } from '../../../models/role.model';
-import { RoleService } from '../../../services/role/role.service';
-import { fireToast } from '../../../shared/utils';
 import { RoleEditFacadeService } from '../../../services/role/role-edit.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';

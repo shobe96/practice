@@ -1,8 +1,7 @@
 import { inject, Injectable } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { ProjectService } from './project.service';
-import { startWith, map, distinctUntilChanged, BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { Project } from '../../models/project.model';
 import { fireToast } from '../../shared/utils';
 

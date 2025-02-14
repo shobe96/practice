@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ProjectHistoryService } from './project-history/project-history.service';
-import { BehaviorSubject, catchError, combineLatest, forkJoin, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, Observable, of, switchMap } from 'rxjs';
 import { Role } from '../models/role.model';
 import { PageEvent } from '../models/page-event.model';
 import { Employee } from '../models/employee.model';
