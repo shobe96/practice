@@ -12,7 +12,6 @@ import { ActivatedRoute } from '@angular/router';
   providedIn: 'root'
 })
 export class DepartmentListFacadeService {
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _departmentService: DepartmentService = inject(DepartmentService);
 
   private _departmentSearch: Department = {}
@@ -27,7 +26,6 @@ export class DepartmentListFacadeService {
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
-  private _routeSubscription: Subscription | undefined;
 
   viewModel$: Observable<any> = combineLatest({
     departments: this._departments.asObservable(),
@@ -35,11 +33,6 @@ export class DepartmentListFacadeService {
     rowsPerPage: this._rowsPerPage.asObservable(),
     dialogOptions: this._dialogOptions.asObservable()
   });
-
-  unsubscribe() {
-    if (this._routeSubscription)
-      this._routeSubscription.unsubscribe();
-  }
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -85,24 +78,13 @@ export class DepartmentListFacadeService {
     else this.getAll(false);
   }
 
-  search(): void {
-    this._routeSubscription = this._activatedRoute.queryParams
-      .pipe(
-        switchMap((params: any) => {
-          this._departmentSearch = {
-            name: params.name
-          }
-          if (this._checkSearchFields()) {
-            return this._departmentService.search(this._departmentSearch, this._defaultPage);
-          } else {
-            return [];
-          }
-
-        })
-      )
-      .subscribe((value: DepartmentSearchResult) => {
+  search(params: Department): void {
+    this._departmentSearch = params;
+    if (this._checkSearchFields()) {
+      this._departmentService.search(this._departmentSearch, this._defaultPage).subscribe((value: DepartmentSearchResult) => {
         this._emitValues(value);
       });
+    }
   }
 
   private _emitValues(value: DepartmentSearchResult): void {

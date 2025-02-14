@@ -6,7 +6,6 @@ import { SkillSearchResult } from '../../models/skill-search-result.model';
 import { Skill } from '../../models/skill.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { SkillService } from './skill.service';
-import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -34,11 +33,6 @@ export class SkillListFacadeService {
   });
 
   private _skillService = inject(SkillService);
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
-
-  constructor() {
-    this.search();
-  }
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -74,24 +68,13 @@ export class SkillListFacadeService {
     else this.getAll(false);
   }
 
-  search(): void {
-    this._activatedRoute.queryParams
-      .pipe(
-        switchMap((params: any) => {
-          this._skillSearch = {
-            name: params.name
-          }
-          if (this._checkSearchFields()) {
-            return this._skillService.search(this._skillSearch, this._defaultPage);
-          } else {
-            return [];
-          }
-
-        })
-      )
-      .subscribe((value: SkillSearchResult) => {
+  search(params: Skill): void {
+    this._skillSearch = params;
+    if (this._checkSearchFields()) {
+      this._skillService.search(this._skillSearch, this._defaultPage).subscribe((value: SkillSearchResult) => {
         this._emitValues(value);
       });
+    }
   }
 
   setDialogParams(skill: Skill | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {

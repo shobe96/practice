@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DialogService } from 'primeng/dynamicdialog';
 import { EmployeeEditComponent } from '../employee-edit/employee-edit.component';
@@ -28,10 +28,11 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   constructor() {
     super();
-    this.employeeListFacade.search();
+    this._subscribeToRoute();
   }
 
   ngOnInit(): void {
@@ -42,7 +43,6 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
 
   ngOnDestroy(): void {
     this.unsubsribe();
-    this.employeeListFacade.unsubscribe();
   }
 
   addNew(): void {
@@ -137,5 +137,16 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
     this.employeeFormGroup.controls['surname'].setValue('');
     this.employeeFormGroup.controls['email'].setValue('');
     this._router.navigate([], { queryParams: { name: '', surname: '', email: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: Employee) => {
+          this.employeeListFacade.search(params);
+        });
   }
 }

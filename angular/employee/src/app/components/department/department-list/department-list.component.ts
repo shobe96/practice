@@ -4,7 +4,7 @@ import { Department } from '../../../models/department.model';
 import { PaginatorState } from 'primeng/paginator';
 import { DepartmentListFacadeService } from '../../../services/department/department-list.facade.service';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DepartmentEditComponent } from '../department-edit/department-edit.component';
@@ -28,10 +28,11 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   constructor() {
     super();
-    this.departmentListFacade.search();
+    this._subscribeToRoute();
   }
 
   ngOnInit(): void {
@@ -42,7 +43,6 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
 
   ngOnDestroy(): void {
     this.unsubsribe();
-    this.departmentListFacade.unsubscribe();
   }
 
   addNew(): void {
@@ -130,5 +130,16 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
   private _clearSearchFields() {
     this.departmentFormGroup.controls['name'].setValue('');
     this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: Department) => {
+          this.departmentListFacade.search(params);
+        });
   }
 }

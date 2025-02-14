@@ -4,7 +4,7 @@ import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Role } from '../../../models/role.model';
 import { RoleListFacadeService } from '../../../services/role/role-list.facade.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { RoleEditComponent } from '../role-edit/role-edit.component';
 import { ConfirmationService } from 'primeng/api';
@@ -27,9 +27,11 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   constructor() {
     super();
+    this._subscribeToRoute();
   }
 
   ngOnInit(): void {
@@ -90,9 +92,24 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
     this.roleListFacade.retrieve();
   }
 
-  showDeleteDialog(visible: boolean, id?: number): void {
-    this.roleId = id ?? 0;
-    this.roleListFacade.setDialogParams(null, 'Warning', false, visible, false);
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete role with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.roleListFacade.delete(id);
+      },
+    });
   }
 
   private _subscribeToFormGroup() {
@@ -119,6 +136,17 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
     this.roleFormGroup = this._formBuilder.group({
       name: ['']
     });
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: Role) => {
+          this.roleListFacade.search(params);
+        });
   }
 }
 

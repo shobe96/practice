@@ -4,7 +4,7 @@ import { Skill } from '../../../models/skill.model';
 import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { SkillListFacadeService } from '../../../services/skill/skill-list.facade.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { SkillEditComponent } from '../skill-edit/skill-edit.component';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -28,9 +28,11 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   constructor() {
     super();
+    this._subscribeToRoute();
   }
 
   ngOnInit(): void {
@@ -131,5 +133,16 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
     this.skillFormGroup = this._formBuilder.group({
       name: ['']
     });
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: Skill) => {
+          this.skillListFacade.search(params);
+        });
   }
 }

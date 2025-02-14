@@ -36,10 +36,6 @@ export class RoleListFacadeService {
   private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _roleService: RoleService = inject(RoleService);
 
-  constructor() {
-    this.search();
-  }
-
   clear(): void {
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
@@ -84,24 +80,13 @@ export class RoleListFacadeService {
     else this.getAll(false);
   }
 
-  search(): void {
-    this._activatedRoute.queryParams
-      .pipe(
-        switchMap((params: any) => {
-          this._roleSearch = {
-            name: params.name
-          }
-          if (this._checkSearchFields()) {
-            return this._roleService.search(this._roleSearch, this._defaultPage);
-          } else {
-            return [];
-          }
-
-        })
-      )
-      .subscribe((value: RoleSearchResult) => {
+  search(params: Role): void {
+    this._roleSearch = params;
+    if (this._checkSearchFields()) {
+      this._roleService.search(this._roleSearch, this._defaultPage).subscribe((value: RoleSearchResult) => {
         this._emitValues(value);
       });
+    }
   }
 
   private _emitValues(value: RoleSearchResult): void {

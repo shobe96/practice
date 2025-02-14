@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { User } from '../../../models/user.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PaginatorState } from 'primeng/paginator';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { UserListFacadeService } from '../../../services/user/user-list.facade.service';
@@ -24,9 +24,11 @@ export class UserListComponent extends SubscriptionCleaner implements OnInit, On
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   constructor() {
     super();
+    this._subscribeToRoute();
   }
 
   ngOnInit(): void {
@@ -100,5 +102,16 @@ export class UserListComponent extends SubscriptionCleaner implements OnInit, On
     this.userFormGroup = this._formBuilder.group({
       username: [''],
     });
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: User) => {
+          this.userListFacade.search(params);
+        });
   }
 }

@@ -1,13 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { UserSearchResult } from '../../models/user-search-result.model';
 import { User } from '../../models/user.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
-import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -34,13 +33,8 @@ export class UserListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _userService = inject(UserService);
   private _authService = inject(AuthService);
-
-  constructor() {
-    this.search();
-  }
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -76,24 +70,13 @@ export class UserListFacadeService {
     else this.getAll();
   }
 
-  search(): void {
-    this._activatedRoute.queryParams
-      .pipe(
-        switchMap((params: any) => {
-          this._userSearch = {
-            username: params.username
-          }
-          if (this._checkSearchFields()) {
-            return this._userService.search(this._userSearch, this._defaultPage);
-          } else {
-            return [];
-          }
-
-        })
-      )
-      .subscribe((value: UserSearchResult) => {
+  search(params: User): void {
+    this._userSearch = params;
+    if (this._checkSearchFields()) {
+      this._userService.search(this._userSearch, this._defaultPage).subscribe((value: UserSearchResult) => {
         this._emitValues(value);
       });
+    }
   }
 
   setDialogParams(user: User | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {

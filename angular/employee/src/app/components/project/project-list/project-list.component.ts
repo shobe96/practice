@@ -4,7 +4,7 @@ import { PaginatorState } from 'primeng/paginator';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
 import { ProjectListFacadeService } from '../../../services/project/project-list.facade.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditComponent } from '../project-edit/project-edit.component';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -28,9 +28,11 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   constructor() {
     super();
+    this._subscribeToRoute();
   }
 
   ngOnInit(): void {
@@ -137,5 +139,16 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
       name: [''],
       code: ['']
     });
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: Project) => {
+          this.projectListFacade.search(params);
+        });
   }
 }

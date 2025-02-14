@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { ProjectSearchResult } from '../../models/project-search-result.model';
 import { Project } from '../../models/project.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { ProjectService } from './project.service';
-import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -33,12 +32,7 @@ export class ProjectListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _projectService: ProjectService = inject(ProjectService);
-
-  constructor() {
-    this.search();
-  }
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -84,25 +78,13 @@ export class ProjectListFacadeService {
     else this.getAll(false);
   }
 
-  search(): void {
-    this._activatedRoute.queryParams
-      .pipe(
-        switchMap((params: any) => {
-          this._projectSearch = {
-            name: params.name,
-            code: params.code
-          }
-          if (this._checkSearchFields()) {
-            return this._projectService.search(this._projectSearch, this._defaultPage);
-          } else {
-            return [];
-          }
-
-        })
-      )
-      .subscribe((value: ProjectSearchResult) => {
+  search(params: Project): void {
+    this._projectSearch = params;
+    if (this._checkSearchFields()) {
+      this._projectService.search(this._projectSearch, this._defaultPage).subscribe((value: ProjectSearchResult) => {
         this._emitValues(value);
       });
+    }
   }
 
   private _emitValues(value: ProjectSearchResult): void {

@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, combineLatest, Observable, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeService } from './employee.service';
 import { PageEvent } from '../../models/page-event.model';
 import { EmployeeSearchResult } from '../../models/employee-search-result.model';
 import { rowsPerPage } from '../../shared/constants.model';
-import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -27,7 +26,6 @@ export class EmployeeListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
   private _employeeSearch: Employee = {}
-  private _routeSubscription: Subscription | undefined;
 
   viewModel$: Observable<any> = combineLatest({
     employees: this._employees.asObservable(),
@@ -36,7 +34,6 @@ export class EmployeeListFacadeService {
     dialogOptions: this._dialogOptions.asObservable()
   });
 
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _employeeService = inject(EmployeeService);
 
   clear(): void {
@@ -73,25 +70,13 @@ export class EmployeeListFacadeService {
     else this.getAll(false);
   }
 
-  search(): void {
-    this._routeSubscription = this._activatedRoute.queryParams
-      .pipe(
-        switchMap((params: any) => {
-          this._employeeSearch = {
-            name: params.name,
-            surname: params.surname,
-            email: params.email
-          }
-          if (this._checkSearchFields()) {
-            return this._employeeService.search(this._employeeSearch, this._defaultPage)
-          } else {
-            return [];
-          }
-        })
-      )
-      .subscribe((value: EmployeeSearchResult) => {
+  search(params: Employee): void {
+    this._employeeSearch = params;
+    if (this._checkSearchFields()) {
+      this._employeeService.search(this._employeeSearch, this._defaultPage).subscribe((value: EmployeeSearchResult) => {
         this._emitValues(value);
       });
+    }
   }
 
   setDialogParams(employee: Employee | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
@@ -102,11 +87,6 @@ export class EmployeeListFacadeService {
     dialogOptions.deleteVisible = deleteVisible;
     dialogOptions.employee = employee ?? {};
     this._dialogOptions.next(dialogOptions);
-  }
-
-  unsubscribe() {
-    if (this._routeSubscription)
-      this._routeSubscription.unsubscribe();
   }
 
   private _checkSearchFields(): boolean {
