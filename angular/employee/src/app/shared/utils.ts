@@ -4,10 +4,11 @@ export function buildSearchParams(object: any): string {
   let params: string = "";
   const keys = Object.keys(object);
   for (let i = 0; i < keys.length; i++) {
-    let value = object[keys[i]];
+    const value = object[keys[i]];
+    const nextValue = object[keys[i + 1]];
     if (value) {
       params += `${keys[i]}=${value}`;
-      if ((i + 1) !== keys.length) {
+      if ((i + 1) !== keys.length && nextValue) {
         params += `&`;
       }
     }
