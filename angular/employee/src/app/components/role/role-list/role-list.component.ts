@@ -36,7 +36,7 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
 
   ngOnInit(): void {
     this._buildForm();
-    this.roleListFacade.getAll(false);
+    this.roleListFacade.retrieve();
     this._subscribeToFormGroup();
   }
 
@@ -75,13 +75,6 @@ export class RoleListComponent extends SubscriptionCleaner implements OnInit, On
       baseZIndex: 10000,
       maximizable: true
     });
-  }
-
-  handleCancel(event: any): void {
-    this.roleListFacade.setDialogParams(null, '', event.visible, false, false);
-    if (event.save) {
-      this.refresh();
-    }
   }
 
   onPageChange(event: PaginatorState): void {

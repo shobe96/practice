@@ -33,7 +33,7 @@ export class UserListComponent extends SubscriptionCleaner implements OnInit, On
 
   ngOnInit(): void {
     this._buildForm();
-    this.userListFacade.getAll();
+    this.userListFacade.retrieve();
     this._subscribeToFormGroup();
   }
 

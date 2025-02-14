@@ -23,14 +23,12 @@ export class UserListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
   private _userSearch: User = {}
 
   viewModel$: Observable<any> = combineLatest({
     users: this._users.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable(),
-    dialogOptions: this._dialogOptions.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable()
   });
 
   private _userService = inject(UserService);
@@ -39,22 +37,15 @@ export class UserListFacadeService {
   clear(): void {
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
-    this.getAll();
+    this._getAll();
   }
 
   delete(id: number | null): void {
     if (id) {
       this._authService.delete(id).subscribe(() => {
         this.retrieve();
-        this.setDialogParams(null, 'Warning', false, false, false);
       })
     }
-  }
-
-  getAll(): void {
-    this._userService.getAllUsers(this._defaultPage).subscribe((value: UserSearchResult) => {
-      this._emitValues(value);
-    });
   }
 
   onPageChange(event: PaginatorState): void {
@@ -67,7 +58,7 @@ export class UserListFacadeService {
   retrieve(): void {
     if (this._checkSearchFields())
       this._userService.search(this._userSearch, this._defaultPage).subscribe((value: UserSearchResult) => this._emitValues(value));
-    else this.getAll();
+    else this._getAll();
   }
 
   search(params: User): void {
@@ -77,16 +68,6 @@ export class UserListFacadeService {
         this._emitValues(value);
       });
     }
-  }
-
-  setDialogParams(user: User | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
-    const dialogOptions: any = {};
-    dialogOptions.disable = disable;
-    dialogOptions.modalTitle = modalTitle;
-    dialogOptions.editVisible = editVisible;
-    dialogOptions.deleteVisible = deleteVisible;
-    dialogOptions.user = user ?? {};
-    this._dialogOptions.next(dialogOptions);
   }
 
   private _emitValues(value: UserSearchResult): void {
@@ -101,5 +82,11 @@ export class UserListFacadeService {
 
   private _checkSearchFields(): boolean {
     return Boolean(this._userSearch.username);
+  }
+
+  private _getAll(): void {
+    this._userService.getAllUsers(this._defaultPage).subscribe((value: UserSearchResult) => {
+      this._emitValues(value);
+    });
   }
 }

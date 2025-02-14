@@ -4,7 +4,6 @@ import { Project } from '../../../models/project.model';
 import { ConfirmationService } from 'primeng/api';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectDetailsFacadeService } from '../../../services/project/project-details.facade.service';
-import { DialogService } from 'primeng/dynamicdialog';
 
 @Component({
   selector: 'app-project-details',
@@ -21,7 +20,6 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
   projectDetailsFacade: ProjectDetailsFacadeService = inject(ProjectDetailsFacadeService);
   private _route: ActivatedRoute = inject(ActivatedRoute);
   private _router: Router = inject(Router)
-  private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
   constructor() {

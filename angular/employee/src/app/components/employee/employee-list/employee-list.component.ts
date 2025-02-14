@@ -74,13 +74,6 @@ export class EmployeeListComponent extends SubscriptionCleaner implements OnInit
     });
   }
 
-  handleCancel(event: any): void {
-    this.employeeListFacade.setDialogParams(null, '', event.visible, false, false);
-    if (event.save) {
-      this.refresh();
-    }
-  }
-
   onPageChange(event: PaginatorState): void {
     this.employeeListFacade.onPageChange(event);
   }

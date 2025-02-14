@@ -11,11 +11,9 @@ import { fireToast } from '../../shared/utils';
 export class ProjectDetailsFacadeService {
 
   private _project: BehaviorSubject<Project> = new BehaviorSubject<Project>({});
-  private _showDialog: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
   viewModel$: Observable<any> = combineLatest({
-    project: this._project.asObservable(),
-    showDialog: this._showDialog.asObservable()
+    project: this._project.asObservable()
   });
 
   private _projectService: ProjectService = inject(ProjectService)
@@ -27,10 +25,6 @@ export class ProjectDetailsFacadeService {
     });
   }
 
-  showDialog(visible: boolean) {
-    this._showDialog.next(visible);
-  }
-
   unassignEmployee(employeeId: number, project: Project) {
     this._projectService.unassignEmployee(employeeId, project)
       .subscribe(
@@ -40,7 +34,6 @@ export class ProjectDetailsFacadeService {
           });
           fireToast('success', 'Success', 'Employee unassigned successfully', this._messageService);
           this._project.next(project);
-          this._showDialog.next(false);
         }
       );
   }

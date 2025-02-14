@@ -37,7 +37,7 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
 
   ngOnInit(): void {
     this._buildForm();
-    this.projectListFacade.getAll(false);
+    this.projectListFacade.retrieve();
     this._subscribeToFormGroup();
   }
 
@@ -70,19 +70,11 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
       width: '35vw',
       contentStyle: { overflow: 'auto' },
       inputValues: {
-        project: project,
-        disable: disable
+        project: project
       },
       baseZIndex: 10000,
       maximizable: true
     });
-  }
-
-  handleCancel(event: any): void {
-    this.projectListFacade.setDialogParams(null, '', event.visible, false, false);
-    if (event.save) {
-      this.refresh();
-    }
   }
 
   onPageChange(event: PaginatorState): void {

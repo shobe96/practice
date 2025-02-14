@@ -17,7 +17,6 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
 
   projectFormGroup!: FormGroup;
 
-  @Input() id: number | null = null;
   @Input() project: Project = {};
 
   projectEditFacade: ProjectEditFacadeService = inject(ProjectEditFacadeService);

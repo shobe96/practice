@@ -25,44 +25,25 @@ export class DepartmentListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
   viewModel$: Observable<any> = combineLatest({
     departments: this._departments.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable(),
-    dialogOptions: this._dialogOptions.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable()
   });
 
   clear(): void {
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
-    this.getAll(false);
-  }
-
-  getAll(all: boolean): void {
-    this._departmentService.getAllDepartments(all, this._defaultPage).subscribe((value: DepartmentSearchResult) => {
-      this._emitValues(value);
-    });
+    this._getAll(false);
   }
 
   delete(id: number | null): void {
     if (id) {
       this._departmentService.delete(id).subscribe(() => {
         this.retrieve();
-        this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
-  }
-
-  setDialogParams(department: Department | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
-    const dialogOptions: any = {};
-    dialogOptions.disable = disable;
-    dialogOptions.modalTitle = modalTitle;
-    dialogOptions.editVisible = editVisible;
-    dialogOptions.deleteVisible = deleteVisible;
-    dialogOptions.department = department ?? {};
-    this._dialogOptions.next(dialogOptions);
   }
 
   onPageChange(event: PaginatorState): void {
@@ -75,7 +56,7 @@ export class DepartmentListFacadeService {
   retrieve(): void {
     if (this._checkSearchFields())
       this._departmentService.search(this._departmentSearch, this._defaultPage).subscribe((value: DepartmentSearchResult) => this._emitValues(value));
-    else this.getAll(false);
+    else this._getAll(false);
   }
 
   search(params: Department): void {
@@ -99,5 +80,11 @@ export class DepartmentListFacadeService {
 
   private _checkSearchFields(): boolean {
     return Boolean(this._departmentSearch.name);
+  }
+
+  private _getAll(all: boolean): void {
+    this._departmentService.getAllDepartments(all, this._defaultPage).subscribe((value: DepartmentSearchResult) => {
+      this._emitValues(value);
+    });
   }
 }

@@ -23,13 +23,11 @@ export class ProjectListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
   viewModel$: Observable<any> = combineLatest({
     projects: this._projects.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable(),
-    dialogOptions: this._dialogOptions.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable()
   });
 
   private _projectService: ProjectService = inject(ProjectService);
@@ -37,32 +35,15 @@ export class ProjectListFacadeService {
   clear(): void {
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
-    this.getAll(false);
-  }
-
-  getAll(all: boolean): void {
-    this._projectService.getAllProjects(all, this._defaultPage).subscribe((value: ProjectSearchResult) => {
-      this._emitValues(value);
-    });
+    this._getAll(false);
   }
 
   delete(id: number | null): void {
     if (id) {
       this._projectService.delete(id).subscribe(() => {
         this.retrieve();
-        this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
-  }
-
-  setDialogParams(project: Project | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
-    const dialogOptions: any = {};
-    dialogOptions.disable = disable;
-    dialogOptions.modalTitle = modalTitle;
-    dialogOptions.editVisible = editVisible;
-    dialogOptions.deleteVisible = deleteVisible;
-    dialogOptions.project = project ?? {};
-    this._dialogOptions.next(dialogOptions);
   }
 
   onPageChange(event: PaginatorState): void {
@@ -75,7 +56,7 @@ export class ProjectListFacadeService {
   retrieve(): void {
     if (this._checkSearchFields())
       this._projectService.search(this._projectSearch, this._defaultPage).subscribe((value: ProjectSearchResult) => this._emitValues(value));
-    else this.getAll(false);
+    else this._getAll(false);
   }
 
   search(params: Project): void {
@@ -99,5 +80,11 @@ export class ProjectListFacadeService {
 
   private _checkSearchFields(): boolean {
     return Boolean(this._projectSearch.name || this._projectSearch.code);
+  }
+
+  private _getAll(all: boolean): void {
+    this._projectService.getAllProjects(all, this._defaultPage).subscribe((value: ProjectSearchResult) => {
+      this._emitValues(value);
+    });
   }
 }

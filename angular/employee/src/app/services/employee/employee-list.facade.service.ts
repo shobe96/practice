@@ -12,8 +12,6 @@ import { rowsPerPage } from '../../shared/constants.model';
 })
 export class EmployeeListFacadeService {
 
-
-
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -24,14 +22,12 @@ export class EmployeeListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
   private _employeeSearch: Employee = {}
 
   viewModel$: Observable<any> = combineLatest({
     employees: this._employees.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable(),
-    dialogOptions: this._dialogOptions.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable()
   });
 
   private _employeeService = inject(EmployeeService);
@@ -39,22 +35,15 @@ export class EmployeeListFacadeService {
   clear(): void {
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
-    this.getAll(false);
+    this._getAll(false);
   }
 
   delete(id: number | null): void {
     if (id) {
       this._employeeService.delete(id).subscribe(() => {
         this.retrieve();
-        this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
-  }
-
-  getAll(all: boolean): void {
-    this._employeeService.getAllEmployees(all, this._defaultPage).subscribe((value: EmployeeSearchResult) => {
-      this._emitValues(value);
-    });
   }
 
   onPageChange(event: PaginatorState): void {
@@ -67,7 +56,7 @@ export class EmployeeListFacadeService {
   retrieve(): void {
     if (this._checkSearchFields())
       this._employeeService.search(this._employeeSearch, this._defaultPage).subscribe((value: EmployeeSearchResult) => this._emitValues(value));
-    else this.getAll(false);
+    else this._getAll(false);
   }
 
   search(params: Employee): void {
@@ -77,16 +66,6 @@ export class EmployeeListFacadeService {
         this._emitValues(value);
       });
     }
-  }
-
-  setDialogParams(employee: Employee | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
-    const dialogOptions: any = {};
-    dialogOptions.disable = disable;
-    dialogOptions.modalTitle = modalTitle;
-    dialogOptions.editVisible = editVisible;
-    dialogOptions.deleteVisible = deleteVisible;
-    dialogOptions.employee = employee ?? {};
-    this._dialogOptions.next(dialogOptions);
   }
 
   private _checkSearchFields(): boolean {
@@ -103,5 +82,11 @@ export class EmployeeListFacadeService {
       this._defaultPage.pageCount = value.size;
       this._page.next(this._defaultPage);
     }
+  }
+
+  private _getAll(all: boolean): void {
+    this._employeeService.getAllEmployees(all, this._defaultPage).subscribe((value: EmployeeSearchResult) => {
+      this._emitValues(value);
+    });
   }
 }

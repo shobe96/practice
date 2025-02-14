@@ -24,47 +24,27 @@ export class RoleListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
 
   viewModel$: Observable<any> = combineLatest({
     roles: this._roles.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable(),
-    dialogOptions: this._dialogOptions.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable()
   });
 
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
   private _roleService: RoleService = inject(RoleService);
 
   clear(): void {
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
-    this.getAll(false);
-  }
-
-  getAll(all: boolean): void {
-    this._roleService.getAllRoles(all, this._defaultPage).subscribe((value: RoleSearchResult) => {
-      this._emitValues(value);
-    });
+    this._getAll(false);
   }
 
   delete(id: number | null): void {
     if (id) {
       this._roleService.delete(id).subscribe(() => {
         this.retrieve();
-        this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
-  }
-
-  setDialogParams(role: Role | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
-    const dialogOptions: any = {};
-    dialogOptions.disable = disable;
-    dialogOptions.modalTitle = modalTitle;
-    dialogOptions.editVisible = editVisible;
-    dialogOptions.deleteVisible = deleteVisible;
-    dialogOptions.role = role ?? {};
-    this._dialogOptions.next(dialogOptions);
   }
 
   onPageChange(event: PaginatorState): void {
@@ -77,7 +57,7 @@ export class RoleListFacadeService {
   retrieve(): void {
     if (this._checkSearchFields())
       this._roleService.search(this._roleSearch, this._defaultPage).subscribe((value: RoleSearchResult) => this._emitValues(value));
-    else this.getAll(false);
+    else this._getAll(false);
   }
 
   search(params: Role): void {
@@ -101,5 +81,11 @@ export class RoleListFacadeService {
 
   private _checkSearchFields(): boolean {
     return Boolean(this._roleSearch.name);
+  }
+
+  private _getAll(all: boolean): void {
+    this._roleService.getAllRoles(all, this._defaultPage).subscribe((value: RoleSearchResult) => {
+      this._emitValues(value);
+    });
   }
 }

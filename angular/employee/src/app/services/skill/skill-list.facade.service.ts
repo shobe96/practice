@@ -22,14 +22,12 @@ export class SkillListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private _dialogOptions: BehaviorSubject<any> = new BehaviorSubject<any>({});
   private _skillSearch: Skill = {}
 
   viewModel$: Observable<any> = combineLatest({
     skills: this._skills.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable(),
-    dialogOptions: this._dialogOptions.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable()
   });
 
   private _skillService = inject(SkillService);
@@ -37,22 +35,15 @@ export class SkillListFacadeService {
   clear(): void {
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
-    this.getAll(false);
+    this._getAll(false);
   }
 
   delete(id: number | null): void {
     if (id) {
       this._skillService.delete(id).subscribe(() => {
         this.retrieve();
-        this.setDialogParams(null, 'Warning', false, false, false);
       });
     }
-  }
-
-  getAll(all: boolean): void {
-    this._skillService.getAllSkills(all, this._defaultPage).subscribe((value: SkillSearchResult) => {
-      this._emitValues(value);
-    });
   }
 
   onPageChange(event: PaginatorState): void {
@@ -65,7 +56,7 @@ export class SkillListFacadeService {
   retrieve(): void {
     if (this._checkSearchFields())
       this._skillService.search(this._skillSearch, this._defaultPage).subscribe((value: SkillSearchResult) => this._emitValues(value));
-    else this.getAll(false);
+    else this._getAll(false);
   }
 
   search(params: Skill): void {
@@ -75,16 +66,6 @@ export class SkillListFacadeService {
         this._emitValues(value);
       });
     }
-  }
-
-  setDialogParams(skill: Skill | null, modalTitle: string, editVisible: boolean, deleteVisible: boolean, disable: boolean): void {
-    const dialogOptions: any = {};
-    dialogOptions.disable = disable;
-    dialogOptions.modalTitle = modalTitle;
-    dialogOptions.editVisible = editVisible;
-    dialogOptions.deleteVisible = deleteVisible;
-    dialogOptions.skill = skill ?? {};
-    this._dialogOptions.next(dialogOptions);
   }
 
   private _emitValues(value: SkillSearchResult): void {
@@ -99,5 +80,11 @@ export class SkillListFacadeService {
 
   private _checkSearchFields(): boolean {
     return Boolean(this._skillSearch.name);
+  }
+
+  private _getAll(all: boolean): void {
+    this._skillService.getAllSkills(all, this._defaultPage).subscribe((value: SkillSearchResult) => {
+      this._emitValues(value);
+    });
   }
 }

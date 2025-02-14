@@ -37,7 +37,7 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
 
   ngOnInit(): void {
     this._buildForm();
-    this.departmentListFacade.getAll(false);
+    this.departmentListFacade.retrieve();
     this._subscribeToFormGroup();
   }
 

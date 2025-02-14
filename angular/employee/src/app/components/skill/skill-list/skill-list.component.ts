@@ -37,7 +37,7 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
 
   ngOnInit(): void {
     this._buildForm();
-    this.skillListFacade.getAll(false);
+    this.skillListFacade.retrieve();
     this._subscribeToFormGroup();
   }
 
@@ -72,13 +72,6 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
       baseZIndex: 10000,
       maximizable: true
     });
-  }
-
-  handleCancel(event: any): void {
-    this.skillListFacade.setDialogParams(null, '', event.visible, false, false);
-    if (event.save) {
-      this.refresh();
-    }
   }
 
   onPageChange(event: PaginatorState): void {
