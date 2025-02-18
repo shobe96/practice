@@ -8,11 +8,11 @@ import { EmployeeSearchResult } from '../../models/employee-search-result.model'
 import { RoleService } from '../role/role.service';
 import { Role } from '../../models/role.model';
 import { RoleSearchResult } from '../../models/role-search-result.model';
-import { MenuItem, MessageService, PrimeIcons } from 'primeng/api';
+import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AuthResponse } from '../../models/auth-response.model';
 import { AuthRequest } from '../../models/auth-request.model';
-import { fireToast } from '../../shared/utils';
-import { enumRoles, enumSeverity } from '../../shared/constants.model';
+import { enumRoles } from '../../shared/constants.model';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -23,7 +23,7 @@ export class AuthFacadeService {
   private _authService: AuthService = inject(AuthService);
   private _roleService: RoleService = inject(RoleService);
   private _employeeService: EmployeeService = inject(EmployeeService);
-  private _messageService: MessageService = inject(MessageService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _isLoggin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
@@ -129,14 +129,14 @@ export class AuthFacadeService {
       localStorage.setItem('authResponse', JSON.stringify(value));
       this._autoLogout(value.expiration ?? 0);
       this._updateMenuItems(true, value.roles);
-      fireToast(enumSeverity.success, 'Success', `Welcome ${value.username}`, this._messageService);
+      this._customMessageService.showSuccess('Success', `Welcome ${value.username}`);
       this._router.navigate(["/home"]);
     });
   }
 
   registerUser(authRequest: AuthRequest) {
     this._authService.registerUser(authRequest).subscribe(() => {
-      fireToast(enumSeverity.success, 'Success', 'User registered', this._messageService);
+      this._customMessageService.showSuccess('Success', 'User registered');
       this._router.navigate(["user/list"]);
     });
   }

@@ -1,10 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { Observable, map } from 'rxjs';
 import { Role } from '../../models/role.model';
-import { enumSeverity } from '../../shared/constants.model';
-import { fireToast } from '../../shared/utils';
 import { RoleService } from './role.service';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +10,7 @@ import { RoleService } from './role.service';
 export class RoleEditFacadeService {
 
   private _roleService: RoleService = inject(RoleService);
-  private _messageService: MessageService = inject(MessageService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   submit(role: Role): Observable<Role> {
     const subscription = !role.id ?
@@ -20,7 +18,7 @@ export class RoleEditFacadeService {
       this._roleService.update(role);
     return subscription.pipe(map((value: Role) => {
       if (value) {
-        fireToast(enumSeverity.success, 'Success', 'Action perforemd successfully', this._messageService);
+        this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
         return value;
       } else {
         return {};

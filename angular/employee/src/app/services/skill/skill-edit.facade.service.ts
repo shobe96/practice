@@ -1,10 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
 import { Skill } from '../../models/skill.model';
-import { enumSeverity } from '../../shared/constants.model';
-import { fireToast } from '../../shared/utils';
 import { SkillService } from './skill.service';
-import { MessageService } from 'primeng/api';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +10,7 @@ import { MessageService } from 'primeng/api';
 export class SkillEditFacadeService {
 
   private _skillService: SkillService = inject(SkillService);
-  private _messageService: MessageService = inject(MessageService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   submit(skill: Skill): Observable<Skill> {
     const subscription = !skill.id ?
@@ -20,7 +18,7 @@ export class SkillEditFacadeService {
       this._skillService.update(skill);
     return subscription.pipe(map((value: Skill) => {
       if (value) {
-        fireToast(enumSeverity.success, 'Success', 'Action perforemd successfully', this._messageService);
+        this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
         return value;
       } else {
         return {};

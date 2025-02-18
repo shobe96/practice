@@ -1,10 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { map, Observable } from 'rxjs';
 import { Department } from '../../models/department.model';
-import { enumSeverity } from '../../shared/constants.model';
-import { fireToast } from '../../shared/utils';
 import { DepartmentService } from './department.service';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +10,7 @@ import { DepartmentService } from './department.service';
 export class DepartmentEditFacadeService {
 
   private _departmentService = inject(DepartmentService);
-  private _messageService: MessageService = inject(MessageService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   submit(department: Department): Observable<Department> {
     const subscription = !department.id ?
@@ -20,7 +18,7 @@ export class DepartmentEditFacadeService {
       this._departmentService.update(department);
     return subscription.pipe(map((value: Department) => {
       if (value) {
-        fireToast(enumSeverity.success, 'Success', 'Action perforemd successfully', this._messageService);
+        this._customMessageService.showSuccess('Success', 'Action perforemd successfully')
         return value;
       } else {
         return {};

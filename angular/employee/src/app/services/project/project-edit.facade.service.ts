@@ -1,18 +1,16 @@
 import { inject, Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { Department } from '../../models/department.model';
 import { Employee } from '../../models/employee.model';
 import { SkillSearchResult } from '../../models/skill-search-result.model';
 import { Skill } from '../../models/skill.model';
-import { enumSeverity } from '../../shared/constants.model';
-import { fireToast } from '../../shared/utils';
 import { DepartmentService } from '../department/department.service';
 import { EmployeeService } from '../employee/employee.service';
 import { SkillService } from '../skill/skill.service';
 import { ProjectService } from './project.service';
 import { Project } from '../../models/project.model';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,7 +31,7 @@ export class ProjectEditFacadeService {
   private _skillService: SkillService = inject(SkillService);
   private _departmentService: DepartmentService = inject(DepartmentService);
   private _projectService: ProjectService = inject(ProjectService);
-  private _messageService: MessageService = inject(MessageService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   submit(project: Project): Observable<Project> {
     const subscription = !project.id ?
@@ -41,7 +39,7 @@ export class ProjectEditFacadeService {
       this._projectService.update(project);
     return subscription.pipe(map((value: Project) => {
       if (value) {
-        fireToast(enumSeverity.success, 'Success', 'Action perforemd successfully', this._messageService);
+        this._customMessageService.showSuccess('Success', 'Action perforemd successfully')
         return value;
       } else {
         return {};

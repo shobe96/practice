@@ -8,9 +8,7 @@ import { Skill } from '../../models/skill.model';
 import { Department } from '../../models/department.model';
 import { SkillSearchResult } from '../../models/skill-search-result.model';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
-import { MessageService } from 'primeng/api';
-import { fireToast } from '../../shared/utils';
-import { enumSeverity } from '../../shared/constants.model';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -28,7 +26,7 @@ export class EmployeeEditFacadeService {
   private _employeeService = inject(EmployeeService);
   private _skillService: SkillService = inject(SkillService);
   private _departmentService: DepartmentService = inject(DepartmentService);
-  private _messageService: MessageService = inject(MessageService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   submit(employee: Employee): Observable<Employee> {
     const subscription = !employee.id ?
@@ -36,7 +34,7 @@ export class EmployeeEditFacadeService {
       this._employeeService.update(employee);
     return subscription.pipe(map((value: Employee) => {
       if (value) {
-        fireToast(enumSeverity.success, 'Success', 'Action perforemd successfully', this._messageService);
+        this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
         return value;
       } else {
         return {};

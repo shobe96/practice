@@ -22,8 +22,4 @@ export function buildPaginationParams(page?: PageEvent): string {
   return queryParams;
 }
 
-export function fireToast(severity: string, summary: string, detail: string, messageService: any): void {
-  messageService.add({ severity: severity, summary: summary, detail: detail });
-}
-
 

@@ -1,9 +1,8 @@
 import { inject, Injectable } from '@angular/core';
-import { MessageService } from 'primeng/api';
 import { ProjectService } from './project.service';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { Project } from '../../models/project.model';
-import { fireToast } from '../../shared/utils';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,7 +16,7 @@ export class ProjectDetailsFacadeService {
   });
 
   private _projectService: ProjectService = inject(ProjectService)
-  private _messageService: MessageService = inject(MessageService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   getProject(id: number) {
     this._projectService.getProject(id).subscribe((value: Project) => {
@@ -32,7 +31,7 @@ export class ProjectDetailsFacadeService {
           project.employees = project.employees?.filter(val => {
             return val.id !== employeeId;
           });
-          fireToast('success', 'Success', 'Employee unassigned successfully', this._messageService);
+          this._customMessageService.showSuccess('Success', 'Employee unassigned successfully');
           this._project.next(project);
         }
       );
