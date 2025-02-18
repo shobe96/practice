@@ -1,0 +1,11 @@
+.auth-form {
+  flex-direction: column;
+  display: flex;
+  gap: 15px;
+
+  .password-input {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}
