@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { Skill } from '../../models/skill.model';
 import { SkillService } from './skill.service';
 import { CustomMessageService } from '../custom-message.service';
@@ -16,13 +16,15 @@ export class SkillEditFacadeService {
     const subscription = !skill.id ?
       this._skillService.save(skill) :
       this._skillService.update(skill);
-    return subscription.pipe(map((value: Skill) => {
-      if (value) {
-        this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
-        return value;
-      } else {
-        return {};
-      }
-    }));
+    return subscription.pipe(
+      map((value: Skill) => {
+        if (value) {
+          this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
+          return value;
+        } else {
+          return {};
+        }
+      }),
+      catchError((err) => { throw err.error.message }));
   }
 }

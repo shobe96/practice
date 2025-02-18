@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { Observable, map } from 'rxjs';
+import { Observable, catchError, map } from 'rxjs';
 import { Role } from '../../models/role.model';
 import { RoleService } from './role.service';
 import { CustomMessageService } from '../custom-message.service';
@@ -16,13 +16,15 @@ export class RoleEditFacadeService {
     const subscription = !role.id ?
       this._roleService.save(role) :
       this._roleService.update(role);
-    return subscription.pipe(map((value: Role) => {
-      if (value) {
-        this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
-        return value;
-      } else {
-        return {};
-      }
-    }));
+    return subscription.pipe(
+      map((value: Role) => {
+        if (value) {
+          this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
+          return value;
+        } else {
+          return {};
+        }
+      }),
+      catchError((err) => { throw err.error.message }));
   }
 }

@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { map, Observable } from 'rxjs';
+import { catchError, map, Observable } from 'rxjs';
 import { Department } from '../../models/department.model';
 import { DepartmentService } from './department.service';
 import { CustomMessageService } from '../custom-message.service';
@@ -16,13 +16,15 @@ export class DepartmentEditFacadeService {
     const subscription = !department.id ?
       this._departmentService.save(department) :
       this._departmentService.update(department);
-    return subscription.pipe(map((value: Department) => {
-      if (value) {
-        this._customMessageService.showSuccess('Success', 'Action perforemd successfully')
-        return value;
-      } else {
-        return {};
-      }
-    }));
+    return subscription.pipe(
+      map((value: Department) => {
+        if (value) {
+          this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
+          return value;
+        } else {
+          return {};
+        }
+      }),
+      catchError(err => { throw err.error.message }));
   }
 }

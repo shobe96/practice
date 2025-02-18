@@ -5,6 +5,7 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { EmployeeEditFacadeService } from '../../../services/employee/employee-edit.facade.service';
 import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-employee-edit',
@@ -23,6 +24,7 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   constructor() {
     super();
@@ -43,14 +45,19 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   }
 
   submit() {
-    this.employee = this._getFormValues();
-    this.employeeEditFacade.submit(this.employee)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe((value: Employee) => {
+    const employeeObserver = {
+      next: (value: Employee) => {
         if (Object.keys(value)) {
           this.cancel();
         }
-      });
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this.employee = this._getFormValues();
+    this.employeeEditFacade.submit(this.employee)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe(employeeObserver);
   }
 
   private _buildForm() {

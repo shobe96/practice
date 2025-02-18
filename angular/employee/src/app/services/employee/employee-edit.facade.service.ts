@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from './employee.service';
 import { Employee } from '../../models/employee.model';
-import { BehaviorSubject, combineLatest, map, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, map, Observable } from 'rxjs';
 import { SkillService } from '../skill/skill.service';
 import { DepartmentService } from '../department/department.service';
 import { Skill } from '../../models/skill.model';
@@ -32,14 +32,16 @@ export class EmployeeEditFacadeService {
     const subscription = !employee.id ?
       this._employeeService.save(employee) :
       this._employeeService.update(employee);
-    return subscription.pipe(map((value: Employee) => {
-      if (value) {
-        this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
-        return value;
-      } else {
-        return {};
-      }
-    }));
+    return subscription.pipe(
+      map((value: Employee) => {
+        if (value) {
+          this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
+          return value;
+        } else {
+          return {};
+        }
+      }),
+      catchError(err => { throw err.error.message }));
   }
 
   loadSelectOptions(): void {
@@ -48,18 +50,28 @@ export class EmployeeEditFacadeService {
   }
 
   private _getSkills(): void {
-    this._skillService.getAllSkills(true).subscribe((value: SkillSearchResult) => {
-      if (value.skills) {
-        this._skills.next(value.skills);
-      }
-    })
+    const skillsObserver = {
+      next: (value: SkillSearchResult) => {
+        if (value.skills) {
+          this._skills.next(value.skills);
+        }
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._skillService.getAllSkills(true).subscribe(skillsObserver)
   }
 
   private _getDepartments(): void {
-    this._departmentService.getAllDepartments(true).subscribe((value: DepartmentSearchResult) => {
-      if (value.departments) {
-        this._departments.next(value.departments);
-      }
-    })
+    const departmentsObserver = {
+      next: (value: DepartmentSearchResult) => {
+        if (value.departments) {
+          this._departments.next(value.departments);
+        }
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._departmentService.getAllDepartments(true).subscribe(departmentsObserver);
   }
 }

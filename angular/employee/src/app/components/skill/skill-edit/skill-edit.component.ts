@@ -5,6 +5,7 @@ import { Skill } from '../../../models/skill.model';
 import { SkillEditFacadeService } from '../../../services/skill/skill-edit.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-skill-edit',
@@ -23,6 +24,7 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
   skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   ngOnInit(): void {
     this._buildForm();
@@ -38,14 +40,19 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
   }
 
   submit() {
-    this.skill = this._getFormValues();
-    this.skillEditFacade.submit(this.skill)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe((value: Skill) => {
+    const skillObserver = {
+      next: (value: Skill) => {
         if (Object.keys(value)) {
           this.cancel();
         }
-      });
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this.skill = this._getFormValues();
+    this.skillEditFacade.submit(this.skill)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe(skillObserver);
   }
 
   private _setValuesToFields() {

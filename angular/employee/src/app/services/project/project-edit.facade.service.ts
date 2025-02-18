@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, map } from 'rxjs';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { Department } from '../../models/department.model';
 import { Employee } from '../../models/employee.model';
@@ -37,14 +37,17 @@ export class ProjectEditFacadeService {
     const subscription = !project.id ?
       this._projectService.save(project) :
       this._projectService.update(project);
-    return subscription.pipe(map((value: Project) => {
-      if (value) {
-        this._customMessageService.showSuccess('Success', 'Action perforemd successfully')
-        return value;
-      } else {
-        return {};
-      }
-    }))
+    return subscription.pipe(
+      map((value: Project) => {
+        if (value) {
+          this._customMessageService.showSuccess('Success', 'Action perforemd successfully')
+          return value;
+        } else {
+          return {};
+        }
+      }),
+      catchError((err) => { throw err.error.message })
+    )
   }
 
   loadSelectOptions(): void {

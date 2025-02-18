@@ -5,6 +5,7 @@ import { Project } from '../../../models/project.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditFacadeService } from '../../../services/project/project-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-project-edit',
@@ -22,6 +23,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
   projectEditFacade: ProjectEditFacadeService = inject(ProjectEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   constructor() {
     super();
@@ -54,14 +56,19 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
   }
 
   submit() {
-    this.project = this._getFormValues();
-    this.projectEditFacade.submit(this.project)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe((value: Project) => {
+    const projectObserver = {
+      next: (value: Project) => {
         if (Object.keys(value)) {
           this.cancel();
         }
-      });
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this.project = this._getFormValues();
+    this.projectEditFacade.submit(this.project)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe(projectObserver);
   }
 
   getEmployees(_event: any) {

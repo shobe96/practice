@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ProjectService } from './project.service';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
 import { Project } from '../../models/project.model';
 import { CustomMessageService } from '../custom-message.service';
 
@@ -19,21 +19,35 @@ export class ProjectDetailsFacadeService {
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   getProject(id: number) {
-    this._projectService.getProject(id).subscribe((value: Project) => {
-      this._project.next(value);
-    });
+    const projectObserver = {
+      next: (value: Project) => {
+        this._project.next(value);
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._projectService.getProject(id)
+      .pipe(
+        catchError(
+          (err) => { throw err.error.message }
+        )
+      ).subscribe(projectObserver);
   }
 
   unassignEmployee(employeeId: number, project: Project) {
+    const unassignObserver = {
+      next: () => {
+        project.employees = project.employees?.filter(val => {
+          return val.id !== employeeId;
+        });
+        this._customMessageService.showSuccess('Success', 'Employee unassigned successfully');
+        this._project.next(project);
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     this._projectService.unassignEmployee(employeeId, project)
-      .subscribe(
-        () => {
-          project.employees = project.employees?.filter(val => {
-            return val.id !== employeeId;
-          });
-          this._customMessageService.showSuccess('Success', 'Employee unassigned successfully');
-          this._project.next(project);
-        }
-      );
+      .pipe(catchError((err) => { throw err.error.message }))
+      .subscribe(unassignObserver);
   }
 }

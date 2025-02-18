@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../employee/employee.service';
-import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, Observable, of } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../models/employee.model';
@@ -125,20 +125,34 @@ export class AuthFacadeService {
   }
 
   loginUser(authRequest: AuthRequest) {
-    this._authService.login(authRequest).subscribe((value: AuthResponse) => {
-      localStorage.setItem('authResponse', JSON.stringify(value));
-      this._autoLogout(value.expiration ?? 0);
-      this._updateMenuItems(true, value.roles);
-      this._customMessageService.showSuccess('Success', `Welcome ${value.username}`);
-      this._router.navigate(["/home"]);
-    });
+    const loginObserver = {
+      next: (value: AuthResponse) => {
+        localStorage.setItem('authResponse', JSON.stringify(value));
+        this._autoLogout(value.expiration ?? 0);
+        this._updateMenuItems(true, value.roles);
+        this._customMessageService.showSuccess('Success', `Welcome ${value.username}`);
+        this._router.navigate(["/home"]);
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    };
+    this._authService.login(authRequest).pipe(catchError((err) => {
+      throw err.error.message;
+    })).subscribe(loginObserver);
   }
 
   registerUser(authRequest: AuthRequest) {
-    this._authService.registerUser(authRequest).subscribe(() => {
-      this._customMessageService.showSuccess('Success', 'User registered');
-      this._router.navigate(["user/list"]);
-    });
+    const registerObserver = {
+      next: () => {
+        this._customMessageService.showSuccess('Success', 'User registered');
+        this._router.navigate(["user/list"]);
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._authService.registerUser(authRequest).pipe(catchError((err) => {
+      throw err.error.message;
+    })).subscribe(registerObserver);
   }
 
   logout(): void {
@@ -155,20 +169,30 @@ export class AuthFacadeService {
   }
 
   private _getEmployees() {
-    this._employeeService.getAllEmployees(true)
-      .subscribe((value: EmployeeSearchResult) => {
+    const employeesObserver = {
+      next: (value: EmployeeSearchResult) => {
         if (value.employees) {
           this._employees.next(value.employees);
         }
-      });
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._employeeService.getAllEmployees(true)
+      .subscribe(employeesObserver);
   }
 
   private _getRoles() {
-    this._roleService.getAllRoles(true).subscribe((value: RoleSearchResult) => {
-      if (value.roles) {
-        this._roles.next(value.roles);
-      }
-    })
+    const rolesObserver = {
+      next: (value: RoleSearchResult) => {
+        if (value.roles) {
+          this._roles.next(value.roles);
+        }
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._roleService.getAllRoles(true).subscribe(rolesObserver);
   }
 
   private _updateMenuItems(isloggedIn: boolean, roles?: Role[]): void {

@@ -5,6 +5,7 @@ import { RoleEditFacadeService } from '../../../services/role/role-edit.facade.s
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-role-edit',
@@ -23,6 +24,7 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
   roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   constructor() {
     super();
@@ -42,14 +44,19 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
   }
 
   submit() {
-    this.role = this._getFormValues();
-    this.roleEditFacade.submit(this.role)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe((value: Role) => {
+    const roleObserver = {
+      next: (value: Role) => {
         if (Object.keys(value)) {
           this.cancel();
         }
-      });
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this.role = this._getFormValues();
+    this.roleEditFacade.submit(this.role)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe(roleObserver);
   }
 
   private _setValuesToFields() {

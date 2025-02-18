@@ -2,9 +2,10 @@ import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } 
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { takeUntil } from 'rxjs';
+import { catchError, takeUntil } from 'rxjs';
 import { DepartmentEditFacadeService } from '../../../services/department/department-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-department-edit',
@@ -23,6 +24,8 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+
   constructor() {
     super();
   }
@@ -47,14 +50,21 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
   }
 
   submit() {
-    this.department = this._getFormValues();
-    this._departmentEditFacade.submit(this.department)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe((value: Department) => {
+    const departmentObserver = {
+      next: (value: Department) => {
         if (Object.keys(value)) {
           this.cancel();
         }
-      });
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this.department = this._getFormValues();
+    this._departmentEditFacade.submit(this.department)
+      .pipe(
+        takeUntil(this.componentIsDestroyed$),
+      )
+      .subscribe(departmentObserver);
   }
 
   private _setValuesToFields() {
