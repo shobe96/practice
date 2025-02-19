@@ -72,8 +72,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
   }
 
   getEmployees(_event: any) {
-    const department = this.project.department = this.projectFormGroup.controls['department'].value;
-    const skills = this.projectFormGroup.controls['skills'].value;
+    const { department, skills } = this.projectFormGroup.getRawValue();
     this.projectFormGroup.controls['employees'].setValue([]);
     this.projectEditFacade.getEmployees(skills, department);
   }
