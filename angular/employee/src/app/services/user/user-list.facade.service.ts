@@ -1,12 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { UserSearchResult } from '../../models/user-search-result.model';
 import { User } from '../../models/user.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { UserService } from './user.service';
 import { AuthService } from '../auth/auth.service';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,6 +34,7 @@ export class UserListFacadeService {
 
   private _userService = inject(UserService);
   private _authService = inject(AuthService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -42,9 +44,14 @@ export class UserListFacadeService {
 
   delete(id: number | null): void {
     if (id) {
-      this._authService.delete(id).subscribe(() => {
-        this.retrieve();
-      })
+      const authObserver = {
+        next: () => { this.retrieve(); },
+        error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+        complete: () => { }
+      }
+      this._authService.delete(id)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(authObserver);
     }
   }
 
@@ -56,17 +63,29 @@ export class UserListFacadeService {
   }
 
   retrieve(): void {
+    const userObserver = {
+      next: (value: UserSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields())
-      this._userService.search(this._userSearch, this._defaultPage).subscribe((value: UserSearchResult) => this._emitValues(value));
+      this._userService.search(this._userSearch, this._defaultPage)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(userObserver);
     else this._getAll();
   }
 
   search(params: User): void {
     this._userSearch = params;
+    const userObserver = {
+      next: (value: UserSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields()) {
-      this._userService.search(this._userSearch, this._defaultPage).subscribe((value: UserSearchResult) => {
-        this._emitValues(value);
-      });
+      this._userService.search(this._userSearch, this._defaultPage)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(userObserver);
     }
   }
 
@@ -85,8 +104,13 @@ export class UserListFacadeService {
   }
 
   private _getAll(): void {
-    this._userService.getAllUsers(this._defaultPage).subscribe((value: UserSearchResult) => {
-      this._emitValues(value);
-    });
+    const userObserver = {
+      next: (value: UserSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._userService.getAllUsers(this._defaultPage)
+      .pipe(catchError((err) => { throw err.error.message }))
+      .subscribe(userObserver);
   }
 }

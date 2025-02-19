@@ -57,11 +57,20 @@ export class ProjectEditFacadeService {
 
   getEmployees(skills: Skill[], department: Department) {
     if (skills.length > 0 && Object.keys(department).length > 0) {
-      this._employeeService.filterEmployeesByActiveAndSkills(skills, department).subscribe((value: Employee[]) => {
-        if (value) {
-          this._employees.next(value);
-        }
-      });
+      const employeeObserver = {
+        next: (value: Employee[]) => {
+          if (value) {
+            this._employees.next(value);
+          }
+        },
+        error: (errorMessage: string) => {
+          this._customMessageService.showError('Error', errorMessage);
+        },
+        complete: () => { }
+      }
+      this._employeeService.filterEmployeesByActiveAndSkills(skills, department)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(employeeObserver);
     } else {
       this.clearEmployees();
     }
@@ -72,18 +81,31 @@ export class ProjectEditFacadeService {
   }
 
   private _getSkills(): void {
-    this._skillService.getAllSkills(true).subscribe((value: SkillSearchResult) => {
-      if (value.skills) {
-        this._skills.next(value.skills);
-      }
-    });
+    const skillObserver = {
+      next: (value: SkillSearchResult) => {
+        if (value.skills) {
+          this._skills.next(value.skills);
+        }
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._skillService.getAllSkills(true).pipe(catchError((err) => { throw err.error.message }))
+      .subscribe(skillObserver);
   }
 
   private _getDepartments(): void {
-    this._departmentService.getAllDepartments(true).subscribe((value: DepartmentSearchResult) => {
-      if (value.departments) {
-        this._departments.next(value.departments);
-      }
-    });
+    const departmentObserver = {
+      next: (value: DepartmentSearchResult) => {
+        if (value.departments) {
+          this._departments.next(value.departments);
+        }
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._departmentService.getAllDepartments(true)
+      .pipe(catchError((err) => { throw err.error.message }))
+      .subscribe(departmentObserver);
   }
 }

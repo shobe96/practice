@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { ProjectSearchResult } from '../../models/project-search-result.model';
 import { Project } from '../../models/project.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { ProjectService } from './project.service';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,7 @@ export class ProjectListFacadeService {
   });
 
   private _projectService: ProjectService = inject(ProjectService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -39,10 +41,13 @@ export class ProjectListFacadeService {
   }
 
   delete(id: number | null): void {
+    const projectObserver = {
+      next: () => { this.retrieve(); },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (id) {
-      this._projectService.delete(id).subscribe(() => {
-        this.retrieve();
-      });
+      this._projectService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(projectObserver);
     }
   }
 
@@ -54,17 +59,28 @@ export class ProjectListFacadeService {
   }
 
   retrieve(): void {
+    const projectObserver = {
+      next: (value: ProjectSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields())
-      this._projectService.search(this._projectSearch, this._defaultPage).subscribe((value: ProjectSearchResult) => this._emitValues(value));
+      this._projectService.search(this._projectSearch, this._defaultPage)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(projectObserver);
     else this._getAll(false);
   }
 
   search(params: Project): void {
     this._projectSearch = params;
+    const projectObserver = {
+      next: (value: ProjectSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields()) {
-      this._projectService.search(this._projectSearch, this._defaultPage).subscribe((value: ProjectSearchResult) => {
-        this._emitValues(value);
-      });
+      this._projectService.search(this._projectSearch, this._defaultPage).pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(projectObserver);
     }
   }
 
@@ -83,8 +99,13 @@ export class ProjectListFacadeService {
   }
 
   private _getAll(all: boolean): void {
-    this._projectService.getAllProjects(all, this._defaultPage).subscribe((value: ProjectSearchResult) => {
-      this._emitValues(value);
-    });
+    const projectObserver = {
+      next: (value: ProjectSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._projectService.getAllProjects(all, this._defaultPage)
+      .pipe(catchError((err) => { throw err.error.message }))
+      .subscribe(projectObserver);
   }
 }

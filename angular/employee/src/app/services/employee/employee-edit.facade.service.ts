@@ -59,7 +59,7 @@ export class EmployeeEditFacadeService {
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
       complete: () => { }
     }
-    this._skillService.getAllSkills(true).subscribe(skillsObserver)
+    this._skillService.getAllSkills(true).pipe(catchError((err) => { throw err.error.message })).subscribe(skillsObserver)
   }
 
   private _getDepartments(): void {
@@ -72,6 +72,6 @@ export class EmployeeEditFacadeService {
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
       complete: () => { }
     }
-    this._departmentService.getAllDepartments(true).subscribe(departmentsObserver);
+    this._departmentService.getAllDepartments(true).pipe(catchError((err) => { throw err.error.message })).subscribe(departmentsObserver);
   }
 }

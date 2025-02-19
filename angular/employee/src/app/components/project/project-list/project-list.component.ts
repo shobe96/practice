@@ -46,7 +46,7 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
   }
 
   addNew(): void {
-    this.goToEdit(null, false);
+    this.goToEdit({});
   }
 
   clear(): void {
@@ -62,7 +62,7 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
     this._router.navigate([`/project/details/${id}`])
   }
 
-  goToEdit(project: Project | null, disable: boolean): void {
+  goToEdit(project: Project): void {
     const title = project ? `Project ${project.id}` : 'Add new Project';
     this._dialogService.open(ProjectEditComponent, {
       header: title,

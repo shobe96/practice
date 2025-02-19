@@ -1,11 +1,12 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, switchMap } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { SkillSearchResult } from '../../models/skill-search-result.model';
 import { Skill } from '../../models/skill.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { SkillService } from './skill.service';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -31,6 +32,7 @@ export class SkillListFacadeService {
   });
 
   private _skillService = inject(SkillService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -40,9 +42,12 @@ export class SkillListFacadeService {
 
   delete(id: number | null): void {
     if (id) {
-      this._skillService.delete(id).subscribe(() => {
-        this.retrieve();
-      });
+      const skillObserver = {
+        next: () => { this.retrieve(); },
+        error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+        complete: () => { }
+      }
+      this._skillService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(skillObserver);
     }
   }
 
@@ -54,17 +59,29 @@ export class SkillListFacadeService {
   }
 
   retrieve(): void {
+    const skillObserver = {
+      next: (value: SkillSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields())
-      this._skillService.search(this._skillSearch, this._defaultPage).subscribe((value: SkillSearchResult) => this._emitValues(value));
+      this._skillService.search(this._skillSearch, this._defaultPage)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(skillObserver);
     else this._getAll(false);
   }
 
   search(params: Skill): void {
     this._skillSearch = params;
+    const skillObserver = {
+      next: (value: SkillSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields()) {
-      this._skillService.search(this._skillSearch, this._defaultPage).subscribe((value: SkillSearchResult) => {
-        this._emitValues(value);
-      });
+      this._skillService.search(this._skillSearch, this._defaultPage)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(skillObserver);
     }
   }
 
@@ -83,8 +100,12 @@ export class SkillListFacadeService {
   }
 
   private _getAll(all: boolean): void {
-    this._skillService.getAllSkills(all, this._defaultPage).subscribe((value: SkillSearchResult) => {
-      this._emitValues(value);
-    });
+    const skillObserver = {
+      next: (value: SkillSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._skillService.getAllSkills(all, this._defaultPage).pipe(catchError((err) => { throw err.error.message }))
+      .subscribe(skillObserver);
   }
 }

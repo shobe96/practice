@@ -1,12 +1,13 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, combineLatest, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, switchMap } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { RoleSearchResult } from '../../models/role-search-result.model';
 import { Role } from '../../models/role.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { RoleService } from './role.service';
 import { ActivatedRoute } from '@angular/router';
+import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,7 @@ export class RoleListFacadeService {
   });
 
   private _roleService: RoleService = inject(RoleService);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
     this._defaultPage.page = 0;
@@ -41,9 +43,14 @@ export class RoleListFacadeService {
 
   delete(id: number | null): void {
     if (id) {
-      this._roleService.delete(id).subscribe(() => {
-        this.retrieve();
-      });
+      const roleObserver = {
+        next: () => { this.retrieve(); },
+        error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+        complete: () => { }
+      }
+      this._roleService.delete(id)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(roleObserver);
     }
   }
 
@@ -55,17 +62,29 @@ export class RoleListFacadeService {
   }
 
   retrieve(): void {
+    const roleObserver = {
+      next: (value: RoleSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields())
-      this._roleService.search(this._roleSearch, this._defaultPage).subscribe((value: RoleSearchResult) => this._emitValues(value));
+      this._roleService.search(this._roleSearch, this._defaultPage)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(roleObserver);
     else this._getAll(false);
   }
 
   search(params: Role): void {
     this._roleSearch = params;
+    const roleObserver = {
+      next: (value: RoleSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
     if (this._checkSearchFields()) {
-      this._roleService.search(this._roleSearch, this._defaultPage).subscribe((value: RoleSearchResult) => {
-        this._emitValues(value);
-      });
+      this._roleService.search(this._roleSearch, this._defaultPage)
+        .pipe(catchError((err) => { throw err.error.message }))
+        .subscribe(roleObserver);
     }
   }
 
@@ -84,8 +103,13 @@ export class RoleListFacadeService {
   }
 
   private _getAll(all: boolean): void {
-    this._roleService.getAllRoles(all, this._defaultPage).subscribe((value: RoleSearchResult) => {
-      this._emitValues(value);
-    });
+    const roleObserver = {
+      next: (value: RoleSearchResult) => { this._emitValues(value) },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this._roleService.getAllRoles(all, this._defaultPage)
+      .pipe(catchError((err) => { throw err.error.message }))
+      .subscribe(roleObserver);
   }
 }
