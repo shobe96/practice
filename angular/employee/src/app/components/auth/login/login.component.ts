@@ -1,11 +1,8 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { PrimeIcons } from 'primeng/api';
 import { AuthRequest } from '../../../models/auth-request.model';
 import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
-import { messageLife } from '../../../shared/constants.model';
-import { Severity } from '../../../shared/custom-types';
 import { RegisterRequest } from '../../../models/register-request.model';
 
 @Component({
@@ -22,17 +19,11 @@ export class LoginComponent implements OnInit {
   authFormGroup!: FormGroup;
   showPassword = false;
   icon: string = PrimeIcons.EYE;
-  severity: Severity = "success";
+  severity = true;
   tooltipMessage = "Show Password";
-  isLoggin = false;
-  tooltipConfirmMessage = "Show Confirm Password";
-  confirmIcon = PrimeIcons.EYE;
-  confirmSeverity: Severity = "success";
-  life = messageLife;
 
   authFacade: AuthFacadeService = inject(AuthFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
 
   ngOnInit(): void {
     this._buildForm();
@@ -45,8 +36,8 @@ export class LoginComponent implements OnInit {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
     if (this.showPassword)
-      this._setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password")
-    else this._setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
+      this._setToggleOptions(PrimeIcons.EYE_SLASH, "Hide Password")
+    else this._setToggleOptions(PrimeIcons.EYE, "Show Password");
   }
 
   private _buildForm(): void {
@@ -56,9 +47,9 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  private _setToggleOptions(icon: string, severity: Severity, tooltipMessage: string): void {
+  private _setToggleOptions(icon: string, tooltipMessage: string): void {
     this.icon = icon;
-    this.severity = severity;
+    this.severity = icon === PrimeIcons.EYE;
     this.tooltipMessage = tooltipMessage;
   }
 

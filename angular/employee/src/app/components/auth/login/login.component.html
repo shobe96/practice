@@ -35,7 +35,7 @@
       [icon]="icon"
       [rounded]="true"
       (onClick)="togglePasswordVisibility()"
-      [severity]="severity"
+      [severity]="severity ? 'success' : 'danger'"
       [pTooltip]="toggleVisibilityTooltip"
       tooltipPosition="top"
     />
@@ -54,33 +54,6 @@
       *ngIf="authFormGroup.controls['password'].errors?.['required']"
       >Password is required!</span
     >
-    <div *ngIf="!isLoggin" class="password-validation-messages">
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('^(?=.*[A-Z])')"
-        >At least one uppercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[a-z])')"
-        >At least one lowercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(.*[0-9].*)')"
-        >At least one digit.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[!@#$%^&*])')"
-        >At least one special character.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('.{8,}')"
-        >At least 8 characters long.</span
-      >
-    </div>
   </div>
   <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
 </form>

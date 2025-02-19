@@ -5,7 +5,6 @@ import { AuthRequest } from '../../../models/auth-request.model';
 import { RegisterRequest } from '../../../models/register-request.model';
 import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
 import { messageLife, StrongPasswordRegx } from '../../../shared/constants.model';
-import { Severity } from '../../../shared/custom-types';
 
 @Component({
   selector: 'app-register',
@@ -20,12 +19,12 @@ export class RegisterComponent implements OnInit {
   authFormGroup!: FormGroup;
   showPassword = false;
   icon: string = PrimeIcons.EYE;
-  severity: Severity = "success";
+  severity = true;
   tooltipMessage = "Show Password";
   isLoggin = false;
   tooltipConfirmMessage = "Show Confirm Password";
   confirmIcon = PrimeIcons.EYE;
-  confirmSeverity: Severity = "success";
+  confirmSeverity = true;
   life = messageLife;
 
   authFacade: AuthFacadeService = inject(AuthFacadeService);
@@ -42,15 +41,15 @@ export class RegisterComponent implements OnInit {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
     if (this.showPassword)
-      this._setToggleOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Password")
-    else this._setToggleOptions(PrimeIcons.EYE, "success", "Show Password");
+      this._setToggleOptions(PrimeIcons.EYE_SLASH, "Hide Password")
+    else this._setToggleOptions(PrimeIcons.EYE, "Show Password");
   }
 
   toggleConfirmPasswordVisibility(): void {
     this.showConfirmPassword = !this.showConfirmPassword;
     if (this.showConfirmPassword)
-      this._setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "danger", "Hide Confirm Password")
-    else this._setToggleConfirmOptions(PrimeIcons.EYE, "success", "Show Confirm Password");
+      this._setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "Hide Confirm Password")
+    else this._setToggleConfirmOptions(PrimeIcons.EYE, "Show Confirm Password");
   }
 
   private _buildForm(): void {
@@ -71,15 +70,15 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  private _setToggleOptions(icon: string, severity: Severity, tooltipMessage: string): void {
+  private _setToggleOptions(icon: string, tooltipMessage: string): void {
     this.icon = icon;
-    this.severity = severity;
+    this.severity = icon === PrimeIcons.EYE;
     this.tooltipMessage = tooltipMessage;
   }
 
-  private _setToggleConfirmOptions(icon: string, severity: Severity, tooltipMessage: string): void {
+  private _setToggleConfirmOptions(icon: string, tooltipMessage: string): void {
     this.confirmIcon = icon;
-    this.confirmSeverity = severity;
+    this.confirmSeverity = icon === PrimeIcons.EYE;
     this.tooltipConfirmMessage = tooltipMessage;
   }
 

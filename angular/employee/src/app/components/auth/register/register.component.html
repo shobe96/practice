@@ -36,7 +36,7 @@
         [icon]="icon"
         [rounded]="true"
         (onClick)="togglePasswordVisibility()"
-        [severity]="severity"
+        [severity]="severity ? 'success' : 'danger'"
         [pTooltip]="toggleVisibilityTooltip"
         tooltipPosition="top"
       />
@@ -94,7 +94,7 @@
         [icon]="confirmIcon"
         [rounded]="true"
         (onClick)="toggleConfirmPasswordVisibility()"
-        [severity]="confirmSeverity"
+        [severity]="confirmSeverity ? 'success' : 'danger'"
         [pTooltip]="toggleConfirmVisibilityTooltip"
         tooltipPosition="top"
       />
