@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
-import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
@@ -18,11 +18,11 @@ import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 
 @Component({
-    selector: 'app-employee-list',
-    templateUrl: './employee-list.component.html',
-    styleUrl: './employee-list.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe, DatePipe]
+  selector: 'app-employee-list',
+  templateUrl: './employee-list.component.html',
+  styleUrl: './employee-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe, DatePipe]
 })
 export class EmployeeListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

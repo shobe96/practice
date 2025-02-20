@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } 
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { catchError, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { DepartmentEditFacadeService } from '../../../services/department/department-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../services/custom-message.service';
@@ -11,11 +11,11 @@ import { NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 
 @Component({
-    selector: 'app-department-edit',
-    templateUrl: './department-edit.component.html',
-    styleUrl: './department-edit.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [ReactiveFormsModule, InputText, NgIf, Button]
+  selector: 'app-department-edit',
+  templateUrl: './department-edit.component.html',
+  styleUrl: './department-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, InputText, NgIf, Button]
 })
 export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

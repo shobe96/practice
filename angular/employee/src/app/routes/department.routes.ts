@@ -1,5 +1,4 @@
 import { Routes } from "@angular/router";
-import { DepartmentListComponent } from "../components/department/department-list/department-list.component";
 import { DepartmentComponent } from "../components/department/department.component";
 import { authGuard } from "../shared/guards/auth.guard";
 import { enumRoles } from "../shared/constants.model";

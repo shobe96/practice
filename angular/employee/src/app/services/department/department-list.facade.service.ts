@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { DepartmentService } from './department.service';
-import { BehaviorSubject, catchError, combineLatest, Observable, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, Observable } from 'rxjs';
 import { Department } from '../../models/department.model';
 import { PageEvent } from '../../models/page-event.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
-import { ActivatedRoute } from '@angular/router';
 import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../employee/employee.service';
-import { BehaviorSubject, catchError, combineLatest, Observable, of } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../models/employee.model';

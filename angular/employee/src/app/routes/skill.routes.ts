@@ -1,5 +1,4 @@
 import { Routes } from "@angular/router";
-import { SkillListComponent } from "../components/skill/skill-list/skill-list.component";
 import { SkillComponent } from "../components/skill/skill.component";
 import { authGuard } from "../shared/guards/auth.guard";
 import { enumRoles } from "../shared/constants.model";

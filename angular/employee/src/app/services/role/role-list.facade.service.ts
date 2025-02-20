@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, catchError, combineLatest, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { RoleSearchResult } from '../../models/role-search-result.model';
 import { Role } from '../../models/role.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { RoleService } from './role.service';
-import { ActivatedRoute } from '@angular/router';
 import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({

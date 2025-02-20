@@ -1,6 +1,4 @@
 import { Routes } from "@angular/router";
-import { ProjectDetailsComponent } from "../components/project/project-details/project-details.component";
-import { ProjectListComponent } from "../components/project/project-list/project-list.component";
 import { ProjectComponent } from "../components/project/project.component";
 import { authGuard } from "../shared/guards/auth.guard";
 import { enumRoles } from "../shared/constants.model";

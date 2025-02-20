@@ -1,5 +1,4 @@
 import { Routes } from "@angular/router";
-import { RoleListComponent } from "../components/role/role-list/role-list.component";
 import { RoleComponent } from "../components/role/role.component";
 import { enumRoles } from "../shared/constants.model";
 import { authGuard } from "../shared/guards/auth.guard";

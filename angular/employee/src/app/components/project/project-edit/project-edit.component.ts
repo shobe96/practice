@@ -14,11 +14,11 @@ import { DatePicker } from 'primeng/datepicker';
 import { Button } from 'primeng/button';
 
 @Component({
-    selector: 'app-project-edit',
-    templateUrl: './project-edit.component.html',
-    styleUrl: './project-edit.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [ReactiveFormsModule, InputText, NgIf, Select, MultiSelect, DatePicker, Button, AsyncPipe]
+  selector: 'app-project-edit',
+  templateUrl: './project-edit.component.html',
+  styleUrl: './project-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, InputText, NgIf, Select, MultiSelect, DatePicker, Button, AsyncPipe]
 })
 export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
@@ -77,7 +77,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
       .subscribe(projectObserver);
   }
 
-  getEmployees(_event: any) {
+  getEmployees() {
     const { department, skills } = this.projectFormGroup.getRawValue();
     this.projectFormGroup.controls['employees'].setValue([]);
     this.projectEditFacade.getEmployees(skills, department);
@@ -98,7 +98,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
         this.projectFormGroup.controls['code'].setValue(code);
         this.projectFormGroup.controls['department'].setValue(department);
         this.projectFormGroup.controls['skills'].setValue(skills);
-        this.getEmployees(null);
+        this.getEmployees();
         this.projectFormGroup.controls['startDate'].setValue(startDate);
         this.projectFormGroup.controls['endDate'].setValue(endDate);
         this.projectFormGroup.controls['employees'].setValue(employees);

@@ -1,6 +1,4 @@
 import { provideRouter, Routes } from '@angular/router';
-import { authGuard } from './shared/guards/auth.guard';
-import { enumRoles } from './shared/constants.model';
 import { authRoutes } from './routes/auth.routes';
 import { homeRoutes } from './routes/home.routes';
 import { employeeRoutes } from './routes/employee.routes';
