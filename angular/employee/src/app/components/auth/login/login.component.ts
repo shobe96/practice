@@ -10,10 +10,16 @@ import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 
 @Component({
-    selector: 'app-login',
-    templateUrl: './login.component.html',
-    styleUrl: './login.component.scss',
-    imports: [ReactiveFormsModule, InputText, NgIf, Button, Tooltip]
+  selector: 'app-login',
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
+  imports: [
+    ReactiveFormsModule,
+    InputText,
+    NgIf,
+    Button,
+    Tooltip
+  ]
 })
 export class LoginComponent implements OnInit {
 

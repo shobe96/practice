@@ -14,10 +14,20 @@ import { Select } from 'primeng/select';
 import { Toast } from 'primeng/toast';
 
 @Component({
-    selector: 'app-register',
-    templateUrl: './register.component.html',
-    styleUrl: './register.component.scss',
-    imports: [NgIf, ReactiveFormsModule, InputText, Button, Tooltip, MultiSelect, Select, Toast, AsyncPipe]
+  selector: 'app-register',
+  templateUrl: './register.component.html',
+  styleUrl: './register.component.scss',
+  imports: [
+    NgIf,
+    ReactiveFormsModule,
+    InputText,
+    Button,
+    Tooltip,
+    MultiSelect,
+    Select,
+    Toast,
+    AsyncPipe
+  ]
 })
 export class RegisterComponent implements OnInit {
   showConfirmPassword = false;
@@ -27,7 +37,6 @@ export class RegisterComponent implements OnInit {
   icon: string = PrimeIcons.EYE;
   severity = true;
   tooltipMessage = "Show Password";
-  isLoggin = false;
   tooltipConfirmMessage = "Show Confirm Password";
   confirmIcon = PrimeIcons.EYE;
   confirmSeverity = true;
@@ -97,10 +106,8 @@ export class RegisterComponent implements OnInit {
     const registerRequest: RegisterRequest = {};
     registerRequest.username = this.authFormGroup.controls['username'].value;
     registerRequest.password = this.authFormGroup.controls['password'].value;
-    if (!this.isLoggin) {
-      registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
-      registerRequest.employee = this.authFormGroup.controls['employee'].value;
-    }
+    registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
+    registerRequest.employee = this.authFormGroup.controls['employee'].value;
     return registerRequest;
   }
 }
