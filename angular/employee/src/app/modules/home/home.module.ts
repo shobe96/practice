@@ -12,19 +12,17 @@ import { ToastModule } from 'primeng/toast';
 
 
 @NgModule({
-  declarations: [
-    HomeComponent,
-    HomePanelComponent,
-  ],
-  imports: [
-    SharedModule,
-    HomeRoutingModule,
-    TabsModule,
-    TableModule,
-    PaginatorModule,
-    ButtonModule,
-    TooltipModule,
-    ToastModule
-  ]
+    imports: [
+        SharedModule,
+        HomeRoutingModule,
+        TabsModule,
+        TableModule,
+        PaginatorModule,
+        ButtonModule,
+        TooltipModule,
+        ToastModule,
+        HomeComponent,
+        HomePanelComponent
+    ]
 })
 export class HomeModule { }

@@ -1,21 +1,28 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Skill } from '../../../models/skill.model';
-import { PaginatorState } from 'primeng/paginator';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { PaginatorState, Paginator } from 'primeng/paginator';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { SkillListFacadeService } from '../../../services/skill/skill-list.facade.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { SkillEditComponent } from '../skill-edit/skill-edit.component';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
-  selector: 'app-skill-list',
-  templateUrl: './skill-list.component.html',
-  styleUrl: './skill-list.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-skill-list',
+    templateUrl: './skill-list.component.html',
+    styleUrl: './skill-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe]
 })
 export class SkillListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

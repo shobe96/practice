@@ -1,18 +1,23 @@
 import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { EmployeeEditFacadeService } from '../../../services/employee/employee-edit.facade.service';
 import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../services/custom-message.service';
+import { InputText } from 'primeng/inputtext';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { Select } from 'primeng/select';
+import { MultiSelect } from 'primeng/multiselect';
+import { Button } from 'primeng/button';
 
 @Component({
-  selector: 'app-employee-edit',
-  templateUrl: './employee-edit.component.html',
-  styleUrl: './employee-edit.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-employee-edit',
+    templateUrl: './employee-edit.component.html',
+    styleUrl: './employee-edit.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [ReactiveFormsModule, InputText, NgIf, Select, MultiSelect, Button, AsyncPipe]
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

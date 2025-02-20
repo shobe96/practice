@@ -15,23 +15,21 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
-  declarations: [
-    SkillComponent,
-    SkillListComponent,
-    SkillEditComponent
-  ],
-  imports: [
-    SkillRoutingModule,
-    SharedModule,
-    FormsModule,
-    AccordionModule,
-    ButtonModule,
-    TooltipModule,
-    TableModule,
-    PaginatorModule,
-    InputTextModule,
-    DynamicDialogModule,
-    ConfirmDialogModule
-  ]
+    imports: [
+        SkillRoutingModule,
+        SharedModule,
+        FormsModule,
+        AccordionModule,
+        ButtonModule,
+        TooltipModule,
+        TableModule,
+        PaginatorModule,
+        InputTextModule,
+        DynamicDialogModule,
+        ConfirmDialogModule,
+        SkillComponent,
+        SkillListComponent,
+        SkillEditComponent
+    ]
 })
 export class SkillModule { }

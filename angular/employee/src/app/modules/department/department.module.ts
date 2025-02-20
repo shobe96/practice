@@ -17,24 +17,22 @@ import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 
 @NgModule({
-  declarations: [
-    DepartmentComponent,
-    DepartmentListComponent,
-    DepartmentEditComponent,
-  ],
-  imports: [
-    DepartmentRoutingModule,
-    SharedModule,
-    FormsModule,
-    AccordionModule,
-    ButtonModule,
-    TooltipModule,
-    TableModule,
-    PaginatorModule,
-    ToastModule,
-    InputTextModule,
-    DynamicDialogModule,
-    ConfirmDialogModule
-  ]
+    imports: [
+        DepartmentRoutingModule,
+        SharedModule,
+        FormsModule,
+        AccordionModule,
+        ButtonModule,
+        TooltipModule,
+        TableModule,
+        PaginatorModule,
+        ToastModule,
+        InputTextModule,
+        DynamicDialogModule,
+        ConfirmDialogModule,
+        DepartmentComponent,
+        DepartmentListComponent,
+        DepartmentEditComponent
+    ]
 })
 export class DepartmentModule { }

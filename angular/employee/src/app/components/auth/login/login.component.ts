@@ -1,16 +1,19 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimeIcons } from 'primeng/api';
 import { AuthRequest } from '../../../models/auth-request.model';
 import { AuthFacadeService } from '../../../services/auth/auth.facade.service';
 import { RegisterRequest } from '../../../models/register-request.model';
+import { InputText } from 'primeng/inputtext';
+import { NgIf } from '@angular/common';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
-  selector: 'app-login',
-  standalone: false,
-
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrl: './login.component.scss',
+    imports: [ReactiveFormsModule, InputText, NgIf, Button, Tooltip]
 })
 export class LoginComponent implements OnInit {
 

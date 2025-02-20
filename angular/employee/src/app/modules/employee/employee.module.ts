@@ -18,26 +18,24 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
-  declarations: [
-    EmployeeComponent,
-    EmployeeListComponent,
-    EmployeeEditComponent
-  ],
-  imports: [
-    EmployeeRoutingModule,
-    SharedModule,
-    FormsModule,
-    AccordionModule,
-    ButtonModule,
-    TooltipModule,
-    TableModule,
-    PaginatorModule,
-    SelectModule,
-    MultiSelectModule,
-    ToastModule,
-    InputTextModule,
-    DynamicDialogModule,
-    ConfirmDialogModule
-  ]
+    imports: [
+        EmployeeRoutingModule,
+        SharedModule,
+        FormsModule,
+        AccordionModule,
+        ButtonModule,
+        TooltipModule,
+        TableModule,
+        PaginatorModule,
+        SelectModule,
+        MultiSelectModule,
+        ToastModule,
+        InputTextModule,
+        DynamicDialogModule,
+        ConfirmDialogModule,
+        EmployeeComponent,
+        EmployeeListComponent,
+        EmployeeEditComponent
+    ]
 })
 export class EmployeeModule { }

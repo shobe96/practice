@@ -1,15 +1,21 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Project } from '../../../models/project.model';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectDetailsFacadeService } from '../../../services/project/project-details.facade.service';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
+import { Ripple } from 'primeng/ripple';
+import { TableModule } from 'primeng/table';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
 
 @Component({
-  selector: 'app-project-details',
-  templateUrl: './project-details.component.html',
-  styleUrl: './project-details.component.scss',
-  standalone: false
+    selector: 'app-project-details',
+    templateUrl: './project-details.component.html',
+    styleUrl: './project-details.component.scss',
+    imports: [NgIf, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Button, Tooltip, AsyncPipe]
 })
 export class ProjectDetailsComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

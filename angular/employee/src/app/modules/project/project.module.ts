@@ -21,28 +21,26 @@ import { ConfirmDialog } from 'primeng/confirmdialog';
 
 
 @NgModule({
-  declarations: [
-    ProjectComponent,
-    ProjectListComponent,
-    ProjectEditComponent,
-    ProjectDetailsComponent
-  ],
-  imports: [
-    SharedModule,
-    ProjectRoutingModule,
-    FormsModule,
-    AccordionModule,
-    ButtonModule,
-    TooltipModule,
-    TableModule,
-    PaginatorModule,
-    TabsModule,
-    SelectModule,
-    MultiSelectModule,
-    DatePickerModule,
-    InputTextModule,
-    DynamicDialogModule,
-    ConfirmDialog
-  ]
+    imports: [
+        SharedModule,
+        ProjectRoutingModule,
+        FormsModule,
+        AccordionModule,
+        ButtonModule,
+        TooltipModule,
+        TableModule,
+        PaginatorModule,
+        TabsModule,
+        SelectModule,
+        MultiSelectModule,
+        DatePickerModule,
+        InputTextModule,
+        DynamicDialogModule,
+        ConfirmDialog,
+        ProjectComponent,
+        ProjectListComponent,
+        ProjectEditComponent,
+        ProjectDetailsComponent
+    ]
 })
 export class ProjectModule { }

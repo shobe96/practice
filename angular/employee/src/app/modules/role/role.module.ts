@@ -15,23 +15,21 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @NgModule({
-  declarations: [
-    RoleComponent,
-    RoleListComponent,
-    RoleEditComponent
-  ],
-  imports: [
-    SharedModule,
-    RoleRoutingModule,
-    FormsModule,
-    AccordionModule,
-    ButtonModule,
-    TooltipModule,
-    TableModule,
-    PaginatorModule,
-    InputTextModule,
-    DynamicDialogModule,
-    ConfirmDialog
-  ]
+    imports: [
+        SharedModule,
+        RoleRoutingModule,
+        FormsModule,
+        AccordionModule,
+        ButtonModule,
+        TooltipModule,
+        TableModule,
+        PaginatorModule,
+        InputTextModule,
+        DynamicDialogModule,
+        ConfirmDialog,
+        RoleComponent,
+        RoleListComponent,
+        RoleEditComponent
+    ]
 })
 export class RoleModule { }

@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
-import { PaginatorState } from 'primeng/paginator';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { PaginatorState, Paginator } from 'primeng/paginator';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
 import { ProjectListFacadeService } from '../../../services/project/project-list.facade.service';
@@ -8,14 +8,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditComponent } from '../project-edit/project-edit.component';
 import { DialogService } from 'primeng/dynamicdialog';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
-  selector: 'app-project-list',
-  templateUrl: './project-list.component.html',
-  styleUrl: './project-list.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-project-list',
+    templateUrl: './project-list.component.html',
+    styleUrl: './project-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe, DatePipe]
 })
 export class ProjectListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

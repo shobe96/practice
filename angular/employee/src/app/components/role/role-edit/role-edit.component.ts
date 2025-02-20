@@ -1,18 +1,21 @@
 import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Role } from '../../../models/role.model';
 import { RoleEditFacadeService } from '../../../services/role/role-edit.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../services/custom-message.service';
+import { InputText } from 'primeng/inputtext';
+import { NgIf } from '@angular/common';
+import { Button } from 'primeng/button';
 
 @Component({
-  selector: 'app-role-edit',
-  templateUrl: './role-edit.component.html',
-  styleUrl: './role-edit.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-role-edit',
+    templateUrl: './role-edit.component.html',
+    styleUrl: './role-edit.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [ReactiveFormsModule, InputText, NgIf, Button]
 })
 export class RoleEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   roleFormGroup!: FormGroup;

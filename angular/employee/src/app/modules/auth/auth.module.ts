@@ -13,20 +13,18 @@ import { LoginComponent } from '../../components/auth/login/login.component';
 
 
 @NgModule({
-  declarations: [
-    AuthComponent,
-    LoginComponent,
-    RegisterComponent
-  ],
-  imports: [
-    SharedModule,
-    AuthRoutingModule,
-    ButtonModule,
-    TooltipModule,
-    MultiSelectModule,
-    ToastModule,
-    SelectModule,
-    InputTextModule,
-  ]
+    imports: [
+        SharedModule,
+        AuthRoutingModule,
+        ButtonModule,
+        TooltipModule,
+        MultiSelectModule,
+        ToastModule,
+        SelectModule,
+        InputTextModule,
+        AuthComponent,
+        LoginComponent,
+        RegisterComponent,
+    ]
 })
 export class AuthModule { }

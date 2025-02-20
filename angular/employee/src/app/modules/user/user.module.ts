@@ -14,21 +14,19 @@ import { DynamicDialogModule } from 'primeng/dynamicdialog';
 import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @NgModule({
-  declarations: [
-    UserComponent,
-    UserListComponent
-  ],
-  imports: [
-    UserRoutingModule,
-    SharedModule,
-    AccordionModule,
-    ButtonModule,
-    TooltipModule,
-    TableModule,
-    PaginatorModule,
-    InputTextModule,
-    DynamicDialogModule,
-    ConfirmDialog
-  ]
+    imports: [
+        UserRoutingModule,
+        SharedModule,
+        AccordionModule,
+        ButtonModule,
+        TooltipModule,
+        TableModule,
+        PaginatorModule,
+        InputTextModule,
+        DynamicDialogModule,
+        ConfirmDialog,
+        UserComponent,
+        UserListComponent
+    ]
 })
 export class UserModule { }

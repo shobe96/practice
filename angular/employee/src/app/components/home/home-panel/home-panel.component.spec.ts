@@ -8,8 +8,8 @@ describe('HomePanelComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [HomePanelComponent]
-    })
+    imports: [HomePanelComponent]
+})
     .compileComponents();
 
     fixture = TestBed.createComponent(HomePanelComponent);

@@ -13,27 +13,25 @@ import { ToastModule } from 'primeng/toast';
 import { MenubarModule } from 'primeng/menubar';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NavBarComponent
-  ],
-  bootstrap: [AppComponent],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    SharedModule,
-    ToastModule,
-    MenubarModule,
-  ],
-  providers: [
-    provideHttpClient(withInterceptors([authInterceptor])),
-    provideHttpClient(withInterceptorsFromDi()),
-    providePrimeNG({
-      theme: {
-        preset: Aura
-      }
-    })
-  ]
+    declarations: [AppComponent],
+    bootstrap: [AppComponent],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        AppRoutingModule,
+        SharedModule,
+        ToastModule,
+        MenubarModule,
+        NavBarComponent,
+    ],
+    providers: [
+        provideHttpClient(withInterceptors([authInterceptor])),
+        provideHttpClient(withInterceptorsFromDi()),
+        providePrimeNG({
+            theme: {
+                preset: Aura
+            }
+        })
+    ]
 })
 export class AppModule { }

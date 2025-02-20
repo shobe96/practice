@@ -1,18 +1,24 @@
 import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditFacadeService } from '../../../services/project/project-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../services/custom-message.service';
+import { InputText } from 'primeng/inputtext';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { Select } from 'primeng/select';
+import { MultiSelect } from 'primeng/multiselect';
+import { DatePicker } from 'primeng/datepicker';
+import { Button } from 'primeng/button';
 
 @Component({
-  selector: 'app-project-edit',
-  templateUrl: './project-edit.component.html',
-  styleUrl: './project-edit.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-project-edit',
+    templateUrl: './project-edit.component.html',
+    styleUrl: './project-edit.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [ReactiveFormsModule, InputText, NgIf, Select, MultiSelect, DatePicker, Button, AsyncPipe]
 })
 export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
