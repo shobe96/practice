@@ -1,4 +1,5 @@
-export class Department {
+export interface Department {
+  [key: string]: number | string | boolean | undefined;
   id?: number;
   name?: string;
   addDate?: string;
@@ -6,21 +7,4 @@ export class Department {
   addUser?: string;
   modUser?: string;
   active?: boolean;
-  constructor(
-    id?: number,
-    name?: string,
-    addDate?: string,
-    modDate?: string,
-    addUser?: string,
-    modUser?: string,
-    active?: boolean
-  ) {
-    this.id = id;
-    this.name = name;
-    this.addDate = addDate;
-    this.modDate = modDate;
-    this.addUser = addUser;
-    this.modUser = modUser;
-    this.active = active;
-  }
 }

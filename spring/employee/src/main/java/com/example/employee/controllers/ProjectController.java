@@ -30,6 +30,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.employee.models.Project;
 import com.example.employee.models.ProjectSearchResult;
+import com.example.employee.models.RestError;
 import com.example.employee.services.ProjectService;
 
 import jakarta.validation.Valid;
@@ -60,8 +61,8 @@ public class ProjectController {
 	@GetMapping("/get-one/{projectId}")
 	public ResponseEntity<Object> getProjectById(@PathVariable Integer projectId) {
 		Project project = projectService.getProjectbyId(projectId);
-		if (project == null) {
-			return ResponseEntity.notFound().build();
+		if (project == null) {			
+			throw new NoSuchElementException();
 		} else {
 			return ResponseEntity.ok().body(project);
 		}
@@ -108,6 +109,16 @@ public class ProjectController {
 			return ResponseEntity.notFound().build();
 		}
 	}
+	
+	@GetMapping("/get-project/{employeeId}")
+	public ResponseEntity<Project> getProjectByEmployee(@PathVariable Integer employeeId) {
+		Project project = projectService.getByEmployeeId(employeeId);
+		if (project != null) {			
+			return ResponseEntity.ok().body(project);
+		} else {
+			throw new NoSuchElementException();
+		}
+	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -137,12 +148,13 @@ public class ProjectController {
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler(NoSuchElementException.class)
-	public Map<String, String> handleNotFoundExceptions(NoSuchElementException ex) {
+	public ResponseEntity<Object> handleNotFoundExceptions(NoSuchElementException ex) {
 		Map<String, String> errors = new HashMap<>();
 		String message = "There is no project with submitted id";
 		String field = "project";
 		errors.put(field, message);
-		return errors;
+		RestError re = new RestError(HttpStatus.NOT_FOUND.value(), "Not Found", false, "HttpErrorResponse", "There is not resource with given id.");
+		return new ResponseEntity<>(re, HttpStatus.NOT_FOUND);
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

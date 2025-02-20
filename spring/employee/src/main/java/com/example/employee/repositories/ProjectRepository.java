@@ -15,6 +15,7 @@ import com.example.employee.models.Project;
 public interface ProjectRepository
 		extends CrudRepository<Project, Integer>, PagingAndSortingRepository<Project, Integer> {
 	
+	// TODO: try to use store procedure instead of queries
 	@Query("SELECT p FROM Project p WHERE p.name LIKE CONCAT('%', :name, '%') AND p.active = true")
 	Page<Project> searchProjects(String name, Pageable pageable);
 
@@ -30,4 +31,7 @@ public interface ProjectRepository
 	
 	@Query("SELECT p FROM Project p LEFT JOIN ProjectHistory ph ON p.id = ph.project.id WHERE ph.employee.id =:employeeId")
 	List<Project> findAllByEmployee(Integer employeeId);
+	
+	@Query(nativeQuery = true, value = "SELECT p.* FROM employee.project as p LEFT JOIN employee.employee_project as ep ON ep.project_id = p.project_id WHERE ep.employee_id = ?1")
+	Project findByEmployeeId(Integer employeeId);
 }

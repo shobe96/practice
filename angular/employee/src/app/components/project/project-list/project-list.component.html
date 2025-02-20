@@ -1,59 +1,74 @@
 <div class="card">
-  <p-accordion [activeIndex]="0">
-    <p-accordionTab header="Search Filters">
-      <div class="search-inputs">
-        <input
-          [(ngModel)]="projectSearch.name"
-          pInputText
-          placeholder="Name of project"
-          (keyup)="onKeyUp()"
-        />
-        <p-button
-          icon="pi pi-trash"
-          [rounded]="true"
-          (onClick)="clear()"
-          severity="danger"
-          [pTooltip]="clearFiltersTooltip"
-          tooltipPosition="top"
-        />
-        <ng-template #clearFiltersTooltip>
-          <div class="flex align-items-center">
-            <span>Clear Filters</span>
-          </div>
-        </ng-template>
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          (onClick)="refresh()"
-          severity="success"
-          [pTooltip]="refreshTooltip"
-          tooltipPosition="top"
-        />
+  <p-accordion value="0">
+    <p-accordion-panel value="0">
+      <p-accordion-header>Search Filters</p-accordion-header>
+      <p-accordion-content>
+        <form class="employee-form" [formGroup]="projectFormGroup">
+          <div class="search-inputs">
+            <input
+              formControlName="name"
+              pInputText
+              placeholder="Name of project"
+            />
+            <input
+              formControlName="name"
+              pInputText
+              placeholder="Code of project"
+            />
+            <p-button
+              icon="pi pi-trash"
+              [rounded]="true"
+              (onClick)="clear()"
+              severity="danger"
+              [pTooltip]="clearFiltersTooltip"
+              tooltipPosition="top"
+            />
+            <ng-template #clearFiltersTooltip>
+              <div class="flex align-items-center">
+                <span>Clear Filters</span>
+              </div>
+            </ng-template>
+            <p-button
+              icon="pi pi-refresh"
+              [rounded]="true"
+              (onClick)="refresh()"
+              severity="success"
+              [pTooltip]="refreshTooltip"
+              tooltipPosition="top"
+            />
 
-        <ng-template #refreshTooltip>
-          <div class="flex align-items-center">
-            <span>Refresh List</span>
+            <ng-template #refreshTooltip>
+              <div class="flex align-items-center">
+                <span>Refresh List</span>
+              </div>
+            </ng-template>
           </div>
-        </ng-template>
-      </div>
-    </p-accordionTab>
+        </form>
+      </p-accordion-content>
+    </p-accordion-panel>
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
-  <div *ngIf="projects.length > 0">
-    <p-table [value]="projects" [tableStyle]="{ 'min-width': '70rem' }">
+  <div *ngIf="projectListFacade.viewModel$ | async as data; noResult">
+    <p-table
+      [rowHover]="true"
+      [value]="data.projects"
+      [tableStyle]="{ 'min-width': '70rem' }"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th id="id">ID</th>
           <th id="name">Name</th>
           <th id="startDate">Start Date</th>
+          <th id="startDate">End Date</th>
           <th id="actions">Actions</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-project>
-        <tr appTableHover>
+        <tr>
           <td>{{ project.id }}</td>
           <td>{{ project.name }}</td>
           <td>{{ project.startDate | date: "dd/MM/yyyy" }}</td>
+          <td>{{ project.endDate | date: "dd/MM/yyyy" }}</td>
           <td>
             <p-button
               icon="pi pi-eye"
@@ -71,8 +86,8 @@
             <p-button
               icon="pi pi-pencil"
               [rounded]="true"
-              (onClick)="goToEdit(project.id)"
-              severity="warning"
+              (onClick)="goToEdit(project)"
+              severity="warn"
               [pTooltip]="editTooltip"
               tooltipPosition="top"
             />
@@ -84,7 +99,7 @@
             <p-button
               icon="pi pi-trash"
               [rounded]="true"
-              (onClick)="showDialog(true, project.id)"
+              (onClick)="showDeleteDialog(project.id)"
               severity="danger"
               [pTooltip]="deleteTooltip"
               tooltipPosition="top"
@@ -102,43 +117,16 @@
     <div class="card flex justify-content-center">
       <p-paginator
         (onPageChange)="onPageChange($event)"
-        [first]="page.first"
-        [rows]="page.rows"
-        [totalRecords]="page.pageCount"
+        [first]="data.page.first"
+        [rows]="data.page.rows"
+        [totalRecords]="data.page.pageCount"
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
     </div>
-
-    <p-dialog
-      header="Warning"
-      [(visible)]="visible"
-      [modal]="true"
-      [style]="{ width: '35vw' }"
-      [draggable]="false"
-      [resizable]="false"
-    >
-      <p class="m-0">
-        Are you sure you want to delete project with id: {{ projectId}}
-      </p>
-      <div class="action-buttons">
-        <p-button
-          icon="pi pi-check"
-          [rounded]="true"
-          severity="success"
-          (onClick)="delete()"
-        ></p-button>
-        <p-button
-          icon="pi pi-times"
-          [rounded]="true"
-          severity="danger"
-          (onClick)="showDialog(false)"
-        ></p-button>
-      </div>
-    </p-dialog>
   </div>
-  <div *ngIf="projects.length === 0">
+  <ng-template #noResult>
     <p>
       No results.
     </p>
-  </div>
+  </ng-template>
 </div>

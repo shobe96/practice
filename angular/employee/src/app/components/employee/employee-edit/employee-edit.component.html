@@ -1,78 +1,115 @@
 <div class="card">
-  <h1 *ngIf="id === null; else elseBlock">Add new Employee</h1>
-  <ng-template #elseBlock>
-    <h1>Employee {{ id }}</h1>
-  </ng-template>
   <form
     class="employee-form"
     [formGroup]="employeeFormGroup"
     (ngSubmit)="submit()"
   >
-    <input formControlName="name" pInputText placeholder="Name of employee" />
-    <div
-      class="validation-messages"
-      *ngIf="employeeFormGroup.controls['name'].invalid && employeeFormGroup.controls['name'].touched"
-    >
-      <div *ngIf="employeeFormGroup.controls['name'].errors?.['required']">
-        Name is required!
+    <div class="custom-row">
+      <div class="custom-column">
+        <input
+          formControlName="name"
+          pInputText
+          placeholder="Name of employee"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="employeeFormGroup.controls['name'].invalid && employeeFormGroup.controls['name'].dirty"
+        >
+          <div *ngIf="employeeFormGroup.controls['name'].errors?.['required']">
+            Name is required!
+          </div>
+          <div *ngIf="employeeFormGroup.controls['name'].errors?.['minlength']">
+            Name must be longer than 5 characters!
+          </div>
+          <div *ngIf="employeeFormGroup.controls['name'].errors?.['maxlength']">
+            Name must be shorter than 25 characters!
+          </div>
+        </div>
       </div>
-      <div *ngIf="employeeFormGroup.controls['name'].errors?.['minlength']">
-        Name must be longer than 5 characters!
-      </div>
-      <div *ngIf="employeeFormGroup.controls['name'].errors?.['maxlength']">
-        Name must be shorter than 25 characters!
+      <div class="custom-column">
+        <input
+          formControlName="surname"
+          pInputText
+          placeholder="Surname of employee"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="employeeFormGroup.controls['surname'].invalid && employeeFormGroup.controls['surname'].dirty"
+        >
+          <div
+            *ngIf="employeeFormGroup.controls['surname'].errors?.['required']"
+          >
+            Surname is required!
+          </div>
+          <div
+            *ngIf="employeeFormGroup.controls['surname'].errors?.['minlength']"
+          >
+            Surname must be longer than 5 characters!
+          </div>
+          <div
+            *ngIf="employeeFormGroup.controls['surname'].errors?.['maxlength']"
+          >
+            Surname must be shorter than 25 characters!
+          </div>
+        </div>
       </div>
     </div>
-    <input
-      formControlName="surname"
-      pInputText
-      placeholder="Surname of employee"
-    />
-    <div
-      class="validation-messages"
-      *ngIf="employeeFormGroup.controls['surname'].invalid && employeeFormGroup.controls['surname'].touched"
-    >
-      <div *ngIf="employeeFormGroup.controls['surname'].errors?.['required']">
-        Surname is required!
-      </div>
-      <div *ngIf="employeeFormGroup.controls['surname'].errors?.['minlength']">
-        Surname must be longer than 5 characters!
-      </div>
-      <div *ngIf="employeeFormGroup.controls['surname'].errors?.['maxlength']">
-        Surname must be shorter than 25 characters!
-      </div>
-    </div>
-    <input formControlName="email" pInputText placeholder="Email of employee" />
-    <div
-      class="validation-messages"
-      *ngIf="employeeFormGroup.controls['email'].invalid && employeeFormGroup.controls['email'].touched"
-    >
-      <div *ngIf="employeeFormGroup.controls['email'].errors?.['required']">
-        Email address is required!
-      </div>
-      <div *ngIf="employeeFormGroup.controls['email'].errors?.['email']">
-        Email address is not valid!
-      </div>
-      <div *ngIf="employeeFormGroup.controls['email'].errors?.['maxlength']">
-        Email address must be shorter than 50 characters!
+    <div class="custom-row">
+      <div class="custom-column">
+        <input
+          pInputText
+          formControlName="email"
+          placeholder="Email of employee"
+        />
+        <div
+          class="validation-messages"
+          *ngIf="employeeFormGroup.controls['email'].invalid && employeeFormGroup.controls['email'].dirty"
+        >
+          <div *ngIf="employeeFormGroup.controls['email'].errors?.['required']">
+            Email address is required!
+          </div>
+          <div *ngIf="employeeFormGroup.controls['email'].errors?.['email']">
+            Email address is not valid!
+          </div>
+          <div
+            *ngIf="employeeFormGroup.controls['email'].errors?.['maxlength']"
+          >
+            Email address must be shorter than 50 characters!
+          </div>
+        </div>
       </div>
     </div>
-    <p-dropdown
-      formControlName="department"
-      [options]="departments"
-      optionLabel="name"
-      placeholder="Select a Department"
-      dataKey="id"
-    />
-    <p-multiSelect
-      [options]="skills"
-      formControlName="selectedSkills"
-      optionLabel="name"
-      placeholder="Select Skills"
-    />
+    <div *ngIf="employeeEditFacade.viewModel$ | async as data">
+      <div class="custom-row">
+        <div class="custom-column">
+          <p-select
+            [disabled]="disable"
+            [virtualScroll]="true"
+            appendTo="body"
+            formControlName="department"
+            [options]="data.departments"
+            optionLabel="name"
+            placeholder="Select a Department"
+            dataKey="id"
+          />
+        </div>
+        <div class="custom-column">
+          <p-multiSelect
+            [disabled]="disable"
+            appendTo="body"
+            [options]="data.skills"
+            formControlName="skills"
+            optionLabel="name"
+            placeholder="Select Skills"
+          />
+        </div>
+      </div>
+    </div>
     <div class="action-buttons">
-      <p-button label="Cancel" (onClick)="back()" />
+      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
       <p-button
+        *ngIf="!disable"
+        severity="success"
         [disabled]="employeeFormGroup.invalid"
         label="Submit"
         type="submit"

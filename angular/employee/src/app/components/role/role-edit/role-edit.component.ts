@@ -1,97 +1,111 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
 import { Role } from '../../../models/role.model';
-import { RoleService } from '../../../services/role/role.service';
-import { fireToast } from '../../../shared/utils';
+import { RoleEditFacadeService } from '../../../services/role/role-edit.facade.service';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { takeUntil } from 'rxjs';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-role-edit',
   templateUrl: './role-edit.component.html',
-  styleUrl: './role-edit.component.scss'
+  styleUrl: './role-edit.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RoleEditComponent implements OnInit, OnDestroy {
-  id: number | null = null;
-  private routeSubscription$!: Subscription;
-  private roleSubscription$!: Subscription;
-  role: Role = new Role();
+export class RoleEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   roleFormGroup!: FormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private roleService: RoleService,
-    private messageService: MessageService
-  ) { }
+  @Input() role: Role | null = {};
+  @Input() disable = false;
+  @Output() cancelEmiitter = new EventEmitter<any>();
+
+  roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+
+  constructor() {
+    super();
+  }
 
   ngOnInit(): void {
-    this.buildForm();
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["roleId"] ?? null;;
-      this.initFormFields();
-    });
+    this._buildForm();
+    this._initFormFields();
   }
-  ngOnDestroy(): void {
-    if (this.routeSubscription$ !== undefined) {
-      this.routeSubscription$.unsubscribe();
-    }
 
-    if (this.roleSubscription$ !== undefined) {
-      this.roleSubscription$.unsubscribe();
+  ngOnDestroy(): void {
+    this.unsubsribe();
+  }
+
+  cancel() {
+    this._dialogRef.close();
+  }
+
+  submit() {
+    const roleObserver = {
+      next: (value: Role) => {
+        if (Object.keys(value)) {
+          this.cancel();
+        }
+      },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
+    }
+    this.role = this._getFormValues();
+    this.roleEditFacade.submit(this.role)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe(roleObserver);
+  }
+
+  private _setValuesToFields() {
+    if (this.role) {
+      const name = this.role.name ?? '';
+      const description = this.role.description ?? ''
+      const code = this.role.code ?? ''
+      if (this.roleFormGroup) {
+        this.roleFormGroup.controls['name'].setValue(name);
+        this.roleFormGroup.controls['description'].setValue(description);
+        this.roleFormGroup.controls['code'].setValue(code);
+      }
     }
   }
-  buildForm() {
-    this.roleFormGroup = this.formBuilder.group({
+
+  private _disableFields(): void {
+    if (this.roleFormGroup) {
+      this.roleFormGroup.controls['name'].disable();
+      this.roleFormGroup.controls['description'].disable();
+      this.roleFormGroup.controls['code'].disable();
+    }
+  }
+  private _enableFields(): void {
+    if (this.roleFormGroup) {
+      this.roleFormGroup.controls['name'].enable();
+      this.roleFormGroup.controls['description'].enable();
+      this.roleFormGroup.controls['code'].enable();
+    }
+  }
+
+  private _getFormValues(): Role {
+    const role: Role = { ...this.role };
+    for (const field in this.roleFormGroup.controls) {
+      role[field] = this.roleFormGroup.controls[field].value;
+    }
+    return role;
+  }
+
+  private _buildForm() {
+    this.roleFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.maxLength(100), Validators.minLength(5)]]
     });
   }
 
-  private initFormFields() {
-    if (this.id !== null) {
-      const roleObserver: any = {
-        next: (value: Role) => {
-          this.role = value;
-          this.roleFormGroup.controls['name'].setValue(value.name);
-          this.roleFormGroup.controls['code'].setValue(value.code);
-          this.roleFormGroup.controls['description'].setValue(value.description);
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
-      };
-      this.roleSubscription$ = this.roleService.getRole(this.id).subscribe(roleObserver);
-    }
-  }
-
-  back() {
-    this.router.navigate(["role/list"])
-  }
-
-  submit() {
-    this.role.name = this.roleFormGroup.controls['name'].value;
-    this.role.code = this.roleFormGroup.controls['code'].value;
-    this.role.description = this.roleFormGroup.controls['description'].value;
-
-    const roleObserver: any = {
-      next: (value: Role) => {
-        if (this.id === null) {
-          fireToast("success", "Success", `Role ${value.name} has been created`, this.messageService);
-        } else {
-          fireToast("success", "Success", `Role ${value.name} has been updated`, this.messageService);
-        }
-        this.router.navigate([`role/details/${value.id}`])
-      },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { },
-    }
-    if (this.id === null) {
-      this.roleService.save(this.role).subscribe(roleObserver);
-    } else {
-      this.roleService.update(this.role).subscribe(roleObserver);
-    }
+  private _initFormFields() {
+    this._setValuesToFields();
+    if (this.disable) this._disableFields();
+    else this._enableFields();
   }
 }

@@ -1,93 +1,104 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Department } from '../../../models/department.model';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { DepartmentService } from '../../../services/department/department.service';
-import { MessageService } from 'primeng/api';
-import { fireToast } from '../../../shared/utils';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { catchError, takeUntil } from 'rxjs';
+import { DepartmentEditFacadeService } from '../../../services/department/department-edit.facade.service';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-department-edit',
   templateUrl: './department-edit.component.html',
-  styleUrl: './department-edit.component.scss'
+  styleUrl: './department-edit.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepartmentEditComponent implements OnInit, OnDestroy {
+export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
-  id: number | null = null;
-  private routeSubscription$!: Subscription;
-  private departmentSubscription$!: Subscription;
-  department: Department = new Department();
   departmentFormGroup!: FormGroup;
 
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private departmentService: DepartmentService,
-    private messageService: MessageService
-  ) { }
-  ngOnDestroy(): void {
-    if (this.routeSubscription$ !== undefined) {
-      this.routeSubscription$.unsubscribe();
-    }
+  @Input() department: Department | null = {};
+  @Input() disable = false;
 
-    if (this.departmentSubscription$ !== undefined) {
-      this.departmentSubscription$.unsubscribe();
-    }
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+
+  constructor() {
+    super();
   }
 
   ngOnInit(): void {
     this.buildForm();
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["departmentId"] ?? null;;
-      this.initFormFields();
-    });
+    this._initFormFields();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   buildForm() {
-    this.departmentFormGroup = this.formBuilder.group({
+    this.departmentFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]]
     });
   }
 
-  private initFormFields() {
-    if (this.id !== null) {
-      const departmentObserver: any = {
-        next: (value: Department) => {
-          this.department = value;
-          this.departmentFormGroup.controls['name'].setValue(value.name);
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
-      };
-      this.departmentSubscription$ = this.departmentService.getDepartment(this.id).subscribe(departmentObserver);
-    }
-  }
-
-  back() {
-    this.router.navigate(["department/list"])
+  cancel() {
+    this._dialogRef.close();
   }
 
   submit() {
-    this.department.name = this.departmentFormGroup.controls['name'].value;
-
-    const departmentObserver: any = {
+    const departmentObserver = {
       next: (value: Department) => {
-        if (this.id === null) {
-          fireToast("success","Success",`Department ${value.name} has been created`, this.messageService);
-        } else {
-          fireToast("success","Success",`Department ${value.name} has been updated`, this.messageService);
+        if (Object.keys(value)) {
+          this.cancel();
         }
-        this.router.navigate([`department/details/${value.id}`])
       },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      complete: () => { }
     }
-    if (this.id === null) {
-      this.departmentService.save(this.department).subscribe(departmentObserver);
-    } else {
-      this.departmentService.update(this.department).subscribe(departmentObserver);
+    this.department = this._getFormValues();
+    this._departmentEditFacade.submit(this.department)
+      .pipe(
+        takeUntil(this.componentIsDestroyed$),
+      )
+      .subscribe(departmentObserver);
+  }
+
+  private _setValuesToFields() {
+    if (this.department) {
+      const name = this.department.name ?? '';
+      if (this.departmentFormGroup) {
+        this.departmentFormGroup.controls['name'].setValue(name);
+      }
     }
+  }
+
+  private _getFormValues(): Department {
+    const department: Department = { ...this.department };
+    for (const field in this.departmentFormGroup.controls) {
+      department[field] = this.departmentFormGroup.controls[field].value;
+    }
+    return department;
+  }
+
+  private _disableFields(): void {
+    if (this.departmentFormGroup) {
+      this.departmentFormGroup.controls['name'].disable();
+    }
+  }
+
+  private _enableFields(): void {
+    if (this.departmentFormGroup) {
+      this.departmentFormGroup.controls['name'].enable();
+    }
+  }
+
+  private _initFormFields() {
+    this._setValuesToFields();
+    if (this.disable) this._disableFields();
+    else this._enableFields();
   }
 }

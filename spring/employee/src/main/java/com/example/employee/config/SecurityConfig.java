@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,6 +25,7 @@ import com.example.employee.repositories.RoleRepository;
 import com.example.employee.repositories.UserRepository;
 import com.example.employee.services.impl.UserDetailsServiceImpl;
 import com.example.employee.utils.AuthoritiesConstants;
+import com.example.employee.utils.CustomAccessDeniedHandler;
 import com.example.employee.utils.JwtAuthFilter;
 
 @Configuration
@@ -38,9 +38,11 @@ public class SecurityConfig {
 	private RoleRepository roleRepository;
 	
 	private AuthenticationEntryPoint authEntryPoint;
+	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
 	@Autowired
-	public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserRepository userRepository, RoleRepository roleRepository, @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authEntryPoint) {
+	public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserRepository userRepository, RoleRepository roleRepository, @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
+		this.customAccessDeniedHandler = customAccessDeniedHandler;
 		this.jwtAuthFilter = jwtAuthFilter;
 		this.userRepository = userRepository;
 		this.roleRepository = roleRepository;
@@ -71,12 +73,13 @@ public class SecurityConfig {
 						.requestMatchers("/api/departments/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/roles/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/skills/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
+						.requestMatchers("/api/projects/get-project/**").hasAnyAuthority(AuthoritiesConstants.ADMIN, AuthoritiesConstants.DEPARTMENT_CHIEF, AuthoritiesConstants.EMPLOYEE)
 						.requestMatchers("/api/projects/**").hasAnyAuthority(AuthoritiesConstants.ADMIN)
 						.requestMatchers("/api/project-history/**").hasAnyAuthority(AuthoritiesConstants.ADMIN, AuthoritiesConstants.DEPARTMENT_CHIEF, AuthoritiesConstants.EMPLOYEE)
 				)
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.httpBasic(basic -> basic.authenticationEntryPoint(authEntryPoint))
-				.exceptionHandling(Customizer.withDefaults())
+				.exceptionHandling(customizer -> customizer.accessDeniedHandler(customAccessDeniedHandler))
 				.authenticationProvider(authenticationProvider())
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class).build();
 

@@ -1,187 +1,145 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { EmployeeService } from '../../../services/employee/employee.service';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
-import { Subject, Subscription, debounceTime } from 'rxjs';
-import { Router } from '@angular/router';
+import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
-import { PageEvent } from '../../../models/page-event.model';
-import { EmployeeSearchResult } from '../../../models/employee-search-result.model';
-import { MessageService } from 'primeng/api';
-import { fireToast } from '../../../shared/utils';
+import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { DialogService } from 'primeng/dynamicdialog';
+import { EmployeeEditComponent } from '../employee-edit/employee-edit.component';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EmployeeListComponent implements OnInit, OnDestroy {
-  private employees$!: Subscription;
-  private searchSubject = new Subject<Employee>();
-  employeeSearch: Employee = new Employee();
-  employeeId: number = 0;
-  page: PageEvent = {
-    page: 0,
-    first: 0,
-    rows: 5,
-    pageCount: 0,
-    sort: 'asc',
-  };
-  employees: Employee[] = [];
-  visible: boolean = false;
+export class EmployeeListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
-  constructor(
-    private employeeService: EmployeeService,
-    private router: Router,
-    private messageService: MessageService
-  ) { }
+  employeeFormGroup!: FormGroup;
+  employeeSearch: Employee = {};
+  employeeId: number | null = 0;
+
+  employeeListFacade: EmployeeListFacadeService = inject(EmployeeListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+
+  constructor() {
+    super();
+    this._subscribeToRoute();
+  }
 
   ngOnInit(): void {
-    this.getAllEmployees();
-    this.searchSubject.pipe(debounceTime(2000)).subscribe({
-      next: (value) => {
-        this.employeeService.search(value, this.page).subscribe({
-          next: (value) => {
-            this.employees = value.employees ?? [];
-            this.page.pageCount = value.size ?? 0;
-          },
-          error: (err) => {
-            fireToast('error', 'Error', err.error.message, this.messageService);
-          },
-        });
-      },
-      error: (err) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
-      },
-    });
+    this._buildForm();
+    this.employeeListFacade.retrieve();
+    this._subscribeToFormGroup();
   }
 
   ngOnDestroy(): void {
-    this.employees$.unsubscribe();
-    this.searchSubject.complete();
+    this.unsubsribe();
   }
 
-  goToDetails(employeeId: number) {
-    this.router.navigate([`employee/details/$${employeeId}`]);
+  addNew(): void {
+    this.goToEdit(null, false);
   }
 
-  goToEdit(employeeId: number) {
-    this.router.navigate([`employee/edit/${employeeId}`]);
+  clear(): void {
+    this._clearSearchFields();
+    this.employeeListFacade.clear();
   }
 
-  public getAllEmployees() {
-    const employeesObserver: any = {
-      next: (value: EmployeeSearchResult) => {
-        this.employees = value.employees ?? [];
-        this.page.pageCount = value.size ?? 0;
+  goToDetails(employee: Employee): void {
+    this.goToEdit(employee, true);
+  }
+
+  goToEdit(employee: Employee | null, disable: boolean): void {
+    const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
+    this._dialogService.open(EmployeeEditComponent, {
+      header: title,
+      modal: true,
+      width: '35vw',
+      contentStyle: { overflow: 'auto' },
+      inputValues: {
+        employee: employee,
+        disable: disable
       },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.message, this.messageService);
-      },
-      complete: () => {
-        console.log('Completed');
-      },
-    };
-    this.employees$ = this.employeeService
-      .getAllEmployees(false, this.page)
-      .subscribe(employeesObserver);
+      baseZIndex: 10000,
+      maximizable: true
+    });
   }
 
-  public addNew() {
-    this.router.navigate(['employee/new']);
+  onPageChange(event: PaginatorState): void {
+    this.employeeListFacade.onPageChange(event);
   }
 
-  onPageChange(event: PaginatorState) {
-    this.page.first = event.first ?? 0;
-    this.page.page = event.page ?? 0;
-    this.page.rows = event.rows ?? 0;
-    if (
-      (this.employeeSearch.name !== undefined &&
-        this.employeeSearch.name !== '') ||
-      (this.employeeSearch.surname !== undefined &&
-        this.employeeSearch.surname !== '') ||
-      (this.employeeSearch.email !== undefined &&
-        this.employeeSearch.surname !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllEmployees();
-    }
+  refresh(): void {
+    this.employeeListFacade.retrieve();
   }
 
-  showDialog(visible: boolean, employeeId?: number) {
-    this.employeeId = employeeId ?? 0;
-    this.visible = visible;
-  }
-
-  delete() {
-    this.employeeService.delete(this.employeeId).subscribe({
-      next: (value: any) => {
-        if (
-          (this.employeeSearch.name !== undefined &&
-            this.employeeSearch.name !== '') ||
-          (this.employeeSearch.surname !== undefined &&
-            this.employeeSearch.surname !== '') ||
-          (this.employeeSearch.email !== undefined &&
-            this.employeeSearch.surname !== '')
-        ) {
-          this.search();
-        } else {
-          this.getAllEmployees();
-        }
-        fireToast(
-          'success',
-          'success',
-          `Employee with id ${this.employeeId} has been deleted.`,
-          this.messageService
-        );
-        this.showDialog(false);
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete employee with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
       },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
+      acceptButtonProps: {
+        label: 'Delete',
       },
-      complete: () => {
-        console.log('Completed');
+      accept: () => {
+        this.employeeListFacade.delete(id);
       },
     });
   }
 
-  search() {
-    console.log(this.employeeSearch);
-    this.searchSubject.next(this.employeeSearch);
+  private _buildForm() {
+    this.employeeFormGroup = this._formBuilder.group({
+      name: [''],
+      surname: [''],
+      email: [''],
+    });
   }
 
-  onKeyUp() {
-    if (
-      (this.employeeSearch.name !== undefined &&
-        this.employeeSearch.name !== '') ||
-      (this.employeeSearch.surname !== undefined &&
-        this.employeeSearch.surname !== '') ||
-      (this.employeeSearch.email !== undefined &&
-        this.employeeSearch.email !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllEmployees();
-    }
+  private _subscribeToFormGroup() {
+    this.employeeFormGroup
+      .valueChanges
+      .pipe(
+        takeUntil(this.componentIsDestroyed$),
+        debounceTime(2000),
+        distinctUntilChanged(),
+      )
+      .subscribe((value: Employee) => {
+        if (value.name || value.surname || value.email) {
+          this._router.navigate([], { queryParams: { name: value.name, surname: value.surname, email: value.email }, queryParamsHandling: 'merge' })
+        }
+      });
   }
 
-  public clear() {
-    this.employeeSearch = new Employee();
-    this.getAllEmployees();
+  private _clearSearchFields() {
+    this.employeeFormGroup.controls['name'].setValue('');
+    this.employeeFormGroup.controls['surname'].setValue('');
+    this.employeeFormGroup.controls['email'].setValue('');
+    this._router.navigate([], { queryParams: { name: '', surname: '', email: '' }, queryParamsHandling: 'merge' })
   }
 
-  public refresh() {
-    if (
-      (this.employeeSearch.name !== undefined &&
-        this.employeeSearch.name !== '') ||
-      (this.employeeSearch.surname !== undefined &&
-        this.employeeSearch.surname !== '') ||
-      (this.employeeSearch.email !== undefined &&
-        this.employeeSearch.surname !== '')
-    ) {
-      this.search();
-    } else {
-      this.getAllEmployees();
-    }
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: Employee) => {
+          this.employeeListFacade.search(params);
+        });
   }
 }

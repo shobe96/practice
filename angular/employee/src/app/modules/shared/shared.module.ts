@@ -1,25 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { TableHoverDirective } from '../../shared/directives/table-hover.directive';
-import { PrimeNgModule } from '../prime-ng/prime-ng.module';
 import { ReactiveFormsModule } from '@angular/forms';
+import { ConfirmationService, MessageService } from 'primeng/api';
+import { DialogService } from 'primeng/dynamicdialog';
+import { ButtonModule } from 'primeng/button';
 
-
+const MODULES = [
+  CommonModule,
+  ReactiveFormsModule,
+];
 
 @NgModule({
-  declarations: [
-    TableHoverDirective,
-  ],
   imports: [
-    CommonModule,
-    PrimeNgModule,
-    ReactiveFormsModule
+    MODULES,
+    ButtonModule
   ],
   exports: [
-    TableHoverDirective,
-    PrimeNgModule,
-    CommonModule,
-    ReactiveFormsModule
-  ]
+    MODULES
+  ],
+  providers: [MessageService, DialogService, ConfirmationService],
 })
 export class SharedModule { }

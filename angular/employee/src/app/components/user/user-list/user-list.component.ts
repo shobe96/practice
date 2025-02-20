@@ -1,93 +1,117 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
-import { PageEvent } from '../../../models/page-event.model';
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { User } from '../../../models/user.model';
-import { UserService } from '../../../services/user/user.service';
-import { Router } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { UserSearchResult } from '../../../models/user-search-result.model';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PaginatorState } from 'primeng/paginator';
-import { AuthService } from '../../../services/auth/auth.service';
-import { fireToast } from '../../../shared/utils';
+import { FormBuilder, FormGroup } from '@angular/forms';
+import { UserListFacadeService } from '../../../services/user/user-list.facade.service';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { ConfirmationService } from 'primeng/api';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserListComponent implements OnInit, OnDestroy {
-  private users$!: Subscription;
-  userId: number = 0;
-  page: PageEvent = {
-    page: 0,
-    first: 0,
-    rows: 5,
-    pageCount: 0,
-    sort: 'asc',
-  };
-  users: User[] = [];
-  visible: boolean = false;
+export class UserListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+  userFormGroup!: FormGroup;
+  userSearch: User = {};
+  userId: number | null = 0;
 
-  constructor(
-    private userService: UserService,
-    private router: Router,
-    private messageService: MessageService,
-    private authService: AuthService
-  ) {}
+  userListFacade: UserListFacadeService = inject(UserListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+
+  constructor() {
+    super();
+    this._subscribeToRoute();
+  }
 
   ngOnInit(): void {
-    this.getAllUsers();
-  }
-  ngOnDestroy(): void {
-    this.users$.unsubscribe();
+    this._buildForm();
+    this.userListFacade.retrieve();
+    this._subscribeToFormGroup();
   }
 
-  public getAllUsers() {
-    const usersObserver: any = {
-      next: (value: UserSearchResult) => {
-        this.users = value.users ?? [];
-        this.page.pageCount = value.size ?? 0;
-      },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.message, this.messageService);
-      },
-      complete: () => {
-        console.log('Completed');
-      },
-    };
-    this.users$ = this.userService
-      .getAllUsers(this.page)
-      .subscribe(usersObserver);
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   delete() {
-    this.authService.delete(this.userId).subscribe({
-      next: (value: any) => {
-        this.getAllUsers();
-        fireToast(
-          'success',
-          'success',
-          `Employee with id ${this.userId} has been deleted.`,
-          this.messageService
-        );
-        this.showDialog(false);
+    this.userListFacade.delete(this.userId);
+  }
+
+  onPageChange(event: PaginatorState) {
+    this.userListFacade.onPageChange(event);
+  }
+
+  clear(): void {
+    this._clearSearchFields();
+    this.userListFacade.clear();
+  }
+
+  refresh(): void {
+    this.userListFacade.retrieve();
+  }
+
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete project with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
       },
-      error: (err: any) => {
-        fireToast('error', 'Error', err.error.message, this.messageService);
+      acceptButtonProps: {
+        label: 'Delete',
       },
-      complete: () => {
-        console.log('Completed');
+      accept: () => {
+        this.userListFacade.delete(id);
       },
     });
   }
-  onPageChange(event: PaginatorState) {
-    this.page.first = event.first ?? 0;
-    this.page.page = event.page ?? 0;
-    this.page.rows = event.rows ?? 0;
-    this.getAllUsers();
+
+  private _subscribeToFormGroup() {
+    this.userFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe((value: User) => {
+        if (value.username) {
+          this._router.navigate([], { queryParams: { username: value.username }, queryParamsHandling: 'merge' })
+        }
+      });
   }
-  showDialog(visible: boolean, userId?: number) {
-    this.userId = userId ?? 0;
-    this.visible = visible;
+
+  private _clearSearchFields() {
+    this.userFormGroup.controls['username'].setValue('');
+    this._router.navigate([], { queryParams: { username: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _buildForm() {
+    this.userFormGroup = this._formBuilder.group({
+      username: [''],
+    });
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: User) => {
+          this.userListFacade.search(params);
+        });
   }
 }

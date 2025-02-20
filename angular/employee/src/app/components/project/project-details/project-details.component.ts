@@ -1,53 +1,63 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Project } from '../../../models/project.model';
-import { ProjectService } from '../../../services/project/project.service';
-import { fireToast } from '../../../shared/utils';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService } from 'primeng/api';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { ProjectDetailsFacadeService } from '../../../services/project/project-details.facade.service';
 
 @Component({
   selector: 'app-project-details',
   templateUrl: './project-details.component.html',
-  styleUrl: './project-details.component.scss'
+  styleUrl: './project-details.component.scss',
+  standalone: false
 })
-export class ProjectDetailsComponent implements OnInit {
+export class ProjectDetailsComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
   project!: Project;
-  employeeId: number = 0;
-  visible: boolean = false;
-  constructor(
-    private route: ActivatedRoute,
-    private router: Router,
-    private projectService: ProjectService,
-    private messageService: MessageService
-  ) { }
+  employeeId = 0;
+  visible = false;
+
+  projectDetailsFacade: ProjectDetailsFacadeService = inject(ProjectDetailsFacadeService);
+  private _route: ActivatedRoute = inject(ActivatedRoute);
+  private _router: Router = inject(Router)
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
+
+  constructor() {
+    super();
+  }
 
   ngOnInit(): void {
-    this.project = this.route.snapshot.data['project'];
+    this.project = this._route.snapshot.data['project'];
+    this._route.params.subscribe((params: any) => {
+      this.projectDetailsFacade.getProject(params.projectId);
+    })
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
   }
 
   back() {
-    this.router.navigate(["project/list"])
+    this._router.navigate(["project/list"])
   }
 
-  showDialog(visible: boolean, employeeId?: number) {
-    this.employeeId = employeeId ?? 0;
-    this.visible = visible;
-  }
-
-  unassignEmployee() {
-    this.projectService.unassignEmployee(this.employeeId, this.project).subscribe({
-      next: (value: any) => {
-        this.project.employees = this.project.employees?.filter(val => {
-          return val.id !== this.employeeId;
-        });
-        fireToast('success', 'Success', 'Employee unassigned successfully', this.messageService);
-        this.showDialog(false);
+  unassignEmployee(employeeId: number, project: Project) {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to unassign employee with id: ${employeeId} from project ${project.name}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
       },
-      error: (err: any) => {
-        fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
+      acceptButtonProps: {
+        label: 'Unassign',
       },
-      complete: () => { }
-    })
+      accept: () => {
+        this.projectDetailsFacade.unassignEmployee(employeeId, project);
+      },
+    });
   }
 }

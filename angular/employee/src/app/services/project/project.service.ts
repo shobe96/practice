@@ -1,58 +1,57 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 import { PageEvent } from '../../models/page-event.model';
 import { ProjectSearchResult } from '../../models/project-search-result.model';
 import { Project } from '../../models/project.model';
-import { buildSearchParams } from '../../shared/utils';
+import { buildPaginationParams, buildSearchParams } from '../../shared/utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectService {
 
-  private backendURL = environment.BACKEND_URL;
-  private baseUrl = "/api/projects"
+  private _backendURL = environment.BACKEND_URL;
+  private _baseUrl = "/api/projects";
+  private _http: HttpClient = inject(HttpClient);
 
-  constructor(private http: HttpClient) { }
-
-  public getAllProjects(all: boolean, page?: PageEvent): Observable<ProjectSearchResult> {
-    if (all) {
-      return this.http.get<ProjectSearchResult>(`${this.backendURL}${this.baseUrl}?all=${all}`)
-    } else {
-      let queryParams: string = page?.page === undefined ? `` : `page=${page.page}`;
-      queryParams += page?.rows === undefined ? `` : `&size=${page.rows}`;
-      queryParams += ``;
-      return this.http.get<ProjectSearchResult>(`${this.backendURL}${this.baseUrl}?${queryParams}&sort=asc&all=${all}`)
-    }
+  getAllProjects(all: boolean, page?: PageEvent): Observable<ProjectSearchResult> {
+    const url =
+      all ?
+        `${this._backendURL}${this._baseUrl}?all=${all}` :
+        `${this._backendURL}${this._baseUrl}?${buildPaginationParams(page)}&sort=asc&all=${all}`;
+    return this._http.get<ProjectSearchResult>(url);
   }
 
-  public getProject(projectd: number): Observable<Project> {
-    return this.http.get<Project>(`${this.backendURL}${this.baseUrl}/get-one/${projectd}`);
+  getProject(projectd: number): Observable<Project> {
+    return this._http.get<Project>(`${this._backendURL}${this._baseUrl}/get-one/${projectd}`);
   }
 
-  public save(project: Project | null): Observable<Project> {
-    return this.http.post<Project>(`${this.backendURL}${this.baseUrl}/create`, project);
+  save(project: Project | null): Observable<Project> {
+    return this._http.post<Project>(`${this._backendURL}${this._baseUrl}/create`, project);
   }
 
-  public update(project: Project): Observable<Project> {
-    return this.http.put<Project>(`${this.backendURL}${this.baseUrl}/update`, project);
+  update(project: Project): Observable<Project> {
+    return this._http.put<Project>(`${this._backendURL}${this._baseUrl}/update`, project);
   }
 
-  public search(project: Project, page: PageEvent): Observable<ProjectSearchResult> {
-    return this.http.get<ProjectSearchResult>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(project)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
+  search(project: Project, page: PageEvent): Observable<ProjectSearchResult> {
+    return this._http.get<ProjectSearchResult>(`${this._backendURL}${this._baseUrl}/search?${buildSearchParams(project)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
-  public delete(projectId: number): Observable<void> {
-    return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${projectId}`);
+  delete(projectId: number): Observable<void> {
+    return this._http.delete<void>(`${this._backendURL}${this._baseUrl}/delete/${projectId}`);
   }
 
-  public unassignEmployee(employeeId: number, project: Project) {
-    return this.http.post<void>(`${this.backendURL}${this.baseUrl}/unassign-employee/${employeeId}`, project);
+  unassignEmployee(employeeId: number, project: Project) {
+    return this._http.post<void>(`${this._backendURL}${this._baseUrl}/unassign-employee/${employeeId}`, project);
   }
 
-  public getEmployeeProjectHisotry(employeeId: number): Observable<Project[]> {
-    return this.http.get<Project[]>(`${this.backendURL}${this.baseUrl}/history/${employeeId}`);
+  getEmployeeProjectHisotry(employeeId: number): Observable<Project[]> {
+    return this._http.get<Project[]>(`${this._backendURL}${this._baseUrl}/history/${employeeId}`);
+  }
+  getProjectByEmployee(employeeId: number): Observable<Project> {
+    return this._http.get<Project>(`${this._backendURL}${this._baseUrl}/get-project/${employeeId}`);
   }
 }

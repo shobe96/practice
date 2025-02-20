@@ -1,22 +1,37 @@
 import { NgModule } from '@angular/core';
 import { RoleRoutingModule } from './role-routing.module';
 import { SharedModule } from '../shared/shared.module';
-import { RoleDetailsComponent } from '../../components/role/role-details/role-details.component';
 import { RoleEditComponent } from '../../components/role/role-edit/role-edit.component';
 import { RoleListComponent } from '../../components/role/role-list/role-list.component';
 import { RoleComponent } from '../../components/role/role.component';
-
+import { FormsModule } from '@angular/forms';
+import { AccordionModule } from 'primeng/accordion';
+import { ButtonModule } from 'primeng/button';
+import { PaginatorModule } from 'primeng/paginator';
+import { TableModule } from 'primeng/table';
+import { TooltipModule } from 'primeng/tooltip';
+import { InputTextModule } from 'primeng/inputtext';
+import { DynamicDialogModule } from 'primeng/dynamicdialog';
+import { ConfirmDialog } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
     RoleComponent,
     RoleListComponent,
-    RoleEditComponent,
-    RoleDetailsComponent
+    RoleEditComponent
   ],
   imports: [
     SharedModule,
-    RoleRoutingModule
+    RoleRoutingModule,
+    FormsModule,
+    AccordionModule,
+    ButtonModule,
+    TooltipModule,
+    TableModule,
+    PaginatorModule,
+    InputTextModule,
+    DynamicDialogModule,
+    ConfirmDialog
   ]
 })
 export class RoleModule { }

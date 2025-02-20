@@ -1,10 +1,8 @@
-@import "primeng/resources/themes/lara-light-blue/theme.css";
-@import "primeng/resources/primeng.css";
 @import "primeicons/primeicons.css";
 
 .action-buttons {
   display: flex;
-  justify-content: flex-start;
+  justify-content: space-between;
   gap: 15px;
 }
 
@@ -13,8 +11,32 @@
   justify-content: flex-start;
   gap: 10px;
 }
+
 .validation-messages {
   display: flex;
   flex-direction: column;
   color: red;
+}
+
+.custom-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.custom-column {
+  display: flex;
+  flex-direction: column;
+}
+
+.p-datatable-hoverable
+  .p-datatable-tbody
+  > tr:not(.p-datatable-row-selected):hover {
+  background: #2563eb !important;
+  color: white !important;
+}
+
+html {
+  font-family: "Inter var", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol";
 }

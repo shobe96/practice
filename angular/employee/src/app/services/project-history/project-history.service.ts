@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { ProjectHistory } from '../../models/project-history.model';
 import { environment } from '../../../environments/environment.development';
 import { Observable } from 'rxjs';
@@ -9,12 +9,11 @@ import { Observable } from 'rxjs';
 })
 export class ProjectHistoryService {
 
-  private backendURL = environment.BACKEND_URL;
-  private baseUrl = "/api/project-history"
+  private _backendURL = environment.BACKEND_URL;
+  private _baseUrl = "/api/project-history";
+  private _http: HttpClient = inject(HttpClient);
 
-  constructor(private http: HttpClient) { }
-
-  public getProjectsHistoryOfEmployee(employeeId: number): Observable<ProjectHistory[]> {
-    return this.http.get<ProjectHistory[]>(`${this.backendURL}${this.baseUrl}/${employeeId}`);
+  getProjectsHistoryOfEmployee(employeeId: number | undefined): Observable<ProjectHistory[]> {
+    return this._http.get<ProjectHistory[]>(`${this._backendURL}${this._baseUrl}/${employeeId}`);
   }
 }

@@ -1,46 +1,55 @@
 <div class="card">
-  <p-accordion [activeIndex]="0">
-    <p-accordionTab header="Search Filters">
-      <div class="search-inputs">
-        <input
-          [(ngModel)]="roleSearch.name"
-          pInputText
-          placeholder="Name of role"
-          (keyup)="onKeyUp()"
-        />
-        <p-button
-          icon="pi pi-trash"
-          [rounded]="true"
-          (onClick)="clear()"
-          severity="danger"
-          [pTooltip]="clearFiltersTooltip"
-          tooltipPosition="top"
-        />
-        <ng-template #clearFiltersTooltip>
-          <div class="flex align-items-center">
-            <span>Clear Filters</span>
+  <p-accordion value="0">
+    <p-accordion-panel value="0">
+      <p-accordion-header>Search Filters</p-accordion-header>
+      <p-accordion-content>
+        <form [formGroup]="roleFormGroup">
+          <div class="search-inputs">
+            <div class="search-inputs">
+              <input
+                formControlName="name"
+                pInputText
+                placeholder="Name of role"
+              />
+              <p-button
+                icon="pi pi-trash"
+                [rounded]="true"
+                (onClick)="clear()"
+                severity="danger"
+                [pTooltip]="clearFiltersTooltip"
+                tooltipPosition="top"
+              />
+              <ng-template #clearFiltersTooltip>
+                <div class="flex align-items-center">
+                  <span>Clear Filters</span>
+                </div>
+              </ng-template>
+              <p-button
+                icon="pi pi-refresh"
+                [rounded]="true"
+                (onClick)="refresh()"
+                severity="success"
+                [pTooltip]="refreshTooltip"
+                tooltipPosition="top"
+              />
+              <ng-template #refreshTooltip>
+                <div class="flex align-items-center">
+                  <span>Refresh List</span>
+                </div>
+              </ng-template>
+            </div>
           </div>
-        </ng-template>
-        <p-button
-          icon="pi pi-refresh"
-          [rounded]="true"
-          (onClick)="refresh()"
-          severity="success"
-          [pTooltip]="refreshTooltip"
-          tooltipPosition="top"
-        />
-
-        <ng-template #refreshTooltip>
-          <div class="flex align-items-center">
-            <span>Refresh List</span>
-          </div>
-        </ng-template>
-      </div>
-    </p-accordionTab>
+        </form>
+      </p-accordion-content>
+    </p-accordion-panel>
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
-  <div *ngIf="roles.length > 0">
-    <p-table [value]="roles" [tableStyle]="{ 'min-width': '70rem' }">
+  <div *ngIf="roleListFacade.viewModel$ | async as data; else elseBlock">
+    <p-table
+      [rowHover]="true"
+      [value]="data.roles"
+      [tableStyle]="{ 'min-width': '70rem' }"
+    >
       <ng-template pTemplate="header">
         <tr>
           <th id="role_id">ID</th>
@@ -49,14 +58,14 @@
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-role>
-        <tr appTableHover>
+        <tr>
           <td>{{ role.id }}</td>
           <td>{{ role.name }}</td>
           <td>
             <p-button
               icon="pi pi-eye"
               [rounded]="true"
-              (onClick)="goToDetails(role.id)"
+              (onClick)="goToDetails(role)"
               severity="success"
               [pTooltip]="detailsTooltip"
               tooltipPosition="top"
@@ -69,8 +78,8 @@
             <p-button
               icon="pi pi-pencil"
               [rounded]="true"
-              (onClick)="goToEdit(role.id)"
-              severity="warning"
+              (onClick)="goToEdit(role, false)"
+              severity="warn"
               [pTooltip]="editTooltip"
               tooltipPosition="top"
             />
@@ -82,7 +91,7 @@
             <p-button
               icon="pi pi-trash"
               [rounded]="true"
-              (onClick)="showDialog(true, role.id)"
+              (onClick)="showDeleteDialog(role.id)"
               severity="danger"
               [pTooltip]="deleteTooltip"
               tooltipPosition="top"
@@ -99,40 +108,14 @@
     <div class="card flex justify-content-center">
       <p-paginator
         (onPageChange)="onPageChange($event)"
-        [first]="page.first"
-        [rows]="page.rows"
-        [totalRecords]="page.pageCount"
+        [first]="data.page.first"
+        [rows]="data.page.rows"
+        [totalRecords]="data.page.pageCount"
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
-      <p-dialog
-      header="Warning"
-      [(visible)]="visible"
-      [modal]="true"
-      [style]="{ width: '35vw' }"
-      [draggable]="false"
-      [resizable]="false"
-    >
-      <p class="m-0">
-        Are you sure you want to delete employee with id: {{ roleId }}
-      </p>
-      <div class="action-buttons">
-        <p-button
-          icon="pi pi-check"
-          [rounded]="true"
-          severity="success"
-          (onClick)="delete()"
-        ></p-button>
-        <p-button
-          icon="pi pi-times"
-          [rounded]="true"
-          severity="danger"
-          (onClick)="showDialog(false)"
-        ></p-button>
-      </div>
-    </p-dialog>
     </div>
   </div>
-  <div *ngIf="roles.length === 0">
+  <ng-template #elseBlock>
     <p>No results.</p>
-  </div>
+  </ng-template>
 </div>

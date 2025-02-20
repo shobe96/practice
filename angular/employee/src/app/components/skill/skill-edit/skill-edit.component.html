@@ -1,13 +1,14 @@
 <div class="card">
-  <h1 *ngIf="id === null; else elseBlock">Add new Skill</h1>
-  <ng-template #elseBlock>
-    <h1>Skill {{ id }}</h1>
-  </ng-template>
   <form class="skill-form" [formGroup]="skillFormGroup" (ngSubmit)="submit()">
-    <input formControlName="name" pInputText placeholder="Name of skill" />
+    <input
+      [readonly]="disable"
+      formControlName="name"
+      pInputText
+      placeholder="Name of skill"
+    />
     <div
       class="validation-messages"
-      *ngIf="skillFormGroup.controls['name'].invalid && skillFormGroup.controls['name'].touched"
+      *ngIf="skillFormGroup.controls['name'].invalid && skillFormGroup.controls['name'].dirty"
     >
       <div *ngIf="skillFormGroup.controls['name'].errors?.['required']">
         Name is required!
@@ -19,28 +20,15 @@
         Name must be shorter than 25 characters!
       </div>
     </div>
-    <div
-      class="validation-messages"
-      *ngIf="skillFormGroup.controls['description'].invalid && skillFormGroup.controls['description'].touched"
-    >
-      <div *ngIf="skillFormGroup.controls['description'].errors?.['required']">
-        Description is required!
-      </div>
-      <div *ngIf="skillFormGroup.controls['description'].errors?.['minlength']">
-        Description must be longer than 5 characters!
-      </div>
-      <div *ngIf="skillFormGroup.controls['description'].errors?.['maxlength']">
-        Description must be shorter than 100 characters!
-      </div>
-    </div>
     <input
+      [readonly]="disable"
       formControlName="description"
       pInputText
       placeholder="Description of skill"
     />
     <div
       class="validation-messages"
-      *ngIf="skillFormGroup.controls['description'].invalid && skillFormGroup.controls['description'].touched"
+      *ngIf="skillFormGroup.controls['description'].invalid && skillFormGroup.controls['description'].dirty"
     >
       <div *ngIf="skillFormGroup.controls['description'].errors?.['required']">
         Description is required!
@@ -53,8 +41,10 @@
       </div>
     </div>
     <div class="action-buttons">
-      <p-button label="Cancel" (onClick)="back()" />
+      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
       <p-button
+        *ngIf="!disable"
+        severity="success"
         [disabled]="skillFormGroup.invalid"
         label="Submit"
         type="submit"

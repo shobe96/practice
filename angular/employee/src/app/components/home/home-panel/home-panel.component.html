@@ -1,88 +1,113 @@
 <div class="card">
-  <p-tabView>
-    <p-tabPanel header="General"
-      ><h1>Employee {{ employee.id }}</h1>
-      <label for="name">Name:</label>
-      <p id="name">{{ employee.name }}</p>
-      <label for="surname">Surname:</label>
-      <p id="surname">{{ employee.surname }}</p>
-      <label for="email">Email:</label>
-      <p id="email">{{ employee.email }}</p>
-      <label for="status">Status:</label>
-      <p id="status">{{ employee.active == true ? 'Assaigned' : 'Free' }}</p>
-    </p-tabPanel>
-    <p-tabPanel header="Roles">
-      <p-table
-        [value]="employee.user?.roles ?? []"
-        [tableStyle]="{ 'min-width': '70rem' }"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th id="roleName">Name</th>
-            <th id="description">Description</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-role>
-          <tr appTableHover>
-            <td>{{ role.name }}</td>
-            <td>{{ role.description }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-tabPanel>
-    <p-tabPanel header="Skills">
-      <p-table
-        [value]="employee.skills ?? []"
-        [tableStyle]="{ 'min-width': '70rem' }"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th id="skillName">Name</th>
-            <th id="description">Description</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-skill>
-          <tr appTableHover>
-            <td>{{ skill.name }}</td>
-            <td>{{ skill.description }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-tabPanel>
-    <p-tabPanel header="Currently Assigned project"> </p-tabPanel>
-    <p-tabPanel header="Projects History">
-      <p-table
-        [value]="projectsHistory"
-        [tableStyle]="{ 'min-width': '70rem' }"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th id="projectName">Name</th>
-            <th id="code">Code</th>
-            <th id="endDate">Assigned on</th>
-            <th id="endDate">Unassigned on</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-projectHistory>
-          <tr appTableHover>
-            <td>{{ projectHistory.project.name }}</td>
-            <td>{{ projectHistory.project.code }}</td>
-            <td>{{ projectHistory.startDate | date: "dd/MM/yyyy" }}</td>
-            <td>{{ projectHistory.endDate | date: "dd/MM/yyyy" }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-tabPanel>
-    <p-tabPanel header="Department" [disabled]="!showTab">
-      <div class="card" *ngIf="employee.department">
-        <h1>Department {{ employee.department.id }}</h1>
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">General</p-tab>
+      <p-tab value="1">Roles</p-tab>
+      <p-tab value="2">Skills</p-tab>
+      <p-tab value="3">Currently Assigned project</p-tab>
+      <p-tab value="4">Projects History</p-tab>
+      <p-tab value="5">Department</p-tab>
+      <p-tab value="6">Department Employees</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <h1>Employee {{ employee.id }}</h1>
         <label for="name">Name:</label>
-        <p id="name">{{ employee.department.name }}</p>
-      </div>
-    </p-tabPanel>
-    <p-tabPanel header="Department Employees" [disabled]="!showTab">
-      <div *ngIf="employees.length > 0">
-        <p-table [value]="employees" [tableStyle]="{ 'min-width': '70rem' }">
+        <p id="name">{{ employee.name }}</p>
+        <label for="surname">Surname:</label>
+        <p id="surname">{{ employee.surname }}</p>
+        <label for="email">Email:</label>
+        <p id="email">{{ employee.email }}</p>
+        <label for="status">Status:</label>
+        <p id="status">{{ employee.active ? 'Assaigned' : 'Free' }}</p>
+      </p-tabpanel>
+      <p-tabpanel value="1">
+        <p-table
+          [rowHover]="true"
+          [value]="employee.user?.roles ?? []"
+          [tableStyle]="{ 'min-width': '70rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th id="roleName">Name</th>
+              <th id="description">Description</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-role>
+            <tr>
+              <td>{{ role.name }}</td>
+              <td>{{ role.description }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+      <p-tabpanel value="2">
+        <p-table
+          [rowHover]="true"
+          [value]="employee.skills ?? []"
+          [tableStyle]="{ 'min-width': '70rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th id="skillName">Name</th>
+              <th id="description">Description</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-skill>
+            <tr>
+              <td>{{ skill.name }}</td>
+              <td>{{ skill.description }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+      <p-tabpanel value="3">
+        <label for="projectName">Name:</label>
+        <p id="projectName">
+          {{ activeProject.name }}
+        </p>
+        <label for="projectCode">Code:</label>
+        <p id="projectCode">
+          {{ activeProject.code }}
+        </p>
+      </p-tabpanel>
+      <p-tabpanel value="4">
+        <p-table
+          [rowHover]="true"
+          [value]="projectsHistory"
+          [tableStyle]="{ 'min-width': '70rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th id="projectName">Name</th>
+              <th id="code">Code</th>
+              <th id="endDate">Assigned on</th>
+              <th id="endDate">Unassigned on</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-projectHistory>
+            <tr>
+              <td>{{ projectHistory.project.name }}</td>
+              <td>{{ projectHistory.project.code }}</td>
+              <td>{{ projectHistory.startDate | date: "dd/MM/yyyy" }}</td>
+              <td>{{ projectHistory.endDate | date: "dd/MM/yyyy" }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+      <p-tabpanel value="5">
+        <div class="card" *ngIf="employee.department">
+          <h1>Department {{ employee.department.id }}</h1>
+          <label for="name">Name:</label>
+          <p id="name">{{ employee.department.name }}</p>
+        </div>
+      </p-tabpanel>
+      <p-tabpanel value="6">
+        <p-table
+          [rowHover]="true"
+          [value]="departmentEmployees"
+          [tableStyle]="{ 'min-width': '70rem' }"
+        >
           <ng-template pTemplate="header">
             <tr>
               <th id="id">ID</th>
@@ -94,7 +119,7 @@
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-employee>
-            <tr appTableHover>
+            <tr>
               <td>{{ employee.id }}</td>
               <td>{{ employee.name }}</td>
               <td>{{ employee.surname }}</td>
@@ -111,7 +136,7 @@
             </tr>
           </ng-template>
         </p-table>
-    
+
         <div class="card flex justify-content-center">
           <p-paginator
             (onPageChange)="onPageChange($event)"
@@ -121,9 +146,9 @@
             [rowsPerPageOptions]="[5, 10, 20, 30]"
           ></p-paginator>
         </div>
-      </div>
-    </p-tabPanel>
-  </p-tabView>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
   <div class="action-buttons">
     <p-button label="Edit" (onClick)="goToEdit()" />
   </div>

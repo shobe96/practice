@@ -1,175 +1,116 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { ActivatedRoute, Router, Params } from '@angular/router';
-import { MessageService } from 'primeng/api';
-import { Subscription } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { Project } from '../../../models/project.model';
-import { ProjectService } from '../../../services/project/project.service';
-import { fireToast } from '../../../shared/utils';
-import { Skill } from '../../../models/skill.model';
-import { SkillService } from '../../../services/skill/skill.service';
-import { SkillSearchResult } from '../../../models/skill-search-result.model';
-import { Employee } from '../../../models/employee.model';
-import { EmployeeService } from '../../../services/employee/employee.service';
-import { Department } from '../../../models/department.model';
-import { DepartmentService } from '../../../services/department/department.service';
-import { DepartmentSearchResult } from '../../../models/department-search-result.model';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { ProjectEditFacadeService } from '../../../services/project/project-edit.facade.service';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
+import { CustomMessageService } from '../../../services/custom-message.service';
 
 @Component({
   selector: 'app-project-edit',
   templateUrl: './project-edit.component.html',
-  styleUrl: './project-edit.component.scss'
+  styleUrl: './project-edit.component.scss',
+  standalone: false,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectEditComponent implements OnInit, OnDestroy {
-  id: number | null = null;
-  private routeSubscription$!: Subscription;
-  private projectSubscription$!: Subscription;
-  project: Project = new Project();
-  projectFormGroup!: FormGroup;
-  skills: Skill[] = [];
-  employees: Employee[] = [];
-  departments: Department[] = [];
+export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
-  constructor(
-    private route: ActivatedRoute,
-    private projectService: ProjectService,
-    private router: Router,
-    private formBuilder: FormBuilder,
-    private messageService: MessageService,
-    private skillService: SkillService,
-    private employeeService: EmployeeService,
-    private departmentService: DepartmentService
-  ) { }
+  projectFormGroup!: FormGroup;
+
+  @Input() project: Project = {};
+
+  projectEditFacade: ProjectEditFacadeService = inject(ProjectEditFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+
+  constructor() {
+    super();
+  }
 
   ngOnInit(): void {
-    this.departmentService.getAllDepartments(true).subscribe({
-      next: (value: DepartmentSearchResult) => {
-        this.departments = value.departments ?? [];
-      },
-      error: (err: any) => {
-        if (err.status === 0) {
-          fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
-        } else {
-          fireToast('error', 'Error', `${err.message}`, this.messageService);
-        }
-      },
-      complete: () => {}
-    })
-    this.skillService.getAllSkills(true).subscribe({
-      next: (value: SkillSearchResult) => {
-        this.skills = value.skills ?? [];
-      },
-      error: (err: any) => {
-        if (err.status === 0) {
-          fireToast('error', `${err.statusText}`, `Something went wrong. Conatact admin.`, this.messageService);
-        } else {
-          fireToast('error', 'Error', `${err.message}`, this.messageService);
-        }
-      },
-      complete: () => { }
-    });
+    this.projectEditFacade.loadSelectOptions();
     this.buildForm();
-    this.routeSubscription$ = this.route.params.subscribe((params: Params) => {
-      this.id = params["projectId"] ?? null;
-      this.initFormFields();
-    });
-    this.onChanges();
+    this._initFormFields();
   }
+
   ngOnDestroy(): void {
-    if (this.routeSubscription$ !== undefined) {
-      this.routeSubscription$.unsubscribe();
-    }
-    if (this.projectSubscription$ !== undefined) {
-      this.projectSubscription$.unsubscribe();
-    }
+    this.unsubsribe();
   }
 
   buildForm() {
-    this.projectFormGroup = this.formBuilder.group({
+    this.projectFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
       startDate: [{}, [Validators.required]],
       endDate: [{}, [Validators.required]],
-      selectedSkills: [[], [Validators.required]],
-      selectedEmployees: [[], [Validators.required]],
-      selectedDepartment: [{}, [Validators.required]]
+      skills: [[], [Validators.required]],
+      employees: [[], [Validators.required]],
+      department: [{}, [Validators.required]]
     });
   }
 
-  private initFormFields() {
-    if (this.id !== null) {
-      const projectObserver: any = {
-        next: (value: Project) => {
-          this.project = value;
-          this.projectFormGroup.controls['name'].setValue(value.name);
-          this.projectFormGroup.controls['code'].setValue(value.code);
-          const skills = value.skills ?? [];
-          const department = value.department ?? {};
-          this.projectFormGroup.controls['selectedSkills'].setValue(skills);
-          this.projectFormGroup.controls['selectedDepartment'].setValue(value.department);
-          this.retrieveEmployees(skills, department);
-          this.projectFormGroup.controls['selectedEmployees'].setValue(value.employees);
-          console.log("typeof startDate",typeof(value.startDate));
-          const startDate = value.startDate ?? new Date();
-          const endDate = value.endDate ?? new Date();
-          this.projectFormGroup.controls['startDate'].setValue(new Date(startDate));
-          this.projectFormGroup.controls['endDate'].setValue(new Date(endDate));
-        },
-        error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-        complete: () => { console.log('Completed') }
-      };
-      this.projectSubscription$ = this.projectService.getProject(this.id).subscribe(projectObserver);
-    }
-  }
-
-  back() {
-    this.router.navigate(["project/list"])
+  cancel() {
+    this._dialogRef.close();
   }
 
   submit() {
-    this.project.name = this.projectFormGroup.controls['name'].value;
-    this.project.code = this.projectFormGroup.controls['code'].value;
-    this.project.skills = this.projectFormGroup.controls['selectedSkills'].value;
-    this.project.employees = this.projectFormGroup.controls['selectedEmployees'].value;
-    this.project.department = this.projectFormGroup.controls['selectedDepartment'].value;
-    this.project.startDate = this.projectFormGroup.controls['startDate'].value;
-    this.project.endDate = this.projectFormGroup.controls['endDate'].value;
-    const projectObserver: any = {
+    const projectObserver = {
       next: (value: Project) => {
-        if (this.id === null) {
-          this.router.navigate([`project/details/${value.id}`])
-          fireToast("success", "Success", `Project ${value.name} has been created`, this.messageService);
-        } else {
-          this.router.navigate([`project/details/${value.id}`])
-          fireToast("success", "Success", `Project ${value.name} has been updated`, this.messageService);
+        if (Object.keys(value)) {
+          this.cancel();
         }
       },
-      error: (err: any) => { fireToast('error', 'Error', err.error.message, this.messageService); },
-      complete: () => { },
-    }
-    if (this.id === null) {
-      this.projectService.save(this.project).subscribe(projectObserver);
-    } else {
-      this.projectService.update(this.project).subscribe(projectObserver);
-    }
-  }
-
-  private retrieveEmployees(skills: Skill[], department: Department) {
-    this.employeeService.filterEmployeesByActiveAndSkills(skills, department).subscribe({
-      next: (value: Employee[]) => {
-        this.employees = value;
-      },
-      error: (err: any) => { },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
       complete: () => { }
-    });
+    }
+    this.project = this._getFormValues();
+    this.projectEditFacade.submit(this.project)
+      .pipe(takeUntil(this.componentIsDestroyed$))
+      .subscribe(projectObserver);
   }
 
-  private onChanges() {
-    this.projectFormGroup.valueChanges.subscribe(val => {
-      console.log(val.selectedDepartment);
-      if (val.selectedSkills.length > 0 && Object.keys(val.selectedDepartment).length > 0) {
-        this.retrieveEmployees(val.selectedSkills, val.selectedDepartment);
+  getEmployees(_event: any) {
+    const { department, skills } = this.projectFormGroup.getRawValue();
+    this.projectFormGroup.controls['employees'].setValue([]);
+    this.projectEditFacade.getEmployees(skills, department);
+  }
+
+  private _setValuesToFields() {
+    if (this.project) {
+      const name = this.project.name ?? '';
+      const code = this.project.code ?? ''
+      const employees = this.project.employees ?? [];
+      const department = this.project.department ?? {};
+      const skills = this.project.skills ?? [];
+      const startDate = this.project.startDate ? new Date(this.project.startDate) : new Date();
+      const endDate = this.project.endDate ? new Date(this.project.endDate) : new Date();
+
+      if (this.projectFormGroup) {
+        this.projectFormGroup.controls['name'].setValue(name);
+        this.projectFormGroup.controls['code'].setValue(code);
+        this.projectFormGroup.controls['department'].setValue(department);
+        this.projectFormGroup.controls['skills'].setValue(skills);
+        this.getEmployees(null);
+        this.projectFormGroup.controls['startDate'].setValue(startDate);
+        this.projectFormGroup.controls['endDate'].setValue(endDate);
+        this.projectFormGroup.controls['employees'].setValue(employees);
       }
-    })
+
+      if (Object.keys(this.project)?.length === 1) this.projectEditFacade.clearEmployees();
+    }
+  }
+
+  private _getFormValues(): Project {
+    const project: Project = { ...this.project };
+    for (const field in this.projectFormGroup.controls) {
+      project[field] = this.projectFormGroup.controls[field].value;
+    }
+    return project;
+  }
+
+  private _initFormFields() {
+    this._setValuesToFields();
   }
 }

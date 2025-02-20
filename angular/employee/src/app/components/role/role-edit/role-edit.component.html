@@ -1,13 +1,9 @@
 <div class="card">
-  <h1 *ngIf="id === null; else elseBlock">Add new Role</h1>
-  <ng-template #elseBlock>
-    <h1>Role {{ id }}</h1>
-  </ng-template>
   <form class="role-form" [formGroup]="roleFormGroup" (ngSubmit)="submit()">
     <input formControlName="name" pInputText placeholder="Name of role" />
     <div
       class="validation-messages"
-      *ngIf="roleFormGroup.controls['name'].invalid && roleFormGroup.controls['name'].touched"
+      *ngIf="roleFormGroup.controls['name'].invalid && roleFormGroup.controls['name'].dirty"
     >
       <div *ngIf="roleFormGroup.controls['name'].errors?.['required']">
         Name is required!
@@ -22,7 +18,7 @@
     <input formControlName="code" pInputText placeholder="Code" />
     <div
       class="validation-messages"
-      *ngIf="roleFormGroup.controls['code'].invalid && roleFormGroup.controls['code'].touched"
+      *ngIf="roleFormGroup.controls['code'].invalid && roleFormGroup.controls['code'].dirty"
     >
       <div *ngIf="roleFormGroup.controls['code'].errors?.['required']">
         Code is required!
@@ -34,9 +30,10 @@
         Code must be shorter than 5 characters!
       </div>
     </div>
+    <input formControlName="description" pInputText placeholder="Description" />
     <div
       class="validation-messages"
-      *ngIf="roleFormGroup.controls['description'].invalid && roleFormGroup.controls['description'].touched"
+      *ngIf="roleFormGroup.controls['description'].invalid && roleFormGroup.controls['description'].dirty"
     >
       <div *ngIf="roleFormGroup.controls['description'].errors?.['required']">
         Description is required!
@@ -49,8 +46,10 @@
       </div>
     </div>
     <div class="action-buttons">
-      <p-button label="Cancel" (onClick)="back()" />
+      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
       <p-button
+        *ngIf="!disable"
+        severity="success"
         [disabled]="roleFormGroup.invalid"
         label="Submit"
         type="submit"

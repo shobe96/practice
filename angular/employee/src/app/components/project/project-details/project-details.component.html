@@ -1,94 +1,76 @@
-<div class="card">
-  <p-tabView>
-    <p-tabPanel header="General">
-      <h1>Project {{ project.id }}</h1>
-      <label for="name">Name:</label>
-      <p id="name">{{ project.name }}</p>
-      <label for="name">Code:</label>
-      <p id="name">{{ project.code }}</p>
-    </p-tabPanel>
-    <p-tabPanel header="Necessary Skills">
-      <p-table
-        [value]="project.skills ?? []"
-        [tableStyle]="{ 'min-width': '70rem' }"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th id="skillName">Name</th>
-            <th id="description">Description</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-skill>
-          <tr appTableHover>
-            <td>{{ skill.name }}</td>
-            <td>{{ skill.description }}</td>
-          </tr>
-        </ng-template>
-      </p-table>
-    </p-tabPanel>
-    <p-tabPanel header="Assigned Employees">
-      <p-table
-        [value]="project.employees ?? []"
-        [tableStyle]="{ 'min-width': '70rem' }"
-      >
-        <ng-template pTemplate="header">
-          <tr>
-            <th id="employeeName">Name</th>
-            <th id="surname">Surname</th>
-            <th id="actions">Actions</th>
-          </tr>
-        </ng-template>
-        <ng-template pTemplate="body" let-employee>
-          <tr appTableHover>
-            <td>{{ employee.name }}</td>
-            <td>{{ employee.surname }}</td>
-            <td>
-              <p-button
-                icon="pi pi-trash"
-                [rounded]="true"
-                (onClick)="showDialog(true, employee.id)"
-                severity="danger"
-                [pTooltip]="deleteTooltip"
-                tooltipPosition="top"
-              />
-              <ng-template #deleteTooltip>
-                <div class="flex align-items-center">
-                  <span>Unassign Employee</span>
-                </div>
-              </ng-template>
-            </td>
-          </tr>
-        </ng-template>
-      </p-table>
-      <p-dialog
-        header="Warning"
-        [(visible)]="visible"
-        [modal]="true"
-        [style]="{ width: '35vw' }"
-        [draggable]="false"
-        [resizable]="false"
-      >
-        <p class="m-0">
-          Are you sure you want to delete skill with id: {{ employeeId }}
-        </p>
-        <div class="action-buttons">
-          <p-button
-            icon="pi pi-check"
-            [rounded]="true"
-            severity="success"
-            (onClick)="unassignEmployee()"
-          ></p-button>
-          <p-button
-            icon="pi pi-times"
-            [rounded]="true"
-            severity="danger"
-            (onClick)="showDialog(false)"
-          ></p-button>
-        </div>
-      </p-dialog>
-    </p-tabPanel>
-  </p-tabView>
-
+<div class="card" *ngIf="projectDetailsFacade.viewModel$ | async as data">
+  <p-tabs value="0">
+    <p-tablist>
+      <p-tab value="0">General</p-tab>
+      <p-tab value="1">Necessary Skills</p-tab>
+      <p-tab value="2">Assigned Employees</p-tab>
+    </p-tablist>
+    <p-tabpanels>
+      <p-tabpanel value="0">
+        <h1>Project {{ data.project.id }}</h1>
+        <label for="name">Name:</label>
+        <p id="name">{{ data.project.name }}</p>
+        <label for="name">Code:</label>
+        <p id="name">{{ data.project.code }}</p>
+      </p-tabpanel>
+      <p-tabpanel value="1">
+        <p-table
+          [rowHover]="true"
+          [value]="data.project.skills ?? []"
+          [tableStyle]="{ 'min-width': '70rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th id="skillName">Name</th>
+              <th id="description">Description</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-skill>
+            <tr>
+              <td>{{ skill.name }}</td>
+              <td>{{ skill.description }}</td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+      <p-tabpanel value="2">
+        <p-table
+          [rowHover]="true"
+          [value]="data.project.employees ?? []"
+          [tableStyle]="{ 'min-width': '70rem' }"
+        >
+          <ng-template pTemplate="header">
+            <tr>
+              <th id="employeeName">Name</th>
+              <th id="surname">Surname</th>
+              <th id="actions">Actions</th>
+            </tr>
+          </ng-template>
+          <ng-template pTemplate="body" let-employee>
+            <tr>
+              <td>{{ employee.name }}</td>
+              <td>{{ employee.surname }}</td>
+              <td>
+                <p-button
+                  icon="pi pi-trash"
+                  [rounded]="true"
+                  (onClick)="unassignEmployee(employee.id, data.project)"
+                  severity="danger"
+                  [pTooltip]="deleteTooltip"
+                  tooltipPosition="top"
+                />
+                <ng-template #deleteTooltip>
+                  <div class="flex align-items-center">
+                    <span>Unassign Employee</span>
+                  </div>
+                </ng-template>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+      </p-tabpanel>
+    </p-tabpanels>
+  </p-tabs>
   <div class="action-buttons">
     <p-button label="Back" (onClick)="back()" />
   </div>
