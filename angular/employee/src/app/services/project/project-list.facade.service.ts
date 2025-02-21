@@ -25,7 +25,7 @@ export class ProjectListFacadeService {
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ projects: Project[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
     projects: this._projects.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable()
@@ -44,7 +44,9 @@ export class ProjectListFacadeService {
     const projectObserver = {
       next: () => { this.retrieve(); },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (id) {
       this._projectService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(projectObserver);
@@ -62,7 +64,9 @@ export class ProjectListFacadeService {
     const projectObserver = {
       next: (value: ProjectSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields())
       this._projectService.search(this._projectSearch, this._defaultPage)
@@ -76,7 +80,9 @@ export class ProjectListFacadeService {
     const projectObserver = {
       next: (value: ProjectSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields()) {
       this._projectService.search(this._projectSearch, this._defaultPage).pipe(catchError((err) => { throw err.error.message }))
@@ -95,14 +101,16 @@ export class ProjectListFacadeService {
   }
 
   private _checkSearchFields(): boolean {
-    return Boolean(this._projectSearch.name || this._projectSearch.code);
+    return Boolean(this._projectSearch.name ?? this._projectSearch.code);
   }
 
   private _getAll(all: boolean): void {
     const projectObserver = {
       next: (value: ProjectSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._projectService.getAllProjects(all, this._defaultPage)
       .pipe(catchError((err) => { throw err.error.message }))

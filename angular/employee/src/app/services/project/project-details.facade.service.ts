@@ -11,7 +11,7 @@ export class ProjectDetailsFacadeService {
 
   private _project: BehaviorSubject<Project> = new BehaviorSubject<Project>({});
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ project: Project }> = combineLatest({
     project: this._project.asObservable()
   });
 
@@ -24,7 +24,9 @@ export class ProjectDetailsFacadeService {
         this._project.next(value);
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._projectService.getProject(id)
       .pipe(
@@ -44,7 +46,9 @@ export class ProjectDetailsFacadeService {
         this._project.next(project);
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._projectService.unassignEmployee(employeeId, project)
       .pipe(catchError((err) => { throw err.error.message }))

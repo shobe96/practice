@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, catchError, combineLatest, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { RoleSearchResult } from '../../models/role-search-result.model';
 import { Role } from '../../models/role.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { RoleService } from './role.service';
-import { ActivatedRoute } from '@angular/router';
 import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
@@ -26,7 +25,7 @@ export class RoleListFacadeService {
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ roles: Role[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
     roles: this._roles.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable()
@@ -46,7 +45,9 @@ export class RoleListFacadeService {
       const roleObserver = {
         next: () => { this.retrieve(); },
         error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-        complete: () => { }
+        complete: () => {
+          // do nothing.
+        }
       }
       this._roleService.delete(id)
         .pipe(catchError((err) => { throw err.error.message }))
@@ -65,7 +66,9 @@ export class RoleListFacadeService {
     const roleObserver = {
       next: (value: RoleSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields())
       this._roleService.search(this._roleSearch, this._defaultPage)
@@ -79,7 +82,9 @@ export class RoleListFacadeService {
     const roleObserver = {
       next: (value: RoleSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields()) {
       this._roleService.search(this._roleSearch, this._defaultPage)
@@ -106,7 +111,9 @@ export class RoleListFacadeService {
     const roleObserver = {
       next: (value: RoleSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._roleService.getAllRoles(all, this._defaultPage)
       .pipe(catchError((err) => { throw err.error.message }))

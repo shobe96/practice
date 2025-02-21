@@ -1,18 +1,21 @@
 import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { Department } from '../../../models/department.model';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { catchError, takeUntil } from 'rxjs';
+import { takeUntil } from 'rxjs';
 import { DepartmentEditFacadeService } from '../../../services/department/department-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../services/custom-message.service';
+import { InputText } from 'primeng/inputtext';
+import { NgIf } from '@angular/common';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-department-edit',
   templateUrl: './department-edit.component.html',
   styleUrl: './department-edit.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, InputText, NgIf, Button]
 })
 export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
@@ -25,10 +28,6 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
   private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
-
-  constructor() {
-    super();
-  }
 
   ngOnInit(): void {
     this.buildForm();
@@ -57,7 +56,9 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this.department = this._getFormValues();
     this._departmentEditFacade.submit(this.department)

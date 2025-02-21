@@ -1,21 +1,28 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
-import { PaginatorState } from 'primeng/paginator';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { PaginatorState, Paginator } from 'primeng/paginator';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { Role } from '../../../models/role.model';
 import { RoleListFacadeService } from '../../../services/role/role-list.facade.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { RoleEditComponent } from '../role-edit/role-edit.component';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
-  selector: 'app-role-list',
-  templateUrl: './role-list.component.html',
-  styleUrl: './role-list.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-role-list',
+    templateUrl: './role-list.component.html',
+    styleUrl: './role-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe]
 })
 export class RoleListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   roleFormGroup!: FormGroup;

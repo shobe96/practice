@@ -2,18 +2,25 @@ import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { User } from '../../../models/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PaginatorState } from 'primeng/paginator';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { PaginatorState, Paginator } from 'primeng/paginator';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { UserListFacadeService } from '../../../services/user/user-list.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
-  selector: 'app-user-list',
-  templateUrl: './user-list.component.html',
-  styleUrl: './user-list.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-user-list',
+    templateUrl: './user-list.component.html',
+    styleUrl: './user-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe]
 })
 export class UserListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   userFormGroup!: FormGroup;

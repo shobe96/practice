@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, catchError, combineLatest, switchMap } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
 import { PageEvent } from '../../models/page-event.model';
 import { SkillSearchResult } from '../../models/skill-search-result.model';
 import { Skill } from '../../models/skill.model';
@@ -25,7 +25,7 @@ export class SkillListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _skillSearch: Skill = {}
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ skills: Skill[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
     skills: this._skills.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable()
@@ -45,7 +45,9 @@ export class SkillListFacadeService {
       const skillObserver = {
         next: () => { this.retrieve(); },
         error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-        complete: () => { }
+        complete: () => {
+          // do nothing.
+        }
       }
       this._skillService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(skillObserver);
     }
@@ -62,7 +64,9 @@ export class SkillListFacadeService {
     const skillObserver = {
       next: (value: SkillSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields())
       this._skillService.search(this._skillSearch, this._defaultPage)
@@ -76,7 +80,9 @@ export class SkillListFacadeService {
     const skillObserver = {
       next: (value: SkillSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields()) {
       this._skillService.search(this._skillSearch, this._defaultPage)
@@ -103,7 +109,9 @@ export class SkillListFacadeService {
     const skillObserver = {
       next: (value: SkillSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._skillService.getAllSkills(all, this._defaultPage).pipe(catchError((err) => { throw err.error.message }))
       .subscribe(skillObserver);

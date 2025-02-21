@@ -4,22 +4,21 @@ import { BehaviorSubject, combineLatest, Observable } from "rxjs";
 export abstract class ListFacade<T> {
   private data: BehaviorSubject<T[]> = new BehaviorSubject<T[]>([]);
 
-  viewModel: Observable<any> = combineLatest({
+  viewModel: Observable<{ data: T[] }> = combineLatest({
     data: this.data.asObservable(),
   })
-  addNew(): void { }
-  checkSearchFields(): boolean { return false; }
-  clear(): void { }
-  delete(): void { }
-  getAll(): void { }
-  goToDetails(id: number): void { }
-  goToEdit(id: number | null): void { }
-  handleCancel(event: any): void { }
-  onKeyUp(): void { }
-  onPageChange(event: PaginatorState): void { }
-  refresh(): void { }
-  retrieve(): void { }
-  search(): void { }
-  setEditParams(editVisible: boolean, id: number | null, modalTitle: string, disable: boolean): void { }
-  showDialog(visible: boolean, id?: number): void { }
+  abstract addNew(): void;
+  abstract checkSearchFields(): boolean
+  abstract clear(): void
+  abstract delete(): void
+  abstract getAll(): void
+  abstract goToDetails(id: number): void
+  abstract goToEdit(id: number | null): void
+  abstract onKeyUp(): void
+  abstract onPageChange(event: PaginatorState): void
+  abstract refresh(): void
+  abstract retrieve(): void
+  abstract search(): void
+  abstract setEditParams(editVisible: boolean, id: number | null, modalTitle: string, disable: boolean): void
+  abstract showDialog(visible: boolean, id?: number): void
 }

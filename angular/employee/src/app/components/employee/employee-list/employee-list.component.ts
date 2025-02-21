@@ -1,21 +1,28 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Employee } from '../../../models/employee.model';
-import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs';
-import { PaginatorState } from 'primeng/paginator';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { PaginatorState, Paginator } from 'primeng/paginator';
 import { EmployeeListFacadeService } from '../../../services/employee/employee-list.facade.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DialogService } from 'primeng/dynamicdialog';
 import { EmployeeEditComponent } from '../employee-edit/employee-edit.component';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe, DatePipe]
 })
 export class EmployeeListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

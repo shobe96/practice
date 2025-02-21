@@ -1,12 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { DepartmentService } from './department.service';
-import { BehaviorSubject, catchError, combineLatest, Observable, Subscription, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, Observable } from 'rxjs';
 import { Department } from '../../models/department.model';
 import { PageEvent } from '../../models/page-event.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { DepartmentSearchResult } from '../../models/department-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
-import { ActivatedRoute } from '@angular/router';
 import { CustomMessageService } from '../custom-message.service';
 
 @Injectable({
@@ -26,7 +25,7 @@ export class DepartmentListFacadeService {
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ departments: Department[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
     departments: this._departments.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable()
@@ -45,7 +44,9 @@ export class DepartmentListFacadeService {
     const departmentObserver = {
       next: () => { this.retrieve(); },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (id) {
       this._departmentService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(departmentObserver);
@@ -63,7 +64,9 @@ export class DepartmentListFacadeService {
     const departmentObserver = {
       next: (value: DepartmentSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields())
       this._departmentService.search(this._departmentSearch, this._defaultPage)
@@ -77,7 +80,9 @@ export class DepartmentListFacadeService {
     const departmentObserver = {
       next: (value: DepartmentSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields()) {
       this._departmentService.search(this._departmentSearch, this._defaultPage)
@@ -104,7 +109,9 @@ export class DepartmentListFacadeService {
     const departmentObserver = {
       next: (value: DepartmentSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._departmentService.getAllDepartments(all, this._defaultPage)
       .pipe(catchError((err) => { throw err.error.message }))

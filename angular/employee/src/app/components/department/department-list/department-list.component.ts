@@ -1,21 +1,28 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
 import { Department } from '../../../models/department.model';
-import { PaginatorState } from 'primeng/paginator';
+import { PaginatorState, Paginator } from 'primeng/paginator';
 import { DepartmentListFacadeService } from '../../../services/department/department-list.facade.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DepartmentEditComponent } from '../department-edit/department-edit.component';
-import { ConfirmationService } from 'primeng/api';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { TableModule } from 'primeng/table';
 
 @Component({
-  selector: 'app-department-list',
-  templateUrl: './department-list.component.html',
-  styleUrl: './department-list.component.scss',
-  standalone: false,
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-department-list',
+    templateUrl: './department-list.component.html',
+    styleUrl: './department-list.component.scss',
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe]
 })
 export class DepartmentListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
