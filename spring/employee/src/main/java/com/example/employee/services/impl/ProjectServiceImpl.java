@@ -86,7 +86,7 @@ public class ProjectServiceImpl implements ProjectService {
 	public void deleteProject(Integer projectId) {
 		Project project = getProjectbyId(projectId);
 		List<Employee> employees = new ArrayList<>(project.getEmployees());
-		if (employees.size() != 0) {
+		if (!employees.isEmpty()) {
 			for (Employee employee : employees) {
 				employee.setActive(false);
 				employeeRepository.save(employee);
