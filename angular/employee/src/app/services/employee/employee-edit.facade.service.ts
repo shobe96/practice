@@ -18,7 +18,7 @@ export class EmployeeEditFacadeService {
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _departments: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ skills: Skill[], departments: Department[] }> = combineLatest({
     skills: this._skills.asObservable(),
     departments: this._departments.asObservable(),
   });
@@ -57,7 +57,9 @@ export class EmployeeEditFacadeService {
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._skillService.getAllSkills(true).pipe(catchError((err) => { throw err.error.message })).subscribe(skillsObserver)
   }
@@ -70,7 +72,9 @@ export class EmployeeEditFacadeService {
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._departmentService.getAllDepartments(true).pipe(catchError((err) => { throw err.error.message })).subscribe(departmentsObserver);
   }

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Role } from '../../../models/role.model';
 import { RoleEditFacadeService } from '../../../services/role/role-edit.facade.service';
@@ -11,27 +11,22 @@ import { NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 
 @Component({
-    selector: 'app-role-edit',
-    templateUrl: './role-edit.component.html',
-    styleUrl: './role-edit.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [ReactiveFormsModule, InputText, NgIf, Button]
+  selector: 'app-role-edit',
+  templateUrl: './role-edit.component.html',
+  styleUrl: './role-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, InputText, NgIf, Button]
 })
 export class RoleEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   roleFormGroup!: FormGroup;
 
   @Input() role: Role | null = {};
   @Input() disable = false;
-  @Output() cancelEmiitter = new EventEmitter<any>();
 
   roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
-
-  constructor() {
-    super();
-  }
 
   ngOnInit(): void {
     this._buildForm();
@@ -54,7 +49,9 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this.role = this._getFormValues();
     this.roleEditFacade.submit(this.role)

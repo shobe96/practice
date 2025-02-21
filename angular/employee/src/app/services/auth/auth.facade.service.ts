@@ -26,9 +26,8 @@ export class AuthFacadeService {
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
-  private _isLoggin: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _roles: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
-  private _tokenExpirationTimer: any;
+  private _tokenExpirationTimer: NodeJS.Timeout | undefined;
 
   private items: MenuItem[] = [
     {
@@ -104,10 +103,9 @@ export class AuthFacadeService {
 
   private _menuItems: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this.items);
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ employees: Employee[], roles: Role[], menuItems: MenuItem[] }> = combineLatest({
     employees: this._employees.asObservable(),
     roles: this._roles.asObservable(),
-    isLoggin: this._isLoggin.asObservable(),
     menuItems: this._menuItems.asObservable()
   });
 
@@ -134,7 +132,9 @@ export class AuthFacadeService {
         this._router.navigate(["/home"]);
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     };
     this._authService.login(authRequest).pipe(catchError((err) => {
       throw err.error.message;
@@ -148,7 +148,9 @@ export class AuthFacadeService {
         this._router.navigate(["user/list"]);
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._authService.registerUser(authRequest).pipe(catchError((err) => {
       throw err.error.message;
@@ -176,7 +178,9 @@ export class AuthFacadeService {
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._employeeService.getAllEmployees(true)
       .subscribe(employeesObserver);
@@ -190,7 +194,9 @@ export class AuthFacadeService {
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._roleService.getAllRoles(true).subscribe(rolesObserver);
   }

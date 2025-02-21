@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Project } from '../../../models/project.model';
 import { ConfirmationService, PrimeTemplate } from 'primeng/api';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
@@ -12,10 +12,10 @@ import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 
 @Component({
-    selector: 'app-project-details',
-    templateUrl: './project-details.component.html',
-    styleUrl: './project-details.component.scss',
-    imports: [NgIf, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Button, Tooltip, AsyncPipe]
+  selector: 'app-project-details',
+  templateUrl: './project-details.component.html',
+  styleUrl: './project-details.component.scss',
+  imports: [NgIf, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Button, Tooltip, AsyncPipe]
 })
 export class ProjectDetailsComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
@@ -28,14 +28,10 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
   private _router: Router = inject(Router)
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
 
-  constructor() {
-    super();
-  }
-
   ngOnInit(): void {
     this.project = this._route.snapshot.data['project'];
-    this._route.params.subscribe((params: any) => {
-      this.projectDetailsFacade.getProject(params.projectId);
+    this._route.params.subscribe((params: Params) => {
+      this.projectDetailsFacade.getProject(params['projectId']);
     })
   }
 

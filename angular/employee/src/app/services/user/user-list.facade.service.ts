@@ -26,7 +26,7 @@ export class UserListFacadeService {
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
   private _userSearch: User = {}
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ users: User[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
     users: this._users.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable()
@@ -47,7 +47,9 @@ export class UserListFacadeService {
       const authObserver = {
         next: () => { this.retrieve(); },
         error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-        complete: () => { }
+        complete: () => {
+          // do nothing.
+        }
       }
       this._authService.delete(id)
         .pipe(catchError((err) => { throw err.error.message }))
@@ -66,7 +68,9 @@ export class UserListFacadeService {
     const userObserver = {
       next: (value: UserSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields())
       this._userService.search(this._userSearch, this._defaultPage)
@@ -80,7 +84,9 @@ export class UserListFacadeService {
     const userObserver = {
       next: (value: UserSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields()) {
       this._userService.search(this._userSearch, this._defaultPage)
@@ -107,7 +113,9 @@ export class UserListFacadeService {
     const userObserver = {
       next: (value: UserSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._userService.getAllUsers(this._defaultPage)
       .pipe(catchError((err) => { throw err.error.message }))

@@ -29,10 +29,6 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
-  constructor() {
-    super();
-  }
-
   ngOnInit(): void {
     this.buildForm();
     this._initFormFields();
@@ -60,7 +56,9 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this.department = this._getFormValues();
     this._departmentEditFacade.submit(this.department)

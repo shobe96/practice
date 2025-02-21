@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, EventEmitter, inject, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { takeUntil } from 'rxjs';
 import { Skill } from '../../../models/skill.model';
@@ -11,18 +11,17 @@ import { NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 
 @Component({
-    selector: 'app-skill-edit',
-    templateUrl: './skill-edit.component.html',
-    styleUrl: './skill-edit.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [ReactiveFormsModule, InputText, NgIf, Button]
+  selector: 'app-skill-edit',
+  templateUrl: './skill-edit.component.html',
+  styleUrl: './skill-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, InputText, NgIf, Button]
 })
 export class SkillEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   skillFormGroup!: FormGroup;
 
   @Input() skill: Skill | null = {};
   @Input() disable = false;
-  @Output() cancelEmiitter = new EventEmitter<any>();
 
   skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
@@ -50,7 +49,9 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this.skill = this._getFormValues();
     this.skillEditFacade.submit(this.skill)

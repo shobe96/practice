@@ -26,7 +26,7 @@ export class EmployeeListFacadeService {
   private _employeeSearch: Employee = {}
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{ employees: Employee[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
     employees: this._employees.asObservable(),
     page: this._page.asObservable(),
     rowsPerPage: this._rowsPerPage.asObservable()
@@ -45,7 +45,9 @@ export class EmployeeListFacadeService {
       const employeeObserver = {
         next: () => { this.retrieve(); },
         error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-        complete: () => { }
+        complete: () => {
+          // do nothing.
+        }
       }
       this._employeeService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(employeeObserver);
     }
@@ -62,7 +64,9 @@ export class EmployeeListFacadeService {
     const employeeObserver = {
       next: (value: EmployeeSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields())
       this._employeeService.search(this._employeeSearch, this._defaultPage)
@@ -76,7 +80,9 @@ export class EmployeeListFacadeService {
     const employeeObserver = {
       next: (value: EmployeeSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     if (this._checkSearchFields()) {
       this._employeeService.search(this._employeeSearch, this._defaultPage)
@@ -86,8 +92,8 @@ export class EmployeeListFacadeService {
   }
 
   private _checkSearchFields(): boolean {
-    return Boolean(this._employeeSearch.name ||
-      this._employeeSearch.surname ||
+    return Boolean(this._employeeSearch.name ??
+      this._employeeSearch.surname ??
       this._employeeSearch.email);
   }
 
@@ -105,7 +111,9 @@ export class EmployeeListFacadeService {
     const employeeObserver = {
       next: (value: EmployeeSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this._employeeService.getAllEmployees(all, this._defaultPage)
       .pipe(catchError((err) => { throw err.error.message }))

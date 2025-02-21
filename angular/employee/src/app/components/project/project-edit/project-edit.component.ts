@@ -31,10 +31,6 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
-  constructor() {
-    super();
-  }
-
   ngOnInit(): void {
     this.projectEditFacade.loadSelectOptions();
     this.buildForm();
@@ -69,7 +65,9 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this.project = this._getFormValues();
     this.projectEditFacade.submit(this.project)

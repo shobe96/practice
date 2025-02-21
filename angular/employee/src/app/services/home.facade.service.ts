@@ -32,7 +32,15 @@ export class HomeFacadeService {
   };
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
 
-  viewModel$: Observable<any> = combineLatest({
+  viewModel$: Observable<{
+    roles: Role[],
+    page: PageEvent,
+    projectsHistory: ProjectHistory[],
+    employee: Employee,
+    departmentEmployees:
+    Employee[],
+    activeProject: Project
+  }> = combineLatest({
     roles: this._roles.asObservable(),
     page: this._page.asObservable(),
     projectsHistory: this._projectsHistory.asObservable(),
@@ -55,19 +63,23 @@ export class HomeFacadeService {
 
   getPanelData() {
     const employeeObserver = {
-      next: (value: any[]) => {
+      next: (value: [ProjectHistory[] | null, EmployeeSearchResult | null, Project | null]) => {
         this._projectsHistory.next(value[0] ?? []);
         this._defaultPage.pageCount = value[1]?.size ?? 0;
         this._page.next(this._defaultPage);
         this._employees.next(value[1]?.employees ?? []);
         this._project.next(value[2] ?? {});
       },
-      error: () => { },
-      complete: () => { }
+      error: () => {
+        // do nothing.
+      },
+      complete: () => {
+        // do nothing.
+      }
     }
     this._authResponse = this._getAuthResponse();
     this.getRoles();
-    if (this._authResponse && this._authResponse.userId) {
+    if (this._authResponse?.userId) {
       this._employeeService.findByUser(this._authResponse.userId).pipe(
         switchMap((employee: Employee) => {
           this._employee.next(employee);
@@ -77,7 +89,7 @@ export class HomeFacadeService {
             this._getActiveProject(employee)
           ]);
 
-        })).subscribe(employeeObserver)
+        })).subscribe(employeeObserver);
     }
   }
 

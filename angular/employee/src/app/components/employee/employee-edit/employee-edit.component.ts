@@ -13,11 +13,11 @@ import { MultiSelect } from 'primeng/multiselect';
 import { Button } from 'primeng/button';
 
 @Component({
-    selector: 'app-employee-edit',
-    templateUrl: './employee-edit.component.html',
-    styleUrl: './employee-edit.component.scss',
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [ReactiveFormsModule, InputText, NgIf, Select, MultiSelect, Button, AsyncPipe]
+  selector: 'app-employee-edit',
+  templateUrl: './employee-edit.component.html',
+  styleUrl: './employee-edit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, InputText, NgIf, Select, MultiSelect, Button, AsyncPipe]
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
@@ -30,10 +30,6 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
-
-  constructor() {
-    super();
-  }
 
   ngOnInit(): void {
     this.employeeEditFacade.loadSelectOptions();
@@ -57,7 +53,9 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
         }
       },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => { }
+      complete: () => {
+        // do nothing.
+      }
     }
     this.employee = this._getFormValues();
     this.employeeEditFacade.submit(this.employee)
