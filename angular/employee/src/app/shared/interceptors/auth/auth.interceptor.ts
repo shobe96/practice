@@ -1,5 +1,5 @@
 import { HttpInterceptorFn, HttpParams } from '@angular/common/http';
-import { AuthResponse } from '../../../models/auth-response.model';
+import { AuthResponse } from '../../../auth/data-access/auth-response.model';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
