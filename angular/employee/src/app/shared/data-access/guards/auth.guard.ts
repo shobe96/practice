@@ -1,7 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
-import { AuthResponse } from '../../auth/data-access/auth-response.model';
-import { Role } from '../../roles/data-access/role.model';
+import { AuthResponse } from '../../../auth/data-access/auth-response.model';
+import { Role } from '../../../roles/data-access/role.model';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authResponse = localStorage.getItem('authResponse');

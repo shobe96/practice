@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
 import { ProjectComponent } from "../projects/ui/project/project.component";
-import { authGuard } from "../shared/guards/auth.guard";
 import { enumRoles } from "../shared/constants.model";
+import { authGuard } from "../shared/data-access/guards/auth.guard";
 
 export const projectRoutes: Routes = [
   {

@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
 import { DepartmentComponent } from "../departments/ui/department/department.component";
-import { authGuard } from "../shared/guards/auth.guard";
 import { enumRoles } from "../shared/constants.model";
+import { authGuard } from "../shared/data-access/guards/auth.guard";
 
 export const departmentRoutes: Routes = [
   {

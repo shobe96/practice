@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthComponent } from '../auth/ui/auth.component';
-import { authGuard } from '../shared/guards/auth.guard';
 import { enumRoles } from '../shared/constants.model';
+import { authGuard } from '../shared/data-access/guards/auth.guard';
 
 
 export const authRoutes: Routes = [

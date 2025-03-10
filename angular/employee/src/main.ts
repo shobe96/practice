@@ -1,7 +1,6 @@
 
 
 import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
-import { authInterceptor } from './app/shared/interceptors/auth/auth.interceptor';
 import { providePrimeNG } from 'primeng/config';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
@@ -13,6 +12,7 @@ import Aura from '@primeng/themes/aura';
 import { appRoutes } from './app/app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
+import { authInterceptor } from './app/shared/data-access/interceptors/auth/auth.interceptor';
 
 
 bootstrapApplication(AppComponent, {

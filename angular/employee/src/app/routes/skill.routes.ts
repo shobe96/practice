@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
 import { SkillComponent } from "../skills/ui/skill/skill.component";
-import { authGuard } from "../shared/guards/auth.guard";
 import { enumRoles } from "../shared/constants.model";
+import { authGuard } from "../shared/data-access/guards/auth.guard";
 
 export const skillRoutes: Routes = [
   {
