@@ -1,4 +1,4 @@
-import { HttpInterceptorFn, HttpParams } from '@angular/common/http';
+import { HttpHeaders, HttpInterceptorFn, HttpParams } from '@angular/common/http';
 import { AuthResponse } from '../../../../auth/data-access/auth-response.model';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
@@ -7,8 +7,9 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
     const authResponse = localStorage.getItem("authResponse");
     if (authResponse) {
       const json: AuthResponse = JSON.parse(authResponse);
+      const token = json.token ? `Bearer ${json.token}` : ""
       const modifiedReq = req.clone({
-        params: new HttpParams().set(`token`, json.token ?? "")
+        headers: new HttpHeaders().set('Authorization', token)
       });
       return next(modifiedReq);
     }
