@@ -4,8 +4,6 @@ import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@an
 import { providePrimeNG } from 'primeng/config';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
-import { ToastModule } from 'primeng/toast';
-import { MenubarModule } from 'primeng/menubar';
 import { AppComponent } from './app/app.component';
 import { importProvidersFrom } from '@angular/core';
 import Aura from '@primeng/themes/aura';
@@ -17,7 +15,7 @@ import { authInterceptor } from './app/shared/data-access/interceptors/auth/auth
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(BrowserModule, ToastModule, MenubarModule),
+    importProvidersFrom(BrowserModule),
     provideHttpClient(withInterceptors([authInterceptor])),
     provideHttpClient(withInterceptorsFromDi()),
     providePrimeNG({
