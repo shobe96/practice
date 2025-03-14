@@ -11,13 +11,23 @@ import { NgIf, AsyncPipe } from '@angular/common';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { Button } from 'primeng/button';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-employee-edit',
   templateUrl: './employee-edit.component.html',
   styleUrl: './employee-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Select, MultiSelect, Button, AsyncPipe]
+  imports: [
+    ReactiveFormsModule,
+    InputText,
+    NgIf,
+    Select,
+    MultiSelect,
+    Button,
+    AsyncPipe,
+    ProgressSpinner
+  ]
 })
 export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
@@ -32,9 +42,11 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   ngOnInit(): void {
+    this.employeeEditFacade.toggleLoading(true);
     this.employeeEditFacade.loadSelectOptions();
     this._buildForm();
     this._initFormFields();
+    this.employeeEditFacade.toggleLoading(false);
   }
 
   ngOnDestroy(): void {

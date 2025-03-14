@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from './employee.service';
 import { Employee } from './employee.model';
-import { BehaviorSubject, catchError, combineLatest, map, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, map, Observable } from 'rxjs';
 import { SkillService } from '../../skills/data-access/skill.service';
 import { DepartmentService } from '../../departments/data-access/department.service';
 import { Skill } from '../../skills/data-access/skill.model';
@@ -17,10 +17,11 @@ export class EmployeeEditFacadeService {
 
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _departments: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
-
-  viewModel$: Observable<{ skills: Skill[], departments: Department[] }> = combineLatest({
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  viewModel$: Observable<{ skills: Skill[], departments: Department[], loading: boolean }> = combineLatest({
     skills: this._skills.asObservable(),
     departments: this._departments.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _employeeService = inject(EmployeeService);
@@ -29,6 +30,7 @@ export class EmployeeEditFacadeService {
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   submit(employee: Employee): Observable<Employee> {
+    this._loading.next(true);
     const subscription = !employee.id ?
       this._employeeService.save(employee) :
       this._employeeService.update(employee);
@@ -41,12 +43,18 @@ export class EmployeeEditFacadeService {
           return {};
         }
       }),
-      catchError(err => { throw err.error.message }));
+      catchError(err => { throw err.error.message }),
+      finalize(() => this._loading.next(false))
+    );
   }
 
   loadSelectOptions(): void {
     this._getSkills();
     this._getDepartments();
+  }
+
+  toggleLoading(loading: boolean) {
+    this._loading.next(loading);
   }
 
   private _getSkills(): void {

@@ -23,6 +23,7 @@ export class HomeFacadeService {
   private _projectsHistory: BehaviorSubject<ProjectHistory[]> = new BehaviorSubject<ProjectHistory[]>([]);
   private _employee: BehaviorSubject<Employee> = new BehaviorSubject<Employee>({});
   private _project: BehaviorSubject<Project> = new BehaviorSubject<Project>({});
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _defaultPage: PageEvent = {
     page: 0,
     first: 0,
@@ -39,14 +40,16 @@ export class HomeFacadeService {
     employee: Employee,
     departmentEmployees:
     Employee[],
-    activeProject: Project
+    activeProject: Project,
+    loading: boolean
   }> = combineLatest({
     roles: this._roles.asObservable(),
     page: this._page.asObservable(),
     projectsHistory: this._projectsHistory.asObservable(),
     employee: this._employee.asObservable(),
     departmentEmployees: this._employees.asObservable(),
-    activeProject: this._project.asObservable()
+    activeProject: this._project.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _projectHistoryService: ProjectHistoryService = inject(ProjectHistoryService);
@@ -55,13 +58,16 @@ export class HomeFacadeService {
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   getRoles() {
+    this._loading.next(true);
     if (this._authResponse) {
       const roles = this._authResponse.roles ?? [];
       this._roles.next(roles);
     }
+    this._loading.next(false);
   }
 
   getPanelData() {
+    this._loading.next(true);
     const employeeObserver = {
       next: (value: [ProjectHistory[] | null, EmployeeSearchResult | null, Project | null]) => {
         this._projectsHistory.next(value[0] ?? []);
@@ -77,8 +83,8 @@ export class HomeFacadeService {
         // do nothing.
       }
     }
+
     this._authResponse = this._getAuthResponse();
-    this.getRoles();
     if (this._authResponse?.userId) {
       this._employeeService.findByUser(this._authResponse.userId).pipe(
         switchMap((employee: Employee) => {
@@ -91,6 +97,8 @@ export class HomeFacadeService {
 
         })).subscribe(employeeObserver);
     }
+
+    this._loading.next(false);
   }
 
   private _getProjectHistory(employee: Employee): Observable<ProjectHistory[] | null> {

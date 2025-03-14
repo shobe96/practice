@@ -27,6 +27,7 @@ export class AuthFacadeService {
 
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
   private _roles: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _tokenExpirationTimer: NodeJS.Timeout | undefined;
 
   private items: MenuItem[] = [
@@ -103,10 +104,11 @@ export class AuthFacadeService {
 
   private _menuItems: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this.items);
 
-  viewModel$: Observable<{ employees: Employee[], roles: Role[], menuItems: MenuItem[] }> = combineLatest({
+  viewModel$: Observable<{ employees: Employee[], roles: Role[], menuItems: MenuItem[], loading: boolean }> = combineLatest({
     employees: this._employees.asObservable(),
     roles: this._roles.asObservable(),
-    menuItems: this._menuItems.asObservable()
+    menuItems: this._menuItems.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   loadSelectOptions() {
@@ -123,17 +125,19 @@ export class AuthFacadeService {
   }
 
   loginUser(authRequest: AuthRequest) {
+    this._loading.next(true);
     const loginObserver = {
       next: (value: AuthResponse) => {
         localStorage.setItem('authResponse', JSON.stringify(value));
         this._autoLogout(value.expiration ?? 0);
         this._updateMenuItems(true, value.roles);
         this._customMessageService.showSuccess('Success', `Welcome ${value.username}`);
+        this._loading.next(false);
         this._router.navigate(["/home"]);
       },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); this._loading.next(false); },
       complete: () => {
-        // do nothing.
+        // do nothing
       }
     };
     this._authService.login(authRequest).pipe(catchError((err) => {

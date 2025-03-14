@@ -16,13 +16,31 @@ import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-employee-list',
   templateUrl: './employee-list.component.html',
   styleUrl: './employee-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe, DatePipe]
+  imports: [
+    Accordion,
+    AccordionPanel,
+    Ripple,
+    AccordionHeader,
+    AccordionContent,
+    ReactiveFormsModule,
+    InputText,
+    Button,
+    Tooltip,
+    NgIf,
+    TableModule,
+    PrimeTemplate,
+    Paginator,
+    AsyncPipe,
+    DatePipe,
+    ProgressSpinner
+  ]
 })
 export class EmployeeListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

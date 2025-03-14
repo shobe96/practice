@@ -57,3 +57,8 @@
   </div>
   <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
 </form>
+<div *ngIf="authFacade.viewModel$ | async as data">
+  <div *ngIf="data.loading" class="card flex justify-center progress-spinner">
+    <p-progress-spinner ariaLabel="loading" />
+  </div>
+</div>

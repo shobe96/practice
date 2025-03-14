@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { Employee } from './employee.model';
-import { BehaviorSubject, catchError, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, Observable } from 'rxjs';
 import { PaginatorState } from 'primeng/paginator';
 import { EmployeeService } from './employee.service';
 import { PageEvent } from '../../shared/data-access/page-event.model';
@@ -23,18 +23,21 @@ export class EmployeeListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   private _employeeSearch: Employee = {}
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
-  viewModel$: Observable<{ employees: Employee[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
+  viewModel$: Observable<{ employees: Employee[], page: PageEvent, rowsPerPage: number[], loading: boolean }> = combineLatest({
     employees: this._employees.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _employeeService = inject(EmployeeService);
 
   clear(): void {
+    this._loading.next(true);
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
     this._getAll(false);
@@ -42,6 +45,7 @@ export class EmployeeListFacadeService {
 
   delete(id: number | null): void {
     if (id) {
+      this._loading.next(true);
       const employeeObserver = {
         next: () => { this.retrieve(); },
         error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -49,7 +53,11 @@ export class EmployeeListFacadeService {
           // do nothing.
         }
       }
-      this._employeeService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(employeeObserver);
+      this._employeeService.delete(id)
+        .pipe(
+          catchError((err) => { throw err.error.message }),
+          finalize(() => this._loading.next(false))
+        ).subscribe(employeeObserver);
     }
   }
 
@@ -61,6 +69,7 @@ export class EmployeeListFacadeService {
   }
 
   retrieve(): void {
+    this._loading.next(true)
     const employeeObserver = {
       next: (value: EmployeeSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -70,12 +79,15 @@ export class EmployeeListFacadeService {
     }
     if (this._checkSearchFields())
       this._employeeService.search(this._employeeSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(
+          catchError((err) => { throw err.error.message }),
+          finalize(() => this._loading.next(false)))
         .subscribe(employeeObserver);
     else this._getAll(false);
   }
 
   search(params: Employee): void {
+    this._loading.next(true);
     this._employeeSearch = params;
     const employeeObserver = {
       next: (value: EmployeeSearchResult) => { this._emitValues(value) },
@@ -86,7 +98,10 @@ export class EmployeeListFacadeService {
     }
     if (this._checkSearchFields()) {
       this._employeeService.search(this._employeeSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(
+          catchError((err) => { throw err.error.message }),
+          finalize(() => this._loading.next(false))
+        )
         .subscribe(employeeObserver);
     }
   }
@@ -116,7 +131,10 @@ export class EmployeeListFacadeService {
       }
     }
     this._employeeService.getAllEmployees(all, this._defaultPage)
-      .pipe(catchError((err) => { throw err.error.message }))
+      .pipe(
+        catchError((err) => { throw err.error.message }),
+        finalize(() => this._loading.next(false))
+      )
       .subscribe(employeeObserver);
   }
 }
