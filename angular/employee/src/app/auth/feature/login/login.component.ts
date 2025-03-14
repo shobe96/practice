@@ -5,9 +5,10 @@ import { AuthRequest } from '../../data-access/auth-request.model';
 import { AuthFacadeService } from '../../data-access/auth.facade.service';
 import { RegisterRequest } from '../../data-access/register-request.model';
 import { InputText } from 'primeng/inputtext';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +19,9 @@ import { Tooltip } from 'primeng/tooltip';
     InputText,
     NgIf,
     Button,
-    Tooltip
+    Tooltip,
+    ProgressSpinner,
+    AsyncPipe
   ]
 })
 export class LoginComponent implements OnInit {

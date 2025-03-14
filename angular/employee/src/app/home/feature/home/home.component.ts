@@ -7,13 +7,23 @@ import { RouterLink } from '@angular/router';
 import { Tooltip } from 'primeng/tooltip';
 import { HomePanelComponent } from '../../ui/home-panel/home-panel.component';
 import { Toast } from 'primeng/toast';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgIf, Button, RouterLink, Tooltip, HomePanelComponent, Toast, AsyncPipe]
+  imports: [
+    NgIf,
+    Button,
+    RouterLink,
+    Tooltip,
+    HomePanelComponent,
+    Toast,
+    AsyncPipe,
+    ProgressSpinner
+  ]
 })
 export class HomeComponent implements OnInit {
 

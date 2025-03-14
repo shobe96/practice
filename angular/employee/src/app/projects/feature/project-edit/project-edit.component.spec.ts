@@ -1,6 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ProjectEditComponent } from './project-edit.component';
+import { HttpClient, HttpHandler } from '@angular/common/http';
+import { MessageService } from 'primeng/api';
+import { DynamicDialogRef } from 'primeng/dynamicdialog';
 
 describe('ProjectEditComponent', () => {
   let component: ProjectEditComponent;
@@ -8,10 +11,11 @@ describe('ProjectEditComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [ProjectEditComponent]
-})
-    .compileComponents();
-    
+      providers: [HttpClient, HttpHandler, MessageService, DynamicDialogRef],
+      imports: [ProjectEditComponent]
+    })
+      .compileComponents();
+
     fixture = TestBed.createComponent(ProjectEditComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

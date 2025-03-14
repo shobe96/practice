@@ -1,6 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SkillComponent } from './skill.component';
+import { ConfirmationService } from 'primeng/api';
 
 describe('SkillComponent', () => {
   let component: SkillComponent;
@@ -8,10 +9,11 @@ describe('SkillComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-    imports: [SkillComponent]
-})
-    .compileComponents();
-    
+      providers: [ConfirmationService],
+      imports: [SkillComponent]
+    })
+      .compileComponents();
+
     fixture = TestBed.createComponent(SkillComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
