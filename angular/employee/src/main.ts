@@ -11,12 +11,13 @@ import { appRoutes } from './app/app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { authInterceptor } from './app/shared/data-access/interceptors/auth/auth.interceptor';
+import { errorInterceptor } from './app/shared/data-access/interceptors/error/error.interceptor';
 
 
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(BrowserModule),
-    provideHttpClient(withInterceptors([authInterceptor])),
+    provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     provideHttpClient(withInterceptorsFromDi()),
     providePrimeNG({
       theme: {
