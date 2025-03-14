@@ -59,6 +59,7 @@ export class HomeFacadeService {
 
   getRoles() {
     this._loading.next(true);
+    this._authResponse = this._getAuthResponse();
     if (this._authResponse) {
       const roles = this._authResponse.roles ?? [];
       this._roles.next(roles);
@@ -84,7 +85,6 @@ export class HomeFacadeService {
       }
     }
 
-    this._authResponse = this._getAuthResponse();
     if (this._authResponse?.userId) {
       this._employeeService.findByUser(this._authResponse.userId).pipe(
         switchMap((employee: Employee) => {
@@ -94,7 +94,6 @@ export class HomeFacadeService {
             this._getAllEmployeesByDepartment(employee),
             this._getActiveProject(employee)
           ]);
-
         })).subscribe(employeeObserver);
     }
 
