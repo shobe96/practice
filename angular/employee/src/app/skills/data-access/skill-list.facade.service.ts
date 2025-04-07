@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, finalize } from 'rxjs';
 import { PageEvent } from '../../shared/data-access/page-event.model';
 import { SkillSearchResult } from './skill-search-result.model';
 import { Skill } from './skill.model';
@@ -23,18 +23,21 @@ export class SkillListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private _skillSearch: Skill = {}
+  private _skillSearch: Skill = {};
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  viewModel$: Observable<{ skills: Skill[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
+  viewModel$: Observable<{ skills: Skill[], page: PageEvent, rowsPerPage: number[], loading: boolean }> = combineLatest({
     skills: this._skills.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _skillService = inject(SkillService);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
+    this._loading.next(true);
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
     this._getAll(false);
@@ -42,6 +45,7 @@ export class SkillListFacadeService {
 
   delete(id: number | null): void {
     if (id) {
+      this._loading.next(true);
       const skillObserver = {
         next: () => { this.retrieve(); },
         error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -49,7 +53,7 @@ export class SkillListFacadeService {
           // do nothing.
         }
       }
-      this._skillService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(skillObserver);
+      this._skillService.delete(id).pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false))).subscribe(skillObserver);
     }
   }
 
@@ -61,6 +65,7 @@ export class SkillListFacadeService {
   }
 
   retrieve(): void {
+    this._loading.next(true);
     const skillObserver = {
       next: (value: SkillSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -70,12 +75,13 @@ export class SkillListFacadeService {
     }
     if (this._checkSearchFields())
       this._skillService.search(this._skillSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(skillObserver);
     else this._getAll(false);
   }
 
   search(params: Skill): void {
+    this._loading.next(true);
     this._skillSearch = params;
     const skillObserver = {
       next: (value: SkillSearchResult) => { this._emitValues(value) },
@@ -86,7 +92,7 @@ export class SkillListFacadeService {
     }
     if (this._checkSearchFields()) {
       this._skillService.search(this._skillSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(skillObserver);
     }
   }
@@ -113,7 +119,7 @@ export class SkillListFacadeService {
         // do nothing.
       }
     }
-    this._skillService.getAllSkills(all, this._defaultPage).pipe(catchError((err) => { throw err.error.message }))
+    this._skillService.getAllSkills(all, this._defaultPage).pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
       .subscribe(skillObserver);
   }
 }

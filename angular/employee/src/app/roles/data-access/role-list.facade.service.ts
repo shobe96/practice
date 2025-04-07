@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, finalize } from 'rxjs';
 import { PageEvent } from '../../shared/data-access/page-event.model';
 import { RoleSearchResult } from './role-search-result.model';
 import { Role } from './role.model';
@@ -24,17 +24,20 @@ export class RoleListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  viewModel$: Observable<{ roles: Role[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
+  viewModel$: Observable<{ roles: Role[], page: PageEvent, rowsPerPage: number[], loading: boolean }> = combineLatest({
     roles: this._roles.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _roleService: RoleService = inject(RoleService);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
+    this._loading.next(true);
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
     this._getAll(false);
@@ -42,6 +45,7 @@ export class RoleListFacadeService {
 
   delete(id: number | null): void {
     if (id) {
+      this._loading.next(true);
       const roleObserver = {
         next: () => { this.retrieve(); },
         error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -50,7 +54,7 @@ export class RoleListFacadeService {
         }
       }
       this._roleService.delete(id)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(roleObserver);
     }
   }
@@ -63,6 +67,7 @@ export class RoleListFacadeService {
   }
 
   retrieve(): void {
+    this._loading.next(true);
     const roleObserver = {
       next: (value: RoleSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -72,12 +77,13 @@ export class RoleListFacadeService {
     }
     if (this._checkSearchFields())
       this._roleService.search(this._roleSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(roleObserver);
     else this._getAll(false);
   }
 
   search(params: Role): void {
+    this._loading.next(true);
     this._roleSearch = params;
     const roleObserver = {
       next: (value: RoleSearchResult) => { this._emitValues(value) },
@@ -88,7 +94,7 @@ export class RoleListFacadeService {
     }
     if (this._checkSearchFields()) {
       this._roleService.search(this._roleSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(roleObserver);
     }
   }
@@ -116,7 +122,7 @@ export class RoleListFacadeService {
       }
     }
     this._roleService.getAllRoles(all, this._defaultPage)
-      .pipe(catchError((err) => { throw err.error.message }))
+      .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
       .subscribe(roleObserver);
   }
 }

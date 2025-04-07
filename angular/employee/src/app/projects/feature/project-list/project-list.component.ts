@@ -16,13 +16,30 @@ import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-project-list',
   templateUrl: './project-list.component.html',
   styleUrl: './project-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe, DatePipe]
+  imports: [
+    Accordion,
+    AccordionPanel,
+    Ripple,
+    AccordionHeader,
+    AccordionContent,
+    ReactiveFormsModule,
+    InputText, Button,
+    Tooltip,
+    NgIf,
+    TableModule,
+    PrimeTemplate,
+    Paginator,
+    AsyncPipe,
+    DatePipe,
+    ProgressSpinner
+  ]
 })
 export class ProjectListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 

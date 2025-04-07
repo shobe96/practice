@@ -48,7 +48,7 @@
     </p-accordion-panel>
   </p-accordion>
   <p-button label="Add New" (onClick)="addNew()" />
-  <div *ngIf="projectListFacade.viewModel$ | async as data; noResult">
+  <div *ngIf="projectListFacade.viewModel$ | async as data; else noResult">
     <p-table
       [rowHover]="true"
       [value]="data.projects"
@@ -122,6 +122,9 @@
         [totalRecords]="data.page.pageCount"
         [rowsPerPageOptions]="[5, 10, 20, 30]"
       ></p-paginator>
+    </div>
+    <div *ngIf="data.loading" class="card flex justify-center progress-spinner">
+      <p-progress-spinner ariaLabel="loading" />
     </div>
   </div>
   <ng-template #noResult>

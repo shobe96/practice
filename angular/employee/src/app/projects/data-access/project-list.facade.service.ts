@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { PaginatorState } from 'primeng/paginator';
-import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, finalize } from 'rxjs';
 import { PageEvent } from '../../shared/data-access/page-event.model';
 import { ProjectSearchResult } from './project-search-result.model';
 import { Project } from './project.model';
@@ -24,32 +24,36 @@ export class ProjectListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  viewModel$: Observable<{ projects: Project[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
+  viewModel$: Observable<{ projects: Project[], page: PageEvent, rowsPerPage: number[], loading: boolean }> = combineLatest({
     projects: this._projects.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _projectService: ProjectService = inject(ProjectService);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
+    this._loading.next(true);
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
     this._getAll(false);
   }
 
   delete(id: number | null): void {
-    const projectObserver = {
-      next: () => { this.retrieve(); },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
+    this._loading.next(true)
     if (id) {
-      this._projectService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(projectObserver);
+      const projectObserver = {
+        next: () => { this.retrieve(); },
+        error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+        complete: () => {
+          // do nothing.
+        }
+      }
+      this._projectService.delete(id).pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false))).subscribe(projectObserver);
     }
   }
 
@@ -61,6 +65,7 @@ export class ProjectListFacadeService {
   }
 
   retrieve(): void {
+    this._loading.next(true)
     const projectObserver = {
       next: (value: ProjectSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -70,12 +75,13 @@ export class ProjectListFacadeService {
     }
     if (this._checkSearchFields())
       this._projectService.search(this._projectSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(projectObserver);
     else this._getAll(false);
   }
 
   search(params: Project): void {
+    this._loading.next(true);
     this._projectSearch = params;
     const projectObserver = {
       next: (value: ProjectSearchResult) => { this._emitValues(value) },
@@ -85,7 +91,7 @@ export class ProjectListFacadeService {
       }
     }
     if (this._checkSearchFields()) {
-      this._projectService.search(this._projectSearch, this._defaultPage).pipe(catchError((err) => { throw err.error.message }))
+      this._projectService.search(this._projectSearch, this._defaultPage).pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(projectObserver);
     }
   }
@@ -113,7 +119,7 @@ export class ProjectListFacadeService {
       }
     }
     this._projectService.getAllProjects(all, this._defaultPage)
-      .pipe(catchError((err) => { throw err.error.message }))
+      .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
       .subscribe(projectObserver);
   }
 }

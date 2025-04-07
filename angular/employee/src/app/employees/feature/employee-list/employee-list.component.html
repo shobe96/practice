@@ -78,10 +78,10 @@
           <td>{{ employee.email }}</td>
           <td>{{ employee.addDate | date: "dd/MM/yyyy hh:mm:ss" }}</td>
           <td>
-            <div *ngIf="employee.active; else elseBlock">
+            <div *ngIf="employee.active; else noResult">
               <i class="pi pi-check"></i>
             </div>
-            <ng-template #elseBlock>
+            <ng-template #noResult>
               <i class="pi pi-times"></i>
             </ng-template>
           </td>

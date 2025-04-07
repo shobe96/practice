@@ -14,13 +14,30 @@ import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { NgIf, AsyncPipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './user-list.component.html',
   styleUrl: './user-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe]
+  imports: [
+    Accordion,
+    AccordionPanel,
+    Ripple,
+    AccordionHeader,
+    AccordionContent,
+    ReactiveFormsModule,
+    InputText,
+    Button,
+    Tooltip,
+    NgIf,
+    TableModule,
+    PrimeTemplate,
+    Paginator,
+    AsyncPipe,
+    ProgressSpinner
+  ]
 })
 export class UserListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   userFormGroup!: FormGroup;

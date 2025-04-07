@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { DepartmentService } from './department.service';
-import { BehaviorSubject, catchError, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, Observable } from 'rxjs';
 import { Department } from './department.model';
 import { PageEvent } from '../../shared/data-access/page-event.model';
 import { rowsPerPage } from '../../shared/constants.model';
@@ -24,32 +24,40 @@ export class DepartmentListFacadeService {
   }
   private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
   private _rowsPerPage: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  viewModel$: Observable<{ departments: Department[], page: PageEvent, rowsPerPage: number[] }> = combineLatest({
+  viewModel$: Observable<{ departments: Department[], page: PageEvent, rowsPerPage: number[], loading: boolean }> = combineLatest({
     departments: this._departments.asObservable(),
     page: this._page.asObservable(),
-    rowsPerPage: this._rowsPerPage.asObservable()
+    rowsPerPage: this._rowsPerPage.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _departmentService: DepartmentService = inject(DepartmentService);
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   clear(): void {
+    this._loading.next(true);
     this._defaultPage.page = 0;
     this._defaultPage.first = 0;
     this._getAll(false);
   }
 
   delete(id: number | null): void {
-    const departmentObserver = {
-      next: () => { this.retrieve(); },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
     if (id) {
-      this._departmentService.delete(id).pipe(catchError((err) => { throw err.error.message })).subscribe(departmentObserver);
+      this._loading.next(true);
+      const departmentObserver = {
+        next: () => { this.retrieve(); },
+        error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
+        complete: () => {
+          // do nothing.
+        }
+      }
+      this._departmentService.delete(id)
+        .pipe(
+          catchError((err) => { throw err.error.message }),
+          finalize(() => this._loading.next(false))
+        ).subscribe(departmentObserver);
     }
   }
 
@@ -61,6 +69,7 @@ export class DepartmentListFacadeService {
   }
 
   retrieve(): void {
+    this._loading.next(true);
     const departmentObserver = {
       next: (value: DepartmentSearchResult) => { this._emitValues(value) },
       error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
@@ -70,12 +79,13 @@ export class DepartmentListFacadeService {
     }
     if (this._checkSearchFields())
       this._departmentService.search(this._departmentSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(departmentObserver);
     else this._getAll(false);
   }
 
   search(params: Department): void {
+    this._loading.next(true);
     this._departmentSearch = params;
     const departmentObserver = {
       next: (value: DepartmentSearchResult) => { this._emitValues(value) },
@@ -86,7 +96,7 @@ export class DepartmentListFacadeService {
     }
     if (this._checkSearchFields()) {
       this._departmentService.search(this._departmentSearch, this._defaultPage)
-        .pipe(catchError((err) => { throw err.error.message }))
+        .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
         .subscribe(departmentObserver);
     }
   }
@@ -114,7 +124,7 @@ export class DepartmentListFacadeService {
       }
     }
     this._departmentService.getAllDepartments(all, this._defaultPage)
-      .pipe(catchError((err) => { throw err.error.message }))
+      .pipe(catchError((err) => { throw err.error.message }), finalize(() => this._loading.next(false)))
       .subscribe(departmentObserver);
   }
 }

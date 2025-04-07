@@ -16,13 +16,30 @@ import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { NgIf, AsyncPipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-role-list',
   templateUrl: './role-list.component.html',
   styleUrl: './role-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Accordion, AccordionPanel, Ripple, AccordionHeader, AccordionContent, ReactiveFormsModule, InputText, Button, Tooltip, NgIf, TableModule, PrimeTemplate, Paginator, AsyncPipe]
+  imports: [
+    Accordion,
+    AccordionPanel,
+    Ripple,
+    AccordionHeader,
+    AccordionContent,
+    ReactiveFormsModule,
+    InputText,
+    Button,
+    Tooltip,
+    NgIf,
+    TableModule,
+    PrimeTemplate,
+    Paginator,
+    AsyncPipe,
+    ProgressSpinner
+  ]
 })
 export class RoleListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   roleFormGroup!: FormGroup;
