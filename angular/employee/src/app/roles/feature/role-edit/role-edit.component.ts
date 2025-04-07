@@ -7,15 +7,16 @@ import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-role-edit',
   templateUrl: './role-edit.component.html',
   styleUrl: './role-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button]
+  imports: [ReactiveFormsModule, InputText, NgIf, Button, AsyncPipe, ProgressSpinner]
 })
 export class RoleEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   roleFormGroup!: FormGroup;

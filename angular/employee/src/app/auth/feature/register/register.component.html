@@ -173,5 +173,8 @@
     </div>
     <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
   </form>
+  <div *ngIf="data.loading" class="card flex justify-center progress-spinner">
+    <p-progress-spinner ariaLabel="loading" />
+  </div>
 </div>
 <p-toast [life]="life" />

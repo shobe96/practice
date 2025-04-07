@@ -7,15 +7,16 @@ import { DepartmentEditFacadeService } from '../../data-access/department-edit.f
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-department-edit',
   templateUrl: './department-edit.component.html',
   styleUrl: './department-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button]
+  imports: [ReactiveFormsModule, InputText, NgIf, Button, ProgressSpinner, AsyncPipe]
 })
 export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
 
@@ -24,6 +25,7 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
   @Input() department: Department | null = {};
   @Input() disable = false;
 
+  departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);

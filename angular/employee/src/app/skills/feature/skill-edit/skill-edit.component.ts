@@ -7,15 +7,16 @@ import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { NgIf } from '@angular/common';
+import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-skill-edit',
   templateUrl: './skill-edit.component.html',
   styleUrl: './skill-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button]
+  imports: [ReactiveFormsModule, InputText, NgIf, Button, AsyncPipe, ProgressSpinner]
 })
 export class SkillEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
   skillFormGroup!: FormGroup;

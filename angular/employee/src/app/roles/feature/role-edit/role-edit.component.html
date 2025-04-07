@@ -45,6 +45,14 @@
         Description must be shorter than 100 characters!
       </div>
     </div>
+    <div *ngIf="roleEditFacade.viewModel$ | async as data">
+      <div
+        *ngIf="data.loading"
+        class="card flex justify-center progress-spinner"
+      >
+        <p-progress-spinner ariaLabel="loading" />
+      </div>
+    </div>
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
       <p-button

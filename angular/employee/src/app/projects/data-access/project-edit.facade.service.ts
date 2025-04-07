@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, combineLatest, map } from 'rxjs';
+import { BehaviorSubject, Observable, catchError, combineLatest, finalize, map } from 'rxjs';
 import { DepartmentSearchResult } from '../../departments/data-access/department-search-result.model';
 import { Department } from '../../departments/data-access/department.model';
 import { Employee } from '../../employees/data-access/employee.model';
@@ -20,11 +20,13 @@ export class ProjectEditFacadeService {
   private _skills: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
   private _departments: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
   private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
+  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  viewModel$: Observable<{ skills: Skill[], departments: Department[], employees: Employee[] }> = combineLatest({
+  viewModel$: Observable<{ skills: Skill[], departments: Department[], employees: Employee[], loading: boolean }> = combineLatest({
     skills: this._skills.asObservable(),
     departments: this._departments.asObservable(),
-    employees: this._employees.asObservable()
+    employees: this._employees.asObservable(),
+    loading: this._loading.asObservable()
   });
 
   private _employeeService = inject(EmployeeService);
@@ -34,6 +36,7 @@ export class ProjectEditFacadeService {
   private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   submit(project: Project): Observable<Project> {
+    this._loading.next(true);
     const subscription = !project.id ?
       this._projectService.save(project) :
       this._projectService.update(project);
@@ -46,7 +49,8 @@ export class ProjectEditFacadeService {
           return {};
         }
       }),
-      catchError((err) => { throw err.error.message })
+      catchError((err) => { throw err.error.message }),
+      finalize(() => this._loading.next(false))
     )
   }
 

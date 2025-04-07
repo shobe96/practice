@@ -12,6 +12,7 @@ import { Tooltip } from 'primeng/tooltip';
 import { MultiSelect } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
 import { Toast } from 'primeng/toast';
+import { ProgressSpinner } from 'primeng/progressspinner';
 
 @Component({
   selector: 'app-register',
@@ -26,7 +27,8 @@ import { Toast } from 'primeng/toast';
     MultiSelect,
     Select,
     Toast,
-    AsyncPipe
+    AsyncPipe,
+    ProgressSpinner
   ]
 })
 export class RegisterComponent implements OnInit {

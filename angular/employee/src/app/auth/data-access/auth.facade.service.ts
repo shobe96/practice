@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { BehaviorSubject, catchError, combineLatest, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, Observable } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../employees/data-access/employee.model';
@@ -146,6 +146,7 @@ export class AuthFacadeService {
   }
 
   registerUser(authRequest: AuthRequest) {
+    this._loading.next(true);
     const registerObserver = {
       next: () => {
         this._customMessageService.showSuccess('Success', 'User registered');
@@ -156,9 +157,9 @@ export class AuthFacadeService {
         // do nothing.
       }
     }
-    this._authService.registerUser(authRequest).pipe(catchError((err) => {
-      throw err.error.message;
-    })).subscribe(registerObserver);
+    this._authService.registerUser(authRequest).pipe(
+      catchError((err) => { throw err.error.message; }),
+      finalize(() => this._loading.next(false))).subscribe(registerObserver);
   }
 
   logout(): void {
