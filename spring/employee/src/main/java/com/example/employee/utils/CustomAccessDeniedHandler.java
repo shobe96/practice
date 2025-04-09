@@ -29,7 +29,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
 		response.setStatus(HttpStatus.FORBIDDEN.value());
 		response.setContentType("application/json");
-		response.addHeader("Access-Control-Allow-Origin", "http://localhost:4200");
 		RestError re = new RestError(HttpStatus.FORBIDDEN.value(), "Forbiden", false, "HttpErrorResponse", "You do not have permission to access this resource.");
 		objectMapper.writeValue(response.getWriter(), re);
 	}
