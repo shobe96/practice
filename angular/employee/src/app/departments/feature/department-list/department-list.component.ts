@@ -1,0 +1,169 @@
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { Department } from '../../data-access/department.model';
+import { PaginatorState, Paginator } from 'primeng/paginator';
+import { DepartmentListFacadeService } from '../../data-access/department-list.facade.service';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
+import { DialogService } from 'primeng/dynamicdialog';
+import { DepartmentEditComponent } from '../department-edit/department-edit.component';
+import { ConfirmationService, PrimeTemplate } from 'primeng/api';
+import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
+import { Ripple } from 'primeng/ripple';
+import { InputText } from 'primeng/inputtext';
+import { Button } from 'primeng/button';
+import { Tooltip } from 'primeng/tooltip';
+import { NgIf, AsyncPipe } from '@angular/common';
+import { TableModule } from 'primeng/table';
+import { ProgressSpinner } from 'primeng/progressspinner';
+
+@Component({
+  selector: 'app-department-list',
+  templateUrl: './department-list.component.html',
+  styleUrl: './department-list.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    Accordion,
+    AccordionPanel,
+    Ripple,
+    AccordionHeader,
+    AccordionContent,
+    ReactiveFormsModule,
+    InputText,
+    Button,
+    Tooltip,
+    NgIf,
+    TableModule,
+    PrimeTemplate,
+    Paginator,
+    AsyncPipe,
+    ProgressSpinner
+  ]
+})
+export class DepartmentListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+
+  departmentFormGroup!: FormGroup;
+  departmentSearch: Department = {};
+  departmentId: number | null = 0;
+
+  departmentListFacade: DepartmentListFacadeService = inject(DepartmentListFacadeService);
+  private _formBuilder: FormBuilder = inject(FormBuilder);
+  private _router: Router = inject(Router);
+  private _dialogService: DialogService = inject(DialogService);
+  private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+
+  constructor() {
+    super();
+    this._subscribeToRoute();
+  }
+
+  ngOnInit(): void {
+    this._buildForm();
+    this.departmentListFacade.retrieve();
+    this._subscribeToFormGroup();
+  }
+
+  ngOnDestroy(): void {
+    this.unsubsribe();
+  }
+
+  addNew(): void {
+    this.goToEdit(null, false);
+  }
+
+  clear(): void {
+    this._clearSearchFields();
+    this.departmentListFacade.clear();
+  }
+
+  delete(): void {
+    this.departmentListFacade.delete(this.departmentId);
+  }
+
+  goToDetails(department: Department): void {
+    this.goToEdit(department, true);
+  }
+
+  goToEdit(department: Department | null, disable: boolean): void {
+    const title = department ? `Department ${department.id}` : 'Add new Department';
+    this._dialogService.open(DepartmentEditComponent, {
+      header: title,
+      modal: true,
+      width: '35vw',
+      contentStyle: { overflow: 'auto' },
+      inputValues: {
+        department: department,
+        disable: disable
+      },
+      baseZIndex: 10000,
+      maximizable: true
+    });
+  }
+
+  onPageChange(event: PaginatorState): void {
+    this.departmentListFacade.onPageChange(event);
+  }
+
+  refresh(): void {
+    this.departmentListFacade.retrieve();
+  }
+
+  showDeleteDialog(id: number): void {
+    this._confirmationService.confirm({
+      message: `Are you sure you want to delete department with id: ${id}`,
+      header: 'Confirmation',
+      closable: true,
+      closeOnEscape: true,
+      icon: 'pi pi-exclamation-triangle',
+      rejectButtonProps: {
+        label: 'Cancel',
+        severity: 'danger'
+      },
+      acceptButtonProps: {
+        label: 'Delete',
+      },
+      accept: () => {
+        this.departmentListFacade.delete(id);
+      },
+    });
+  }
+
+  private _buildForm() {
+    this.departmentFormGroup = this._formBuilder.group({
+      name: ['']
+    });
+  }
+
+  private _subscribeToFormGroup() {
+    this.departmentFormGroup
+      .valueChanges
+      .pipe(
+        debounceTime(2000),
+        distinctUntilChanged(),
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe((value: Department) => {
+        if (value.name) {
+          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
+        }
+      });
+  }
+
+  private _clearSearchFields() {
+    this.departmentFormGroup.controls['name'].setValue('');
+    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
+  }
+
+  private _subscribeToRoute() {
+    this._activatedRoute.queryParams
+      .pipe(
+        takeUntil(this.componentIsDestroyed$)
+      )
+      .subscribe(
+        (params: Department) => {
+          this.departmentListFacade.search(params);
+        });
+  }
+}

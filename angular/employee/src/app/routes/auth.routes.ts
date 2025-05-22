@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { AuthComponent } from '../components/auth/auth.component';
-import { authGuard } from '../shared/guards/auth.guard';
+import { AuthComponent } from '../auth/ui/auth.component';
 import { enumRoles } from '../shared/constants.model';
+import { authGuard } from '../shared/data-access/guards/auth.guard';
 
 
 export const authRoutes: Routes = [
@@ -11,11 +11,11 @@ export const authRoutes: Routes = [
     children: [
       {
         path: "login",
-        loadComponent: () => import('../components/auth/login/login.component').then(c => c.LoginComponent)
+        loadComponent: () => import('../auth/feature/login/login.component').then(c => c.LoginComponent)
       },
       {
         path: "register",
-        loadComponent: () => import('../components/auth/register/register.component').then(c => c.RegisterComponent),
+        loadComponent: () => import('../auth/feature/register/register.component').then(c => c.RegisterComponent),
         canActivate: [authGuard],
         data: { roles: [enumRoles.ADMIN] }
       }

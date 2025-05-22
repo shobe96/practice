@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
-import { DepartmentComponent } from "../components/department/department.component";
-import { authGuard } from "../shared/guards/auth.guard";
+import { DepartmentComponent } from "../departments/ui/department/department.component";
 import { enumRoles } from "../shared/constants.model";
+import { authGuard } from "../shared/data-access/guards/auth.guard";
 
 export const departmentRoutes: Routes = [
   {
@@ -10,7 +10,7 @@ export const departmentRoutes: Routes = [
     children: [
       {
         path: "list",
-        loadComponent: () => import('../components/department/department-list/department-list.component').then(c => c.DepartmentListComponent),
+        loadComponent: () => import('../departments/feature/department-list/department-list.component').then(c => c.DepartmentListComponent),
         canActivate: [authGuard],
         data: { roles: [enumRoles.ADMIN] }
       }

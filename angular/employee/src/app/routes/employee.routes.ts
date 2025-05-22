@@ -1,7 +1,7 @@
 import { Routes } from "@angular/router";
-import { EmployeeComponent } from "../components/employee/employee.component";
-import { authGuard } from "../shared/guards/auth.guard";
+import { EmployeeComponent } from "../employees/ui/employee/employee.component";
 import { enumRoles } from "../shared/constants.model";
+import { authGuard } from "../shared/data-access/guards/auth.guard";
 
 export const employeeRoutes: Routes = [
   {
@@ -10,7 +10,7 @@ export const employeeRoutes: Routes = [
     children: [
       {
         path: "list",
-        loadComponent: () => import('../components/employee/employee-list/employee-list.component').then(c => c.EmployeeListComponent),
+        loadComponent: () => import('../employees/feature/employee-list/employee-list.component').then(c => c.EmployeeListComponent),
         canActivate: [authGuard],
         data: { roles: [enumRoles.ADMIN] }
       },

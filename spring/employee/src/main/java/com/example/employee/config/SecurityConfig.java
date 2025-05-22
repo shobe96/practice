@@ -1,5 +1,8 @@
 package com.example.employee.config;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -20,6 +23,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.example.employee.repositories.RoleRepository;
 import com.example.employee.repositories.UserRepository;
@@ -61,7 +67,7 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		return http.cors(cors -> cors.disable()).csrf(AbstractHttpConfigurer::disable)
+		return http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/login").permitAll()
 						.requestMatchers("/api/auth/register-user").hasAnyAuthority(AuthoritiesConstants.ADMIN)
@@ -102,6 +108,25 @@ public class SecurityConfig {
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
+	}
+	
+	@Bean
+	public CorsConfigurationSource corsConfigurationSource() {
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		CorsConfiguration configuration = new CorsConfiguration();
+		configuration.addAllowedOrigin("http://localhost:4200");
+		List<String> methods = new ArrayList<>();
+		methods.add("GET");
+		methods.add("POST");
+		methods.add("PUT");
+		methods.add("DELETE");
+		configuration.setAllowedMethods(methods);
+		List<String> headers = new ArrayList<>();
+		headers.add("Authorization");
+		headers.add("Content-Type");
+		configuration.setAllowedHeaders(headers);
+		source.registerCorsConfiguration("/**", configuration);
+		return source;
 	}
 
 }
