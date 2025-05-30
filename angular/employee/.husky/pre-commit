@@ -1,0 +1,16 @@
+#!/bin/sh
+
+echo "🔍 Running Prettier check on staged files..."
+npx lint-staged
+
+echo "🧹 Running ESLint on affected projects..."
+npx nx affected --target=lint --uncommitted --parallel --fix --strict
+
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Commit blocked due to lint issues."
+  echo "💡 To fix:"
+  echo "   👉 Run: npm run lint:affected"
+  echo "   👉 Or open the file and fix the warnings/errors manually"
+  exit 1
+fi
