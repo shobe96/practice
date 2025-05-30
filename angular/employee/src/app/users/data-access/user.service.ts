@@ -14,7 +14,7 @@ export class UserService {
 
   private _backendURL = environment.BACKEND_URL;
   private _baseUrl = "/api/users"
-  private _http: HttpClient = inject(HttpClient);
+  private _http = inject(HttpClient);
 
   getAllUsers(page?: PageEvent): Observable<UserSearchResult> {
     return this._http.get<UserSearchResult>(`${this._backendURL}${this._baseUrl}?${buildPaginationParams(page)}`);

@@ -11,7 +11,7 @@ export class ProjectHistoryService {
 
   private _backendURL = environment.BACKEND_URL;
   private _baseUrl = "/api/project-history";
-  private _http: HttpClient = inject(HttpClient);
+  private _http = inject(HttpClient);
 
   getProjectsHistoryOfEmployee(employeeId: number | undefined): Observable<ProjectHistory[]> {
     return this._http.get<ProjectHistory[]>(`${this._backendURL}${this._baseUrl}/${employeeId}`);

@@ -13,7 +13,7 @@ export class AuthService {
 
   private _backendURL = environment.BACKEND_URL;
   private _baseUrl = "/api/auth";
-  private _http: HttpClient = inject(HttpClient);
+  private _http = inject(HttpClient);
 
   login(request: AuthRequest): Observable<AuthResponse> {
     return this._http.post(`${this._backendURL}${this._baseUrl}/login`, request);

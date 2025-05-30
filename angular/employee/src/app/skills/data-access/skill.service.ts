@@ -14,9 +14,7 @@ export class SkillService {
 
   private _backendURL = environment.BACKEND_URL;
   private _baseUrl = "/api/skills";
-  private _http: HttpClient = inject(HttpClient);
-
-  constructor(private http: HttpClient) { }
+  private _http = inject(HttpClient);
 
   public getAllSkills(all: boolean, page?: PageEvent): Observable<SkillSearchResult> {
     const url =
@@ -27,22 +25,22 @@ export class SkillService {
   }
 
   public getSkill(skilld: number): Observable<Skill> {
-    return this.http.get<Skill>(`${this._backendURL}${this._baseUrl}/get-one/${skilld}`);
+    return this._http.get<Skill>(`${this._backendURL}${this._baseUrl}/get-one/${skilld}`);
   }
 
   public save(skill: Skill | null): Observable<Skill> {
-    return this.http.post<Skill>(`${this._backendURL}${this._baseUrl}/create`, skill);
+    return this._http.post<Skill>(`${this._backendURL}${this._baseUrl}/create`, skill);
   }
 
   public update(skill: Skill): Observable<Skill> {
-    return this.http.put<Skill>(`${this._backendURL}${this._baseUrl}/update`, skill);
+    return this._http.put<Skill>(`${this._backendURL}${this._baseUrl}/update`, skill);
   }
 
   public search(skill: Skill, page: PageEvent): Observable<SkillSearchResult> {
-    return this.http.get<SkillSearchResult>(`${this._backendURL}${this._baseUrl}/search?${buildSearchParams(skill)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
+    return this._http.get<SkillSearchResult>(`${this._backendURL}${this._baseUrl}/search?${buildSearchParams(skill)}&page=${page.page}&size=${page.rows}&sort=${page.sort}`);
   }
 
   public delete(skillId: number): Observable<void> {
-    return this.http.delete<void>(`${this._backendURL}${this._baseUrl}/delete/${skillId}`);
+    return this._http.delete<void>(`${this._backendURL}${this._baseUrl}/delete/${skillId}`);
   }
 }

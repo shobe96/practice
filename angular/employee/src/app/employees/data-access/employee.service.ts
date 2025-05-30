@@ -16,7 +16,7 @@ export class EmployeeService {
 
   private _backendURL = environment.BACKEND_URL;
   private _baseUrl = "/api/employees";
-  private _http: HttpClient = inject(HttpClient);
+  private _http = inject(HttpClient);
 
   getAllEmployees(all: boolean, page?: PageEvent): Observable<EmployeeSearchResult> {
     const url =

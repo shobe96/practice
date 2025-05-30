@@ -14,7 +14,7 @@ export class RoleService {
 
   private _backendURL = environment.BACKEND_URL;
   private _baseUrl = "/api/roles";
-  private _http: HttpClient = inject(HttpClient);
+  private _http = inject(HttpClient);
 
   getAllRoles(all: boolean, page?: PageEvent): Observable<RoleSearchResult> {
     const url =

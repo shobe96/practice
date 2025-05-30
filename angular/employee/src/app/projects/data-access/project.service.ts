@@ -14,7 +14,7 @@ export class ProjectService {
 
   private _backendURL = environment.BACKEND_URL;
   private _baseUrl = "/api/projects";
-  private _http: HttpClient = inject(HttpClient);
+  private _http = inject(HttpClient);
 
   getAllProjects(all: boolean, page?: PageEvent): Observable<ProjectSearchResult> {
     const url =
