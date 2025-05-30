@@ -4,7 +4,7 @@ import { Project } from '../../data-access/project.model';
 import { ConfirmationService, PrimeTemplate } from 'primeng/api';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectDetailsFacadeService } from '../../data-access/project-details.facade.service';
-import { NgIf, AsyncPipe, NgFor } from '@angular/common';
+import { NgIf, AsyncPipe } from '@angular/common';
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
 import { Ripple } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
