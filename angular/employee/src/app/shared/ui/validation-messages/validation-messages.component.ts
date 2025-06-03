@@ -9,7 +9,7 @@ import { AbstractControl } from '@angular/forms';
 })
 export class ValidationMessagesComponent {
   @Input() control!: AbstractControl | null;
-  @Input() messages: { [key: string]: string } = {};
+  @Input() messages: Record<string, string> = {};
 
   get errorKeys(): string[] {
     if (!this.control || !this.control.errors) return [];

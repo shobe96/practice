@@ -1,5 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimeIcons } from 'primeng/api';
 import { AuthRequest } from '../../data-access/auth-request.model';
 import { AuthFacadeService } from '../../data-access/auth.facade.service';
