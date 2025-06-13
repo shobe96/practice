@@ -63,29 +63,13 @@
       </ng-template>
     </div>
     @if(isInvalid('confirmPassword')) {
-    <div class="validation-messages">
-      @if(authFormGroup.controls['confirmPassword'].errors?.['required']) {
-      <span class="block">Password is required!</span>
-      }
-      @if(!authFormGroup.controls['confirmPassword'].value?.match('^(?=.*[A-Z])'))
-      {
-      <span class="block">At least one uppercase letter.</span>
-      } @if
-      (!authFormGroup.controls['confirmPassword'].value?.match('(?=.*[a-z])')) {
-      <span class="block">At least one lowercase letter.</span>
-      } @if
-      (!authFormGroup.controls['confirmPassword'].value?.match('(.*[0-9].*)')) {
-      <span class="block">At least one digit.</span>
-      }
-      @if(!authFormGroup.controls['confirmPassword'].value?.match('(?=.*[!@#$%^&*])'))
-      {
-      <span class="block">At least one special character.</span>
-      } @if(!authFormGroup.controls['confirmPassword'].value?.match('.{8,}')) {
-      <span class="block">At least 8 characters long.</span>
-      }
-    </div>
+    <app-password-requirements
+      [password]="authFormGroup.get('confirmPassword')?.value"
+    />
     } @if(authFormGroup.errors?.['passwordMissmatch']) {
-    <span class="block">Passwords missmatch. </span>
+    <div class="validation-messages">
+      <span class="block">Passwords missmatch. </span>
+    </div>
     }
     <p-multiSelect
       [options]="viewModel().roles"

@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { BehaviorSubject, catchError, combineLatest, finalize, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, Observable, of, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../employees/data-access/employee.model';
@@ -20,17 +20,18 @@ import { AuthState } from './auth-state';
 })
 export class AuthFacadeService {
 
-  private _router: Router = inject(Router);
-  private _authService: AuthService = inject(AuthService);
-  private _roleService: RoleService = inject(RoleService);
-  private _employeeService: EmployeeService = inject(EmployeeService);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private readonly _router: Router = inject(Router);
+  private readonly _authService: AuthService = inject(AuthService);
+  private readonly _roleService: RoleService = inject(RoleService);
+  private readonly _employeeService: EmployeeService = inject(EmployeeService);
+  private readonly _customMessageService: CustomMessageService = inject(CustomMessageService);
 
-  private _employees$: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
-  private _roles$: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
-  private _loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _menuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._buildMenuItems());
-  private _tokenExpirationTimer: NodeJS.Timeout | undefined;
+  private readonly _employees$: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
+  private readonly _roles$: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
+  private readonly _loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly _menuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._buildMenuItems());
+
+  private _tokenExpirationTimer?: ReturnType<typeof setTimeout>;
 
   viewModel$: Observable<AuthState> = combineLatest({
     employees: this._employees$.asObservable(),
@@ -45,46 +46,44 @@ export class AuthFacadeService {
   }
 
   checkAuthResponse(): void {
-    const authResponse = localStorage.getItem("authResponse");
-    if (authResponse) {
-      const json: AuthResponse = JSON.parse(authResponse);
-      this._updateMenuItems(true, json.roles);
-    }
+    const stored = localStorage.getItem('authResponse');
+    if (!stored) return;
+
+    const authResponse: AuthResponse = JSON.parse(stored);
+    this._updateMenuItems(true, authResponse.roles);
   }
 
   loginUser(authRequest: AuthRequest): void {
     this._loading$.next(true);
-    const loginObserver = {
-      next: (value: AuthResponse) => {
-        localStorage.setItem('authResponse', JSON.stringify(value));
-        this._autoLogout(value.expiration ?? 0);
-        this._updateMenuItems(true, value.roles);
-        this._customMessageService.showSuccess('Success', `Welcome ${value.username}`);
+    this._authService.login(authRequest).pipe(
+      tap((response: AuthResponse) => {
+        localStorage.setItem('authResponse', JSON.stringify(response));
+        this._autoLogout(response.expiration ?? 0);
+        this._updateMenuItems(true, response.roles);
+        this._customMessageService.showSuccess('Success', `Welcome ${response.username}`);
         this._router.navigate(["/home"]);
-      }
-    };
-    this._authService.login(authRequest).pipe(finalize(() => this._loading$.next(false)), catchError((err) => {
-      {
+      }),
+      catchError((err) => {
         this._customMessageService.showError('Error', err.error.message);
-        throw err;
-      }
-    })).subscribe(loginObserver);
+        return of()
+      }),
+      finalize(() => this._loading$.next(false))
+    ).subscribe();
   }
 
   registerUser(authRequest: AuthRequest): void {
     this._loading$.next(true);
-    const registerObserver = {
-      next: () => {
+    this._authService.registerUser(authRequest).pipe(
+      tap(() => {
         this._customMessageService.showSuccess('Success', 'User registered');
         this._router.navigate(["user/list"]);
-      }
-    }
-    this._authService.registerUser(authRequest).pipe(
-      finalize(() => this._loading$.next(false)),
+      }),
       catchError((err) => {
         this._customMessageService.showError('Error', err.error.message);
-        throw err;
-      })).subscribe(registerObserver);
+        return of()
+      }),
+      finalize(() => this._loading$.next(false))
+    ).subscribe();
   }
 
   logout(): void {
@@ -101,28 +100,29 @@ export class AuthFacadeService {
   }
 
   private _getEmployees(): void {
-    const employeesObserver = {
-      next: (value: EmployeeSearchResult) => {
-        if (value.employees) {
-          this._employees$.next(value.employees);
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); }
-    }
     this._employeeService.getAllEmployees(true)
-      .subscribe(employeesObserver);
+      .pipe(tap((res: EmployeeSearchResult) => {
+        this._employees$.next(res.employees ?? []);
+      }),
+        catchError((err) => {
+          this._customMessageService.showError('Error', err.error.message);
+          return of()
+        })
+      )
+      .subscribe();
   }
 
   private _getRoles(): void {
-    const rolesObserver = {
-      next: (value: RoleSearchResult) => {
-        if (value.roles) {
-          this._roles$.next(value.roles);
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-    }
-    this._roleService.getAllRoles(true).subscribe(rolesObserver);
+    this._roleService.getAllRoles(true)
+      .pipe(tap((res: RoleSearchResult) => {
+        this._roles$.next(res.roles ?? []);
+      }),
+        catchError((err) => {
+          this._customMessageService.showError('Error', err.error.message);
+          return of()
+        })
+      )
+      .subscribe();
   }
 
   private _updateMenuItems(isLoggedIn: boolean, roles: Role[] = []): void {
