@@ -1,0 +1,22 @@
+<p-accordion value="0">
+  <p-accordion-panel value="0">
+    <p-accordion-header>Search Filters</p-accordion-header>
+    <p-accordion-content>
+      <form class="employee-form" [formGroup]="formGroup">
+        <div class="search-inputs">
+          <ng-content></ng-content>
+
+          @for(btn of actionButtons; track btn.icon) {
+          <app-icon-button
+            [icon]="btn.icon"
+            (action)="btn.action()"
+            [severity]="btn.severity"
+            [tooltipPosition]="'top'"
+            [tooltip]="btn.tooltip"
+          />
+          }
+        </div>
+      </form>
+    </p-accordion-content>
+  </p-accordion-panel>
+</p-accordion>
