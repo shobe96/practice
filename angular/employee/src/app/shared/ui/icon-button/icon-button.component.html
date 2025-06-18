@@ -1,0 +1,14 @@
+<p-button
+  [icon]="icon"
+  [rounded]="rounded"
+  [severity]="severity"
+  (onClick)="action.emit()"
+  [pTooltip]="tooltipMessage"
+  [tooltipPosition]="tooltipPosition"
+/>
+
+<ng-template #tooltipMessage>
+  <div class="flex align-items-center">
+    <span>{{tooltip}}</span>
+  </div>
+</ng-template>
