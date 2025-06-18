@@ -68,7 +68,11 @@ export class EmployeeListComponent {
   private readonly _confirmationService = inject(ConfirmationService);
   private readonly _activatedRoute = inject(ActivatedRoute);
 
-  employeeFormGroup = this._buildForm();
+  employeeFormGroup = this._formBuilder.group({
+    name: [''],
+    surname: [''],
+    email: [''],
+  });
 
   private readonly _queryParamsSignal = toSignal(this._activatedRoute.queryParams, {
     initialValue: {}
@@ -97,8 +101,6 @@ export class EmployeeListComponent {
   });
 
   constructor() {
-
-    this._buildForm();
     effect(() => {
       const params = this._queryParamsSignal();
       this._employeeListFacade.search(params);
@@ -177,14 +179,6 @@ export class EmployeeListComponent {
         },
       });
     }
-  }
-
-  private _buildForm() {
-    return this._formBuilder.group({
-      name: [''],
-      surname: [''],
-      email: [''],
-    });
   }
 
   private _clearSearchFields() {
