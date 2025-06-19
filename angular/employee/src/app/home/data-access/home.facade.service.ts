@@ -13,19 +13,17 @@ import { Project } from '../../projects/data-access/project.model';
 import { CustomMessageService } from '../../shared/data-access/custom-message.service';
 import { HomeState } from './home-state';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class HomeFacadeService {
 
-  private readonly _authResponse: AuthResponse | null = this._getAuthResponse();
+  private readonly _authResponse = this._getAuthResponse();
 
-  private readonly _roles$: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
-  private readonly _employees$: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
-  private readonly _projectsHistory$: BehaviorSubject<ProjectHistory[]> = new BehaviorSubject<ProjectHistory[]>([]);
-  private readonly _employee$: BehaviorSubject<Employee> = new BehaviorSubject<Employee>({});
-  private readonly _project$: BehaviorSubject<Project> = new BehaviorSubject<Project>({});
-  private readonly _loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly _roles$ = new BehaviorSubject<Role[]>([]);
+  private readonly _employees$ = new BehaviorSubject<Employee[]>([]);
+  private readonly _projectsHistory$ = new BehaviorSubject<ProjectHistory[]>([]);
+  private readonly _employee$ = new BehaviorSubject<Employee>({});
+  private readonly _project$ = new BehaviorSubject<Project>({});
+  private readonly _loading$ = new BehaviorSubject<boolean>(false);
   private readonly _defaultPage: PageEvent = {
     page: 0,
     first: 0,
@@ -33,9 +31,9 @@ export class HomeFacadeService {
     pageCount: 0,
     sort: 'asc',
   };
-  private readonly _page$: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
+  private readonly _page$ = new BehaviorSubject<PageEvent>(this._defaultPage);
 
-  viewModel$: Observable<HomeState> = combineLatest({
+  viewModel$ = combineLatest({
     roles: this._roles$.asObservable(),
     page: this._page$.asObservable(),
     projectsHistory: this._projectsHistory$.asObservable(),
@@ -45,10 +43,10 @@ export class HomeFacadeService {
     loading: this._loading$.asObservable()
   });
 
-  private readonly _projectHistoryService: ProjectHistoryService = inject(ProjectHistoryService);
-  private readonly _projectService: ProjectService = inject(ProjectService);
-  private readonly _employeeService: EmployeeService = inject(EmployeeService);
-  private readonly _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private readonly _projectHistoryService = inject(ProjectHistoryService);
+  private readonly _projectService = inject(ProjectService);
+  private readonly _employeeService = inject(EmployeeService);
+  private readonly _customMessageService = inject(CustomMessageService);
 
   getRoles(): void {
     if (!this._authResponse) return;

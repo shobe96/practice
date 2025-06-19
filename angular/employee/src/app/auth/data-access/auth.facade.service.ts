@@ -20,20 +20,20 @@ import { AuthState } from './auth-state';
 })
 export class AuthFacadeService {
 
-  private readonly _router: Router = inject(Router);
-  private readonly _authService: AuthService = inject(AuthService);
-  private readonly _roleService: RoleService = inject(RoleService);
-  private readonly _employeeService: EmployeeService = inject(EmployeeService);
-  private readonly _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private readonly _router = inject(Router);
+  private readonly _authService = inject(AuthService);
+  private readonly _roleService = inject(RoleService);
+  private readonly _employeeService = inject(EmployeeService);
+  private readonly _customMessageService = inject(CustomMessageService);
 
-  private readonly _employees$: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
-  private readonly _roles$: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
-  private readonly _loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private readonly _menuItems$: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this._buildMenuItems());
+  private readonly _employees$ = new BehaviorSubject<Employee[]>([]);
+  private readonly _roles$ = new BehaviorSubject<Role[]>([]);
+  private readonly _loading$ = new BehaviorSubject<boolean>(false);
+  private readonly _menuItems$ = new BehaviorSubject<MenuItem[]>(this._buildMenuItems());
 
   private _tokenExpirationTimer?: ReturnType<typeof setTimeout>;
 
-  viewModel$: Observable<AuthState> = combineLatest({
+  viewModel$ = combineLatest({
     employees: this._employees$.asObservable(),
     roles: this._roles$.asObservable(),
     menuItems: this._menuItems$.asObservable(),
