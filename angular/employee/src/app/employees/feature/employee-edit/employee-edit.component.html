@@ -11,20 +11,14 @@
           pInputText
           placeholder="Name of employee"
         />
-        <div
-          class="validation-messages"
-          *ngIf="employeeFormGroup.controls['name'].invalid && employeeFormGroup.controls['name'].dirty"
-        >
-          <div *ngIf="employeeFormGroup.controls['name'].errors?.['required']">
-            Name is required!
-          </div>
-          <div *ngIf="employeeFormGroup.controls['name'].errors?.['minlength']">
-            Name must be longer than 5 characters!
-          </div>
-          <div *ngIf="employeeFormGroup.controls['name'].errors?.['maxlength']">
-            Name must be shorter than 25 characters!
-          </div>
-        </div>
+        @if(isInvalid('name')) {
+        <app-validation-messages
+          [control]="employeeFormGroup.controls['name']"
+          [messages]="{required: 'Name is required!',
+      minlength: 'Name must be longer than 5 characters!',
+      maxlength: 'Name must be shorter than 25 characters!'}"
+        />
+        }
       </div>
       <div class="custom-column">
         <input
@@ -32,26 +26,14 @@
           pInputText
           placeholder="Surname of employee"
         />
-        <div
-          class="validation-messages"
-          *ngIf="employeeFormGroup.controls['surname'].invalid && employeeFormGroup.controls['surname'].dirty"
-        >
-          <div
-            *ngIf="employeeFormGroup.controls['surname'].errors?.['required']"
-          >
-            Surname is required!
-          </div>
-          <div
-            *ngIf="employeeFormGroup.controls['surname'].errors?.['minlength']"
-          >
-            Surname must be longer than 5 characters!
-          </div>
-          <div
-            *ngIf="employeeFormGroup.controls['surname'].errors?.['maxlength']"
-          >
-            Surname must be shorter than 25 characters!
-          </div>
-        </div>
+        @if(isInvalid('surname')) {
+        <app-validation-messages
+          [control]="employeeFormGroup.controls['surname']"
+          [messages]="{required: 'Surname is required!',
+      minlength: 'Surname must be longer than 5 characters!',
+      maxlength: 'Surname must be shorter than 25 characters!'}"
+        />
+        }
       </div>
     </div>
     <div class="custom-row">
@@ -61,25 +43,18 @@
           formControlName="email"
           placeholder="Email of employee"
         />
-        <div
-          class="validation-messages"
-          *ngIf="employeeFormGroup.controls['email'].invalid && employeeFormGroup.controls['email'].dirty"
-        >
-          <div *ngIf="employeeFormGroup.controls['email'].errors?.['required']">
-            Email address is required!
-          </div>
-          <div *ngIf="employeeFormGroup.controls['email'].errors?.['email']">
-            Email address is not valid!
-          </div>
-          <div
-            *ngIf="employeeFormGroup.controls['email'].errors?.['maxlength']"
-          >
-            Email address must be shorter than 50 characters!
-          </div>
-        </div>
+        @if(isInvalid('email')) {
+        <app-validation-messages
+          [control]="employeeFormGroup.controls['email']"
+          [messages]="{required: 'Email address is required!',
+    email: 'Email address is not valid!',
+    maxlength: 'Email address must be shorter than 50 characters!'}"
+        />
+        }
       </div>
     </div>
-    <div *ngIf="employeeEditFacade.viewModel$ | async as data">
+    @if (viewModel(); as vm) {
+    <div>
       <div class="custom-row">
         <div class="custom-column">
           <p-select
@@ -87,7 +62,7 @@
             [virtualScroll]="true"
             appendTo="body"
             formControlName="department"
-            [options]="data.departments"
+            [options]="vm.departments"
             optionLabel="name"
             placeholder="Select a Department"
             dataKey="id"
@@ -97,29 +72,30 @@
           <p-multiSelect
             [disabled]="disable"
             appendTo="body"
-            [options]="data.skills"
+            [options]="vm.skills"
             formControlName="skills"
             optionLabel="name"
             placeholder="Select Skills"
           />
         </div>
       </div>
-      <div
-        *ngIf="data.loading"
-        class="card flex justify-center progress-spinner"
-      >
+      @if(vm.loading) {
+      <div class="card flex justify-center progress-spinner">
         <p-progress-spinner ariaLabel="loading" />
       </div>
+      }
     </div>
+    }
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+      @if(!disable) {
       <p-button
-        *ngIf="!disable"
         severity="success"
         [disabled]="employeeFormGroup.invalid"
         label="Submit"
         type="submit"
       />
+      }
     </div>
   </form>
 </div>
