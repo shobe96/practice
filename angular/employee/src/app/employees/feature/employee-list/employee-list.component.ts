@@ -137,7 +137,7 @@ export class EmployeeListComponent {
 
   goToEdit(employee: Employee | null, disable: boolean): void {
     const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
-    this._dialogService.open(EmployeeEditComponent, {
+    const dialogRef = this._dialogService.open(EmployeeEditComponent, {
       header: title,
       modal: true,
       width: '35vw',
@@ -149,6 +149,12 @@ export class EmployeeListComponent {
       baseZIndex: 10000,
       maximizable: true
     });
+
+    dialogRef.onClose.subscribe((value: boolean) => {
+      if (value) {
+        this.refresh()
+      }
+    })
   }
 
   onPageChange(event: PaginatorState): void {
@@ -181,7 +187,7 @@ export class EmployeeListComponent {
     }
   }
 
-  private _clearSearchFields() {
+  private _clearSearchFields(): void {
     this.employeeFormGroup.controls['name'].setValue('');
     this.employeeFormGroup.controls['surname'].setValue('');
     this.employeeFormGroup.controls['email'].setValue('');

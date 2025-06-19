@@ -9,12 +9,10 @@ import { rowsPerPage } from '../../shared/constants.model';
 import { CustomMessageService } from '../../shared/data-access/custom-message.service';
 import { EmployeeState } from './employee-state';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class EmployeeListFacadeService {
 
-  private _employees$: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
+  private _employees$ = new BehaviorSubject<Employee[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
     first: 0,
@@ -22,11 +20,11 @@ export class EmployeeListFacadeService {
     pageCount: 0,
     sort: 'asc',
   }
-  private readonly _page$: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
-  private readonly _rowsPerPage$: BehaviorSubject<number[]> = new BehaviorSubject<number[]>(rowsPerPage);
-  private readonly _loading$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  private readonly _page$ = new BehaviorSubject<PageEvent>(this._defaultPage);
+  private readonly _rowsPerPage$ = new BehaviorSubject<number[]>(rowsPerPage);
+  private readonly _loading$ = new BehaviorSubject<boolean>(false);
   private _employeeSearch: Employee = {}
-  private readonly _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private readonly _customMessageService = inject(CustomMessageService);
 
   viewModel$: Observable<EmployeeState> = combineLatest({
     employees: this._employees$.asObservable(),
@@ -101,7 +99,7 @@ export class EmployeeListFacadeService {
   }
 
   private _handleError<T>(severity: 'Error' | 'Warning', fallback: T) {
-    return catchError((err: any) => {
+    return catchError((err) => {
       const msg = err?.error?.message ?? 'Unknown error';
       severity === 'Error'
         ? this._customMessageService.showError(severity, msg)
