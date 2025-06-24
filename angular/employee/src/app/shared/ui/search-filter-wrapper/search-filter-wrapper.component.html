@@ -6,7 +6,7 @@
         <div class="search-inputs">
           <ng-content></ng-content>
 
-          @for(btn of actionButtons; track btn.icon) {
+          @for(btn of actionButtons; track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action()"

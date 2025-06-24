@@ -46,7 +46,7 @@
           }
         </td>
         <td>
-          @for(btn of actionButtons; track btn.icon) {
+          @for(btn of actionButtons; track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(employee)"
