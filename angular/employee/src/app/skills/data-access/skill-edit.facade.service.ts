@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable, catchError, combineLatest, finalize, map } from 'rxjs';
 import { Skill } from './skill.model';
 import { SkillService } from './skill.service';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable({
   providedIn: 'root'

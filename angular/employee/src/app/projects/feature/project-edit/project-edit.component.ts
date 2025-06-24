@@ -5,7 +5,7 @@ import { Project } from '../../data-access/project.model';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditFacadeService } from '../../data-access/project-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../../shared/data-access/services/custom-message/custom-message.service';
 import { InputText } from 'primeng/inputtext';
 import { NgIf, AsyncPipe } from '@angular/common';
 import { Select } from 'primeng/select';

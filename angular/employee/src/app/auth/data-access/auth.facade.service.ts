@@ -12,7 +12,7 @@ import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AuthResponse } from './auth-response.model';
 import { AuthRequest } from './auth-request.model';
 import { enumRoles } from '../../shared/constants.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { AuthState } from './auth-state';
 
 @Injectable({

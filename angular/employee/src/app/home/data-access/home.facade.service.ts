@@ -10,7 +10,7 @@ import { EmployeeService } from '../../employees/data-access/employee.service';
 import { EmployeeSearchResult } from '../../employees/data-access/employee-search-result.model';
 import { ProjectService } from '../../projects/data-access/project.service';
 import { Project } from '../../projects/data-access/project.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { HomeState } from './home-state';
 
 @Injectable()

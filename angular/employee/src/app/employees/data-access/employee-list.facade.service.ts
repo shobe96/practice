@@ -6,7 +6,7 @@ import { EmployeeService } from './employee.service';
 import { PageEvent } from '../../shared/data-access/page-event.model';
 import { EmployeeSearchResult } from './employee-search-result.model';
 import { rowsPerPage } from '../../shared/constants.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { EmployeeState } from './employee-state';
 
 @Injectable()

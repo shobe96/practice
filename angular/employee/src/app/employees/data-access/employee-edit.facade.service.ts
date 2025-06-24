@@ -6,7 +6,7 @@ import { SkillService } from '../../skills/data-access/skill.service';
 import { DepartmentService } from '../../departments/data-access/department.service';
 import { Skill } from '../../skills/data-access/skill.model';
 import { Department } from '../../departments/data-access/department.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable()
 export class EmployeeEditFacadeService {

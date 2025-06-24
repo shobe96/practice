@@ -6,7 +6,7 @@ import { SkillSearchResult } from './skill-search-result.model';
 import { Skill } from './skill.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { SkillService } from './skill.service';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable({
   providedIn: 'root'

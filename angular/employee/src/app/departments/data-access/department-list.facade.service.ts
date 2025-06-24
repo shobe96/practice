@@ -6,7 +6,7 @@ import { PageEvent } from '../../shared/data-access/page-event.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { DepartmentSearchResult } from './department-search-result.model';
 import { PaginatorState } from 'primeng/paginator';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable({
   providedIn: 'root'

@@ -5,7 +5,7 @@ import { RoleEditFacadeService } from '../../data-access/role-edit.facade.servic
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../../shared/data-access/services/custom-message/custom-message.service';
 import { InputText } from 'primeng/inputtext';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';

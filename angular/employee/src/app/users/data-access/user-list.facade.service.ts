@@ -7,7 +7,7 @@ import { User } from './user.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { UserService } from './user.service';
 import { AuthService } from '../../auth/data-access/auth.service';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable({
   providedIn: 'root'

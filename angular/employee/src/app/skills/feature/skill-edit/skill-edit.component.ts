@@ -5,7 +5,7 @@ import { Skill } from '../../data-access/skill.model';
 import { SkillEditFacadeService } from '../../data-access/skill-edit.facade.service';
 import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../../shared/data-access/services/custom-message/custom-message.service';
 import { InputText } from 'primeng/inputtext';
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';

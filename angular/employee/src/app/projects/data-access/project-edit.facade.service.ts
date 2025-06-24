@@ -10,7 +10,7 @@ import { EmployeeService } from '../../employees/data-access/employee.service';
 import { SkillService } from '../../skills/data-access/skill.service';
 import { ProjectService } from './project.service';
 import { Project } from './project.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable({
   providedIn: 'root'

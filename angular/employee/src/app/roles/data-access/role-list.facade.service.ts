@@ -6,7 +6,7 @@ import { RoleSearchResult } from './role-search-result.model';
 import { Role } from './role.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { RoleService } from './role.service';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable({
   providedIn: 'root'

@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { EmployeeListFacadeService } from './employee-list.facade.service';
 import { EmployeeService } from './employee.service';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { MessageService } from 'primeng/api';
 import { HttpClient, HttpHandler } from '@angular/common/http';
 

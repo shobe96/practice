@@ -6,7 +6,7 @@ import { ProjectSearchResult } from './project-search-result.model';
 import { Project } from './project.model';
 import { rowsPerPage } from '../../shared/constants.model';
 import { ProjectService } from './project.service';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
 @Injectable({
   providedIn: 'root'

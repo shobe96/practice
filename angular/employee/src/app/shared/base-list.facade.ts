@@ -1,12 +1,27 @@
 import { PaginatorState } from "primeng/paginator";
 import { BehaviorSubject, combineLatest, Observable } from "rxjs";
+import { PageEvent } from "./data-access/page-event.model";
+import { rowsPerPage } from "./constants.model";
 
-export abstract class ListFacade<T> {
-  private data: BehaviorSubject<T[]> = new BehaviorSubject<T[]>([]);
+export abstract class BaseListFacade<T> {
+  private _data$ = new BehaviorSubject<T[]>([]);
+  private _defaultPage: PageEvent = {
+    page: 0,
+    first: 0,
+    rows: 5,
+    pageCount: 0,
+    sort: 'asc',
+  }
+  private readonly _page$ = new BehaviorSubject<PageEvent>(this._defaultPage);
+  private readonly _rowsPerPage$ = new BehaviorSubject<number[]>(rowsPerPage);
+  private readonly _loading$ = new BehaviorSubject<boolean>(false);
 
   viewModel: Observable<{ data: T[] }> = combineLatest({
-    data: this.data.asObservable(),
-  })
+    data: this._data$.asObservable(),
+    page: this._page$.asObservable(),
+    rowsPerPage: this._rowsPerPage$.asObservable(),
+    loading: this._loading$.asObservable()
+  });
   abstract addNew(): void;
   abstract checkSearchFields(): boolean
   abstract clear(): void
