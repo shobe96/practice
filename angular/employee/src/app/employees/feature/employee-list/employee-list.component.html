@@ -2,8 +2,8 @@
 <div class="card">
   <app-search-filter-wrapper
     [formGroup]="employeeFormGroup"
-    (onClear)="clear()"
-    (onRefresh)="refresh()"
+    (clear)="clear()"
+    (refresh)="refresh()"
   >
     <input formControlName="name" pInputText placeholder="Name of employee" />
     <input
@@ -14,10 +14,10 @@
     <input pInputText formControlName="email" placeholder="Email of employee" />
   </app-search-filter-wrapper>
   <p-button label="Add New" (onClick)="addNew()" />
-  @if(vm.employees.length) {
+  @if(vm.data.length) {
   <p-table
     [rowHover]="true"
-    [value]="vm.employees"
+    [value]="vm.data"
     [tableStyle]="{ 'min-width': '70rem' }"
   >
     <ng-template pTemplate="header">

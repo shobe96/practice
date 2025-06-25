@@ -17,27 +17,27 @@ import { ActionButtons } from '../../data-access/action-buttons.model';
 export class SearchFilterWrapperComponent {
   @Input() formGroup!: FormGroup;
 
-  @Output() onClear = new EventEmitter<void>();
-  @Output() onRefresh = new EventEmitter<void>();
+  @Output() clear = new EventEmitter<void>();
+  @Output() refresh = new EventEmitter<void>();
 
-  clear() {
-    this.onClear.emit();
+  onClear() {
+    this.clear.emit();
   }
 
-  refresh() {
-    this.onRefresh.emit();
+  onRefresh() {
+    this.refresh.emit();
   }
 
   actionButtons: ActionButtons<void>[] = [
     {
       icon: 'pi pi-trash',
-      action: () => this.clear(),
+      action: () => this.onClear(),
       severity: 'danger',
       tooltip: 'Clear Filters'
     },
     {
       icon: 'pi pi-refresh',
-      action: () => this.refresh(),
+      action: () => this.onRefresh(),
       severity: 'success',
       tooltip: 'Refresh List'
     }

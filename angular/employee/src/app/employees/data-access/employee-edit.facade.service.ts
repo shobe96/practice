@@ -7,46 +7,27 @@ import { DepartmentService } from '../../departments/data-access/department.serv
 import { Skill } from '../../skills/data-access/skill.model';
 import { Department } from '../../departments/data-access/department.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
+import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
+import { DepartmentSearchResult } from '../../departments/data-access/department-search-result.model';
+import { SkillSearchResult } from '../../skills/data-access/skill-search-result.model';
 
 @Injectable()
-export class EmployeeEditFacadeService {
+export class EmployeeEditFacadeService extends BaseEditFacade<Employee> {
 
   private readonly _skills$ = new BehaviorSubject<Skill[]>([]);
   private readonly _departments$ = new BehaviorSubject<Department[]>([]);
-  private readonly _loading$ = new BehaviorSubject<boolean>(false);
 
-  viewModel$ = combineLatest({
+  override viewModel$ = combineLatest({
     skills: this._skills$.asObservable(),
     departments: this._departments$.asObservable(),
     loading: this._loading$.asObservable()
   });
 
-  private readonly _employeeService = inject(EmployeeService);
   private readonly _skillService = inject(SkillService);
   private readonly _departmentService = inject(DepartmentService);
-  private readonly _customMessageService = inject(CustomMessageService);
 
-  submit(employee: Employee): Observable<boolean> {
-    const subscription = !employee.id ?
-      this._employeeService.save(employee) :
-      this._employeeService.update(employee);
-
-    this._loading$.next(true);
-
-    return subscription.pipe(
-      tap(
-        () => {
-          this._customMessageService.showSuccess('Success', 'Action perforemd successfully');
-        }
-      ),
-      map(() => true),
-      catchError((err) => {
-        const msg = err?.error?.message ?? 'Unknown error';
-        this._customMessageService.showError('Error', msg)
-        return of(false);
-      }),
-      finalize(() => this._loading$.next(false))
-    )
+  constructor(employeeService: EmployeeService) {
+    super(employeeService);
   }
 
   loadSelectOptions(): void {
@@ -54,28 +35,11 @@ export class EmployeeEditFacadeService {
     this._getDepartments();
   }
 
-  toggleLoading(loading: boolean) {
-    this._loading$.next(loading);
-  }
-
   private _getSkills(): void {
-    this._withLoading(() => this._skillService.getAllSkills(true).pipe(tap((value) => this._skills$.next(value.skills ?? [])), this._handleError([])));
+    this._withLoading(() => this._skillService.getAllSkills(true).pipe(tap((value) => this._skills$.next(value.skills ?? [])), this._handleError<SkillSearchResult>({ skills: [], size: 0 }))).subscribe();
   }
 
   private _getDepartments(): void {
-    this._withLoading(() => this._departmentService.getAllDepartments(true).pipe(tap((value) => this._departments$.next(value.departments ?? [])), this._handleError([])))
-  }
-
-  private _withLoading<T>(fn: () => Observable<T>): void {
-    this._loading$.next(true);
-    fn().pipe(finalize(() => this._loading$.next(false))).subscribe();
-  }
-
-  private _handleError<T>(fallback: T) {
-    return catchError((err) => {
-      const msg = err?.error?.message ?? 'Unknown error';
-      this._customMessageService.showError('Error', msg)
-      return of(fallback);
-    });
+    this._withLoading(() => this._departmentService.getAllDepartments(true).pipe(tap((value) => this._departments$.next(value.departments ?? [])), this._handleError<DepartmentSearchResult>({ departments: [], size: 0 }))).subscribe();
   }
 }

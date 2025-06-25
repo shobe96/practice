@@ -7,11 +7,10 @@ import { Employee } from '../../employees/data-access/employee.model';
 import { ProjectHistory } from '../../projects/data-access/project-history.model';
 import { AuthResponse } from '../../auth/data-access/auth-response.model';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { EmployeeSearchResult } from '../../employees/data-access/employee-search-result.model';
 import { ProjectService } from '../../projects/data-access/project.service';
 import { Project } from '../../projects/data-access/project.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
-import { HomeState } from './home-state';
+import { SearchResult } from '../../shared/data-access/search-result.model';
 
 @Injectable()
 export class HomeFacadeService {
@@ -73,7 +72,7 @@ export class HomeFacadeService {
             this._projectsHistory$.next(history ?? []);
             this._defaultPage.pageCount = searchResult?.size ?? 0;
             this._page$.next({ ...this._defaultPage });
-            this._employees$.next(searchResult?.employees ?? []);
+            this._employees$.next(searchResult?.items ?? []);
             this._project$.next(project ?? {});
           }),
           catchError(() => of(null))
@@ -89,11 +88,11 @@ export class HomeFacadeService {
       .pipe(this._handleError<ProjectHistory[]>('Error', []));
   }
 
-  private _getAllEmployeesByDepartment(employee: Employee): Observable<EmployeeSearchResult | null> {
+  private _getAllEmployeesByDepartment(employee: Employee): Observable<SearchResult<Employee> | null> {
     if (!employee.department?.id) return of(null);
     return this._employeeService
       .findByDepartment(employee.department.id, this._defaultPage)
-      .pipe(this._handleError<EmployeeSearchResult>('Warning', {}));
+      .pipe(this._handleError<SearchResult<Employee>>('Warning', {}));
   }
 
   private _getActiveProject(employee: Employee): Observable<Project | null> {
@@ -124,9 +123,9 @@ export class HomeFacadeService {
   private _handleError<T>(severity: 'Error' | 'Warning', fallback: T): OperatorFunction<T, T> {
     return catchError((err) => {
       const msg = err?.error?.message ?? 'Unknown error';
-      severity === 'Error'
-        ? this._customMessageService.showError(severity, msg)
-        : this._customMessageService.showWarn(severity, msg);
+      if (severity === 'Error')
+        this._customMessageService.showError(severity, msg)
+      else this._customMessageService.showWarn(severity, msg);
       return of(fallback);
     });
   }

@@ -1,10 +1,9 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { BehaviorSubject, catchError, combineLatest, finalize, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, of, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../employees/data-access/employee.model';
-import { EmployeeSearchResult } from '../../employees/data-access/employee-search-result.model';
 import { RoleService } from '../../roles/data-access/role.service';
 import { Role } from '../../roles/data-access/role.model';
 import { RoleSearchResult } from '../../roles/data-access/role-search-result.model';
@@ -13,7 +12,7 @@ import { AuthResponse } from './auth-response.model';
 import { AuthRequest } from './auth-request.model';
 import { enumRoles } from '../../shared/constants.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
-import { AuthState } from './auth-state';
+import { SearchResult } from '../../shared/data-access/search-result.model';
 
 @Injectable({
   providedIn: 'root'
@@ -100,9 +99,9 @@ export class AuthFacadeService {
   }
 
   private _getEmployees(): void {
-    this._employeeService.getAllEmployees(true)
-      .pipe(tap((res: EmployeeSearchResult) => {
-        this._employees$.next(res.employees ?? []);
+    this._employeeService.getAll(true)
+      .pipe(tap((res: SearchResult<Employee>) => {
+        this._employees$.next(res.items ?? []);
       }),
         catchError((err) => {
           this._customMessageService.showError('Error', err.error.message);

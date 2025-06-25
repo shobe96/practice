@@ -59,7 +59,7 @@ export class EmployeeEditComponent implements OnInit {
     this.employee = this._getFormValues();
     this.employeeEditFacade.submit(this.employee).subscribe(res => {
       if (res) {
-        this.cancel();
+        this._dialogRef.close(true);
       }
     });
   }

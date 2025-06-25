@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
 import { Employee } from '../../data-access/employee.model';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState, Paginator } from 'primeng/paginator';
@@ -36,7 +36,7 @@ import { ActionButtons } from '../../../shared/data-access/action-buttons.model'
     SearchFilterWrapperComponent
   ]
 })
-export class EmployeeListComponent {
+export class EmployeeListComponent implements OnInit {
 
   employeeSearch: Employee = {};
   employeeId: number | null = 0;
@@ -93,7 +93,7 @@ export class EmployeeListComponent {
 
   viewModel = toSignal(this._employeeListFacade.viewModel$, {
     initialValue: {
-      employees: [],
+      data: [],
       page: this._defaultPage,
       rowsPerPage: [],
       loading: false
