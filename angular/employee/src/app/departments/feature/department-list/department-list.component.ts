@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Department } from '../../data-access/department.model';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { DepartmentListFacadeService } from '../../data-access/department-list.facade.service';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DialogService } from 'primeng/dynamicdialog';
 import { DepartmentEditComponent } from '../department-edit/department-edit.component';
 import { ConfirmationService, PrimeTemplate } from 'primeng/api';
-import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
-import { Ripple } from 'primeng/ripple';
 import { InputText } from 'primeng/inputtext';
-import { Button } from 'primeng/button';
-import { Tooltip } from 'primeng/tooltip';
-import { NgIf, AsyncPipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { ActionButtons } from '../../../shared/data-access/action-buttons.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { PageEvent } from '../../../shared/data-access/page-event.model';
+import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
+import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
+import { Button } from 'primeng/button';
 
 @Component({
   selector: 'app-department-list',
@@ -24,49 +24,100 @@ import { ProgressSpinner } from 'primeng/progressspinner';
   styleUrl: './department-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    Accordion,
-    AccordionPanel,
-    Ripple,
-    AccordionHeader,
-    AccordionContent,
     ReactiveFormsModule,
-    InputText,
     Button,
-    Tooltip,
-    NgIf,
+    InputText,
     TableModule,
     PrimeTemplate,
     Paginator,
-    AsyncPipe,
-    ProgressSpinner
+    ProgressSpinner,
+    SearchFilterWrapperComponent,
+    IconButtonComponent
   ]
 })
-export class DepartmentListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class DepartmentListComponent implements OnInit {
 
-  departmentFormGroup!: FormGroup;
   departmentSearch: Department = {};
   departmentId: number | null = 0;
 
-  departmentListFacade: DepartmentListFacadeService = inject(DepartmentListFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
-  private _dialogService: DialogService = inject(DialogService);
-  private _confirmationService: ConfirmationService = inject(ConfirmationService);
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  actionButtons: ActionButtons<Department>[] = [
+    {
+      icon: 'pi pi-eye',
+      action: (emp: Department) => this.goToDetails(emp),
+      severity: 'success',
+      tooltip: 'View Employee'
+    },
+    {
+      icon: 'pi pi-pencil',
+      action: (emp: Department) => this.goToEdit(emp, false),
+      severity: 'warn',
+      tooltip: 'Edit Employee'
+    },
+    {
+      icon: 'pi pi-trash',
+      action: (emp: Department) => this.showDeleteDialog(emp.id),
+      severity: 'danger',
+      tooltip: 'Delete Employee'
+    }
+  ];
+
+  private _departmentListFacade = inject(DepartmentListFacadeService);
+  private _formBuilder = inject(FormBuilder);
+  private _router = inject(Router);
+  private _dialogService = inject(DialogService);
+  private _confirmationService = inject(ConfirmationService);
+  private _activatedRoute = inject(ActivatedRoute);
+
+  departmentFormGroup = this._formBuilder.group({
+    name: ['']
+  });
+
+  private readonly _queryParamsSignal = toSignal(this._activatedRoute.queryParams, {
+    initialValue: {}
+  });
+
+  private readonly _departmentFormSignal = toSignal(
+    this.departmentFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
+    { initialValue: this.departmentFormGroup.getRawValue() }
+  );
+
+  private readonly _defaultPage: PageEvent = {
+    page: 0,
+    first: 0,
+    rows: 5,
+    pageCount: 0,
+    sort: 'asc',
+  };
+
+  viewModel = toSignal(this._departmentListFacade.viewModel$, {
+    initialValue: {
+      data: [],
+      page: this._defaultPage,
+      rowsPerPage: [],
+      loading: false
+    }
+  });
 
   constructor() {
-    super();
-    this._subscribeToRoute();
+    effect(() => {
+      const params = this._queryParamsSignal();
+      this._departmentListFacade.search(params);
+    });
+
+    effect(() => {
+      const value = this._departmentFormSignal();
+      const { name } = value;
+      if (name) {
+        this._router.navigate([], {
+          queryParams: { name },
+          queryParamsHandling: 'merge',
+        });
+      }
+    });
   }
 
   ngOnInit(): void {
-    this._buildForm();
-    this.departmentListFacade.retrieve();
-    this._subscribeToFormGroup();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
+    this._departmentListFacade.retrieve();
   }
 
   addNew(): void {
@@ -75,11 +126,7 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
 
   clear(): void {
     this._clearSearchFields();
-    this.departmentListFacade.clear();
-  }
-
-  delete(): void {
-    this.departmentListFacade.delete(this.departmentId);
+    this._departmentListFacade.clear();
   }
 
   goToDetails(department: Department): void {
@@ -88,7 +135,7 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
 
   goToEdit(department: Department | null, disable: boolean): void {
     const title = department ? `Department ${department.id}` : 'Add new Department';
-    this._dialogService.open(DepartmentEditComponent, {
+    const dialogRef = this._dialogService.open(DepartmentEditComponent, {
       header: title,
       modal: true,
       width: '35vw',
@@ -100,70 +147,46 @@ export class DepartmentListComponent extends SubscriptionCleaner implements OnIn
       baseZIndex: 10000,
       maximizable: true
     });
+
+    dialogRef.onClose.subscribe((value: boolean) => {
+      if (value) {
+        this.refresh()
+      }
+    })
   }
 
   onPageChange(event: PaginatorState): void {
-    this.departmentListFacade.onPageChange(event);
+    this._departmentListFacade.onPageChange(event);
   }
 
   refresh(): void {
-    this.departmentListFacade.retrieve();
+    this._departmentListFacade.retrieve();
   }
 
-  showDeleteDialog(id: number): void {
-    this._confirmationService.confirm({
-      message: `Are you sure you want to delete department with id: ${id}`,
-      header: 'Confirmation',
-      closable: true,
-      closeOnEscape: true,
-      icon: 'pi pi-exclamation-triangle',
-      rejectButtonProps: {
-        label: 'Cancel',
-        severity: 'danger'
-      },
-      acceptButtonProps: {
-        label: 'Delete',
-      },
-      accept: () => {
-        this.departmentListFacade.delete(id);
-      },
-    });
-  }
-
-  private _buildForm() {
-    this.departmentFormGroup = this._formBuilder.group({
-      name: ['']
-    });
-  }
-
-  private _subscribeToFormGroup() {
-    this.departmentFormGroup
-      .valueChanges
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged(),
-        takeUntil(this.componentIsDestroyed$)
-      )
-      .subscribe((value: Department) => {
-        if (value.name) {
-          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
-        }
+  showDeleteDialog(id: number | undefined): void {
+    if (id) {
+      this._confirmationService.confirm({
+        message: `Are you sure you want to delete department with id: ${id}`,
+        header: 'Confirmation',
+        closable: true,
+        closeOnEscape: true,
+        icon: 'pi pi-exclamation-triangle',
+        rejectButtonProps: {
+          label: 'Cancel',
+          severity: 'danger'
+        },
+        acceptButtonProps: {
+          label: 'Delete',
+        },
+        accept: () => {
+          this._departmentListFacade.delete(id);
+        },
       });
+    }
   }
 
   private _clearSearchFields() {
     this.departmentFormGroup.controls['name'].setValue('');
     this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
-  }
-
-  private _subscribeToRoute() {
-    this._activatedRoute.queryParams
-      .pipe(
-        takeUntil(this.componentIsDestroyed$)
-      )
-      .subscribe(
-        (params: Department) => {
-          this.departmentListFacade.search(params);
-        });
   }
 }

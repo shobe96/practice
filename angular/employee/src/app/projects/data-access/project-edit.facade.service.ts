@@ -114,7 +114,7 @@ export class ProjectEditFacadeService {
         // do nothing.
       }
     }
-    this._departmentService.getAllDepartments(true)
+    this._departmentService.getAll(true)
       .pipe(catchError((err) => { throw err.error.message }))
       .subscribe(departmentObserver);
   }

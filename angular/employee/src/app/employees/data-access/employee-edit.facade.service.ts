@@ -7,8 +7,8 @@ import { DepartmentService } from '../../departments/data-access/department.serv
 import { Skill } from '../../skills/data-access/skill.model';
 import { Department } from '../../departments/data-access/department.model';
 import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
-import { DepartmentSearchResult } from '../../departments/data-access/department-search-result.model';
 import { SkillSearchResult } from '../../skills/data-access/skill-search-result.model';
+import { SearchResult } from '../../shared/data-access/search-result.model';
 
 @Injectable()
 export class EmployeeEditFacadeService extends BaseEditFacade<Employee> {
@@ -39,6 +39,6 @@ export class EmployeeEditFacadeService extends BaseEditFacade<Employee> {
   }
 
   private _getDepartments(): void {
-    this._withLoading(() => this._departmentService.getAll(true).pipe(tap((value) => this._departments$.next(value.departments ?? [])), this._handleError<DepartmentSearchResult>({ departments: [], size: 0 }))).subscribe();
+    this._withLoading(() => this._departmentService.getAll(true).pipe(tap((value) => this._departments$.next(value.items ?? [])), this._handleError<SearchResult<Department>>({ items: [], size: 0 }))).subscribe();
   }
 }
