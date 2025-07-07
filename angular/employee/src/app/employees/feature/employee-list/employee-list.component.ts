@@ -89,7 +89,7 @@ export class EmployeeListComponent implements OnInit {
     rows: 5,
     pageCount: 0,
     sort: 'asc',
-  }
+  };
 
   viewModel = toSignal(this._employeeListFacade.viewModel$, {
     initialValue: {

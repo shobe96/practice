@@ -5,7 +5,7 @@ import { BaseListFacade } from '../../shared/data-access/services/base/base-list
 import { SearchResult } from '../../shared/data-access/search-result.model';
 
 @Injectable()
-export class EmployeeListFacadeService extends BaseListFacade<Employee, SearchResult<Employee>> {
+export class EmployeeListFacadeService extends BaseListFacade<Employee> {
 
   protected override _search: Employee = {};
 

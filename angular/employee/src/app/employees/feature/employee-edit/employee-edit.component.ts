@@ -34,8 +34,8 @@ export class EmployeeEditComponent implements OnInit {
   @Input() employee: Employee = {};
   @Input() disable = false;
 
-  employeeEditFacade = inject(EmployeeEditFacadeService);
-  viewModel = toSignal(this.employeeEditFacade.viewModel$, {
+  private _employeeEditFacade = inject(EmployeeEditFacadeService);
+  viewModel = toSignal(this._employeeEditFacade.viewModel$, {
     initialValue: {
       skills: [],
       departments: [],
@@ -46,7 +46,7 @@ export class EmployeeEditComponent implements OnInit {
   private _dialogRef = inject(DynamicDialogRef);
 
   ngOnInit(): void {
-    this.employeeEditFacade.loadSelectOptions();
+    this._employeeEditFacade.loadSelectOptions();
     this._buildForm();
     this._initFormFields();
   }
@@ -57,7 +57,7 @@ export class EmployeeEditComponent implements OnInit {
 
   submit() {
     this.employee = this._getFormValues();
-    this.employeeEditFacade.submit(this.employee).subscribe(res => {
+    this._employeeEditFacade.submit(this.employee).subscribe(res => {
       if (res) {
         this._dialogRef.close(true);
       }
@@ -88,21 +88,6 @@ export class EmployeeEditComponent implements OnInit {
       department: this.employee.department ?? {},
       skills: this.employee.skills ?? []
     })
-  }
-
-  private _disableFields(): void {
-    if (this.employeeFormGroup) {
-      this.employeeFormGroup.controls['name'].disable();
-      this.employeeFormGroup.controls['surname'].disable();
-      this.employeeFormGroup.controls['email'].disable();
-    }
-  }
-  private _enableFields(): void {
-    if (this.employeeFormGroup) {
-      this.employeeFormGroup.controls['name'].enable();
-      this.employeeFormGroup.controls['surname'].enable();
-      this.employeeFormGroup.controls['email'].enable();
-    }
   }
 
   private _getFormValues(): Employee {
