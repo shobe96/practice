@@ -60,7 +60,7 @@ export class AuthFacadeService {
         this._autoLogout(response.expiration ?? 0);
         this._updateMenuItems(true, response.roles);
         this._customMessageService.showSuccess('Success', `Welcome ${response.username}`);
-        this._router.navigate(["/home"]);
+        this._router.navigate(["/home/panel"]);
       }),
       catchError((err) => {
         this._customMessageService.showError('Error', err.error.message);
