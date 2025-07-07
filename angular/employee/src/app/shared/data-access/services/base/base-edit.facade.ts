@@ -13,7 +13,7 @@ export abstract class BaseEditFacade<T extends { id?: number }> {
 
   protected readonly _customMessageService = inject(CustomMessageService);
 
-  protected constructor(protected readonly baseService: BaseCrudService<T, unknown>) { }
+  protected constructor(protected readonly baseService: BaseCrudService<T>) { }
 
   submit(entity: T): Observable<boolean> {
     const request$ = entity.id

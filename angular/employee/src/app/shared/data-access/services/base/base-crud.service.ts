@@ -4,20 +4,21 @@ import { HttpClient } from '@angular/common/http';
 import { PageEvent } from '../../page-event.model';
 import { buildPaginationParams, buildSearchParams } from '../../../utils';
 import { Observable } from 'rxjs';
+import { SearchResult } from '../../search-result.model';
 
-export abstract class BaseCrudService<T extends object, U> {
+export abstract class BaseCrudService<T extends object> {
 
   protected readonly backendURL = environment.BACKEND_URL;
   protected readonly http = inject(HttpClient);
 
   protected abstract readonly baseUrl: string;
 
-  getAll(all: boolean, page?: PageEvent): Observable<U> {
+  getAll(all: boolean, page?: PageEvent): Observable<SearchResult<T>> {
     const url =
       all
         ? `${this.backendURL}${this.baseUrl}?all=${all}` :
         `${this.backendURL}${this.baseUrl}?${buildPaginationParams(page)}&sort=asc&all=${all}`;
-    return this.http.get<U>(url);
+    return this.http.get<SearchResult<T>>(url);
   }
 
   get(id: number): Observable<T> {
@@ -36,7 +37,7 @@ export abstract class BaseCrudService<T extends object, U> {
     return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${id}`);
   }
 
-  search(data: T, page: PageEvent): Observable<U> {
-    return this.http.get<U>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(data)}&${buildPaginationParams(page)}`);
+  search(data: T, page: PageEvent): Observable<SearchResult<T>> {
+    return this.http.get<SearchResult<T>>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(data)}&${buildPaginationParams(page)}`);
   }
 }

@@ -8,7 +8,7 @@ import { CustomMessageService } from "../custom-message/custom-message.service";
 import { PaginatorState } from "primeng/paginator";
 import { ListState } from "../../list-state.model";
 
-export abstract class BaseListFacade<T extends object, U extends SearchResult<T>> {
+export abstract class BaseListFacade<T extends object> {
   private _data$ = new BehaviorSubject<T[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -32,7 +32,7 @@ export abstract class BaseListFacade<T extends object, U extends SearchResult<T>
     loading: this._loading$.asObservable()
   });
 
-  protected constructor(protected readonly baseService: BaseCrudService<T, U>) { }
+  protected constructor(protected readonly baseService: BaseCrudService<T>) { }
 
   protected abstract readonly searchKeys: (keyof T)[];
 
@@ -88,7 +88,7 @@ export abstract class BaseListFacade<T extends object, U extends SearchResult<T>
     this._page$.next({ ...current, ...update });
   }
 
-  private _processResult(result: U | null): void {
+  private _processResult(result: SearchResult<T> | null): void {
     if (!result) return;
     this._data$.next(result.items ?? []);
     if (result.size != null) {
