@@ -43,21 +43,21 @@ export class SkillListComponent implements OnInit {
   actionButtons: ActionButtons<Skill>[] = [
     {
       icon: 'pi pi-eye',
-      action: (emp: Skill) => this.goToDetails(emp),
+      action: (sk: Skill) => this.goToDetails(sk),
       severity: 'success',
-      tooltip: 'View Employee'
+      tooltip: 'View Skill'
     },
     {
       icon: 'pi pi-pencil',
-      action: (emp: Skill) => this.goToEdit(emp, false),
+      action: (sk: Skill) => this.goToEdit(sk, false),
       severity: 'warn',
-      tooltip: 'Edit Employee'
+      tooltip: 'Edit Skill'
     },
     {
       icon: 'pi pi-trash',
-      action: (emp: Skill) => this.showDeleteDialog(emp.id),
+      action: (sk: Skill) => this.showDeleteDialog(sk.id),
       severity: 'danger',
-      tooltip: 'Delete Employee'
+      tooltip: 'Delete Skill'
     }
   ];
 

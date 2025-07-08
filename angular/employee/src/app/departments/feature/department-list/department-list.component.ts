@@ -43,21 +43,21 @@ export class DepartmentListComponent implements OnInit {
   actionButtons: ActionButtons<Department>[] = [
     {
       icon: 'pi pi-eye',
-      action: (emp: Department) => this.goToDetails(emp),
+      action: (dep: Department) => this.goToDetails(dep),
       severity: 'success',
-      tooltip: 'View Employee'
+      tooltip: 'View Department'
     },
     {
       icon: 'pi pi-pencil',
-      action: (emp: Department) => this.goToEdit(emp, false),
+      action: (dep: Department) => this.goToEdit(dep, false),
       severity: 'warn',
-      tooltip: 'Edit Employee'
+      tooltip: 'Edit Department'
     },
     {
       icon: 'pi pi-trash',
-      action: (emp: Department) => this.showDeleteDialog(emp.id),
+      action: (dep: Department) => this.showDeleteDialog(dep.id),
       severity: 'danger',
-      tooltip: 'Delete Employee'
+      tooltip: 'Delete Department'
     }
   ];
 
