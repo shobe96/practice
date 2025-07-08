@@ -98,7 +98,7 @@ export class ProjectEditFacadeService {
         // do nothing.
       }
     }
-    this._skillService.getAllSkills(true).pipe(catchError((err) => { throw err.error.message }))
+    this._skillService.getAll(true).pipe(catchError((err) => { throw err.error.message }))
       .subscribe(skillObserver);
   }
 

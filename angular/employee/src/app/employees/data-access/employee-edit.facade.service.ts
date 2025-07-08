@@ -35,7 +35,7 @@ export class EmployeeEditFacadeService extends BaseEditFacade<Employee> {
   }
 
   private _getSkills(): void {
-    this._withLoading(() => this._skillService.getAllSkills(true).pipe(tap((value) => this._skills$.next(value.skills ?? [])), this._handleError<SkillSearchResult>({ skills: [], size: 0 }))).subscribe();
+    this._withLoading(() => this._skillService.getAll(true).pipe(tap((value) => this._skills$.next(value.items ?? [])), this._handleError<SearchResult<Skill>>({ items: [], size: 0 }))).subscribe();
   }
 
   private _getDepartments(): void {
