@@ -152,9 +152,9 @@ export class EmployeeListComponent implements OnInit {
 
     dialogRef.onClose.subscribe((value: boolean) => {
       if (value) {
-        this.refresh()
+        this.refresh();
       }
-    })
+    });
   }
 
   onPageChange(event: PaginatorState): void {
