@@ -15,7 +15,8 @@ import { ValidationMessagesComponent } from '../../../shared/ui/validation-messa
   templateUrl: './department-edit.component.html',
   styleUrl: './department-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button, ProgressSpinner, ValidationMessagesComponent]
+  imports: [ReactiveFormsModule, InputText, NgIf, Button, ProgressSpinner, ValidationMessagesComponent],
+  providers: [DepartmentEditFacadeService]
 })
 export class DepartmentEditComponent implements OnInit {
 

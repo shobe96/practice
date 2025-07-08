@@ -5,9 +5,7 @@ import { DepartmentService } from './department.service';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class DepartmentEditFacadeService extends BaseEditFacade<Department> {
 
   constructor(departmentService: DepartmentService) {
