@@ -11,20 +11,14 @@
           pInputText
           placeholder="Name of project"
         />
-        <div
-          class="validation-messages"
-          *ngIf="projectFormGroup.controls['name'].invalid && projectFormGroup.controls['name'].dirty"
-        >
-          <div *ngIf="projectFormGroup.controls['name'].errors?.['required']">
-            Name is required!
-          </div>
-          <div *ngIf="projectFormGroup.controls['name'].errors?.['minlength']">
-            Name must be longer than 5 characters!
-          </div>
-          <div *ngIf="projectFormGroup.controls['name'].errors?.['maxlength']">
-            Name must be shorter than 25 characters!
-          </div>
-        </div>
+        @if(isInvalid('name')) {
+        <app-validation-messages
+          [control]="projectFormGroup.controls['name']"
+          [messages]="{required: 'Name is required!',
+      minlength: 'Name must be longer than 5 characters!',
+      maxlength: 'Name must be shorter than 25 characters!'}"
+        />
+        }
       </div>
       <div class="custom-column">
         <input
@@ -32,86 +26,71 @@
           pInputText
           placeholder="Code of project"
         />
-        <div
-          class="validation-messages"
-          *ngIf="projectFormGroup.controls['code'].invalid && projectFormGroup.controls['code'].dirty"
-        >
-          <div *ngIf="projectFormGroup.controls['code'].errors?.['required']">
-            Code is required!
-          </div>
-          <div *ngIf="projectFormGroup.controls['code'].errors?.['minlength']">
-            Code must be longer than 3 characters!
-          </div>
-          <div *ngIf="projectFormGroup.controls['code'].errors?.['maxlength']">
-            Code must be shorter than 5 characters!
-          </div>
-        </div>
+        @if(isInvalid('code')) {
+        <app-validation-messages
+          [control]="projectFormGroup.controls['code']"
+          [messages]="{required: 'Name is required!',
+      minlength: 'Code must be longer than 3 characters!',
+      maxlength: 'Code must be shorter than 5 characters!'}"
+        />
+        }
       </div>
     </div>
-    <div *ngIf="projectEditFacade.viewModel$ | async as data">
-      <div class="custom-row">
-        <div class="custom-column">
-          <p-select
-            appendTo="body"
-            formControlName="department"
-            [options]="data.departments"
-            optionLabel="name"
-            placeholder="Select a Department"
-            dataKey="id"
-            (onChange)="getEmployees()"
-          />
-        </div>
-        <div class="custom-column">
-          <p-multiSelect
-            appendTo="body"
-            [options]="data.skills"
-            formControlName="skills"
-            optionLabel="name"
-            placeholder="Select Skills"
-            (onChange)="getEmployees()"
-          />
-          <div
-            class="validation-messages"
-            *ngIf="projectFormGroup.controls['skills'].invalid && projectFormGroup.controls['skills'].dirty"
-          >
-            <div
-              *ngIf="projectFormGroup.controls['skills'].errors?.['required']"
-            >
-              Skills are required!
-            </div>
-          </div>
-        </div>
+    @if (viewModel(); as vm) {
+    <div class="custom-row">
+      <div class="custom-column">
+        <p-select
+          appendTo="body"
+          formControlName="department"
+          [options]="vm.departments"
+          optionLabel="name"
+          placeholder="Select a Department"
+          dataKey="id"
+          (onChange)="getEmployees()"
+        />
       </div>
-      <div class="custom-row">
-        <div class="custom-column">
-          <p-multiSelect
-            appendTo="body"
-            *ngIf="data.employees.length"
-            [options]="data.employees"
-            formControlName="employees"
-            optionLabel="name"
-            placeholder="Select Employees"
-            optionDisabled="active"
-          />
-          <div
-            class="validation-messages"
-            *ngIf="projectFormGroup.controls['employees'].invalid && projectFormGroup.controls['employees'].dirty"
-          >
-            <div
-              *ngIf="projectFormGroup.controls['employees'].errors?.['required']"
-            >
-              Employees are required!
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        *ngIf="data.loading"
-        class="card flex justify-center progress-spinner"
-      >
-        <p-progress-spinner ariaLabel="loading" />
+      <div class="custom-column">
+        <p-multiSelect
+          appendTo="body"
+          [options]="vm.skills"
+          formControlName="skills"
+          optionLabel="name"
+          placeholder="Select Skills"
+          (onChange)="getEmployees()"
+        />
+        @if(isInvalid('skills')) {
+        <app-validation-messages
+          [control]="projectFormGroup.controls['skills']"
+          [messages]="{required: 'Skills are required!'}"
+        />
+        }
       </div>
     </div>
+    <div class="custom-row">
+      <div class="custom-column">
+        @if(vm.employees.length) {
+        <p-multiSelect
+          appendTo="body"
+          [options]="vm.employees"
+          formControlName="employees"
+          optionLabel="name"
+          placeholder="Select Employees"
+          optionDisabled="active"
+        />
+        } @if(isInvalid('employees')) {
+        <app-validation-messages
+          [control]="projectFormGroup.controls['employees']"
+          [messages]="{required: 'Employees are required!'}"
+        />
+        }
+      </div>
+    </div>
+    @if(vm.loading) {
+    <div class="card flex justify-center progress-spinner">
+      <p-progress-spinner ariaLabel="loading" />
+    </div>
+    } }
+
     <div class="custom-row">
       <div class="custom-column">
         <label for="startDate">Start Date</label>
@@ -122,16 +101,12 @@
           [showIcon]="true"
           id="startDate"
         />
-        <div
-          class="validation-messages"
-          *ngIf="projectFormGroup.controls['startDate'].invalid && projectFormGroup.controls['startDate'].dirty"
-        >
-          <div
-            *ngIf="projectFormGroup.controls['startDate'].errors?.['required']"
-          >
-            Start Date is required!
-          </div>
-        </div>
+        @if(isInvalid('startDate')) {
+        <app-validation-messages
+          [control]="projectFormGroup.controls['startDate']"
+          [messages]="{required: 'Start Date is required!'}"
+        />
+        }
       </div>
       <div class="custom-column">
         <label for="endDate">End Date</label>
@@ -142,16 +117,12 @@
           [showIcon]="true"
           id="endDate"
         />
-        <div
-          class="validation-messages"
-          *ngIf="projectFormGroup.controls['endDate'].invalid && projectFormGroup.controls['endDate'].dirty"
-        >
-          <div
-            *ngIf="projectFormGroup.controls['endDate'].errors?.['required']"
-          >
-            End Date is required!
-          </div>
-        </div>
+        @if(isInvalid('endDate')) {
+        <app-validation-messages
+          [control]="projectFormGroup.controls['endDate']"
+          [messages]="{required: 'End Date is required!'}"
+        />
+        }
       </div>
     </div>
 

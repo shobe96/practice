@@ -1,42 +1,43 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { Component, effect, inject } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Project } from '../../data-access/project.model';
 import { ConfirmationService, PrimeTemplate } from 'primeng/api';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectDetailsFacadeService } from '../../data-access/project-details.facade.service';
-import { NgIf, AsyncPipe } from '@angular/common';
 import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
 import { Ripple } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-project-details',
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss',
-  imports: [NgIf, Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Button, Tooltip, AsyncPipe]
+  imports: [Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Button, Tooltip]
 })
-export class ProjectDetailsComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class ProjectDetailsComponent {
 
   project!: Project;
   employeeId = 0;
   visible = false;
 
-  projectDetailsFacade: ProjectDetailsFacadeService = inject(ProjectDetailsFacadeService);
-  private _route: ActivatedRoute = inject(ActivatedRoute);
-  private _router: Router = inject(Router)
-  private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _projectDetailsFacade = inject(ProjectDetailsFacadeService);
+  private _route = inject(ActivatedRoute);
+  private _router = inject(Router)
+  private _confirmationService = inject(ConfirmationService);
 
-  ngOnInit(): void {
-    this.project = this._route.snapshot.data['project'];
-    this._route.params.subscribe((params: Params) => {
-      this.projectDetailsFacade.getProject(params['projectId']);
-    })
-  }
+  viewModel = toSignal(this._projectDetailsFacade.viewModel$);
 
-  ngOnDestroy(): void {
-    this.unsubsribe();
+  routeParams = toSignal(this._route.params);
+
+  constructor() {
+    effect(() => {
+      const params = this.routeParams();
+      if (params) {
+        this._projectDetailsFacade.getProject(params['projectId']);
+      }
+    });
   }
 
   back() {
@@ -58,7 +59,7 @@ export class ProjectDetailsComponent extends SubscriptionCleaner implements OnIn
         label: 'Unassign',
       },
       accept: () => {
-        this.projectDetailsFacade.unassignEmployee(employeeId, project);
+        this._projectDetailsFacade.unassignEmployee(employeeId, project);
       },
     });
   }
