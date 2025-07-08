@@ -4,7 +4,6 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { DepartmentEditFacadeService } from '../../data-access/department-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputText } from 'primeng/inputtext';
-import { NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -15,7 +14,7 @@ import { ValidationMessagesComponent } from '../../../shared/ui/validation-messa
   templateUrl: './department-edit.component.html',
   styleUrl: './department-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button, ProgressSpinner, ValidationMessagesComponent],
+  imports: [ReactiveFormsModule, InputText, Button, ProgressSpinner, ValidationMessagesComponent],
   providers: [DepartmentEditFacadeService]
 })
 export class DepartmentEditComponent implements OnInit {
