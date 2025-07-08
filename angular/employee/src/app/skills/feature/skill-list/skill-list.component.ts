@@ -1,22 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Skill } from '../../data-access/skill.model';
 import { PaginatorState, Paginator } from 'primeng/paginator';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { SkillListFacadeService } from '../../data-access/skill-list.facade.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { SkillEditComponent } from '../skill-edit/skill-edit.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, PrimeTemplate } from 'primeng/api';
-import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
-import { Ripple } from 'primeng/ripple';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
-import { Tooltip } from 'primeng/tooltip';
-import { NgIf, AsyncPipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { ActionButtons } from '../../../shared/data-access/action-buttons.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { PageEvent } from '../../../shared/data-access/page-event.model';
+import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
+import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
 
 @Component({
   selector: 'app-skill-list',
@@ -24,49 +24,100 @@ import { ProgressSpinner } from 'primeng/progressspinner';
   styleUrl: './skill-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    Accordion,
-    AccordionPanel,
-    Ripple,
-    AccordionHeader,
-    AccordionContent,
     ReactiveFormsModule,
     InputText,
     Button,
-    Tooltip,
-    NgIf,
     TableModule,
     PrimeTemplate,
     Paginator,
-    AsyncPipe,
-    ProgressSpinner
+    ProgressSpinner,
+    IconButtonComponent,
+    SearchFilterWrapperComponent
   ]
 })
-export class SkillListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class SkillListComponent implements OnInit {
 
-  skillFormGroup!: FormGroup;
   skillSearch: Skill = {};
   skillId: number | null = 0;
 
-  skillListFacade: SkillListFacadeService = inject(SkillListFacadeService);
+  actionButtons: ActionButtons<Skill>[] = [
+    {
+      icon: 'pi pi-eye',
+      action: (emp: Skill) => this.goToDetails(emp),
+      severity: 'success',
+      tooltip: 'View Employee'
+    },
+    {
+      icon: 'pi pi-pencil',
+      action: (emp: Skill) => this.goToEdit(emp, false),
+      severity: 'warn',
+      tooltip: 'Edit Employee'
+    },
+    {
+      icon: 'pi pi-trash',
+      action: (emp: Skill) => this.showDeleteDialog(emp.id),
+      severity: 'danger',
+      tooltip: 'Delete Employee'
+    }
+  ];
+
+  private _skillListFacade: SkillListFacadeService = inject(SkillListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
   private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
+  skillFormGroup = this._formBuilder.group({
+    name: ['']
+  });
+
+  private readonly _queryParamsSignal = toSignal(this._activatedRoute.queryParams, {
+    initialValue: {}
+  });
+
+  private readonly _skillFormSignal = toSignal(
+    this.skillFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
+    { initialValue: this.skillFormGroup.getRawValue() }
+  );
+
+  private readonly _defaultPage: PageEvent = {
+    page: 0,
+    first: 0,
+    rows: 5,
+    pageCount: 0,
+    sort: 'asc',
+  };
+
+  viewModel = toSignal(this._skillListFacade.viewModel$, {
+    initialValue: {
+      data: [],
+      page: this._defaultPage,
+      rowsPerPage: [],
+      loading: false
+    }
+  });
+
   constructor() {
-    super();
-    this._subscribeToRoute();
+    effect(() => {
+      const params = this._queryParamsSignal();
+      this._skillListFacade.search(params);
+    });
+
+    effect(() => {
+      const value = this._skillFormSignal();
+      const { name } = value;
+      if (name) {
+        this._router.navigate([], {
+          queryParams: { name },
+          queryParamsHandling: 'merge',
+        });
+      }
+    });
   }
 
   ngOnInit(): void {
-    this._buildForm();
-    this.skillListFacade.retrieve();
-    this._subscribeToFormGroup();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
+    this._skillListFacade.retrieve();
   }
 
   addNew(): void {
@@ -75,7 +126,7 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
 
   clear(): void {
     this._clearSearchFields();
-    this.skillListFacade.clear();
+    this._skillListFacade.clear();
   }
 
   goToDetails(skill: Skill): void {
@@ -84,7 +135,7 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
 
   goToEdit(skill: Skill | null, disable: boolean): void {
     const title = skill ? `Skill ${skill.id}` : 'Add new Skill';
-    this._dialogService.open(SkillEditComponent, {
+    const dialogRef = this._dialogService.open(SkillEditComponent, {
       header: title,
       modal: true,
       width: '35vw',
@@ -96,70 +147,46 @@ export class SkillListComponent extends SubscriptionCleaner implements OnInit, O
       baseZIndex: 10000,
       maximizable: true
     });
-  }
 
-  onPageChange(event: PaginatorState): void {
-    this.skillListFacade.onPageChange(event);
-  }
-
-  refresh(): void {
-    this.skillListFacade.retrieve();
-  }
-
-  showDeleteDialog(id: number): void {
-    this._confirmationService.confirm({
-      message: `Are you sure you want to delete skill with id: ${id}`,
-      header: 'Confirmation',
-      closable: true,
-      closeOnEscape: true,
-      icon: 'pi pi-exclamation-triangle',
-      rejectButtonProps: {
-        label: 'Cancel',
-        severity: 'danger'
-      },
-      acceptButtonProps: {
-        label: 'Delete',
-      },
-      accept: () => {
-        this.skillListFacade.delete(id);
-      },
+    dialogRef.onClose.subscribe((value: boolean) => {
+      if (value) {
+        this.refresh()
+      }
     });
   }
 
-  private _subscribeToFormGroup() {
-    this.skillFormGroup
-      .valueChanges
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged(),
-        takeUntil(this.componentIsDestroyed$)
-      )
-      .subscribe((value: Skill) => {
-        if (value.name) {
-          this._router.navigate([], { queryParams: { name: value.name }, queryParamsHandling: 'merge' })
-        }
+  onPageChange(event: PaginatorState): void {
+    this._skillListFacade.onPageChange(event);
+  }
+
+  refresh(): void {
+    this._skillListFacade.retrieve();
+  }
+
+  showDeleteDialog(id: number | undefined): void {
+    if (id) {
+      this._confirmationService.confirm({
+        message: `Are you sure you want to delete skill with id: ${id}`,
+        header: 'Confirmation',
+        closable: true,
+        closeOnEscape: true,
+        icon: 'pi pi-exclamation-triangle',
+        rejectButtonProps: {
+          label: 'Cancel',
+          severity: 'danger'
+        },
+        acceptButtonProps: {
+          label: 'Delete',
+        },
+        accept: () => {
+          this._skillListFacade.delete(id);
+        },
       });
+    }
   }
 
   private _clearSearchFields() {
     this.skillFormGroup.controls['name'].setValue('');
     this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
-  }
-
-  private _buildForm() {
-    this.skillFormGroup = this._formBuilder.group({
-      name: ['']
-    });
-  }
-
-  private _subscribeToRoute() {
-    this._activatedRoute.queryParams
-      .pipe(
-        takeUntil(this.componentIsDestroyed$)
-      )
-      .subscribe(
-        (params: Skill) => {
-          this.skillListFacade.search(params);
-        });
   }
 }
