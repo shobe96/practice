@@ -23,11 +23,11 @@ export class SkillEditComponent implements OnInit {
   @Input() skill: Skill | null = {};
   @Input() disable = false;
 
-  private _skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
+  private _skillEditFacade = inject(SkillEditFacadeService);
   viewModel = toSignal(this._skillEditFacade.viewModel$, { initialValue: { loading: false } });
 
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
+  private _formBuilder = inject(FormBuilder);
+  private _dialogRef = inject(DynamicDialogRef);
 
   ngOnInit(): void {
     this._buildForm();

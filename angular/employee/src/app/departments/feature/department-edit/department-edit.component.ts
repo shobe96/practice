@@ -24,7 +24,7 @@ export class DepartmentEditComponent implements OnInit {
   @Input() department: Department | null = {};
   @Input() disable = false;
 
-  private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
+  private _departmentEditFacade = inject(DepartmentEditFacadeService);
   viewModel = toSignal(this._departmentEditFacade.viewModel$, { initialValue: { loading: false } });
 
   private _formBuilder = inject(FormBuilder);
