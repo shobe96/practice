@@ -15,8 +15,8 @@ import com.example.employee.models.Project;
 public interface ProjectRepository
 		extends CrudRepository<Project, Integer>, PagingAndSortingRepository<Project, Integer> {
 	
-	@Query("SELECT p FROM Project p WHERE p.name LIKE CONCAT('%', :name, '%') AND p.active = true")
-	Page<Project> searchProjects(String name, Pageable pageable);
+	@Query("SELECT p FROM Project p WHERE (p.name LIKE CONCAT('%', :name, '%') OR p.name IS NULL) AND (p.code LIKE CONCAT('%', :code, '%') OR p.code IS NULL) AND p.active = true")
+	Page<Project> searchProjects(String name, String code, Pageable pageable);
 
 	@Query("SELECT COUNT(p) FROM Project p WHERE p.name LIKE CONCAT('%', :name, '%') AND p.active = true")
 	Long searchResultCount(String name);

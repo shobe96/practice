@@ -87,9 +87,9 @@ public class ProjectController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<ProjectSearchResult> searchEMployees(@RequestParam(required = false) String name,
+	public ResponseEntity<ProjectSearchResult> searchEMployees(@RequestParam(required = false) String name, @RequestParam(required = false) String code,
 			Pageable pageable) {
-		return ResponseEntity.ok().body(projectService.searcProjects(name, pageable));
+		return ResponseEntity.ok().body(projectService.searcProjects(name, code, pageable));
 	}
 	
 	@PostMapping("/unassign-employee/{employeeId}")

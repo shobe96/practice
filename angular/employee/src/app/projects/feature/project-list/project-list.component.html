@@ -6,7 +6,7 @@
     (refresh)="refresh()"
   >
     <input formControlName="name" pInputText placeholder="Name of project" />
-    <input formControlName="name" pInputText placeholder="Code of project" />
+    <input formControlName="code" pInputText placeholder="Code of project" />
   </app-search-filter-wrapper>
 
   <p-button label="Add New" (onClick)="addNew()" />
@@ -52,7 +52,7 @@
       [first]="vm.page.first"
       [rows]="vm.page.rows"
       [totalRecords]="vm.page.pageCount"
-      [rowsPerPageOptions]="[5, 10, 20, 30]"
+      [rowsPerPageOptions]="vm.rowsPerPage"
     ></p-paginator>
   </div>
   } @else {

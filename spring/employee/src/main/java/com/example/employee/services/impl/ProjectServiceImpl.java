@@ -100,12 +100,12 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectSearchResult searcProjects(String name, Pageable pageable) {
+	public ProjectSearchResult searcProjects(String name, String code, Pageable pageable) {
 		if (name == null) {
 			name = "";
 		}
 		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
-		List<Project> employees = projectRepository.searchProjects(name, pageable).getContent();
+		List<Project> employees = projectRepository.searchProjects(name, code, pageable).getContent();
 		projectSearchResult.setProjects(employees);
 		projectSearchResult.setSize(projectRepository.searchResultCount(name));
 		return projectSearchResult;

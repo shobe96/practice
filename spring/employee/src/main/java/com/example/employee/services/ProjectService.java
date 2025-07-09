@@ -14,7 +14,7 @@ public interface ProjectService {
 	public Project saveProject(Project project);
 	public Project updateProject(Project project);
 	public void deleteProject(Integer projectId);
-	public ProjectSearchResult searcProjects(String name, Pageable pageable);
+	public ProjectSearchResult searcProjects(String name, String code,Pageable pageable);
 	public void unassignEmployee(Integer employeeId, Project project);
 	public List<Project> getProjectsByEmployee(Integer employeeId);
 	public Project getByEmployeeId(Integer employeeId);
