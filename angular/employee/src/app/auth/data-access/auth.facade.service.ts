@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { BehaviorSubject, catchError, combineLatest, finalize, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, Observable, of, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../employees/data-access/employee.model';
@@ -85,6 +85,10 @@ export class AuthFacadeService {
     ).subscribe();
   }
 
+  deleteUser(userId: number) {
+    this._withLoading(() => this._authService.delete(userId).pipe(this._handleError('Error', null)));
+  }
+
   logout(): void {
     localStorage.removeItem("authResponse");
     clearTimeout(this._tokenExpirationTimer);
@@ -112,7 +116,7 @@ export class AuthFacadeService {
   }
 
   private _getRoles(): void {
-    this._roleService.getAllRoles(true)
+    this._roleService.getAll(true)
       .pipe(tap((res: RoleSearchResult) => {
         this._roles$.next(res.roles ?? []);
       }),
@@ -213,5 +217,20 @@ export class AuthFacadeService {
         ]
       }
     ];
+  }
+
+  private _withLoading<T>(fn: () => Observable<T>): void {
+    this._loading$.next(true);
+    fn().pipe(finalize(() => this._loading$.next(false))).subscribe();
+  }
+
+  private _handleError<T>(severity: 'Error' | 'Warning', fallback: T) {
+    return catchError((err) => {
+      const msg = err?.error?.message ?? 'Unknown error';
+      if (severity === 'Error')
+        this._customMessageService.showError(severity, msg)
+      else this._customMessageService.showWarn(severity, msg);
+      return of(fallback);
+    });
   }
 }

@@ -6,21 +6,13 @@ import { environment } from '../../../environments/environment.development';
 import { buildPaginationParams, buildSearchParams } from '../../shared/utils';
 import { Observable } from 'rxjs';
 import { User } from './user.model';
+import { BaseCrudService } from '../../shared/data-access/services/base/base-crud.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class UserService extends BaseCrudService<User> {
 
-  private _backendURL = environment.BACKEND_URL;
-  private _baseUrl = "/api/users"
-  private _http = inject(HttpClient);
+  baseUrl = "/api/users"
 
-  getAllUsers(page?: PageEvent): Observable<UserSearchResult> {
-    return this._http.get<UserSearchResult>(`${this._backendURL}${this._baseUrl}?${buildPaginationParams(page)}`);
-  }
-
-  search(user: User, page: PageEvent): Observable<UserSearchResult> {
-    return this._http.get<UserSearchResult>(`${this._backendURL}${this._baseUrl}/search?${buildSearchParams(user)}&${buildPaginationParams(page)}`);
-  }
 }
