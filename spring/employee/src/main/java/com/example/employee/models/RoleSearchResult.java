@@ -2,8 +2,11 @@ package com.example.employee.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class RoleSearchResult {
 
+	@JsonProperty("items")
 	private List<Role> roles;
 	private Long size;
 

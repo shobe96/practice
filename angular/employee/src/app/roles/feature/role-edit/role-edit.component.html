@@ -1,58 +1,36 @@
 <div class="card">
   <form class="role-form" [formGroup]="roleFormGroup" (ngSubmit)="submit()">
     <input formControlName="name" pInputText placeholder="Name of role" />
-    <div
-      class="validation-messages"
-      *ngIf="roleFormGroup.controls['name'].invalid && roleFormGroup.controls['name'].dirty"
-    >
-      <div *ngIf="roleFormGroup.controls['name'].errors?.['required']">
-        Name is required!
-      </div>
-      <div *ngIf="roleFormGroup.controls['name'].errors?.['minlength']">
-        Name must be longer than 5 characters!
-      </div>
-      <div *ngIf="roleFormGroup.controls['name'].errors?.['maxlength']">
-        Name must be shorter than 25 characters!
-      </div>
-    </div>
+    @if(isInvalid('name')) {
+    <app-validation-messages
+      [control]="roleFormGroup.controls['name']"
+      [messages]="{required: 'Name is required!',
+        minlength: 'Name must be longer than 5 characters!',
+        maxlength: 'Name must be shorter than 25 characters!'}"
+    />
+    }
     <input formControlName="code" pInputText placeholder="Code" />
-    <div
-      class="validation-messages"
-      *ngIf="roleFormGroup.controls['code'].invalid && roleFormGroup.controls['code'].dirty"
-    >
-      <div *ngIf="roleFormGroup.controls['code'].errors?.['required']">
-        Code is required!
-      </div>
-      <div *ngIf="roleFormGroup.controls['code'].errors?.['minlength']">
-        Name must be longer than 3 characters!
-      </div>
-      <div *ngIf="roleFormGroup.controls['code'].errors?.['maxlength']">
-        Code must be shorter than 5 characters!
-      </div>
-    </div>
+    @if(isInvalid('code')) {
+    <app-validation-messages
+      [control]="roleFormGroup.controls['code']"
+      [messages]="{required: 'Code is required!',
+        minlength: 'Code must be longer than 3 characters!',
+        maxlength: 'Code must be shorter than 5 characters!'}"
+    />
+    }
     <input formControlName="description" pInputText placeholder="Description" />
-    <div
-      class="validation-messages"
-      *ngIf="roleFormGroup.controls['description'].invalid && roleFormGroup.controls['description'].dirty"
-    >
-      <div *ngIf="roleFormGroup.controls['description'].errors?.['required']">
-        Description is required!
-      </div>
-      <div *ngIf="roleFormGroup.controls['description'].errors?.['minlength']">
-        Description must be longer than 5 characters!
-      </div>
-      <div *ngIf="roleFormGroup.controls['description'].errors?.['maxlength']">
-        Description must be shorter than 100 characters!
-      </div>
+    @if(isInvalid('description')) {
+    <app-validation-messages
+      [control]="roleFormGroup.controls['description']"
+      [messages]="{required: 'Description is required!',
+        minlength: 'Description must be longer than 5 characters!',
+        maxlength: 'Description must be shorter than 100 characters!'}"
+    />
+    } @if (viewModel(); as vm) { @if(vm.loading) {
+    <div class="card flex justify-center progress-spinner">
+      <p-progress-spinner ariaLabel="loading" />
     </div>
-    <div *ngIf="roleEditFacade.viewModel$ | async as data">
-      <div
-        *ngIf="data.loading"
-        class="card flex justify-center progress-spinner"
-      >
-        <p-progress-spinner ariaLabel="loading" />
-      </div>
-    </div>
+    } }
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
       <p-button
