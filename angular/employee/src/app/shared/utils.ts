@@ -1,12 +1,4 @@
-import { Department } from "../departments/data-access/department.model";
-import { Employee } from "../employees/data-access/employee.model";
 import { PageEvent } from "./data-access/page-event.model";
-import { Project } from "../projects/data-access/project.model";
-import { Role } from "../roles/data-access/role.model";
-import { Skill } from "../skills/data-access/skill.model";
-import { User } from "../users/data-access/user.model";
-
-type SearchType = Department | Employee | Project | Role | Skill | User;
 
 export function buildSearchParams(object: object): string {
   let params = "";

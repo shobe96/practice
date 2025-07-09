@@ -1,13 +1,10 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Role } from '../../data-access/role.model';
 import { RoleEditFacadeService } from '../../data-access/role-edit.facade.service';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/services/custom-message/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';

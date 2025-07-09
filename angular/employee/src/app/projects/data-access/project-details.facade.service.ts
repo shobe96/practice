@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ProjectService } from './project.service';
-import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest } from 'rxjs';
 import { Project } from './project.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 

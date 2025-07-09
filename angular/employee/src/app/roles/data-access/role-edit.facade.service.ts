@@ -1,8 +1,6 @@
-import { inject, Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, catchError, combineLatest, finalize, map } from 'rxjs';
+import { Injectable } from '@angular/core';
 import { Role } from './role.model';
 import { RoleService } from './role.service';
-import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
 
 @Injectable({
