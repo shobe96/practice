@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.employee.models.Project;
-import com.example.employee.models.ProjectSearchResult;
 import com.example.employee.models.RestError;
 import com.example.employee.services.ProjectService;
+import com.example.employee.utils.SearchResult;
 
 import jakarta.validation.Valid;
 
@@ -45,10 +45,10 @@ public class ProjectController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<ProjectSearchResult> getAllProjects(Pageable pageable, @RequestParam() Boolean all) {
-		ProjectSearchResult projects = new ProjectSearchResult();
+	public ResponseEntity<SearchResult<Project>> getAllProjects(Pageable pageable, @RequestParam() Boolean all) {
+		SearchResult<Project> projects = new SearchResult<>();
 		if (all.equals(true)) {
-			projects.setProjects(projectService.getAllProjects());
+			projects.setItems(projectService.getAllProjects());
 		} else {
 			projects = projectService.getAllProjects(pageable);
 		}
@@ -87,7 +87,7 @@ public class ProjectController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<ProjectSearchResult> searchEMployees(@RequestParam(required = false) String name, @RequestParam(required = false) String code,
+	public ResponseEntity<SearchResult<Project>> searchEMployees(@RequestParam(required = false) String name, @RequestParam(required = false) String code,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(projectService.searcProjects(name, code, pageable));
 	}
