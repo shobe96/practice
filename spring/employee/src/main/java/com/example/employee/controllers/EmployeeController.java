@@ -28,9 +28,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import com.example.employee.models.Employee;
-import com.example.employee.models.EmployeeSearchResult;
 import com.example.employee.models.Skill;
 import com.example.employee.services.EmployeeService;
+import com.example.employee.utils.SearchResult;
 
 import jakarta.validation.Valid;
 
@@ -46,10 +46,10 @@ public class EmployeeController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<EmployeeSearchResult> getAllEmployees(Pageable pageable, @RequestParam() Boolean all) {
-		EmployeeSearchResult employees = new EmployeeSearchResult();
+	public ResponseEntity<SearchResult<Employee>> getAllEmployees(Pageable pageable, @RequestParam() Boolean all) {
+		SearchResult<Employee> employees = new SearchResult<>();
 		if (all.equals(true)) {
-			employees.setEmployees(employeeService.getAllEmployees());
+			employees.setItems(employeeService.getAllEmployees());
 		} else {
 			employees = employeeService.getAllEmployees(pageable);
 		}
@@ -68,9 +68,9 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/get-by-department/{departmentId}")
-	public ResponseEntity<EmployeeSearchResult> getEmployeeByDepartmentId(Pageable pageable,
+	public ResponseEntity<SearchResult<Employee>> getEmployeeByDepartmentId(Pageable pageable,
 			@PathVariable Integer departmentId) {
-		EmployeeSearchResult employeeSearchResult = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
+		SearchResult<Employee> employeeSearchResult = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
 		return ResponseEntity.ok().body(employeeSearchResult);
 	}
 
@@ -95,7 +95,7 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<EmployeeSearchResult> searchEmployees(@RequestParam(required = false) String name,
+	public ResponseEntity<SearchResult<Employee>> searchEmployees(@RequestParam(required = false) String name,
 			@RequestParam(required = false) String surname, @RequestParam(required = false) String email,
 			Pageable pageable) {
 		return ResponseEntity.ok().headers(new HttpHeaders())
