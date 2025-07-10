@@ -3,6 +3,8 @@ RUN npm install to install all node modules
 SWAGGER DOCUMENTATION:
 http://localhost:8080/swagger-ui/index.html
 
+Install lombok
+
 Angular update guide:
 Global:
 npm uninstall -g @angular/cli
@@ -13,8 +15,8 @@ npm uninstall --save-dev @angular/cli
 npm install --save-dev @angular/cli@latest
 npm install
 
-dependency injection, 
-content projection, 
+dependency injection,
+content projection,
 rxjs operatori
 provider na nivou modula i komponente,
 interceptors,
