@@ -27,8 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.employee.models.Skill;
-import com.example.employee.models.SkillSearchResult;
 import com.example.employee.services.SkillService;
+import com.example.employee.utils.SearchResult;
 
 import jakarta.validation.Valid;
 
@@ -44,8 +44,8 @@ public class SkillController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<SkillSearchResult> getAllSkills(Pageable pageable, @RequestParam() Boolean all) {
-		SkillSearchResult skills = null;
+	public ResponseEntity<SearchResult<Skill>> getAllSkills(Pageable pageable, @RequestParam() Boolean all) {
+		SearchResult<Skill> skills = null;
 		if (all.equals(true)) {
 			skills = skillService.getAllSkills();
 		} else {
@@ -86,7 +86,7 @@ public class SkillController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SkillSearchResult> searchEMployees(@RequestParam(required = false) String name,
+	public ResponseEntity<SearchResult<Skill>> searchEMployees(@RequestParam(required = false) String name,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(skillService.searcSkills(name, pageable));
 	}

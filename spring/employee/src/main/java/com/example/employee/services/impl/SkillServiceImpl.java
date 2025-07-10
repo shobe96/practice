@@ -10,9 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Skill;
-import com.example.employee.models.SkillSearchResult;
 import com.example.employee.repositories.SkillRepository;
 import com.example.employee.services.SkillService;
+import com.example.employee.utils.SearchResult;
 
 import jakarta.transaction.Transactional;
 
@@ -28,24 +28,24 @@ public class SkillServiceImpl implements SkillService {
 	}
 
 	@Override
-	public SkillSearchResult getAllSkills(Pageable pageable) {
-		SkillSearchResult skillSearchResult = new SkillSearchResult();
+	public SearchResult<Skill> getAllSkills(Pageable pageable) {
+		SearchResult<Skill> skillSearchResult = new SearchResult<>();
 		List<Skill> skills = skillRepository.findAll(pageable).getContent();
 		if (skills.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			skills = skillRepository.findAll(newPage).getContent();
 		}
 		skillSearchResult.setSize(skillRepository.count());
-		skillSearchResult.setSkills(skills);
+		skillSearchResult.setItems(skills);
 		return skillSearchResult;
 	}
 
 	@Override
-	public SkillSearchResult getAllSkills() {
+	public SearchResult<Skill> getAllSkills() {
 		List<Skill> skills = new ArrayList<>();
 		skillRepository.findAll().forEach(skills::add);
-		SkillSearchResult skillSearchResult = new SkillSearchResult();
-		skillSearchResult.setSkills(skills);		
+		SearchResult<Skill> skillSearchResult = new SearchResult<>();
+		skillSearchResult.setItems(skills);		
 		return skillSearchResult;
 	}
 
@@ -76,13 +76,13 @@ public class SkillServiceImpl implements SkillService {
 	}
 
 	@Override
-	public SkillSearchResult searcSkills(String name, Pageable pageable) {
+	public SearchResult<Skill> searcSkills(String name, Pageable pageable) {
 		if (name == null) {
 			name = "";
 		}
-		SkillSearchResult skillSearchResult = new SkillSearchResult();
+		SearchResult<Skill> skillSearchResult = new SearchResult<>();
 		List<Skill> employees = skillRepository.searchSkills(name, pageable).getContent();
-		skillSearchResult.setSkills(employees);
+		skillSearchResult.setItems(employees);
 		skillSearchResult.setSize(skillRepository.searchResultCount(name));
 		return skillSearchResult;
 	}
