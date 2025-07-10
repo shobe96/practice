@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 import com.example.employee.models.Employee;
 import com.example.employee.models.RegisterRequest;
 import com.example.employee.models.User;
-import com.example.employee.models.UserSearchResult;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.UserRepository;
 import com.example.employee.services.UserService;
 import com.example.employee.utils.CommonUtils;
+import com.example.employee.utils.SearchResult;
 
 import jakarta.transaction.Transactional;
 
@@ -69,10 +69,10 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserSearchResult getAllUsers(Pageable pageable) {
-		UserSearchResult userSearchResult = new UserSearchResult();
+	public SearchResult<User> getAllUsers(Pageable pageable) {
+		SearchResult<User> userSearchResult = new SearchResult<>();
 		userSearchResult.setSize(userRepository.count());
-		userSearchResult.setUsers(userRepository.findAll(pageable).getContent());
+		userSearchResult.setItems(userRepository.findAll(pageable).getContent());
 		return userSearchResult;
 	}
 
@@ -111,13 +111,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public UserSearchResult searchUsers(String username, Pageable pageable) {
+	public SearchResult<User> searchUsers(String username, Pageable pageable) {
 		if (username == null) {
 			username = "";
 		}
-		UserSearchResult userSearchResult = new UserSearchResult();
+		SearchResult<User> userSearchResult = new SearchResult<>();
 		List<User> users = userRepository.searchUsers(username, pageable).getContent();
-		userSearchResult.setUsers(users);
+		userSearchResult.setItems(users);
 		userSearchResult.setSize(userRepository.searchResultCount(username));
 		return userSearchResult;
 	}

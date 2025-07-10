@@ -5,17 +5,17 @@ import org.springframework.security.core.Authentication;
 
 import com.example.employee.models.RegisterRequest;
 import com.example.employee.models.User;
-import com.example.employee.models.UserSearchResult;
+import com.example.employee.utils.SearchResult;
 
 public interface UserService {
 
 	public User registerUser(RegisterRequest request);
 	
-	public UserSearchResult getAllUsers(Pageable pageable);
+	public SearchResult<User> getAllUsers(Pageable pageable);
 	
 	public void deleteUser(Integer userId);
 	
 	public Authentication getAuthenticatedUser(Authentication authentication);
 
-	public UserSearchResult searchUsers(String username, Pageable pageable);
+	public SearchResult<User> searchUsers(String username, Pageable pageable);
 }
