@@ -5,15 +5,15 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Department;
-import com.example.employee.models.DepartmentSearchResult;
+import com.example.employee.utils.SearchResult;
 
 public interface DepartmentService {
-	public DepartmentSearchResult getAllDepartments(Pageable pageable);
+	public SearchResult<Department> getAllDepartments(Pageable pageable);
 	public List<Department> getAllDepartments();
 	public Department getDepartmentById(Integer departmentId);
 	public Department getByDepartmentName(String departmentName);
 	public Department saveDepartment(Department department);
 	public Department updateDepartment(Department department);
 	public void deleteDepartment(Integer departmentId);
-	public DepartmentSearchResult searchDepartments(String name, Pageable pageable);
+	public SearchResult<Department> searchDepartments(String name, Pageable pageable);
 }

@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.models.Department;
-import com.example.employee.models.DepartmentSearchResult;
 import com.example.employee.services.DepartmentService;
+import com.example.employee.utils.SearchResult;
 
 @RestController
 @RequestMapping("/api/departments")
@@ -38,10 +38,10 @@ public class DepartmentController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<DepartmentSearchResult> getAllDepartments(Pageable pageable, @RequestParam() Boolean all) {
-		DepartmentSearchResult departments = new DepartmentSearchResult();
+	public ResponseEntity<SearchResult<Department>> getAllDepartments(Pageable pageable, @RequestParam() Boolean all) {
+		SearchResult<Department> departments = new SearchResult<>();
 		if (all.equals(true)) {
-			departments.setDepartments(departmentService.getAllDepartments());
+			departments.setItems(departmentService.getAllDepartments());
 		} else {
 			departments = departmentService.getAllDepartments(pageable);
 		}
@@ -60,7 +60,7 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<DepartmentSearchResult> search(@RequestParam(required = false) String name,
+	public ResponseEntity<SearchResult<Department>> search(@RequestParam(required = false) String name,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(departmentService.searchDepartments(name, pageable));
 	}
