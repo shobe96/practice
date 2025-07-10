@@ -1,43 +1,38 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { Department } from '../../data-access/department.model';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { takeUntil } from 'rxjs';
 import { DepartmentEditFacadeService } from '../../data-access/department-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
 
 @Component({
   selector: 'app-department-edit',
   templateUrl: './department-edit.component.html',
   styleUrl: './department-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button, ProgressSpinner, AsyncPipe]
+  imports: [ReactiveFormsModule, InputText, Button, ProgressSpinner, ValidationMessagesComponent],
+  providers: [DepartmentEditFacadeService]
 })
-export class DepartmentEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class DepartmentEditComponent implements OnInit {
 
   departmentFormGroup!: FormGroup;
 
   @Input() department: Department | null = {};
   @Input() disable = false;
 
-  departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _departmentEditFacade: DepartmentEditFacadeService = inject(DepartmentEditFacadeService);
-  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private _departmentEditFacade = inject(DepartmentEditFacadeService);
+  viewModel = toSignal(this._departmentEditFacade.viewModel$, { initialValue: { loading: false } });
+
+  private _formBuilder = inject(FormBuilder);
+  private _dialogRef = inject(DynamicDialogRef);
 
   ngOnInit(): void {
     this.buildForm();
     this._initFormFields();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   buildForm() {
@@ -51,23 +46,13 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
   }
 
   submit() {
-    const departmentObserver = {
-      next: (value: Department) => {
-        if (Object.keys(value)) {
-          this.cancel();
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
     this.department = this._getFormValues();
-    this._departmentEditFacade.submit(this.department)
-      .pipe(
-        takeUntil(this.componentIsDestroyed$),
-      )
-      .subscribe(departmentObserver);
+    this._departmentEditFacade.submit(this.department).subscribe(res => {
+      if (res) {
+        this._dialogRef.close(true);
+      }
+    });
+
   }
 
   private _setValuesToFields() {
@@ -87,21 +72,18 @@ export class DepartmentEditComponent extends SubscriptionCleaner implements OnIn
     return department;
   }
 
-  private _disableFields(): void {
-    if (this.departmentFormGroup) {
-      this.departmentFormGroup.controls['name'].disable();
-    }
-  }
-
-  private _enableFields(): void {
-    if (this.departmentFormGroup) {
-      this.departmentFormGroup.controls['name'].enable();
-    }
-  }
-
   private _initFormFields() {
     this._setValuesToFields();
-    if (this.disable) this._disableFields();
-    else this._enableFields();
+    this._setFormDisabledState();
+  }
+
+  private _setFormDisabledState(): void {
+    const control = 'name';
+    this.departmentFormGroup.controls[control][this.disable ? 'disable' : 'enable']();
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.departmentFormGroup.get(controlName);
+    return !!control && control.invalid && control.dirty;
   }
 }

@@ -2,6 +2,7 @@ import { Routes } from "@angular/router";
 import { HomeComponent } from "../home/feature/home/home.component";
 import { enumRoles } from "../shared/constants.model";
 import { authGuard } from "../shared/data-access/guards/auth.guard";
+import { HomeFacadeService } from "../home/data-access/home.facade.service";
 
 export const homeRoutes: Routes = [
   {
@@ -14,6 +15,7 @@ export const homeRoutes: Routes = [
         canActivate: [authGuard],
         data: { roles: [enumRoles.ADMIN, enumRoles.EMPLOYEE, enumRoles.DEPARTMENT_CHIEF] }
       }
-    ]
+    ],
+    providers: [HomeFacadeService]
   }
 ]

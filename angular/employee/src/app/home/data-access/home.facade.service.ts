@@ -1,128 +1,132 @@
 import { inject, Injectable } from '@angular/core';
 import { ProjectHistoryService } from '../../projects/data-access/project-history.service';
-import { BehaviorSubject, catchError, combineLatest, Observable, of, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, Observable, of, OperatorFunction, switchMap, tap } from 'rxjs';
 import { Role } from '../../roles/data-access/role.model';
 import { PageEvent } from '../../shared/data-access/page-event.model';
 import { Employee } from '../../employees/data-access/employee.model';
 import { ProjectHistory } from '../../projects/data-access/project-history.model';
 import { AuthResponse } from '../../auth/data-access/auth-response.model';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { EmployeeSearchResult } from '../../employees/data-access/employee-search-result.model';
 import { ProjectService } from '../../projects/data-access/project.service';
 import { Project } from '../../projects/data-access/project.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
+import { SearchResult } from '../../shared/data-access/search-result.model';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class HomeFacadeService {
 
-  private _authResponse: AuthResponse | null = {};
-  private _roles: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
-  private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
-  private _projectsHistory: BehaviorSubject<ProjectHistory[]> = new BehaviorSubject<ProjectHistory[]>([]);
-  private _employee: BehaviorSubject<Employee> = new BehaviorSubject<Employee>({});
-  private _project: BehaviorSubject<Project> = new BehaviorSubject<Project>({});
-  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _defaultPage: PageEvent = {
+  private readonly _authResponse = this._getAuthResponse();
+
+  private readonly _roles$ = new BehaviorSubject<Role[]>([]);
+  private readonly _employees$ = new BehaviorSubject<Employee[]>([]);
+  private readonly _projectsHistory$ = new BehaviorSubject<ProjectHistory[]>([]);
+  private readonly _employee$ = new BehaviorSubject<Employee>({});
+  private readonly _project$ = new BehaviorSubject<Project>({});
+  private readonly _loading$ = new BehaviorSubject<boolean>(false);
+  private readonly _defaultPage: PageEvent = {
     page: 0,
     first: 0,
     rows: 5,
     pageCount: 0,
     sort: 'asc',
   };
-  private _page: BehaviorSubject<PageEvent> = new BehaviorSubject<PageEvent>(this._defaultPage);
+  private readonly _page$ = new BehaviorSubject<PageEvent>(this._defaultPage);
 
-  viewModel$: Observable<{
-    roles: Role[],
-    page: PageEvent,
-    projectsHistory: ProjectHistory[],
-    employee: Employee,
-    departmentEmployees:
-    Employee[],
-    activeProject: Project,
-    loading: boolean
-  }> = combineLatest({
-    roles: this._roles.asObservable(),
-    page: this._page.asObservable(),
-    projectsHistory: this._projectsHistory.asObservable(),
-    employee: this._employee.asObservable(),
-    departmentEmployees: this._employees.asObservable(),
-    activeProject: this._project.asObservable(),
-    loading: this._loading.asObservable()
+  viewModel$ = combineLatest({
+    roles: this._roles$.asObservable(),
+    page: this._page$.asObservable(),
+    projectsHistory: this._projectsHistory$.asObservable(),
+    employee: this._employee$.asObservable(),
+    departmentEmployees: this._employees$.asObservable(),
+    activeProject: this._project$.asObservable(),
+    loading: this._loading$.asObservable()
   });
 
-  private _projectHistoryService: ProjectHistoryService = inject(ProjectHistoryService);
-  private _projectService: ProjectService = inject(ProjectService);
-  private _employeeService: EmployeeService = inject(EmployeeService);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private readonly _projectHistoryService = inject(ProjectHistoryService);
+  private readonly _projectService = inject(ProjectService);
+  private readonly _employeeService = inject(EmployeeService);
+  private readonly _customMessageService = inject(CustomMessageService);
 
-  getRoles() {
-    this._loading.next(true);
-    this._authResponse = this._getAuthResponse();
-    if (this._authResponse) {
-      const roles = this._authResponse.roles ?? [];
-      this._roles.next(roles);
-    }
-    this._loading.next(false);
+  getRoles(): void {
+    if (!this._authResponse) return;
+    this._withLoading(() => {
+      const roles = this._authResponse?.roles ?? [];
+      this._roles$.next(roles);
+    });
   }
 
-  getPanelData() {
-    this._loading.next(true);
-    const employeeObserver = {
-      next: (value: [ProjectHistory[] | null, EmployeeSearchResult | null, Project | null]) => {
-        this._projectsHistory.next(value[0] ?? []);
-        this._defaultPage.pageCount = value[1]?.size ?? 0;
-        this._page.next(this._defaultPage);
-        this._employees.next(value[1]?.employees ?? []);
-        this._project.next(value[2] ?? {});
-      },
-      error: () => {
-        // do nothing.
-      },
-      complete: () => {
-        // do nothing.
-      }
+  getPanelData(): void {
+    const userId = this._authResponse?.userId;
+    if (userId) {
+      this._withLoading(() =>
+        this._employeeService.findByUser(userId).pipe(
+          tap(employee => this._employee$.next(employee)),
+          switchMap(employee =>
+            combineLatest([
+              this._getProjectHistory(employee),
+              this._getAllEmployeesByDepartment(employee),
+              this._getActiveProject(employee)
+            ])
+          ),
+          tap(([history, searchResult, project]) => {
+            this._projectsHistory$.next(history ?? []);
+            this._defaultPage.pageCount = searchResult?.size ?? 0;
+            this._page$.next({ ...this._defaultPage });
+            this._employees$.next(searchResult?.items ?? []);
+            this._project$.next(project ?? {});
+          }),
+          catchError(() => of(null))
+        )
+      );
     }
 
-    if (this._authResponse?.userId) {
-      this._employeeService.findByUser(this._authResponse.userId).pipe(
-        switchMap((employee: Employee) => {
-          this._employee.next(employee);
-          return combineLatest([
-            this._getProjectHistory(employee),
-            this._getAllEmployeesByDepartment(employee),
-            this._getActiveProject(employee)
-          ]);
-        })).subscribe(employeeObserver);
-    }
-
-    this._loading.next(false);
   }
 
   private _getProjectHistory(employee: Employee): Observable<ProjectHistory[] | null> {
-    return this._projectHistoryService.getProjectsHistoryOfEmployee(employee.id).pipe(catchError(err => { this._customMessageService.showError('Error', err.error.message); return of(null); }));
+    return this._projectHistoryService
+      .getProjectsHistoryOfEmployee(employee.id)
+      .pipe(this._handleError<ProjectHistory[]>('Error', []));
   }
 
-  private _getAllEmployeesByDepartment(employee: Employee): Observable<EmployeeSearchResult | null> {
-    if (employee.department?.id)
-      return this._employeeService.findByDepartment(employee.department?.id, this._defaultPage).pipe(catchError(err => { this._customMessageService.showWarn('Warning', err.error.message); return of(null); }));
-    else return of(null);
+  private _getAllEmployeesByDepartment(employee: Employee): Observable<SearchResult<Employee> | null> {
+    if (!employee.department?.id) return of(null);
+    return this._employeeService
+      .findByDepartment(employee.department.id, this._defaultPage)
+      .pipe(this._handleError<SearchResult<Employee>>('Warning', {}));
   }
 
-  private _getActiveProject(employee: Employee) {
-    if (employee.id)
-      return this._projectService.getProjectByEmployee(employee.id).pipe(catchError(err => { this._customMessageService.showError('Error', err.error.message); return of(null); }));
-    else return of(null)
+  private _getActiveProject(employee: Employee): Observable<Project | null> {
+    if (!employee.id) return of(null);
+    return this._projectService
+      .getProjectByEmployee(employee.id)
+      .pipe(this._handleError<Project>('Error', {}));
   }
 
   private _getAuthResponse(): AuthResponse | null {
-    const authResponse = localStorage.getItem("authResponse");
-    if (authResponse) {
-      const json: AuthResponse = JSON.parse(authResponse);
-      return json;
+    const raw = localStorage.getItem('authResponse');
+    return raw ? JSON.parse(raw) : null;
+  }
+
+  private _withLoading<T>(fn: () => Observable<T> | void): void {
+    this._loading$.next(true);
+    const result = fn();
+    if (result instanceof Observable) {
+      result.subscribe({
+        complete: () => this._loading$.next(false),
+        error: () => this._loading$.next(false),
+      });
     } else {
-      return null;
+      this._loading$.next(false);
     }
+  }
+
+  private _handleError<T>(severity: 'Error' | 'Warning', fallback: T): OperatorFunction<T, T> {
+    return catchError((err) => {
+      const msg = err?.error?.message ?? 'Unknown error';
+      if (severity === 'Error')
+        this._customMessageService.showError(severity, msg)
+      else this._customMessageService.showWarn(severity, msg);
+      return of(fallback);
+    });
   }
 }

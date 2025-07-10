@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.models.Role;
-import com.example.employee.models.RoleSearchResult;
+import com.example.employee.models.SearchResult;
 import com.example.employee.services.RoleService;
 
 @RestController
@@ -38,8 +38,8 @@ public class RoleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<RoleSearchResult> getAllRoles(Pageable pageable, @RequestParam() Boolean all) {
-		RoleSearchResult roles;
+	public ResponseEntity<SearchResult<Role>> getAllRoles(Pageable pageable, @RequestParam() Boolean all) {
+		SearchResult<Role> roles;
 		if (all.equals(true)) {
 			roles = roleService.getAllRoles();
 		} else {
@@ -60,7 +60,7 @@ public class RoleController {
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<RoleSearchResult> search(@RequestParam(required = false) String name,
+	public ResponseEntity<SearchResult<Role>> search(@RequestParam(required = false) String name,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(roleService.searchRoles(name, pageable));
 	}

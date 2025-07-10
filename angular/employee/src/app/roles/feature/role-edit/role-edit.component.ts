@@ -1,41 +1,37 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Role } from '../../data-access/role.model';
 import { RoleEditFacadeService } from '../../data-access/role-edit.facade.service';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
-import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { AsyncPipe, NgIf } from '@angular/common';
+import { NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
 
 @Component({
   selector: 'app-role-edit',
   templateUrl: './role-edit.component.html',
   styleUrl: './role-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button, AsyncPipe, ProgressSpinner]
+  imports: [ReactiveFormsModule, InputText, NgIf, Button, ProgressSpinner, ValidationMessagesComponent]
 })
-export class RoleEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class RoleEditComponent implements OnInit {
   roleFormGroup!: FormGroup;
 
   @Input() role: Role | null = {};
   @Input() disable = false;
 
-  roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
+  private _roleEditFacade: RoleEditFacadeService = inject(RoleEditFacadeService);
+  viewModel = toSignal(this._roleEditFacade.viewModel$, { initialValue: { loading: false } });
+
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
 
   ngOnInit(): void {
     this._buildForm();
     this._initFormFields();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   cancel() {
@@ -43,21 +39,14 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
   }
 
   submit() {
-    const roleObserver = {
-      next: (value: Role) => {
-        if (Object.keys(value)) {
-          this.cancel();
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
+
     this.role = this._getFormValues();
-    this.roleEditFacade.submit(this.role)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe(roleObserver);
+    this._roleEditFacade.submit(this.role)
+      .subscribe((res) => {
+        if (res) {
+          this._dialogRef.close(true);
+        }
+      });
   }
 
   private _setValuesToFields() {
@@ -108,5 +97,10 @@ export class RoleEditComponent extends SubscriptionCleaner implements OnInit, On
     this._setValuesToFields();
     if (this.disable) this._disableFields();
     else this._enableFields();
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.roleFormGroup.get(controlName);
+    return !!control && control.invalid && control.dirty;
   }
 }

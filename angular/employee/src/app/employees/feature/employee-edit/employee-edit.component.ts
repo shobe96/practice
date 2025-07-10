@@ -1,17 +1,15 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { Employee } from '../../data-access/employee.model';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { EmployeeEditFacadeService } from '../../data-access/employee-edit.facade.service';
-import { takeUntil } from 'rxjs';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { NgIf, AsyncPipe } from '@angular/common';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
 
 @Component({
   selector: 'app-employee-edit',
@@ -21,36 +19,36 @@ import { ProgressSpinner } from 'primeng/progressspinner';
   imports: [
     ReactiveFormsModule,
     InputText,
-    NgIf,
     Select,
     MultiSelect,
     Button,
-    AsyncPipe,
-    ProgressSpinner
-  ]
+    ProgressSpinner,
+    ValidationMessagesComponent
+  ],
+  providers: [EmployeeEditFacadeService]
 })
-export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class EmployeeEditComponent implements OnInit {
 
   employeeFormGroup!: FormGroup;
 
-  @Input() employee: Employee | null = {};
+  @Input() employee: Employee = {};
   @Input() disable = false;
 
-  employeeEditFacade: EmployeeEditFacadeService = inject(EmployeeEditFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private _employeeEditFacade = inject(EmployeeEditFacadeService);
+  viewModel = toSignal(this._employeeEditFacade.viewModel$, {
+    initialValue: {
+      skills: [],
+      departments: [],
+      loading: false
+    }
+  });
+  private _formBuilder = inject(FormBuilder);
+  private _dialogRef = inject(DynamicDialogRef);
 
   ngOnInit(): void {
-    this.employeeEditFacade.toggleLoading(true);
-    this.employeeEditFacade.loadSelectOptions();
+    this._employeeEditFacade.loadSelectOptions();
     this._buildForm();
     this._initFormFields();
-    this.employeeEditFacade.toggleLoading(false);
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   cancel() {
@@ -58,21 +56,12 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
   }
 
   submit() {
-    const employeeObserver = {
-      next: (value: Employee) => {
-        if (Object.keys(value)) {
-          this.cancel();
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
     this.employee = this._getFormValues();
-    this.employeeEditFacade.submit(this.employee)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe(employeeObserver);
+    this._employeeEditFacade.submit(this.employee).subscribe(res => {
+      if (res) {
+        this._dialogRef.close(true);
+      }
+    });
   }
 
   private _buildForm() {
@@ -87,40 +76,18 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
 
   private _initFormFields() {
     this._setValuesToFields();
-    if (this.disable) this._disableFields();
-    else this._enableFields();
+    this._setFormDisabledState();
   }
 
-  private _setValuesToFields() {
-    if (this.employee) {
-      const name = this.employee.name ?? '';
-      const surname = this.employee.surname ?? ''
-      const email = this.employee.email ?? '';
-      const department = this.employee.department ?? {};
-      const skills = this.employee.skills ?? [];
-      if (this.employeeFormGroup) {
-        this.employeeFormGroup.controls['name'].setValue(name);
-        this.employeeFormGroup.controls['surname'].setValue(surname);
-        this.employeeFormGroup.controls['email'].setValue(email);
-        this.employeeFormGroup.controls['department'].setValue(department);
-        this.employeeFormGroup.controls['skills'].setValue(skills);
-      }
-    }
-  }
-
-  private _disableFields(): void {
-    if (this.employeeFormGroup) {
-      this.employeeFormGroup.controls['name'].disable();
-      this.employeeFormGroup.controls['surname'].disable();
-      this.employeeFormGroup.controls['email'].disable();
-    }
-  }
-  private _enableFields(): void {
-    if (this.employeeFormGroup) {
-      this.employeeFormGroup.controls['name'].enable();
-      this.employeeFormGroup.controls['surname'].enable();
-      this.employeeFormGroup.controls['email'].enable();
-    }
+  private _setValuesToFields(): void {
+    if (!this.employee) return;
+    this.employeeFormGroup.patchValue({
+      name: this.employee.name ?? '',
+      surname: this.employee.surname ?? '',
+      email: this.employee.email ?? '',
+      department: this.employee.department ?? {},
+      skills: this.employee.skills ?? []
+    })
   }
 
   private _getFormValues(): Employee {
@@ -129,5 +96,17 @@ export class EmployeeEditComponent extends SubscriptionCleaner implements OnInit
       employee[field] = this.employeeFormGroup.controls[field].value;
     }
     return employee;
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.employeeFormGroup.get(controlName);
+    return !!control && control.invalid && control.dirty;
+  }
+
+  private _setFormDisabledState(): void {
+    const controls = ['name', 'surname', 'email', 'department', 'skills'];
+    controls.forEach(control =>
+      this.employeeFormGroup.controls[control][this.disable ? 'disable' : 'enable']()
+    );
   }
 }

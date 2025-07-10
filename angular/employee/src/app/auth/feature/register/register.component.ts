@@ -1,11 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormGroup, Validators, FormControl, ValidatorFn, AbstractControl, ValidationErrors, ReactiveFormsModule } from '@angular/forms';
 import { PrimeIcons } from 'primeng/api';
 import { AuthRequest } from '../../data-access/auth-request.model';
 import { RegisterRequest } from '../../data-access/register-request.model';
 import { AuthFacadeService } from '../../data-access/auth.facade.service';
 import { messageLife, StrongPasswordRegx } from '../../../shared/constants.model';
-import { NgIf, AsyncPipe } from '@angular/common';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
@@ -13,13 +12,15 @@ import { MultiSelect } from 'primeng/multiselect';
 import { Select } from 'primeng/select';
 import { Toast } from 'primeng/toast';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
+import { PasswordRequirementsComponent } from '../../ui/password-requirements/password-requirements.component';
 
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss',
   imports: [
-    NgIf,
     ReactiveFormsModule,
     InputText,
     Button,
@@ -27,57 +28,59 @@ import { ProgressSpinner } from 'primeng/progressspinner';
     MultiSelect,
     Select,
     Toast,
-    AsyncPipe,
-    ProgressSpinner
+    ProgressSpinner,
+    ValidationMessagesComponent,
+    PasswordRequirementsComponent
   ]
 })
 export class RegisterComponent implements OnInit {
-  showConfirmPassword = false;
   authRequest: AuthRequest = {};
-  authFormGroup!: FormGroup;
-  showPassword = false;
-  icon: string = PrimeIcons.EYE;
-  severity = true;
-  tooltipMessage = "Show Password";
-  tooltipConfirmMessage = "Show Confirm Password";
-  confirmIcon = PrimeIcons.EYE;
-  confirmSeverity = true;
+  authFormGroup = new FormGroup({
+    username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
+    password: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
+    confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
+    selectedRoles: new FormControl([], [Validators.required]),
+    employee: new FormControl({}, [Validators.required])
+  }, { validators: [this._passwordMissmatchTest()] });;
+
+  showPassword = signal(false);
+  icon = computed(() => this.showPassword() ? PrimeIcons.EYE_SLASH : PrimeIcons.EYE);
+  severity = computed(() => !this.showPassword());
+  tooltipMessage = computed(() => this.showPassword() ? 'Hide Password' : 'Show Password');
+
+  showConfirmPassword = signal(false);
+  confirmIcon = computed(() => this.showConfirmPassword() ? PrimeIcons.EYE_SLASH : PrimeIcons.EYE);
+  confirmSeverity = computed(() => !this.showConfirmPassword());
+  tooltipConfirmMessage = computed(() => this.showConfirmPassword() ? 'Hide Password' : 'Show Password');
+
   life = messageLife;
 
-  authFacade: AuthFacadeService = inject(AuthFacadeService);
+  private _authFacade: AuthFacadeService = inject(AuthFacadeService);
+
+  private readonly _signalInitValue = { employees: [], roles: [], menuItems: [], loading: false }
+  viewModel = toSignal(this._authFacade.viewModel$, { initialValue: this._signalInitValue });
 
   ngOnInit(): void {
-    this.authFacade.loadSelectOptions();
-    this._buildForm();
+    this._authFacade.loadSelectOptions();
   }
 
   submit(): void {
     this._registerUser();
   }
 
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-    if (this.showPassword)
-      this._setToggleOptions(PrimeIcons.EYE_SLASH, "Hide Password")
-    else this._setToggleOptions(PrimeIcons.EYE, "Show Password");
+  togglePasswordVisibility(): void {
+    this.showPassword.set(!this.showPassword());
   }
 
   toggleConfirmPasswordVisibility(): void {
-    this.showConfirmPassword = !this.showConfirmPassword;
-    if (this.showConfirmPassword)
-      this._setToggleConfirmOptions(PrimeIcons.EYE_SLASH, "Hide Confirm Password")
-    else this._setToggleConfirmOptions(PrimeIcons.EYE, "Show Confirm Password");
+    this.showConfirmPassword.set(!this.showConfirmPassword());
   }
 
-  private _buildForm(): void {
-    this.authFormGroup = new FormGroup({
-      username: new FormControl('', [Validators.required, Validators.minLength(5), Validators.maxLength(100)]),
-      password: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
-      confirmPassword: new FormControl('', [Validators.required, Validators.pattern(StrongPasswordRegx)]),
-      selectedRoles: new FormControl([], [Validators.required]),
-      employee: new FormControl({}, [Validators.required])
-    }, { validators: [this._passwordMissmatchTest()] });
+  isInvalid(controlName: string): boolean {
+    const control = this.authFormGroup.get(controlName);
+    return !!control && control.invalid && control.dirty;
   }
+
 
   private _passwordMissmatchTest(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
@@ -87,29 +90,21 @@ export class RegisterComponent implements OnInit {
     }
   }
 
-  private _setToggleOptions(icon: string, tooltipMessage: string): void {
-    this.icon = icon;
-    this.severity = icon === PrimeIcons.EYE;
-    this.tooltipMessage = tooltipMessage;
-  }
-
-  private _setToggleConfirmOptions(icon: string, tooltipMessage: string): void {
-    this.confirmIcon = icon;
-    this.confirmSeverity = icon === PrimeIcons.EYE;
-    this.tooltipConfirmMessage = tooltipMessage;
-  }
-
   private _registerUser(): void {
     const registerRequest: RegisterRequest = this._getFormValues();
-    this.authFacade.registerUser(registerRequest);
+    this._authFacade.registerUser(registerRequest);
   }
 
   private _getFormValues(): RegisterRequest {
-    const registerRequest: RegisterRequest = {};
-    registerRequest.username = this.authFormGroup.controls['username'].value;
-    registerRequest.password = this.authFormGroup.controls['password'].value;
-    registerRequest.roles = this.authFormGroup.controls['selectedRoles'].value;
-    registerRequest.employee = this.authFormGroup.controls['employee'].value;
+    const { username, password, selectedRoles, employee } = this.authFormGroup.value;
+
+    const registerRequest: RegisterRequest = {
+      username: username ?? undefined,
+      password: password ?? undefined,
+      roles: selectedRoles ?? undefined,
+      employee: employee ?? undefined
+    };
+
     return registerRequest;
   }
 }

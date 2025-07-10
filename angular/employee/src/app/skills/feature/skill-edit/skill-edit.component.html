@@ -6,57 +6,42 @@
       pInputText
       placeholder="Name of skill"
     />
-    <div
-      class="validation-messages"
-      *ngIf="skillFormGroup.controls['name'].invalid && skillFormGroup.controls['name'].dirty"
-    >
-      <div *ngIf="skillFormGroup.controls['name'].errors?.['required']">
-        Name is required!
-      </div>
-      <div *ngIf="skillFormGroup.controls['name'].errors?.['minlength']">
-        Name must be longer than 0 characters!
-      </div>
-      <div *ngIf="skillFormGroup.controls['name'].errors?.['maxlength']">
-        Name must be shorter than 25 characters!
-      </div>
-    </div>
+    @if (isInvalid('name')) {
+    <app-validation-messages
+      [control]="skillFormGroup.controls['name']"
+      [messages]="{required: 'Name is required!',
+      minlength: 'Name must be longer than 5 characters!',
+      maxlength: 'Name must be shorter than 25 characters!'}"
+    />
+    }
     <input
       [readonly]="disable"
       formControlName="description"
       pInputText
       placeholder="Description of skill"
     />
-    <div
-      class="validation-messages"
-      *ngIf="skillFormGroup.controls['description'].invalid && skillFormGroup.controls['description'].dirty"
-    >
-      <div *ngIf="skillFormGroup.controls['description'].errors?.['required']">
-        Description is required!
-      </div>
-      <div *ngIf="skillFormGroup.controls['description'].errors?.['minlength']">
-        Description must be longer than 5 characters!
-      </div>
-      <div *ngIf="skillFormGroup.controls['description'].errors?.['maxlength']">
-        Description must be shorter than 100 characters!
-      </div>
+    @if (isInvalid('description')) {
+    <app-validation-messages
+      [control]="skillFormGroup.controls['description']"
+      [messages]="{required: 'Description is required!',
+      minlength: 'Description must be longer than 5 characters!',
+      maxlength: 'Description must be shorter than 25 characters!'}"
+    />
+    } @if (viewModel(); as vm) { @if(vm.loading) {
+    <div class="card flex justify-center progress-spinner">
+      <p-progress-spinner ariaLabel="loading" />
     </div>
-    <div *ngIf="skillEditFacade.viewModel$ | async as data">
-      <div
-        *ngIf="data.loading"
-        class="card flex justify-center progress-spinner"
-      >
-        <p-progress-spinner ariaLabel="loading" />
-      </div>
-    </div>
+    } }
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+      @if(!disable) {
       <p-button
-        *ngIf="!disable"
         severity="success"
         [disabled]="skillFormGroup.invalid"
         label="Submit"
         type="submit"
       />
+      }
     </div>
   </form>
 </div>

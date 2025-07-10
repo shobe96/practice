@@ -5,37 +5,28 @@
     (ngSubmit)="submit()"
   >
     <input formControlName="name" pInputText placeholder="Name of department" />
-    <div
-      class="validation-messages"
-      *ngIf="departmentFormGroup.controls['name'].invalid && departmentFormGroup.controls['name'].dirty"
-    >
-      <div *ngIf="departmentFormGroup.controls['name'].errors?.['required']">
-        Name is required!
-      </div>
-      <div *ngIf="departmentFormGroup.controls['name'].errors?.['minlength']">
-        Name must be longer than 5 characters!
-      </div>
-      <div *ngIf="departmentFormGroup.controls['name'].errors?.['maxlength']">
-        Name must be shorter than 25 characters!
-      </div>
+    @if (isInvalid('name')) {
+    <app-validation-messages
+      [control]="departmentFormGroup.controls['name']"
+      [messages]="{required: 'Name is required!',
+      minlength: 'Name must be longer than 5 characters!',
+      maxlength: 'Name must be shorter than 25 characters!'}"
+    />
+    } @if (viewModel(); as vm) { @if(vm.loading) {
+    <div class="card flex justify-center progress-spinner">
+      <p-progress-spinner ariaLabel="loading" />
     </div>
-    <div *ngIf="departmentEditFacade.viewModel$ | async as data">
-      <div
-        *ngIf="data.loading"
-        class="card flex justify-center progress-spinner"
-      >
-        <p-progress-spinner ariaLabel="loading" />
-      </div>
-    </div>
+    } }
     <div class="action-buttons">
       <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+      @if(!disable) {
       <p-button
         severity="success"
-        *ngIf="!disable"
         [disabled]="departmentFormGroup.invalid"
         label="Submit"
         type="submit"
       />
+      }
     </div>
   </form>
 </div>

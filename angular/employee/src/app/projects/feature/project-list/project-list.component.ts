@@ -1,22 +1,23 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { PaginatorState, Paginator } from 'primeng/paginator';
-import { debounceTime, distinctUntilChanged, takeUntil } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Project } from '../../data-access/project.model';
 import { ProjectListFacadeService } from '../../data-access/project-list.facade.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditComponent } from '../project-edit/project-edit.component';
 import { DialogService } from 'primeng/dynamicdialog';
 import { ConfirmationService, PrimeTemplate } from 'primeng/api';
-import { Accordion, AccordionPanel, AccordionHeader, AccordionContent } from 'primeng/accordion';
-import { Ripple } from 'primeng/ripple';
 import { InputText } from 'primeng/inputtext';
 import { Button } from 'primeng/button';
-import { Tooltip } from 'primeng/tooltip';
-import { NgIf, AsyncPipe, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { ActionButtons } from '../../../shared/data-access/action-buttons.model';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { PageEvent } from '../../../shared/data-access/page-event.model';
+import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
+import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
 
 @Component({
   selector: 'app-project-list',
@@ -24,71 +25,121 @@ import { ProgressSpinner } from 'primeng/progressspinner';
   styleUrl: './project-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [
-    Accordion,
-    AccordionPanel,
-    Ripple,
-    AccordionHeader,
-    AccordionContent,
     ReactiveFormsModule,
     InputText, Button,
-    Tooltip,
-    NgIf,
     TableModule,
     PrimeTemplate,
     Paginator,
-    AsyncPipe,
     DatePipe,
-    ProgressSpinner
+    ProgressSpinner,
+    SearchFilterWrapperComponent,
+    IconButtonComponent
   ]
 })
-export class ProjectListComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class ProjectListComponent implements OnInit {
 
-  projectFormGroup!: FormGroup;
-  projectSearch: Project = {};
   projectId: number | null = 0;
+  actionButtons: ActionButtons<Project>[] = [
+    {
+      icon: 'pi pi-eye',
+      action: (pro: Project) => this.goToDetails(pro),
+      severity: 'success',
+      tooltip: 'View Project'
+    },
+    {
+      icon: 'pi pi-pencil',
+      action: (pro: Project) => this.goToEdit(pro),
+      severity: 'warn',
+      tooltip: 'Edit Project'
+    },
+    {
+      icon: 'pi pi-trash',
+      action: (pro: Project) => this.showDeleteDialog(pro.id),
+      severity: 'danger',
+      tooltip: 'Delete Project'
+    }
+  ];
 
-  projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
+  private _projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
   private _confirmationService: ConfirmationService = inject(ConfirmationService);
   private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
+  projectFormGroup = this._formBuilder.group({
+    name: [''],
+    code: ['']
+  });
+
+  private readonly _queryParamsSignal = toSignal(this._activatedRoute.queryParams, {
+    initialValue: {}
+  });
+
+  private readonly _employeeFormSignal = toSignal(
+    this.projectFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
+    { initialValue: this.projectFormGroup.getRawValue() }
+  );
+
+  private readonly _defaultPage: PageEvent = {
+    page: 0,
+    first: 0,
+    rows: 5,
+    pageCount: 0,
+    sort: 'asc',
+  };
+
+  viewModel = toSignal(this._projectListFacade.viewModel$, {
+    initialValue: {
+      data: [],
+      page: this._defaultPage,
+      rowsPerPage: [],
+      loading: false
+    }
+  });
+
   constructor() {
-    super();
-    this._subscribeToRoute();
+    effect(() => {
+      const params = this._queryParamsSignal();
+      this._projectListFacade.search(params);
+    });
+
+    effect(() => {
+      const value = this._employeeFormSignal();
+      const { name, code } = value;
+      if (name || code) {
+        this._router.navigate([], {
+          queryParams: { name, code },
+          queryParamsHandling: 'merge',
+        });
+      }
+    });
   }
 
   ngOnInit(): void {
-    this._buildForm();
-    this.projectListFacade.retrieve();
-    this._subscribeToFormGroup();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
+    this._projectListFacade.retrieve();
   }
 
   addNew(): void {
-    this.goToEdit({});
+    this.goToEdit(null);
   }
 
   clear(): void {
     this._clearSearchFields();
-    this.projectListFacade.clear();
+    this._projectListFacade.clear();
   }
 
   delete(): void {
-    this.projectListFacade.delete(this.projectId);
+    this._projectListFacade.delete(this.projectId);
   }
 
-  goToDetails(id: number): void {
-    this._router.navigate([`/project/details/${id}`])
+  goToDetails(project: Project): void {
+    this._router.navigate([`/project/details/${project.id}`])
   }
 
-  goToEdit(project: Project): void {
+  goToEdit(project: Project | null): void {
     const title = project ? `Project ${project.id}` : 'Add new Project';
-    this._dialogService.open(ProjectEditComponent, {
+    const dialogRef = this._dialogService.open(ProjectEditComponent, {
       header: title,
       modal: true,
       width: '35vw',
@@ -99,72 +150,47 @@ export class ProjectListComponent extends SubscriptionCleaner implements OnInit,
       baseZIndex: 10000,
       maximizable: true
     });
-  }
 
-  onPageChange(event: PaginatorState): void {
-    this.projectListFacade.onPageChange(event);
-  }
-
-  refresh(): void {
-    this.projectListFacade.retrieve();
-  }
-
-  showDeleteDialog(id: number): void {
-    this._confirmationService.confirm({
-      message: `Are you sure you want to delete project with id: ${id}`,
-      header: 'Confirmation',
-      closable: true,
-      closeOnEscape: true,
-      icon: 'pi pi-exclamation-triangle',
-      rejectButtonProps: {
-        label: 'Cancel',
-        severity: 'danger'
-      },
-      acceptButtonProps: {
-        label: 'Delete',
-      },
-      accept: () => {
-        this.projectListFacade.delete(id);
-      },
+    dialogRef.onClose.subscribe((value: boolean) => {
+      if (value) {
+        this.refresh();
+      }
     });
   }
 
-  private _subscribeToFormGroup() {
-    this.projectFormGroup
-      .valueChanges
-      .pipe(
-        debounceTime(2000),
-        distinctUntilChanged(),
-        takeUntil(this.componentIsDestroyed$)
-      )
-      .subscribe((value: Project) => {
-        if (value.name || value.code) {
-          this._router.navigate([], { queryParams: { name: value.name, code: value.code }, queryParamsHandling: 'merge' })
-        }
+  onPageChange(event: PaginatorState): void {
+    this._projectListFacade.onPageChange(event);
+  }
+
+  refresh(): void {
+    this._projectListFacade.retrieve();
+  }
+
+  showDeleteDialog(id: number | undefined): void {
+    if (id) {
+      this._confirmationService.confirm({
+        message: `Are you sure you want to delete project with id: ${id}`,
+        header: 'Confirmation',
+        closable: true,
+        closeOnEscape: true,
+        icon: 'pi pi-exclamation-triangle',
+        rejectButtonProps: {
+          label: 'Cancel',
+          severity: 'danger'
+        },
+        acceptButtonProps: {
+          label: 'Delete',
+        },
+        accept: () => {
+          this._projectListFacade.delete(id);
+        },
       });
+    }
   }
 
   private _clearSearchFields() {
     this.projectFormGroup.controls['name'].setValue('');
     this.projectFormGroup.controls['code'].setValue('');
     this._router.navigate([], { queryParams: { name: '', code: '' }, queryParamsHandling: 'merge' })
-  }
-
-  private _buildForm() {
-    this.projectFormGroup = this._formBuilder.group({
-      name: [''],
-      code: ['']
-    });
-  }
-
-  private _subscribeToRoute() {
-    this._activatedRoute.queryParams
-      .pipe(
-        takeUntil(this.componentIsDestroyed$)
-      )
-      .subscribe(
-        (params: Project) => {
-          this.projectListFacade.search(params);
-        });
   }
 }

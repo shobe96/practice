@@ -1,180 +1,113 @@
-<div class="card" *ngIf="authFacade.viewModel$ | async as data">
+<div class="card">
   <h1>
     Register new user
   </h1>
   <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="submit()">
     <input formControlName="username" pInputText placeholder="Username" />
-    <div
-      class="validation-messages"
-      *ngIf="authFormGroup.controls['username']?.invalid && authFormGroup.controls['username']?.dirty"
-    >
-      <span
-        class="block"
-        *ngIf="authFormGroup.controls['username'].errors?.['required']"
-        >Username is required!</span
-      >
-      <span
-        class="block"
-        *ngIf="authFormGroup.controls['username'].errors?.['minLength']"
-        >Username must be longer than 5 characters!</span
-      >
-      <span
-        class="block"
-        *ngIf="authFormGroup.controls['username'].errors?.['maxLength']"
-        >Username must be shorter than 100 characters!</span
-      >
-    </div>
+    @if(isInvalid('username')) {
+    <app-validation-messages
+      [control]="authFormGroup.controls['username']"
+      [messages]="{required: 'Username is required!',
+    minlength: 'Username must be longer than 5 characters!',
+    maxlength: 'Username must be shorter than 100 characters!'}"
+    />
+    }
     <div class="password-input">
       <input
         formControlName="password"
         pInputText
         placeholder="Password"
-        type="{{ showPassword ? 'text' : 'password' }}"
+        [type]="showPassword() ? 'text' : 'password'"
       />
 
       <p-button
-        [icon]="icon"
+        [icon]="icon()"
         [rounded]="true"
         (onClick)="togglePasswordVisibility()"
-        [severity]="severity ? 'success' : 'danger'"
+        [severity]="severity() ? 'success' : 'danger'"
         [pTooltip]="toggleVisibilityTooltip"
         tooltipPosition="top"
       />
       <ng-template #toggleVisibilityTooltip>
         <div class="flex align-items-center">
-          <span>{{ tooltipMessage }}</span>
+          <span>{{ tooltipMessage() }}</span>
         </div>
       </ng-template>
     </div>
-    <div
-      class="validation-messages"
-      *ngIf="authFormGroup.controls['password']?.invalid && authFormGroup.controls['password']?.dirty"
-    >
-      <span
-        class="block"
-        *ngIf="authFormGroup.controls['password'].errors?.['required']"
-        >Password is required!</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('^(?=.*[A-Z])')"
-        >At least one uppercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[a-z])')"
-        >At least one lowercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(.*[0-9].*)')"
-        >At least one digit.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('(?=.*[!@#$%^&*])')"
-        >At least one special character.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['password'].value?.match('.{8,}')"
-        >At least 8 characters long.</span
-      >
-    </div>
+    @if (isInvalid('password')) {
+    <app-password-requirements
+      [password]="authFormGroup.get('password')?.value"
+    />
+    }
 
     <div class="password-input">
       <input
         formControlName="confirmPassword"
         pInputText
         placeholder="Confirm Password"
-        type="{{ showConfirmPassword ? 'text' : 'password' }}"
+        [type]="showConfirmPassword() ? 'text' : 'password'"
       />
 
       <p-button
-        [icon]="confirmIcon"
+        [icon]="confirmIcon()"
         [rounded]="true"
         (onClick)="toggleConfirmPasswordVisibility()"
-        [severity]="confirmSeverity ? 'success' : 'danger'"
+        [severity]="confirmSeverity() ? 'success' : 'danger'"
         [pTooltip]="toggleConfirmVisibilityTooltip"
         tooltipPosition="top"
       />
       <ng-template #toggleConfirmVisibilityTooltip>
         <div class="flex align-items-center">
-          <span>{{ tooltipConfirmMessage }}</span>
+          <span>{{ tooltipConfirmMessage() }}</span>
         </div>
       </ng-template>
     </div>
-    <div
-      class="validation-messages"
-      *ngIf="authFormGroup.controls['confirmPassword']?.invalid && authFormGroup.controls['confirmPassword']?.dirty"
-    >
-      <span
-        class="block"
-        *ngIf="authFormGroup.controls['confirmPassword'].errors?.['required']"
-        >Password is required!</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['confirmPassword'].value?.match('^(?=.*[A-Z])')"
-        >At least one uppercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['confirmPassword'].value?.match('(?=.*[a-z])')"
-        >At least one lowercase letter.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['confirmPassword'].value?.match('(.*[0-9].*)')"
-        >At least one digit.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['confirmPassword'].value?.match('(?=.*[!@#$%^&*])')"
-        >At least one special character.</span
-      >
-      <span
-        class="block"
-        *ngIf="!authFormGroup.controls['confirmPassword'].value?.match('.{8,}')"
-        >At least 8 characters long.</span
-      >
-      <span class="block" *ngIf="authFormGroup.errors?.['passwordMissmatch']"
-        >Passwords missmatch.
-      </span>
+    @if(isInvalid('confirmPassword')) {
+    <app-password-requirements
+      [password]="authFormGroup.get('confirmPassword')?.value"
+    />
+    } @if(authFormGroup.errors?.['passwordMissmatch']) {
+    <div class="validation-messages">
+      <span class="block">Passwords missmatch. </span>
     </div>
+    }
     <p-multiSelect
-      [options]="data.roles"
+      [options]="viewModel().roles"
       formControlName="selectedRoles"
       optionLabel="name"
       placeholder="Select Roles"
     />
-    <div
-      class="validation-messages"
-      *ngIf="authFormGroup.controls['selectedRoles'].invalid && authFormGroup.controls['selectedRoles'].dirty"
-    >
-      <div *ngIf="authFormGroup.controls['selectedRoles'].errors?.['required']">
+    @if(isInvalid('selectedRoles')) {
+    <div class="validation-messages">
+      @if(authFormGroup.controls['selectedRoles'].errors?.['required']) {
+      <div>
         Roles are required!
       </div>
+      }
     </div>
+    }
     <p-select
       formControlName="employee"
-      [options]="data.employees"
+      [options]="viewModel().employees"
       optionLabel="name"
       placeholder="Select a Employee"
       dataKey="id"
     />
-    <div
-      class="validation-messages"
-      *ngIf="authFormGroup.controls['employee'].invalid && authFormGroup.controls['employee'].dirty"
-    >
-      <div *ngIf="authFormGroup.controls['employee'].errors?.['required']">
+    @if(isInvalid('employee')) {
+    <div class="validation-messages">
+      @if(authFormGroup.controls['employee'].errors?.['required']) {
+      <div>
         Employee is required!
       </div>
+      }
     </div>
+    }
     <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
   </form>
-  <div *ngIf="data.loading" class="card flex justify-center progress-spinner">
+  @if(viewModel().loading) {
+  <div class="card flex justify-center progress-spinner">
     <p-progress-spinner ariaLabel="loading" />
   </div>
+  }
 </div>
 <p-toast [life]="life" />

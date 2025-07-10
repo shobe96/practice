@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Department;
-import com.example.employee.models.DepartmentSearchResult;
+import com.example.employee.models.SearchResult;
 import com.example.employee.repositories.DepartmentRepository;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.DepartmentService;
@@ -31,14 +31,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public DepartmentSearchResult getAllDepartments(Pageable pageable) {
-		DepartmentSearchResult departmentSearchResult = new DepartmentSearchResult();
+	public SearchResult<Department> getAllDepartments(Pageable pageable) {
+		SearchResult<Department> departmentSearchResult = new SearchResult<>();
 		List<Department> departments = departmentRepository.findAll(pageable).getContent();
 		if (departments.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			departments = departmentRepository.findAll(newPage).getContent();
 		}
-		departmentSearchResult.setDepartments(departments);
+		departmentSearchResult.setItems(departments);
 		departmentSearchResult.setSize(departmentRepository.count());
 		return departmentSearchResult;
 	}
@@ -83,9 +83,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 	}
 
 	@Override
-	public DepartmentSearchResult searchDepartments(String name, Pageable pageable) {
-		DepartmentSearchResult departmentSearchResult = new DepartmentSearchResult();
-		departmentSearchResult.setDepartments(departmentRepository.searchDepartments(name, pageable).getContent());
+	public SearchResult<Department> searchDepartments(String name, Pageable pageable) {
+		SearchResult<Department> departmentSearchResult = new SearchResult<>();
+		departmentSearchResult.setItems(departmentRepository.searchDepartments(name, pageable).getContent());
 		departmentSearchResult.setSize(departmentRepository.searchResultCount(name));
 		return departmentSearchResult;
 	}

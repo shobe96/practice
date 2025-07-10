@@ -3,62 +3,49 @@
 </h1>
 <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="submit()">
   <input formControlName="username" pInputText placeholder="Username" />
-  <div
-    class="validation-messages"
-    *ngIf="authFormGroup.controls['username']?.invalid && authFormGroup.controls['username']?.dirty"
-  >
-    <span
-      class="block"
-      *ngIf="authFormGroup.controls['username'].errors?.['required']"
-      >Username is required!</span
-    >
-    <span
-      class="block"
-      *ngIf="authFormGroup.controls['username'].errors?.['minLength']"
-      >Username must be longer than 5 characters!!</span
-    >
-    <span
-      class="block"
-      *ngIf="authFormGroup.controls['username'].errors?.['maxLength']"
-      >Username must be shorter than 100 characters!!</span
-    >
+  @if(authFormGroup.controls['username'].invalid &&
+  authFormGroup.controls['username'].dirty) {
+  <div class="validation-messages">
+    @if(authFormGroup.controls['username'].errors?.['required']) {
+    <span class="block">Username is required!</span>
+    }
   </div>
+  }
+
   <div class="password-input">
     <input
       formControlName="password"
       pInputText
       placeholder="Password"
-      type="{{ showPassword ? 'text' : 'password' }}"
+      [type]="showPassword() ? 'text' : 'password'"
     />
 
     <p-button
-      [icon]="icon"
+      [icon]="icon()"
       [rounded]="true"
       (onClick)="togglePasswordVisibility()"
-      [severity]="severity ? 'success' : 'danger'"
+      [severity]="severity() ? 'success' : 'danger'"
       [pTooltip]="toggleVisibilityTooltip"
       tooltipPosition="top"
     />
     <ng-template #toggleVisibilityTooltip>
       <div class="flex align-items-center">
-        <span>{{ tooltipMessage }}</span>
+        <span>{{ tooltipMessage() }}</span>
       </div>
     </ng-template>
   </div>
-  <div
-    class="validation-messages"
-    *ngIf="authFormGroup.controls['password']?.invalid && authFormGroup.controls['password']?.dirty"
-  >
-    <span
-      class="block"
-      *ngIf="authFormGroup.controls['password'].errors?.['required']"
-      >Password is required!</span
-    >
+  @if(authFormGroup.controls['password'].invalid &&
+  authFormGroup.controls['password'].dirty) {
+  <div class="validation-messages">
+    @if(authFormGroup.controls['password'].errors?.['required']) {
+    <span class="block">Password is required!</span>
+    }
   </div>
+  }
   <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
 </form>
-<div *ngIf="authFacade.viewModel$ | async as data">
-  <div *ngIf="data.loading" class="card flex justify-center progress-spinner">
-    <p-progress-spinner ariaLabel="loading" />
-  </div>
+@if(viewModel().loading) {
+<div class="card flex justify-center progress-spinner">
+  <p-progress-spinner ariaLabel="loading" />
 </div>
+}

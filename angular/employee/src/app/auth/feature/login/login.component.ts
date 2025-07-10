@@ -1,14 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, computed, inject, signal } from '@angular/core';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { PrimeIcons } from 'primeng/api';
 import { AuthRequest } from '../../data-access/auth-request.model';
 import { AuthFacadeService } from '../../data-access/auth.facade.service';
 import { RegisterRequest } from '../../data-access/register-request.model';
 import { InputText } from 'primeng/inputtext';
-import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-login',
@@ -17,63 +17,54 @@ import { ProgressSpinner } from 'primeng/progressspinner';
   imports: [
     ReactiveFormsModule,
     InputText,
-    NgIf,
     Button,
     Tooltip,
     ProgressSpinner,
-    AsyncPipe
   ]
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
 
-  showConfirmPassword = false;
   authRequest: AuthRequest = {};
-  authFormGroup!: FormGroup;
-  showPassword = false;
-  icon: string = PrimeIcons.EYE;
-  severity = true;
-  tooltipMessage = "Show Password";
 
-  authFacade: AuthFacadeService = inject(AuthFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
+  showPassword = signal(false);
+  icon = computed(() => this.showPassword() ? PrimeIcons.EYE_SLASH : PrimeIcons.EYE);
+  severity = computed(() => !this.showPassword());
+  tooltipMessage = computed(() => this.showPassword() ? 'Hide Password' : 'Show Password');
 
-  ngOnInit(): void {
-    this._buildForm();
-  }
+  private readonly _signalInitValue = { employees: [], roles: [], menuItems: [], loading: false }
+  private readonly _formBuilder = inject(FormBuilder);
+
+  authFormGroup = this._formBuilder.group({
+    username: ['', [Validators.required]],
+    password: ['', [Validators.required]],
+  });
+
+  private _authFacade = inject(AuthFacadeService);
+
+  viewModel = toSignal(this._authFacade.viewModel$, { initialValue: this._signalInitValue });
 
   submit(): void {
     this._loginUser();
   }
 
-  togglePasswordVisibility() {
-    this.showPassword = !this.showPassword;
-    if (this.showPassword)
-      this._setToggleOptions(PrimeIcons.EYE_SLASH, "Hide Password")
-    else this._setToggleOptions(PrimeIcons.EYE, "Show Password");
-  }
-
-  private _buildForm(): void {
-    this.authFormGroup = this._formBuilder.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required]],
-    });
-  }
-
-  private _setToggleOptions(icon: string, tooltipMessage: string): void {
-    this.icon = icon;
-    this.severity = icon === PrimeIcons.EYE;
-    this.tooltipMessage = tooltipMessage;
+  togglePasswordVisibility(): void {
+    this.showPassword.set(!this.showPassword());
   }
 
   private _loginUser(): void {
-    const registerRequest: RegisterRequest = this._getFormValues();
-    this.authFacade.loginUser(registerRequest);
+    const registerRequest = this._getFormValues();
+    this._authFacade.loginUser(registerRequest);
   }
 
   private _getFormValues(): RegisterRequest {
-    const registerRequest: RegisterRequest = {};
-    registerRequest.username = this.authFormGroup.controls['username'].value;
-    registerRequest.password = this.authFormGroup.controls['password'].value;
+    const { username, password } = this.authFormGroup.value;
+
+    const registerRequest: RegisterRequest = {
+      username: username ?? undefined,
+      password: password ?? undefined,
+    };
+
     return registerRequest;
   }
+
 }

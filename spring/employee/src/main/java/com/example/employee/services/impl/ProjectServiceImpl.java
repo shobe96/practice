@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import com.example.employee.models.Employee;
 import com.example.employee.models.Project;
 import com.example.employee.models.ProjectHistory;
-import com.example.employee.models.ProjectSearchResult;
+import com.example.employee.models.SearchResult;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.repositories.ProjectRepository;
@@ -38,15 +38,15 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectSearchResult getAllProjects(Pageable pageable) {
-		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
+	public SearchResult<Project> getAllProjects(Pageable pageable) {
+		SearchResult<Project> projectSearchResult = new SearchResult<>();
 		List<Project> projects = projectRepository.findAllByActive(true, pageable).getContent();
 		if (projects.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			projects = projectRepository.findAllByActive(true, newPage).getContent();
 		}
 		projectSearchResult.setSize(projectRepository.countAllActiveProjects());
-		projectSearchResult.setProjects(projects);
+		projectSearchResult.setItems(projects);
 		return projectSearchResult;
 	}
 
@@ -100,13 +100,13 @@ public class ProjectServiceImpl implements ProjectService {
 	}
 
 	@Override
-	public ProjectSearchResult searcProjects(String name, Pageable pageable) {
+	public SearchResult<Project> searcProjects(String name, String code, Pageable pageable) {
 		if (name == null) {
 			name = "";
 		}
-		ProjectSearchResult projectSearchResult = new ProjectSearchResult();
-		List<Project> employees = projectRepository.searchProjects(name, pageable).getContent();
-		projectSearchResult.setProjects(employees);
+		SearchResult<Project> projectSearchResult = new SearchResult<>();
+		List<Project> projects = projectRepository.searchProjects(name, code, pageable).getContent();
+		projectSearchResult.setItems(projects);
 		projectSearchResult.setSize(projectRepository.searchResultCount(name));
 		return projectSearchResult;
 	}

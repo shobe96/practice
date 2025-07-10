@@ -1,165 +1,91 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { BehaviorSubject, catchError, combineLatest, finalize, Observable } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, Observable, of, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../employees/data-access/employee.model';
-import { EmployeeSearchResult } from '../../employees/data-access/employee-search-result.model';
 import { RoleService } from '../../roles/data-access/role.service';
 import { Role } from '../../roles/data-access/role.model';
-import { RoleSearchResult } from '../../roles/data-access/role-search-result.model';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AuthResponse } from './auth-response.model';
 import { AuthRequest } from './auth-request.model';
 import { enumRoles } from '../../shared/constants.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
+import { SearchResult } from '../../shared/data-access/search-result.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthFacadeService {
 
-  private _router: Router = inject(Router);
-  private _authService: AuthService = inject(AuthService);
-  private _roleService: RoleService = inject(RoleService);
-  private _employeeService: EmployeeService = inject(EmployeeService);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private readonly _router = inject(Router);
+  private readonly _authService = inject(AuthService);
+  private readonly _roleService = inject(RoleService);
+  private readonly _employeeService = inject(EmployeeService);
+  private readonly _customMessageService = inject(CustomMessageService);
 
-  private _employees: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
-  private _roles: BehaviorSubject<Role[]> = new BehaviorSubject<Role[]>([]);
-  private _loading: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
-  private _tokenExpirationTimer: NodeJS.Timeout | undefined;
+  private readonly _employees$ = new BehaviorSubject<Employee[]>([]);
+  private readonly _roles$ = new BehaviorSubject<Role[]>([]);
+  private readonly _loading$ = new BehaviorSubject<boolean>(false);
+  private readonly _menuItems$ = new BehaviorSubject<MenuItem[]>(this._buildMenuItems());
 
-  private items: MenuItem[] = [
-    {
-      label: 'Home',
-      icon: PrimeIcons.HOME,
-      routerLink: "/home/panel",
-    },
-    {
-      label: 'Features',
-      icon: PrimeIcons.LIST,
-      visible: false,
-      items: [
-        {
-          label: 'Employees',
-          icon: PrimeIcons.USERS,
-          routerLink: '/employee/list'
-        },
-        {
-          label: 'Departments',
-          icon: PrimeIcons.SITEMAP,
-          routerLink: '/department/list'
-        },
-        {
-          label: 'Skills',
-          icon: PrimeIcons.ANDROID,
-          routerLink: '/skill/list'
-        },
-        {
-          label: 'Projects',
-          icon: PrimeIcons.CODE,
-          routerLink: '/project/list'
-        },
-      ]
-    },
-    {
-      label: 'User',
-      icon: PrimeIcons.USER,
-      items: [
-        {
-          label: 'Users',
-          icon: PrimeIcons.USERS,
-          routerLink: '/user/list',
-          visible: false
-        },
-        {
-          label: 'Roles',
-          icon: PrimeIcons.WRENCH,
-          routerLink: '/role/list',
-          visible: false
-        },
-        {
-          label: 'Login',
-          icon: PrimeIcons.SIGN_IN,
-          routerLink: '/auth/login'
-        },
-        {
-          label: 'Register',
-          icon: PrimeIcons.USER_PLUS,
-          routerLink: '/auth/register',
-          visible: false
-        },
-        {
-          label: 'Logout',
-          icon: PrimeIcons.SIGN_OUT,
-          visible: false,
-          command: () => {
-            this.logout();
-          }
-        }
-      ]
-    }
-  ];
+  private _tokenExpirationTimer?: ReturnType<typeof setTimeout>;
 
-  private _menuItems: BehaviorSubject<MenuItem[]> = new BehaviorSubject<MenuItem[]>(this.items);
-
-  viewModel$: Observable<{ employees: Employee[], roles: Role[], menuItems: MenuItem[], loading: boolean }> = combineLatest({
-    employees: this._employees.asObservable(),
-    roles: this._roles.asObservable(),
-    menuItems: this._menuItems.asObservable(),
-    loading: this._loading.asObservable()
+  viewModel$ = combineLatest({
+    employees: this._employees$.asObservable(),
+    roles: this._roles$.asObservable(),
+    menuItems: this._menuItems$.asObservable(),
+    loading: this._loading$.asObservable()
   });
 
-  loadSelectOptions() {
+  loadSelectOptions(): void {
     this._getEmployees();
     this._getRoles();
   }
 
-  checkAuthResponse() {
-    const authResponse = localStorage.getItem("authResponse");
-    if (authResponse) {
-      const json: AuthResponse = JSON.parse(authResponse);
-      this._updateMenuItems(true, json.roles);
-    }
+  checkAuthResponse(): void {
+    const stored = localStorage.getItem('authResponse');
+    if (!stored) return;
+
+    const authResponse: AuthResponse = JSON.parse(stored);
+    this._updateMenuItems(true, authResponse.roles);
   }
 
-  loginUser(authRequest: AuthRequest) {
-    this._loading.next(true);
-    const loginObserver = {
-      next: (value: AuthResponse) => {
-        localStorage.setItem('authResponse', JSON.stringify(value));
-        this._autoLogout(value.expiration ?? 0);
-        this._updateMenuItems(true, value.roles);
-        this._customMessageService.showSuccess('Success', `Welcome ${value.username}`);
-        this._loading.next(false);
-        this._router.navigate(["/home"]);
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); this._loading.next(false); },
-      complete: () => {
-        // do nothing
-      }
-    };
-    this._authService.login(authRequest).pipe(catchError((err) => {
-      throw err.error.message;
-    })).subscribe(loginObserver);
+  loginUser(authRequest: AuthRequest): void {
+    this._loading$.next(true);
+    this._authService.login(authRequest).pipe(
+      tap((response: AuthResponse) => {
+        localStorage.setItem('authResponse', JSON.stringify(response));
+        this._autoLogout(response.expiration ?? 0);
+        this._updateMenuItems(true, response.roles);
+        this._customMessageService.showSuccess('Success', `Welcome ${response.username}`);
+        this._router.navigate(["/home/panel"]);
+      }),
+      catchError((err) => {
+        this._customMessageService.showError('Error', err.error.message);
+        return of()
+      }),
+      finalize(() => this._loading$.next(false))
+    ).subscribe();
   }
 
-  registerUser(authRequest: AuthRequest) {
-    this._loading.next(true);
-    const registerObserver = {
-      next: () => {
+  registerUser(authRequest: AuthRequest): void {
+    this._loading$.next(true);
+    this._authService.registerUser(authRequest).pipe(
+      tap(() => {
         this._customMessageService.showSuccess('Success', 'User registered');
         this._router.navigate(["user/list"]);
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
-    this._authService.registerUser(authRequest).pipe(
-      catchError((err) => { throw err.error.message; }),
-      finalize(() => this._loading.next(false))).subscribe(registerObserver);
+      }),
+      catchError((err) => {
+        this._customMessageService.showError('Error', err.error.message);
+        return of()
+      }),
+      finalize(() => this._loading$.next(false))
+    ).subscribe();
+  }
+
+  deleteUser(userId: number) {
+    this._withLoading(() => this._authService.delete(userId).pipe(this._handleError('Error', null)));
   }
 
   logout(): void {
@@ -175,57 +101,135 @@ export class AuthFacadeService {
     }, expiration);
   }
 
-  private _getEmployees() {
-    const employeesObserver = {
-      next: (value: EmployeeSearchResult) => {
-        if (value.employees) {
-          this._employees.next(value.employees);
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
-    this._employeeService.getAllEmployees(true)
-      .subscribe(employeesObserver);
+  private _getEmployees(): void {
+    this._employeeService.getAll(true)
+      .pipe(tap((res: SearchResult<Employee>) => {
+        this._employees$.next(res.items ?? []);
+      }),
+        catchError((err) => {
+          this._customMessageService.showError('Error', err.error.message);
+          return of()
+        })
+      )
+      .subscribe();
   }
 
-  private _getRoles() {
-    const rolesObserver = {
-      next: (value: RoleSearchResult) => {
-        if (value.roles) {
-          this._roles.next(value.roles);
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
-    this._roleService.getAllRoles(true).subscribe(rolesObserver);
+  private _getRoles(): void {
+    this._roleService.getAll(true)
+      .pipe(tap((res: SearchResult<Role>) => {
+        this._roles$.next(res.items ?? []);
+      }),
+        catchError((err) => {
+          this._customMessageService.showError('Error', err.error.message);
+          return of()
+        })
+      )
+      .subscribe();
   }
 
-  private _updateMenuItems(isloggedIn: boolean, roles?: Role[]): void {
-    roles = roles ?? [];
-    if (roles.length > 0) {
-      for (const role of roles) {
-        if (role.code === enumRoles.ADMIN) {
-          this.items[1].visible = isloggedIn;
-          this.items[2].items![0].visible = isloggedIn;
-          this.items[2].items![1].visible = isloggedIn;
-          this.items[2].items![3].visible = isloggedIn;
-        }
-      }
-    } else {
-      this.items[1].visible = isloggedIn;
-      this.items[2].items![0].visible = isloggedIn;
-      this.items[2].items![1].visible = isloggedIn;
-      this.items[2].items![3].visible = isloggedIn;
-    }
+  private _updateMenuItems(isLoggedIn: boolean, roles: Role[] = []): void {
+    const items = this._buildMenuItems();
 
-    this.items[2].items![2].visible = !isloggedIn;
-    this.items[2].items![4].visible = isloggedIn;
-    this._menuItems.next(this.items);
+    const isAdmin = roles.some(role => role.code === enumRoles.ADMIN);
+
+    items[1].visible = isAdmin;
+    const userItems = items[2].items ?? [];
+
+    userItems[0].visible = isAdmin;
+    userItems[1].visible = isAdmin;
+    userItems[2].visible = !isLoggedIn;
+    userItems[3].visible = isAdmin;
+    userItems[4].visible = isLoggedIn;
+
+    this._menuItems$.next(items);
+  }
+
+  private _buildMenuItems(): MenuItem[] {
+    return [
+      {
+        label: 'Home',
+        icon: PrimeIcons.HOME,
+        routerLink: "/home/panel",
+      },
+      {
+        label: 'Features',
+        icon: PrimeIcons.LIST,
+        visible: false,
+        items: [
+          {
+            label: 'Employees',
+            icon: PrimeIcons.USERS,
+            routerLink: '/employee/list'
+          },
+          {
+            label: 'Departments',
+            icon: PrimeIcons.SITEMAP,
+            routerLink: '/department/list'
+          },
+          {
+            label: 'Skills',
+            icon: PrimeIcons.ANDROID,
+            routerLink: '/skill/list'
+          },
+          {
+            label: 'Projects',
+            icon: PrimeIcons.CODE,
+            routerLink: '/project/list'
+          },
+        ]
+      },
+      {
+        label: 'User',
+        icon: PrimeIcons.USER,
+        items: [
+          {
+            label: 'Users',
+            icon: PrimeIcons.USERS,
+            routerLink: '/user/list',
+            visible: false
+          },
+          {
+            label: 'Roles',
+            icon: PrimeIcons.WRENCH,
+            routerLink: '/role/list',
+            visible: false
+          },
+          {
+            label: 'Login',
+            icon: PrimeIcons.SIGN_IN,
+            routerLink: '/auth/login'
+          },
+          {
+            label: 'Register',
+            icon: PrimeIcons.USER_PLUS,
+            routerLink: '/auth/register',
+            visible: false
+          },
+          {
+            label: 'Logout',
+            icon: PrimeIcons.SIGN_OUT,
+            visible: false,
+            command: () => {
+              this.logout();
+            }
+          }
+        ]
+      }
+    ];
+  }
+
+  private _withLoading<T>(fn: () => Observable<T>): void {
+    this._loading$.next(true);
+    fn().pipe(finalize(() => this._loading$.next(false))).subscribe();
+  }
+
+  private _handleError<T>(severity: 'Error' | 'Warning', fallback: T) {
+    return catchError((err) => {
+      const msg = err?.error?.message ?? 'Unknown error';
+      if (severity === 'Error')
+        this._customMessageService.showError(severity, msg)
+      else this._customMessageService.showWarn(severity, msg);
+      return of(fallback);
+    });
   }
 }

@@ -27,5 +27,10 @@
       "!{projectRoot}/eslint.config.cjs"
     ]
   },
-  "nxCloudId": "67cea43686ab5868a3e4a694"
+  "nxCloudId": "67cea43686ab5868a3e4a694",
+  "generators": {
+    "@nx/angular:component": {
+      "style": "css"
+    }
+  }
 }

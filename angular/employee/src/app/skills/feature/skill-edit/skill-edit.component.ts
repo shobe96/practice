@@ -1,41 +1,37 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { takeUntil } from 'rxjs';
 import { Skill } from '../../data-access/skill.model';
 import { SkillEditFacadeService } from '../../data-access/skill-edit.facade.service';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { AsyncPipe, NgIf } from '@angular/common';
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
 
 @Component({
   selector: 'app-skill-edit',
   templateUrl: './skill-edit.component.html',
   styleUrl: './skill-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button, AsyncPipe, ProgressSpinner]
+  imports: [ReactiveFormsModule, InputText, Button, ProgressSpinner, ValidationMessagesComponent],
+  providers: [SkillEditFacadeService]
 })
-export class SkillEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class SkillEditComponent implements OnInit {
   skillFormGroup!: FormGroup;
 
   @Input() skill: Skill | null = {};
   @Input() disable = false;
 
-  skillEditFacade: SkillEditFacadeService = inject(SkillEditFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private _skillEditFacade = inject(SkillEditFacadeService);
+  viewModel = toSignal(this._skillEditFacade.viewModel$, { initialValue: { loading: false } });
+
+  private _formBuilder = inject(FormBuilder);
+  private _dialogRef = inject(DynamicDialogRef);
 
   ngOnInit(): void {
     this._buildForm();
     this._initFormFields();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   cancel() {
@@ -43,21 +39,12 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
   }
 
   submit() {
-    const skillObserver = {
-      next: (value: Skill) => {
-        if (Object.keys(value)) {
-          this.cancel();
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
     this.skill = this._getFormValues();
-    this.skillEditFacade.submit(this.skill)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe(skillObserver);
+    this._skillEditFacade.submit(this.skill).subscribe(res => {
+      if (res) {
+        this._dialogRef.close(true);
+      }
+    });
   }
 
   private _setValuesToFields() {
@@ -68,19 +55,6 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
         this.skillFormGroup.controls['name'].setValue(name);
         this.skillFormGroup.controls['description'].setValue(description);
       }
-    }
-  }
-
-  private _disableFields(): void {
-    if (this.skillFormGroup) {
-      this.skillFormGroup.controls['name'].disable();
-      this.skillFormGroup.controls['description'].disable();
-    }
-  }
-  private _enableFields(): void {
-    if (this.skillFormGroup) {
-      this.skillFormGroup.controls['name'].enable();
-      this.skillFormGroup.controls['description'].enable();
     }
   }
 
@@ -101,7 +75,16 @@ export class SkillEditComponent extends SubscriptionCleaner implements OnInit, O
 
   private _initFormFields() {
     this._setValuesToFields();
-    if (this.disable) this._disableFields();
-    else this._enableFields();
+    this._setFormDisabledState();
+  }
+
+  private _setFormDisabledState(): void {
+    const controls = ['name', 'description'];
+    controls.forEach((control) => this.skillFormGroup.controls[control][this.disable ? 'disable' : 'enable']());
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.skillFormGroup.get(controlName);
+    return !!control && control.invalid && control.dirty;
   }
 }

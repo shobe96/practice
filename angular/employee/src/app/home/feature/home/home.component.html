@@ -1,5 +1,6 @@
-<div class="card" *ngIf="homeFacade.viewModel$ | async as data">
-  <div *ngIf="!data.roles.length; else elseBlock">
+<div class="card">
+  @if(!viewModel().roles.length) {
+  <div>
     <p>
       You're not logged in please press button below or go to menu Users to
       login.
@@ -18,19 +19,20 @@
       </div>
     </ng-template>
   </div>
+  } @else {
   <div>
-    <ng-template #elseBlock>
-      <app-home-panel
-        [employee]="data.employee"
-        [projectsHistory]="data.projectsHistory"
-        [departmentEmployees]="data.departmentEmployees"
-        [page]="data.page"
-        [activeProject]="data.activeProject"
-      />
-    </ng-template>
+    <app-home-panel
+      [employee]="viewModel().employee"
+      [projectsHistory]="viewModel().projectsHistory"
+      [departmentEmployees]="viewModel().departmentEmployees"
+      [page]="viewModel().page"
+      [activeProject]="viewModel().activeProject"
+    />
   </div>
-  <div *ngIf="data.loading" class="card flex justify-center progress-spinner">
+  } @if(viewModel().loading) {
+  <div class="card flex justify-center progress-spinner">
     <p-progress-spinner ariaLabel="loading" />
   </div>
+  }
 </div>
 <p-toast [life]="life" />

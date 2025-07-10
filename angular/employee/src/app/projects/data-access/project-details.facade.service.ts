@@ -1,22 +1,20 @@
 import { inject, Injectable } from '@angular/core';
 import { ProjectService } from './project.service';
-import { BehaviorSubject, Observable, catchError, combineLatest } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest } from 'rxjs';
 import { Project } from './project.model';
-import { CustomMessageService } from '../../shared/data-access/custom-message.service';
+import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ProjectDetailsFacadeService {
 
-  private _project: BehaviorSubject<Project> = new BehaviorSubject<Project>({});
+  private _project = new BehaviorSubject<Project>({});
 
-  viewModel$: Observable<{ project: Project }> = combineLatest({
+  viewModel$ = combineLatest({
     project: this._project.asObservable()
   });
 
-  private _projectService: ProjectService = inject(ProjectService)
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private _projectService = inject(ProjectService)
+  private _customMessageService = inject(CustomMessageService);
 
   getProject(id: number) {
     const projectObserver = {
@@ -28,7 +26,7 @@ export class ProjectDetailsFacadeService {
         // do nothing.
       }
     }
-    this._projectService.getProject(id)
+    this._projectService.get(id)
       .pipe(
         catchError(
           (err) => { throw err.error.message }

@@ -1,18 +1,16 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
-import { takeUntil } from 'rxjs';
 import { Project } from '../../data-access/project.model';
-import { SubscriptionCleaner } from '../../../shared/subscription-cleaner ';
 import { ProjectEditFacadeService } from '../../data-access/project-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
-import { CustomMessageService } from '../../../shared/data-access/custom-message.service';
 import { InputText } from 'primeng/inputtext';
-import { NgIf, AsyncPipe } from '@angular/common';
 import { Select } from 'primeng/select';
 import { MultiSelect } from 'primeng/multiselect';
 import { DatePicker } from 'primeng/datepicker';
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
 
 @Component({
   selector: 'app-project-edit',
@@ -22,42 +20,46 @@ import { ProgressSpinner } from 'primeng/progressspinner';
   imports: [
     ReactiveFormsModule,
     InputText,
-    NgIf,
     Select,
     MultiSelect,
     DatePicker,
     Button,
-    AsyncPipe,
-    ProgressSpinner
-  ]
+    ProgressSpinner,
+    ValidationMessagesComponent
+  ],
+  providers: [ProjectEditFacadeService]
 })
-export class ProjectEditComponent extends SubscriptionCleaner implements OnInit, OnDestroy {
+export class ProjectEditComponent implements OnInit {
 
   projectFormGroup!: FormGroup;
 
   @Input() project: Project = {};
 
-  projectEditFacade: ProjectEditFacadeService = inject(ProjectEditFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _dialogRef: DynamicDialogRef = inject(DynamicDialogRef);
-  private _customMessageService: CustomMessageService = inject(CustomMessageService);
+  private _projectEditFacade = inject(ProjectEditFacadeService);
+
+  viewModel = toSignal(this._projectEditFacade.viewModel$, {
+    initialValue: {
+      skills: [],
+      departments: [],
+      employees: [],
+      loading: false
+    }
+  });
+  private _formBuilder = inject(FormBuilder);
+  private _dialogRef = inject(DynamicDialogRef);
 
   ngOnInit(): void {
-    this.projectEditFacade.loadSelectOptions();
+    this._projectEditFacade.loadSelectOptions();
     this.buildForm();
     this._initFormFields();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubsribe();
   }
 
   buildForm() {
     this.projectFormGroup = this._formBuilder.group({
       name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
       code: ['', [Validators.required, Validators.maxLength(5), Validators.minLength(3)]],
-      startDate: [{}, [Validators.required]],
-      endDate: [{}, [Validators.required]],
+      startDate: [null, [Validators.required]],
+      endDate: [null, [Validators.required]],
       skills: [[], [Validators.required]],
       employees: [[], [Validators.required]],
       department: [{}, [Validators.required]]
@@ -69,27 +71,18 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
   }
 
   submit() {
-    const projectObserver = {
-      next: (value: Project) => {
-        if (Object.keys(value)) {
-          this.cancel();
-        }
-      },
-      error: (errorMessage: string) => { this._customMessageService.showError('Error', errorMessage); },
-      complete: () => {
-        // do nothing.
-      }
-    }
     this.project = this._getFormValues();
-    this.projectEditFacade.submit(this.project)
-      .pipe(takeUntil(this.componentIsDestroyed$))
-      .subscribe(projectObserver);
+    this._projectEditFacade.submit(this.project).subscribe(res => {
+      if (res) {
+        this._dialogRef.close(true);
+      }
+    });
   }
 
   getEmployees() {
     const { department, skills } = this.projectFormGroup.getRawValue();
     this.projectFormGroup.controls['employees'].setValue([]);
-    this.projectEditFacade.getEmployees(skills, department);
+    this._projectEditFacade.getEmployees(skills, department);
   }
 
   private _setValuesToFields() {
@@ -113,7 +106,7 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
         this.projectFormGroup.controls['employees'].setValue(employees);
       }
 
-      if (Object.keys(this.project)?.length === 1) this.projectEditFacade.clearEmployees();
+      if (Object.keys(this.project)?.length === 1) this._projectEditFacade.clearEmployees();
     }
   }
 
@@ -127,5 +120,10 @@ export class ProjectEditComponent extends SubscriptionCleaner implements OnInit,
 
   private _initFormFields() {
     this._setValuesToFields();
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.projectFormGroup.get(controlName);
+    return !!control && control.invalid && control.dirty;
   }
 }

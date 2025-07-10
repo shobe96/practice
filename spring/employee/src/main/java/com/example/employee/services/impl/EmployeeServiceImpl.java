@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Employee;
-import com.example.employee.models.EmployeeSearchResult;
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
@@ -32,15 +32,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public EmployeeSearchResult getAllEmployees(Pageable pageable) {
-		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+	public SearchResult<Employee> getAllEmployees(Pageable pageable) {
+		SearchResult<Employee> employeeSearchResult = new SearchResult<>();
 		List<Employee> employees = employeeRepository.findAll(pageable).getContent();
 		if (employees.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			employees = employeeRepository.findAll(newPage).getContent();
 		}
 		employeeSearchResult.setSize(employeeRepository.count());
-		employeeSearchResult.setEmployees(employees);
+		employeeSearchResult.setItems(employees);
 		return employeeSearchResult;
 	}
 
@@ -55,9 +55,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public EmployeeSearchResult getEmployeeByDepartmentId(Pageable pageable, Integer departmentId) {
-		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
-		employeeSearchResult.setEmployees(employeeRepository.findAllByDepartmentId(pageable, departmentId).getContent());
+	public SearchResult<Employee> getEmployeeByDepartmentId(Pageable pageable, Integer departmentId) {
+		SearchResult<Employee> employeeSearchResult = new SearchResult<>();
+		employeeSearchResult.setItems(employeeRepository.findAllByDepartmentId(pageable, departmentId).getContent());
 		Long size = (long) employeeRepository.findAllByDepartmentId(departmentId).size();
 		employeeSearchResult.setSize(size);
 		return employeeSearchResult;
@@ -90,7 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 	}
 
 	@Override
-	public EmployeeSearchResult searcEmployees(String name, String surname, String email, Pageable pageable) {
+	public SearchResult<Employee> searcEmployees(String name, String surname, String email, Pageable pageable) {
 		if (name == null) {
 			name = "";
 		}
@@ -100,9 +100,9 @@ public class EmployeeServiceImpl implements EmployeeService {
 		if (email == null) {
 			email = "";
 		}
-		EmployeeSearchResult employeeSearchResult = new EmployeeSearchResult();
+		SearchResult<Employee> employeeSearchResult = new SearchResult<>();
 		List<Employee> employees = employeeRepository.searchEmployees(name, surname, email, pageable).getContent();
-		employeeSearchResult.setEmployees(employees);
+		employeeSearchResult.setItems(employees);
 		employeeSearchResult.setSize(employeeRepository.searchResultCount(name, surname, email));
 		return employeeSearchResult;
 	}
