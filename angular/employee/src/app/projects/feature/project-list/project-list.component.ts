@@ -38,9 +38,7 @@ import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.
 })
 export class ProjectListComponent implements OnInit {
 
-  projectSearch: Project = {};
   projectId: number | null = 0;
-
   actionButtons: ActionButtons<Project>[] = [
     {
       icon: 'pi pi-eye',

@@ -34,7 +34,6 @@ import { AuthFacadeService } from '../../../auth/data-access/auth.facade.service
 })
 export class UserListComponent implements OnInit {
 
-  userSearch: User = {};
   userId: number | null = 0;
   actionButtons: ActionButtons<User>[] = [
     {

@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { Employee } from '../../employees/data-access/employee.model';
 import { RoleService } from '../../roles/data-access/role.service';
 import { Role } from '../../roles/data-access/role.model';
-import { RoleSearchResult } from '../../roles/data-access/role-search-result.model';
 import { MenuItem, PrimeIcons } from 'primeng/api';
 import { AuthResponse } from './auth-response.model';
 import { AuthRequest } from './auth-request.model';
@@ -117,8 +116,8 @@ export class AuthFacadeService {
 
   private _getRoles(): void {
     this._roleService.getAll(true)
-      .pipe(tap((res: RoleSearchResult) => {
-        this._roles$.next(res.roles ?? []);
+      .pipe(tap((res: SearchResult<Role>) => {
+        this._roles$.next(res.items ?? []);
       }),
         catchError((err) => {
           this._customMessageService.showError('Error', err.error.message);

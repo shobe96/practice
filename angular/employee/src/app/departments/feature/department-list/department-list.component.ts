@@ -37,7 +37,6 @@ import { Button } from 'primeng/button';
 })
 export class DepartmentListComponent implements OnInit {
 
-  departmentSearch: Department = {};
   departmentId: number | null = 0;
 
   actionButtons: ActionButtons<Department>[] = [

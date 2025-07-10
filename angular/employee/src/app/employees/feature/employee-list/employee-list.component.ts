@@ -38,7 +38,6 @@ import { ActionButtons } from '../../../shared/data-access/action-buttons.model'
 })
 export class EmployeeListComponent implements OnInit {
 
-  employeeSearch: Employee = {};
   employeeId: number | null = 0;
   actionButtons: ActionButtons<Employee>[] = [
     {

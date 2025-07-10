@@ -37,9 +37,7 @@ import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-w
 })
 export class SkillListComponent implements OnInit {
 
-  skillSearch: Skill = {};
   skillId: number | null = 0;
-
   actionButtons: ActionButtons<Skill>[] = [
     {
       icon: 'pi pi-eye',

@@ -37,7 +37,6 @@ import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-w
 })
 export class RoleListComponent implements OnInit {
 
-  roleSearch: Role = {};
   roleId: number | null = 0;
   actionButtons: ActionButtons<Role>[] = [
     {
