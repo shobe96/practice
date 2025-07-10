@@ -10,10 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Department;
+import com.example.employee.models.SearchResult;
 import com.example.employee.repositories.DepartmentRepository;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.DepartmentService;
-import com.example.employee.utils.SearchResult;
 
 import jakarta.transaction.Transactional;
 

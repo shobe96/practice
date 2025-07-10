@@ -4,8 +4,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
 import com.example.employee.models.RegisterRequest;
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.User;
-import com.example.employee.utils.SearchResult;
 
 public interface UserService {
 

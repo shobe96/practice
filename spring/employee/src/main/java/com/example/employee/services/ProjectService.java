@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Project;
-import com.example.employee.utils.SearchResult;
+import com.example.employee.models.SearchResult;
 
 public interface ProjectService {
 	public SearchResult<Project> getAllProjects(Pageable pageable);

@@ -26,9 +26,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
 import com.example.employee.services.SkillService;
-import com.example.employee.utils.SearchResult;
 
 import jakarta.validation.Valid;
 

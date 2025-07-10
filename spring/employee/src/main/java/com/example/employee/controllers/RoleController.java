@@ -23,8 +23,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.models.Role;
+import com.example.employee.models.SearchResult;
 import com.example.employee.services.RoleService;
-import com.example.employee.utils.SearchResult;
 
 @RestController
 @RequestMapping("/api/roles")

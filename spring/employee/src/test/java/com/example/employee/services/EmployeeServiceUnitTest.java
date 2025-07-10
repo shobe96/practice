@@ -20,10 +20,10 @@ import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Department;
 import com.example.employee.models.Employee;
+import com.example.employee.models.SearchResult;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.impl.EmployeeServiceImpl;
-import com.example.employee.utils.SearchResult;
 
 @ExtendWith(MockitoExtension.class)
 class EmployeeServiceUnitTest {

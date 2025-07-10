@@ -9,10 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
 import com.example.employee.repositories.SkillRepository;
 import com.example.employee.services.SkillService;
-import com.example.employee.utils.SearchResult;
 
 import jakarta.transaction.Transactional;
 

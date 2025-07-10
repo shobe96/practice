@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Department;
-import com.example.employee.utils.SearchResult;
+import com.example.employee.models.SearchResult;
 
 public interface DepartmentService {
 	public SearchResult<Department> getAllDepartments(Pageable pageable);

@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 
 import com.example.employee.models.Employee;
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
-import com.example.employee.utils.SearchResult;
 
 public interface EmployeeService {
 	

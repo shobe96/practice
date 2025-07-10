@@ -2,8 +2,8 @@ package com.example.employee.services;
 
 import org.springframework.data.domain.Pageable;
 
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
-import com.example.employee.utils.SearchResult;
 
 public interface SkillService {
 	public SearchResult<Skill> getAllSkills(Pageable pageable);

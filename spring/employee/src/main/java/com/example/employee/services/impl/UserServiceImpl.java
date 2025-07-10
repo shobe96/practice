@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Employee;
 import com.example.employee.models.RegisterRequest;
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.User;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.UserRepository;
 import com.example.employee.services.UserService;
 import com.example.employee.utils.CommonUtils;
-import com.example.employee.utils.SearchResult;
 
 import jakarta.transaction.Transactional;
 

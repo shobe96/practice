@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.employee.models.SearchResult;
 import com.example.employee.models.User;
 import com.example.employee.services.UserService;
-import com.example.employee.utils.SearchResult;
 
 @RestController
 @RequestMapping("/api/users")

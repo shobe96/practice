@@ -29,8 +29,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.employee.models.Project;
 import com.example.employee.models.RestError;
+import com.example.employee.models.SearchResult;
 import com.example.employee.services.ProjectService;
-import com.example.employee.utils.SearchResult;
 
 import jakarta.validation.Valid;
 

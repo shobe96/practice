@@ -13,11 +13,11 @@ import org.springframework.stereotype.Service;
 import com.example.employee.models.Employee;
 import com.example.employee.models.Project;
 import com.example.employee.models.ProjectHistory;
+import com.example.employee.models.SearchResult;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.repositories.ProjectRepository;
 import com.example.employee.services.ProjectService;
-import com.example.employee.utils.SearchResult;
 
 import jakarta.transaction.Transactional;
 
