@@ -10,9 +10,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.models.Role;
-import com.example.employee.models.RoleSearchResult;
 import com.example.employee.repositories.RoleRepository;
 import com.example.employee.services.RoleService;
+import com.example.employee.utils.SearchResult;
 
 import jakarta.transaction.Transactional;
 
@@ -28,25 +28,25 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public RoleSearchResult getAllRoles() {
-		RoleSearchResult roleSearchResult = new RoleSearchResult();
+	public SearchResult<Role> getAllRoles() {
+		SearchResult<Role> roleSearchResult = new SearchResult<Role>();
 		List<Role> roles = new ArrayList<>();
 		roleRepository.findAll().forEach(roles::add);
-		roleSearchResult.setRoles(roles);
+		roleSearchResult.setItems(roles);
 		roleSearchResult.setSize(roleRepository.count());
 		return roleSearchResult;
 	}
 
 	@Override
-	public RoleSearchResult getAllRoles(Pageable pageable) {
-		RoleSearchResult roleSearchResult = new RoleSearchResult();
+	public SearchResult<Role> getAllRoles(Pageable pageable) {
+		SearchResult<Role> roleSearchResult = new SearchResult<>();
 		List<Role> roles = roleRepository.findAll(pageable).getContent();
 		if (roles.isEmpty()) {
 			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
 			roles = roleRepository.findAll(newPage).getContent();
 		}
 		roleSearchResult.setSize(roleRepository.count());
-		roleSearchResult.setRoles(roles);
+		roleSearchResult.setItems(roles);
 		return roleSearchResult;
 	}
 
@@ -78,13 +78,13 @@ public class RoleServiceImpl implements RoleService {
 	}
 
 	@Override
-	public RoleSearchResult searchRoles(String name, Pageable pageable) {
+	public SearchResult<Role> searchRoles(String name, Pageable pageable) {
 		if (name == null) {
 			name = "";
 		}
-		RoleSearchResult roleSearchResult = new RoleSearchResult();
+		SearchResult<Role> roleSearchResult = new SearchResult<>();
 		List<Role> roles = roleRepository.searchRoles(name, pageable).getContent();
-		roleSearchResult.setRoles(roles);
+		roleSearchResult.setItems(roles);
 		roleSearchResult.setSize(roleRepository.searchResultCount(name));
 		return roleSearchResult;
 	}
