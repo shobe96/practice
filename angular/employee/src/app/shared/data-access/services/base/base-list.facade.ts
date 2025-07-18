@@ -25,6 +25,10 @@ export abstract class BaseListFacade<T extends object> {
 
   protected abstract _search: T;
 
+  protected get page(): PageEvent {
+    return this._page$.getValue();
+  }
+
   viewModel$: Observable<ListState<T>> = combineLatest({
     data: this._data$.asObservable(),
     page: this._page$.asObservable(),
@@ -38,7 +42,7 @@ export abstract class BaseListFacade<T extends object> {
 
   clear(): void {
     this._updatePage({ page: 0, first: 0 });
-    this._getAll(false);
+    this.retrieve();
   }
 
   delete(id: number | null): void {
@@ -46,13 +50,27 @@ export abstract class BaseListFacade<T extends object> {
 
     this._withLoading(() =>
       this.baseService.delete(id).pipe(
-        tap(() => this.retrieve()),
+        tap(() => {
+          const currentData = this._data$.getValue();
+          const currentPage = this.page;
+
+          // If deleting the last item on a non-first page, go to the previous page
+          if (currentData.length === 1 && currentPage.page > 0) {
+            this._updatePage({
+              page: currentPage.page - 1,
+              first: currentPage.first - currentPage.rows
+            });
+          }
+
+          this.retrieve(); // only call retrieve once
+        }),
         this._handleError('Error', null)
       )
     );
   }
 
   onPageChange(event: PaginatorState): void {
+    console.log("PAGE CHANGE");
     this._updatePage({
       first: event.first ?? 0,
       page: event.page ?? 0,
@@ -62,21 +80,9 @@ export abstract class BaseListFacade<T extends object> {
   }
 
   retrieve(): void {
-    const fetch$ = this._hasSearchFields()
-      ? this.baseService.search(this._search, this._page$.value)
-      : this.baseService.getAll(false, this._page$.value);
-
+    console.log("RETRIEVE");
     this._withLoading(() =>
-      fetch$.pipe(
-        tap(result => this._processResult(result)),
-        this._handleError('Error', null)
-      )
-    );
-  }
-
-  private _getAll(all: boolean): void {
-    this._withLoading(() =>
-      this.baseService.getAll(all, this._page$.value).pipe(
+      this.baseService.search(this._search, this.page).pipe(
         tap(result => this._processResult(result)),
         this._handleError('Error', null)
       )
@@ -84,15 +90,16 @@ export abstract class BaseListFacade<T extends object> {
   }
 
   private _updatePage(update: Partial<PageEvent>): void {
-    const current = this._page$.value;
+    const current = this.page;
     this._page$.next({ ...current, ...update });
   }
 
   private _processResult(result: SearchResult<T> | null): void {
+    console.log('RESULT', result);
     if (!result) return;
     this._data$.next(result.items ?? []);
-    if (result.size != null) {
-      const updatedPage = { ...this._page$.value, pageCount: result.size };
+    if (result.size) {
+      const updatedPage = { ...this.page, pageCount: result.size };
       this._page$.next(updatedPage);
     }
   }
@@ -114,19 +121,12 @@ export abstract class BaseListFacade<T extends object> {
 
   search(params: T): void {
     this._search = params;
-    if (!this._hasSearchFields()) return;
+    console.log("SEARCH", params);
     this._withLoading(() =>
-      this.baseService.search(this._search, this._page$.value).pipe(
+      this.baseService.search(this._search, this.page).pipe(
         tap(result => this._processResult(result)),
         this._handleError('Error', null)
       )
     );
-  }
-
-  private _hasSearchFields(): boolean {
-    return this.searchKeys.some(key => {
-      const value = this._search[key];
-      return value !== undefined && value !== null && value !== '';
-    });
   }
 }

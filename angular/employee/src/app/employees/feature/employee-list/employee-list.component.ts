@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject, OnInit } from '@angular/core';
 import { Employee } from '../../data-access/employee.model';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState, Paginator } from 'primeng/paginator';
@@ -77,6 +77,8 @@ export class EmployeeListComponent implements OnInit {
     initialValue: {}
   });
 
+  private readonly _queryParamsComputed = computed(() => this._queryParamsSignal());
+
   private readonly _employeeFormSignal = toSignal(
     this.employeeFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
     { initialValue: this.employeeFormGroup.getRawValue() }
@@ -101,7 +103,8 @@ export class EmployeeListComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      const params = this._queryParamsSignal();
+      console.log("EFFECT");
+      const params = this._queryParamsComputed();
       this._employeeListFacade.search(params);
     });
 
@@ -118,7 +121,8 @@ export class EmployeeListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._employeeListFacade.retrieve();
+    console.log("ONINIT");
+    // this._employeeListFacade.retrieve();
   }
 
   addNew(): void {

@@ -13,12 +13,8 @@ export abstract class BaseCrudService<T extends object> {
 
   protected abstract readonly baseUrl: string;
 
-  getAll(all: boolean, page?: PageEvent): Observable<SearchResult<T>> {
-    const url =
-      all
-        ? `${this.backendURL}${this.baseUrl}?all=${all}` :
-        `${this.backendURL}${this.baseUrl}?${buildPaginationParams(page)}&sort=asc&all=${all}`;
-    return this.http.get<SearchResult<T>>(url);
+  getAll(): Observable<T[]> {
+    return this.http.get<T[]>(`${this.backendURL}${this.baseUrl}`);
   }
 
   get(id: number): Observable<T> {

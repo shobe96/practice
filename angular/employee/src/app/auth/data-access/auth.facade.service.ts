@@ -102,9 +102,10 @@ export class AuthFacadeService {
   }
 
   private _getEmployees(): void {
-    this._employeeService.getAll(true)
-      .pipe(tap((res: SearchResult<Employee>) => {
-        this._employees$.next(res.items ?? []);
+    //TODO: get employees without user
+    this._employeeService.getAll()
+      .pipe(tap((res: Employee[]) => {
+        this._employees$.next(res ?? []);
       }),
         catchError((err) => {
           this._customMessageService.showError('Error', err.error.message);
@@ -115,9 +116,9 @@ export class AuthFacadeService {
   }
 
   private _getRoles(): void {
-    this._roleService.getAll(true)
-      .pipe(tap((res: SearchResult<Role>) => {
-        this._roles$.next(res.items ?? []);
+    this._roleService.getAll()
+      .pipe(tap((res: Role[]) => {
+        this._roles$.next(res ?? []);
       }),
         catchError((err) => {
           this._customMessageService.showError('Error', err.error.message);
