@@ -3,6 +3,8 @@ package com.example.employee.utils;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,5 +30,15 @@ public class CommonUtils {
 			logger.error("Failed to obtain roles");
 		}
 		return auths;
+	}
+	
+	public static <T> List<Integer> extractIds(List<T> objects) {
+		return objects.stream().map(obj -> {
+			try {
+				return (Integer) obj.getClass().getMethod("getId").invoke(obj);
+			} catch (Exception e) {
+                throw new RuntimeException("Failed to extract ID", e);
+            }
+		}).collect(Collectors.toList());
 	}
 }
