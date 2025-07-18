@@ -80,14 +80,13 @@ public class UserServiceImpl implements UserService {
 	public void deleteUser(Integer userId) {
 		Optional<User> optional = userRepository.findById(userId);
 		if (optional.isPresent()) {
-			Employee employee = employeeRepository.findByUserId(userId);
+			Employee employee = optional.get().getEmployee();
 			if (employee != null) {
 				employee.setUser(null);
 				employeeRepository.save(employee);
 			}
 			userRepository.delete(optional.get());
 		}
-		
 	}
 
 	@Override
