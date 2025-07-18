@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -86,7 +87,7 @@ public class Employee {
 	@JsonIgnore
 	private Set<Project> projects = new HashSet<>();
 	
-	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JsonIgnore
 	private Set<ProjectHistory> projectHistories = new HashSet<>();
 

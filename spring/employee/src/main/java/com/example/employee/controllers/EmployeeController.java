@@ -27,6 +27,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
+import com.example.employee.criteria.EmployeeSearchCriteria;
 import com.example.employee.models.Employee;
 import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
@@ -46,20 +48,13 @@ public class EmployeeController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<SearchResult<Employee>> getAllEmployees(Pageable pageable, @RequestParam() Boolean all) {
-		SearchResult<Employee> employees = new SearchResult<>();
-		if (all.equals(true)) {
-			employees.setItems(employeeService.getAllEmployees());
-		} else {
-			employees = employeeService.getAllEmployees(pageable);
-		}
-		
-		return ResponseEntity.ok().body(employees);
+	public ResponseEntity<List<Employee>> getAllEmployees() {
+		return ResponseEntity.ok().body(employeeService.getAll());
 	}
 
 	@GetMapping("/get-one/{employeeId}")
 	public ResponseEntity<Object> getEmployeeById(@PathVariable Integer employeeId) {
-		Employee employee = employeeService.getEmployeebyId(employeeId);
+		Employee employee = employeeService.getById(employeeId);
 		if (employee == null) {
 			return ResponseEntity.notFound().build();
 		} else {			
@@ -70,13 +65,15 @@ public class EmployeeController {
 	@GetMapping("/get-by-department/{departmentId}")
 	public ResponseEntity<SearchResult<Employee>> getEmployeeByDepartmentId(Pageable pageable,
 			@PathVariable Integer departmentId) {
-		SearchResult<Employee> employeeSearchResult = employeeService.getEmployeeByDepartmentId(pageable, departmentId);
+		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
+		searchCriteria.setDepartmentId(departmentId);
+		SearchResult<Employee> employeeSearchResult = employeeService.search(searchCriteria, pageable);
 		return ResponseEntity.ok().body(employeeSearchResult);
 	}
 
 	@PostMapping("/create")
 	public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee) {
-		Employee newEmployee = employeeService.saveEmployee(employee);
+		Employee newEmployee = employeeService.save(employee);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(newEmployee.getId()).toUri();
 		return ResponseEntity.created(location).body(newEmployee);
@@ -84,13 +81,13 @@ public class EmployeeController {
 
 	@PutMapping("/update")
 	public ResponseEntity<Employee> updateEmployee(@Valid @RequestBody Employee employee) {
-		Employee updatedEmployee = employeeService.saveEmployee(employee);
+		Employee updatedEmployee = employeeService.save(employee);
 		return ResponseEntity.ok().body(updatedEmployee);
 	}
 
 	@DeleteMapping("/delete/{employeeId}")
 	public ResponseEntity<Void> deleteEmployee(@PathVariable Integer employeeId) {
-		employeeService.deleteEmployee(employeeId);
+		employeeService.delete(employeeId);
 		return ResponseEntity.ok().body(null);
 	}
 
@@ -98,19 +95,28 @@ public class EmployeeController {
 	public ResponseEntity<SearchResult<Employee>> searchEmployees(@RequestParam(required = false) String name,
 			@RequestParam(required = false) String surname, @RequestParam(required = false) String email,
 			Pageable pageable) {
+		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
+		searchCriteria.setName(name);
+		searchCriteria.setSurname(surname);
+		searchCriteria.setEmail(email);
 		return ResponseEntity.ok().headers(new HttpHeaders())
-				.body(employeeService.searcEmployees(name, surname, email, pageable));
+				.body(employeeService.search(searchCriteria, pageable));
 	}
 	
 	@PostMapping("/filter-by-active-and-skills/{departmentId}")
 	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId, @RequestBody List<Skill> skills) {
+		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
+		searchCriteria.setSkills(skills);
+		searchCriteria.setActive(true);
 		return ResponseEntity.ok().headers(new HttpHeaders())
-				.body(employeeService.filterEmployeesByActiveAndSkills(skills, departmentId));
+				.body(employeeService.search(searchCriteria));
 	}
 	
 	@GetMapping("/find-by-user/{userId}")
 	public ResponseEntity<Object> findByUser(@PathVariable Integer userId) {
-		Employee employee = employeeService.findByUserId(userId);
+		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
+		searchCriteria.setUserId(userId);
+		Employee employee = employeeService.search(searchCriteria).get(0);
 		if (employee == null) {
 			return ResponseEntity.notFound().build();
 		} else {			
