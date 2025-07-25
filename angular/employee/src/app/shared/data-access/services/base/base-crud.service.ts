@@ -6,7 +6,7 @@ import { buildPaginationParams, buildSearchParams } from '../../../utils';
 import { Observable } from 'rxjs';
 import { SearchResult } from '../../search-result.model';
 
-export abstract class BaseCrudService<T extends object> {
+export abstract class BaseCrudService<T extends object, C extends object = {}> {
 
   protected readonly backendURL = environment.BACKEND_URL;
   protected readonly http = inject(HttpClient);
@@ -33,7 +33,7 @@ export abstract class BaseCrudService<T extends object> {
     return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${id}`);
   }
 
-  search(data: T, page: PageEvent): Observable<SearchResult<T>> {
+  search(data: C, page?: PageEvent): Observable<SearchResult<T>> {
     return this.http.get<SearchResult<T>>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(data)}&${buildPaginationParams(page)}`);
   }
 }

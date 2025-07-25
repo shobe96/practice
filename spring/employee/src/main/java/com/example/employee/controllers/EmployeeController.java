@@ -18,6 +18,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -92,15 +93,10 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Employee>> searchEmployees(@RequestParam(required = false) String name,
-			@RequestParam(required = false) String surname, @RequestParam(required = false) String email,
+	public ResponseEntity<SearchResult<Employee>> searchEmployees(@ModelAttribute EmployeeSearchCriteria criteria,
 			Pageable pageable) {
-		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
-		searchCriteria.setName(name);
-		searchCriteria.setSurname(surname);
-		searchCriteria.setEmail(email);
 		return ResponseEntity.ok().headers(new HttpHeaders())
-				.body(employeeService.search(searchCriteria, pageable));
+				.body(employeeService.search(criteria, pageable));
 	}
 	
 	@PostMapping("/filter-by-active-and-skills/{departmentId}")

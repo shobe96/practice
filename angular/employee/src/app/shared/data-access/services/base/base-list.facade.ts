@@ -8,7 +8,7 @@ import { CustomMessageService } from "../custom-message/custom-message.service";
 import { PaginatorState } from "primeng/paginator";
 import { ListState } from "../../list-state.model";
 
-export abstract class BaseListFacade<T extends object> {
+export abstract class BaseListFacade<T extends object, C extends object = {}> {
   private _data$ = new BehaviorSubject<T[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,
@@ -23,7 +23,7 @@ export abstract class BaseListFacade<T extends object> {
 
   private readonly _customMessageService = inject(CustomMessageService);
 
-  protected abstract _search: T;
+  protected abstract _search: C;
 
   protected get page(): PageEvent {
     return this._page$.getValue();
@@ -36,7 +36,7 @@ export abstract class BaseListFacade<T extends object> {
     loading: this._loading$.asObservable()
   });
 
-  protected constructor(protected readonly baseService: BaseCrudService<T>) { }
+  protected constructor(protected readonly baseService: BaseCrudService<T, C>) { }
 
   protected abstract readonly searchKeys: (keyof T)[];
 
@@ -70,7 +70,6 @@ export abstract class BaseListFacade<T extends object> {
   }
 
   onPageChange(event: PaginatorState): void {
-    console.log("PAGE CHANGE");
     this._updatePage({
       first: event.first ?? 0,
       page: event.page ?? 0,
@@ -80,7 +79,6 @@ export abstract class BaseListFacade<T extends object> {
   }
 
   retrieve(): void {
-    console.log("RETRIEVE");
     this._withLoading(() =>
       this.baseService.search(this._search, this.page).pipe(
         tap(result => this._processResult(result)),
@@ -95,7 +93,6 @@ export abstract class BaseListFacade<T extends object> {
   }
 
   private _processResult(result: SearchResult<T> | null): void {
-    console.log('RESULT', result);
     if (!result) return;
     this._data$.next(result.items ?? []);
     if (result.size) {
@@ -119,9 +116,9 @@ export abstract class BaseListFacade<T extends object> {
     });
   }
 
-  search(params: T): void {
+  search(params: C): void {
     this._search = params;
-    console.log("SEARCH", params);
+    if (this.page.page !== 0) this.page.page = 0;
     this._withLoading(() =>
       this.baseService.search(this._search, this.page).pipe(
         tap(result => this._processResult(result)),

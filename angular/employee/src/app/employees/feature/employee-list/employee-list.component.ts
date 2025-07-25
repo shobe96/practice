@@ -36,7 +36,7 @@ import { ActionButtons } from '../../../shared/data-access/action-buttons.model'
     SearchFilterWrapperComponent
   ]
 })
-export class EmployeeListComponent implements OnInit {
+export class EmployeeListComponent {
 
   employeeId: number | null = 0;
   actionButtons: ActionButtons<Employee>[] = [
@@ -103,7 +103,6 @@ export class EmployeeListComponent implements OnInit {
 
   constructor() {
     effect(() => {
-      console.log("EFFECT");
       const params = this._queryParamsComputed();
       this._employeeListFacade.search(params);
     });
@@ -118,11 +117,6 @@ export class EmployeeListComponent implements OnInit {
         });
       }
     });
-  }
-
-  ngOnInit(): void {
-    console.log("ONINIT");
-    // this._employeeListFacade.retrieve();
   }
 
   addNew(): void {

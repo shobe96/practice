@@ -9,7 +9,7 @@ import { SkillService } from '../../skills/data-access/skill.service';
 import { ProjectService } from './project.service';
 import { Project } from './project.model';
 import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
-import { SearchResult } from '../../shared/data-access/search-result.model';
+import { EmployeeSearchCriteria } from '../../employees/data-access/employee-search.criteria';
 
 @Injectable({
   providedIn: 'root'
@@ -42,7 +42,11 @@ export class ProjectEditFacadeService extends BaseEditFacade<Project> {
 
   getEmployees(skills: Skill[], department: Department) {
     if (skills.length > 0 && Object.keys(department).length > 0) {
-      this._withLoading(() => this._employeeService.filterEmployeesByActiveAndSkills(skills, department).pipe(tap((value) => this._employees$.next(value)))).subscribe();
+      const criteria: EmployeeSearchCriteria = {
+        skills: skills,
+        departmentId: department.id
+      }
+      this._withLoading(() => this._employeeService.search(criteria).pipe(tap((value) => this._employees$.next(value.items ?? [])))).subscribe();
     } else {
       this.clearEmployees();
     }

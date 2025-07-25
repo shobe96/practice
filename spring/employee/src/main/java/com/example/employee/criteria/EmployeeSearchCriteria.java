@@ -12,6 +12,7 @@ import com.example.employee.utils.CommonUtils;
 import jakarta.persistence.criteria.Predicate;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,6 +21,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class EmployeeSearchCriteria implements SearchCriteria<Employee> {
 	
 	private String name;
@@ -29,6 +31,7 @@ public class EmployeeSearchCriteria implements SearchCriteria<Employee> {
     private Integer userId;
     private Boolean active;
     private List<Skill> skills;
+    private Boolean withoutUser;
 
 	@Override
 	public Specification<Employee> toSpecification() {
@@ -57,6 +60,9 @@ public class EmployeeSearchCriteria implements SearchCriteria<Employee> {
             	List<Integer> skillIds = CommonUtils.extractIds(skills);
                 predicates.add(root.joinSet("skills").get("id").in(skillIds));
                 query.distinct(true);
+            }
+            if (Boolean.TRUE.equals(withoutUser)) {
+                predicates.add(cb.isNull(root.get("user")));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
