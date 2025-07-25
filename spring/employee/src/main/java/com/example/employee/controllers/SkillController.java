@@ -2,6 +2,7 @@ package com.example.employee.controllers;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -44,13 +45,10 @@ public class SkillController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<SearchResult<Skill>> getAllSkills(Pageable pageable, @RequestParam() Boolean all) {
-		SearchResult<Skill> skills = null;
-		if (all.equals(true)) {
-			skills = skillService.getAllSkills();
-		} else {
-			skills = skillService.getAllSkills(pageable);
-		}
+	public ResponseEntity<List<Skill>> getAllSkills() {
+		List<Skill> skills = null;
+
+		skills = skillService.getAllSkills();
 
 		return ResponseEntity.ok().body(skills);
 	}

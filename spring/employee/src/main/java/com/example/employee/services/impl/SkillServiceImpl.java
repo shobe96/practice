@@ -41,12 +41,10 @@ public class SkillServiceImpl implements SkillService {
 	}
 
 	@Override
-	public SearchResult<Skill> getAllSkills() {
+	public List<Skill> getAllSkills() {
 		List<Skill> skills = new ArrayList<>();
-		skillRepository.findAll().forEach(skills::add);
-		SearchResult<Skill> skillSearchResult = new SearchResult<>();
-		skillSearchResult.setItems(skills);		
-		return skillSearchResult;
+		skillRepository.findAll().forEach(skills::add);	
+		return skills;
 	}
 
 	@Override

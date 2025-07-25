@@ -2,6 +2,7 @@ package com.example.employee.controllers;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
@@ -31,21 +32,15 @@ import com.example.employee.services.DepartmentService;
 public class DepartmentController {
 
 	private DepartmentService departmentService;
-	
+
 	@Autowired
 	public DepartmentController(DepartmentService departmentService) {
 		this.departmentService = departmentService;
 	}
 
 	@GetMapping()
-	public ResponseEntity<SearchResult<Department>> getAllDepartments(Pageable pageable, @RequestParam() Boolean all) {
-		SearchResult<Department> departments = new SearchResult<>();
-		if (all.equals(true)) {
-			departments.setItems(departmentService.getAllDepartments());
-		} else {
-			departments = departmentService.getAllDepartments(pageable);
-		}
-		return ResponseEntity.ok().body(departments);
+	public ResponseEntity<List<Department>> getAllDepartments() {
+		return ResponseEntity.ok().body(departmentService.getAllDepartments());
 	}
 
 	@GetMapping("/get-one/{departmentId}")
@@ -53,10 +48,10 @@ public class DepartmentController {
 		Department department = departmentService.getDepartmentById(departmentId);
 		if (department == null) {
 			return ResponseEntity.notFound().build();
-		} else {			
+		} else {
 			return ResponseEntity.ok().body(department);
 		}
-		
+
 	}
 
 	@GetMapping("/search")
