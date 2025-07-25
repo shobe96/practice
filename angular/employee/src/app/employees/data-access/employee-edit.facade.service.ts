@@ -7,7 +7,6 @@ import { DepartmentService } from '../../departments/data-access/department.serv
 import { Skill } from '../../skills/data-access/skill.model';
 import { Department } from '../../departments/data-access/department.model';
 import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
-import { SearchResult } from '../../shared/data-access/search-result.model';
 
 @Injectable()
 export class EmployeeEditFacadeService extends BaseEditFacade<Employee> {

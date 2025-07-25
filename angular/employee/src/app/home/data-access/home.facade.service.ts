@@ -59,10 +59,10 @@ export class HomeFacadeService {
   getPanelData(): void {
     const userId = this._authResponse?.userId;
     if (userId) {
-      const criteria: EmployeeSearchCriteria = {
-        userId: userId
-      };
       //TODO: replace find by user with search
+      // const criteria: EmployeeSearchCriteria = {
+      //   userId: userId
+      // };
       this._withLoading(() =>
         this._employeeService.findByUser(userId).pipe(
           tap(employee => this._employee$.next(employee)),
