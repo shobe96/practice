@@ -1,6 +1,5 @@
 package com.example.employee.services.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
@@ -19,8 +18,7 @@ public class EmployeeServiceImpl extends BaseServiceImpl<Employee, Integer> impl
 
 	EmployeeRepository employeeRepository;
 	ProjectHistoryRepository projectHistoryRepository;
-	
-	@Autowired
+
 	public EmployeeServiceImpl(EmployeeRepository employeeRepository,
 			ProjectHistoryRepository projectHistoryRepository) {
 		super();
@@ -45,6 +43,7 @@ public class EmployeeServiceImpl extends BaseServiceImpl<Employee, Integer> impl
             project.getEmployees().remove(employeeToDelete); // Remove from owning side
         }
 		employeeToDelete.getProjects().clear();
+		projectHistoryRepository.deleteProjectHistoryByEmployee(id);
 		deleteEntity(employeeToDelete);
 	}
 
