@@ -2,10 +2,10 @@ package com.example.employee.controllers;
 
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -13,15 +13,16 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.employee.criteria.RoleSearchCriteria;
 import com.example.employee.models.Role;
 import com.example.employee.models.SearchResult;
 import com.example.employee.services.RoleService;
@@ -32,25 +33,20 @@ public class RoleController {
 
 	private RoleService roleService;
 
-	@Autowired
 	public RoleController(RoleService roleService) {
 		this.roleService = roleService;
 	}
 
 	@GetMapping()
-	public ResponseEntity<SearchResult<Role>> getAllRoles(Pageable pageable, @RequestParam() Boolean all) {
-		SearchResult<Role> roles;
-		if (all.equals(true)) {
-			roles = roleService.getAllRoles();
-		} else {
-			roles = roleService.getAllRoles(pageable);
-		}
+	public ResponseEntity<List<Role>> getAllRoles() {
+		List<Role> roles = roleService.getAll();
+
 		return ResponseEntity.ok().body(roles);
 	}
 	
 	@GetMapping("/get-one/{roleId}")
 	public ResponseEntity<Role> getRoleById(@PathVariable Integer roleId) {
-		Role role = roleService.getRoleById(roleId);
+		Role role = roleService.getById(roleId);
 		if (role == null) {
 			return ResponseEntity.notFound().build();
 		} else {			
@@ -60,26 +56,26 @@ public class RoleController {
 	}
 	
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Role>> search(@RequestParam(required = false) String name,
+	public ResponseEntity<SearchResult<Role>> searchRoles(@ModelAttribute RoleSearchCriteria criteria,
 			Pageable pageable) {
-		return ResponseEntity.ok().body(roleService.searchRoles(name, pageable));
+		return ResponseEntity.ok().body(roleService.search(criteria, pageable));
 	}
 	
 	@PostMapping("/create")
 	public ResponseEntity<Role> saveRole(@RequestBody Role role) {
-		Role newRole = roleService.saveRole(role);
+		Role newRole = roleService.save(role);
 		return ResponseEntity.ok().body(newRole);
 	}
 
 	@PutMapping("/update")
 	public ResponseEntity<Role> updateRole(@RequestBody Role role) {
-		Role newRole = roleService.updateRole(role);
+		Role newRole = roleService.save(role);
 		return ResponseEntity.ok().body(newRole);
 	}
 
 	@DeleteMapping("/delete/{roleId}")
 	public ResponseEntity<Void> deleteRole(@PathVariable Integer roleId) {
-		roleService.deleteRole(roleId);
+		roleService.delete(roleId);
 		return ResponseEntity.ok().body(null);
 	}
 
