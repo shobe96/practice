@@ -5,17 +5,17 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.criteria.UserSearchCriteria;
 import com.example.employee.models.Employee;
 import com.example.employee.models.RegisterRequest;
-import com.example.employee.models.SearchResult;
 import com.example.employee.models.User;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.UserRepository;
@@ -26,13 +26,23 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl extends BaseServiceImpl<User, Integer> implements UserService {
 
 	private UserRepository userRepository;
 	private EmployeeRepository employeeRepository;
 	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+	
 
-	@Autowired
+	@Override
+	protected JpaRepository<User, Integer> getRepository() {
+		return userRepository;
+	}
+
+	@Override
+	protected JpaSpecificationExecutor<User> getSpecificationExecutor() {
+		return userRepository;
+	}
+
 	public UserServiceImpl(UserRepository userRepository, EmployeeRepository employeeRepository) {
 		this.userRepository = userRepository;
 		this.employeeRepository = employeeRepository;
@@ -41,11 +51,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public User registerUser(RegisterRequest request) {
 		try {
-			User user = null;
 			String salt = BCrypt.gensalt(12);
-			user = userRepository.findByUsername(request.getUsername());
-			if (user == null) {
-				user = new User();
+			UserSearchCriteria criteria = new UserSearchCriteria();
+			criteria.setUsername(request.getUsername());
+			List<User> users = userRepository.findAll(criteria.toSpecification());
+			
+			if (users.isEmpty()) {
+				User user = new User();
 				user.setUsername(request.getUsername());
 				user.setPassword(hash(request.getPassword(), salt));
 				user.setSalt(salt);
@@ -68,16 +80,16 @@ public class UserServiceImpl implements UserService {
 		return BCrypt.hashpw(password, salt);
 	}
 
-	@Override
-	public SearchResult<User> getAllUsers(Pageable pageable) {
-		SearchResult<User> userSearchResult = new SearchResult<>();
-		userSearchResult.setSize(userRepository.count());
-		userSearchResult.setItems(userRepository.findAll(pageable).getContent());
-		return userSearchResult;
-	}
+//	@Override
+//	public SearchResult<User> getAllUsers(Pageable pageable) {
+//		SearchResult<User> userSearchResult = new SearchResult<>();
+//		userSearchResult.setSize(userRepository.count());
+//		userSearchResult.setItems(userRepository.findAll(pageable).getContent());
+//		return userSearchResult;
+//	}
 
 	@Override
-	public void deleteUser(Integer userId) {
+	public void delete(Integer userId) {
 		Optional<User> optional = userRepository.findById(userId);
 		if (optional.isPresent()) {
 			Employee employee = optional.get().getEmployee();
@@ -91,7 +103,9 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Authentication getAuthenticatedUser(Authentication authentication) {
-		User authenticateUser = userRepository.findByUsername(authentication.getName());
+		UserSearchCriteria criteria = new UserSearchCriteria();
+		criteria.setUsername(authentication.getName());
+		User authenticateUser = userRepository.findAll(criteria.toSpecification()).get(0);
 		if (authenticateUser != null) {
 			String passwordHash = BCrypt.hashpw(authentication.getCredentials().toString(), authenticateUser.getSalt());
 			if (authenticateUser.getPassword().equals(passwordHash)) {			
@@ -109,15 +123,16 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
-	@Override
-	public SearchResult<User> searchUsers(String username, Pageable pageable) {
-		if (username == null) {
-			username = "";
-		}
-		SearchResult<User> userSearchResult = new SearchResult<>();
-		List<User> users = userRepository.searchUsers(username, pageable).getContent();
-		userSearchResult.setItems(users);
-		userSearchResult.setSize(userRepository.searchResultCount(username));
-		return userSearchResult;
-	}
+//	@Override
+//	public SearchResult<User> searchUsers(String username, Pageable pageable) {
+//		if (username == null) {
+//			username = "";
+//		}
+//		SearchResult<User> userSearchResult = new SearchResult<>();
+//		List<User> users = userRepository.searchUsers(username, pageable).getContent();
+//		userSearchResult.setItems(users);
+//		userSearchResult.setSize(userRepository.searchResultCount(username));
+//		return userSearchResult;
+//	}
+
 }
