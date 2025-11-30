@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -17,16 +16,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.example.employee.criteria.SkillSearchCriteria;
 import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
 import com.example.employee.services.SkillService;
@@ -39,23 +39,20 @@ public class SkillController {
 
 	private SkillService skillService;
 
-	@Autowired
 	public SkillController(SkillService skillService) {
 		this.skillService = skillService;
 	}
 
 	@GetMapping()
 	public ResponseEntity<List<Skill>> getAllSkills() {
-		List<Skill> skills = null;
-
-		skills = skillService.getAllSkills();
+		List<Skill> skills = skillService.getAll();
 
 		return ResponseEntity.ok().body(skills);
 	}
 
 	@GetMapping("/get-one/{skillId}")
 	public ResponseEntity<Object> getSkillById(@PathVariable Integer skillId) {
-		Skill skill = skillService.getSkillbyId(skillId);
+		Skill skill = skillService.getById(skillId);
 		if (skill == null) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -65,7 +62,7 @@ public class SkillController {
 
 	@PostMapping("/create")
 	public ResponseEntity<Skill> saveSkill(@Valid @RequestBody Skill skill) {
-		Skill newSkill = skillService.saveSkill(skill);
+		Skill newSkill = skillService.save(skill);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newSkill.getId())
 				.toUri();
 		return ResponseEntity.created(location).body(newSkill);
@@ -73,20 +70,20 @@ public class SkillController {
 
 	@PutMapping("/update")
 	public ResponseEntity<Skill> updateSkill(@Valid @RequestBody Skill skill) {
-		Skill updatedSkill = skillService.saveSkill(skill);
+		Skill updatedSkill = skillService.save(skill);
 		return ResponseEntity.ok().body(updatedSkill);
 	}
 
 	@DeleteMapping("/delete/{skillId}")
 	public ResponseEntity<Void> deleteSkill(@PathVariable Integer skillId) {
-		skillService.deleteSkill(skillId);
+		skillService.delete(skillId);
 		return ResponseEntity.ok().body(null);
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Skill>> searchEMployees(@RequestParam(required = false) String name,
+	public ResponseEntity<SearchResult<Skill>> searchSkills(@ModelAttribute SkillSearchCriteria criteria,
 			Pageable pageable) {
-		return ResponseEntity.ok().body(skillService.searcSkills(name, pageable));
+		return ResponseEntity.ok().body(skillService.search(criteria, pageable));
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
