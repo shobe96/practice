@@ -6,7 +6,7 @@ import { buildPaginationParams, buildSearchParams } from '../../../utils';
 import { Observable } from 'rxjs';
 import { SearchResult } from '../../search-result.model';
 
-export abstract class BaseCrudService<T extends object, C extends object = {}> {
+export abstract class BaseCrudService<T extends object, C extends object = object> {
 
   protected readonly backendURL = environment.BACKEND_URL;
   protected readonly http = inject(HttpClient);

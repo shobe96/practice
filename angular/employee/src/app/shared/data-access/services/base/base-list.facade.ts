@@ -8,7 +8,7 @@ import { CustomMessageService } from "../custom-message/custom-message.service";
 import { PaginatorState } from "primeng/paginator";
 import { ListState } from "../../list-state.model";
 
-export abstract class BaseListFacade<T extends object, C extends object = {}> {
+export abstract class BaseListFacade<T extends object, C extends object> {
   private _data$ = new BehaviorSubject<T[]>([]);
   private _defaultPage: PageEvent = {
     page: 0,

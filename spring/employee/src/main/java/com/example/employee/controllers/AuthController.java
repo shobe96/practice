@@ -1,6 +1,5 @@
 package com.example.employee.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +29,6 @@ public class AuthController {
 	private UserService userService;
 	private CustomAuthenticationManager customAuthenticationManager;
 
-	@Autowired
 	public AuthController(JwtUtil jwtUtil, UserService userService,
 			CustomAuthenticationManager customAuthenticationManager) {
 		this.jwtUtil = jwtUtil;
@@ -73,7 +71,7 @@ public class AuthController {
 
 	@DeleteMapping("/delete/{userId}")
 	public ResponseEntity<Void> deleteUser(@PathVariable Integer userId) {
-		userService.deleteUser(userId);
+		userService.delete(userId);
 		return ResponseEntity.ok().body(null);
 	}
 }

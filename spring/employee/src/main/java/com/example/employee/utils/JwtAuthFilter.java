@@ -2,7 +2,6 @@ package com.example.employee.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,7 +29,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	private JwtUtil jwtUtil;
 	private UserDetailsServiceImpl userDetailsServiceImpl;
 
-	@Autowired
 	public JwtAuthFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl) {
 		this.jwtUtil = jwtUtil;
 		this.userDetailsServiceImpl = userDetailsServiceImpl;
@@ -50,8 +48,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			} else {
 				checkIfLogin(request);
 			}
-			
-			
 
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
@@ -75,16 +71,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 	}
 
-	private void checkIfLogin(HttpServletRequest request) throws AuthException{
+	private void checkIfLogin(HttpServletRequest request) throws AuthException {
 		Boolean isLogin = request.getRequestURL().toString().contains("login");
 		if (Boolean.FALSE.equals(isLogin)) {
 			logger.error("Authorization header missing");
 			throw new AuthException("You need to be logged in to access this feature.");
 		}
-		
-		
+
 	}
-	
+
 	private void handleAuthError(String message, HttpServletResponse response) {
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
