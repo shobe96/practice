@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Department } from '../../data-access/department.model';
 import { PaginatorState, Paginator } from 'primeng/paginator';
@@ -35,7 +35,7 @@ import { Button } from 'primeng/button';
     IconButtonComponent
   ]
 })
-export class DepartmentListComponent implements OnInit {
+export class DepartmentListComponent {
 
   departmentId: number | null = 0;
 
@@ -60,12 +60,12 @@ export class DepartmentListComponent implements OnInit {
     }
   ];
 
-  private _departmentListFacade = inject(DepartmentListFacadeService);
-  private _formBuilder = inject(FormBuilder);
-  private _router = inject(Router);
-  private _dialogService = inject(DialogService);
-  private _confirmationService = inject(ConfirmationService);
-  private _activatedRoute = inject(ActivatedRoute);
+  private readonly _departmentListFacade = inject(DepartmentListFacadeService);
+  private readonly _formBuilder = inject(FormBuilder);
+  private readonly _router = inject(Router);
+  private readonly _dialogService = inject(DialogService);
+  private readonly _confirmationService = inject(ConfirmationService);
+  private readonly _activatedRoute = inject(ActivatedRoute);
 
   departmentFormGroup = this._formBuilder.group({
     name: ['']
@@ -113,10 +113,6 @@ export class DepartmentListComponent implements OnInit {
         });
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._departmentListFacade.retrieve();
   }
 
   addNew(): void {

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.example.employee.criteria.DepartmentCriteria;
+import com.example.employee.criteria.DepartmentSearchCriteria;
 import com.example.employee.models.Department;
 import com.example.employee.models.SearchResult;
 import com.example.employee.services.DepartmentService;
@@ -54,7 +54,7 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Department>> search(@ModelAttribute DepartmentCriteria criteria,
+	public ResponseEntity<SearchResult<Department>> search(@ModelAttribute DepartmentSearchCriteria criteria,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(departmentService.search(criteria, pageable));
 	}
@@ -80,22 +80,40 @@ public class DepartmentController {
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(SQLException.class)
 	public Map<String, String> handleValidationExceptions(SQLException ex) {
-		Map<String, String> errors = new HashMap<>();
-		for (Throwable t : ex) {
-			String field = t.getMessage();
-			field = field.substring(field.indexOf("'") + 1);
-			field = field.substring(0, field.indexOf("'"));
-			String message = "";
-			if (t.getMessage().contains("long")) {
-				message = "Field execeds maximum number of characters";
-			}
+	    Map<String, String> errors = new HashMap<>();
 
-			if (t.getMessage().contains("null")) {
-				message = "Field is mandatory";
-			}
-			errors.put(field, message);
-		}
-		return errors;
+	    // Iterate over the chain of exceptions (if any)
+	    for (Throwable t : ex) {
+	        String fullMessage = t.getMessage();
+	        String field = "unknown"; // Default field name
+	        String message = "Database constraint violation occurred."; // Default error message
+
+	        // --- Step 1: Safely Extract the Field Name ---
+	        int firstQuote = fullMessage.indexOf("'");
+	        
+	        if (firstQuote != -1) {
+	            String temp = fullMessage.substring(firstQuote + 1);
+	            int secondQuote = temp.indexOf("'");
+	            
+	            // This is the CRITICAL safety check for the second quote
+	            if (secondQuote != -1) { 
+	                field = temp.substring(0, secondQuote);
+	            }
+	        }
+	        
+	        // --- Step 2: Determine User-Friendly Message ---
+	        if (fullMessage.contains("long")) {
+	            message = "Field exceeds maximum number of characters";
+	        } else if (fullMessage.contains("null")) {
+	            message = "Field is mandatory";
+	        } else if (fullMessage.contains("foreign key")) { // Catch the Foreign Key error explicitly
+	             message = "Cannot delete or update record because other data relies on it.";
+	             field = "data_integrity"; // Use a general field for non-field-specific errors
+	        }
+
+	        errors.put(field, message);
+	    }
+	    return errors;
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)

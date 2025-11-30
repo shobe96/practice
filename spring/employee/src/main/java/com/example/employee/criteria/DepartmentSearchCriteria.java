@@ -18,7 +18,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DepartmentCriteria implements SearchCriteria<Department> {
+public class DepartmentSearchCriteria implements SearchCriteria<Department> {
 	
 	private String name;
 
