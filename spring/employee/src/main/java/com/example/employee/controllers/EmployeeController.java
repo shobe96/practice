@@ -109,11 +109,16 @@ public class EmployeeController {
 	public ResponseEntity<Object> findByUser(@PathVariable Integer userId) {
 		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
 		searchCriteria.setUserId(userId);
-		Employee employee = employeeService.search(searchCriteria).get(0);
-		if (employee == null) {
+		List<Employee> employees = employeeService.search(searchCriteria);
+		if (employees == null) {
 			return ResponseEntity.notFound().build();
-		} else {			
-			return ResponseEntity.ok().body(employee);
+		} else {
+			if (employees.size() > 0) {
+				
+				return ResponseEntity.ok().body(employees.get(0));
+			} else {
+				return ResponseEntity.notFound().build();
+			}
 		}
 	}
 
