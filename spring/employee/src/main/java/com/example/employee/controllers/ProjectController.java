@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
@@ -17,16 +16,17 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.example.employee.criteria.ProjectSearchCriteria;
 import com.example.employee.models.Project;
 import com.example.employee.models.RestError;
 import com.example.employee.models.SearchResult;
@@ -39,27 +39,19 @@ import jakarta.validation.Valid;
 public class ProjectController {
 	private ProjectService projectService;
 
-	@Autowired
 	public ProjectController(ProjectService projectService) {
 		this.projectService = projectService;
 	}
 
 	@GetMapping()
-	public ResponseEntity<SearchResult<Project>> getAllProjects(Pageable pageable, @RequestParam() Boolean all) {
-		SearchResult<Project> projects = new SearchResult<>();
-		if (all.equals(true)) {
-			projects.setItems(projectService.getAllProjects());
-		} else {
-			projects = projectService.getAllProjects(pageable);
-		}
-
-		return ResponseEntity.ok().body(projects);
+	public ResponseEntity<List<Project>> getAllProjects() {
+		return ResponseEntity.ok().body(projectService.getAll());
 	}
 
 	@GetMapping("/get-one/{projectId}")
 	public ResponseEntity<Object> getProjectById(@PathVariable Integer projectId) {
-		Project project = projectService.getProjectbyId(projectId);
-		if (project == null) {			
+		Project project = projectService.getById(projectId);
+		if (project == null) {
 			throw new NoSuchElementException();
 		} else {
 			return ResponseEntity.ok().body(project);
@@ -68,7 +60,7 @@ public class ProjectController {
 
 	@PostMapping("/create")
 	public ResponseEntity<Project> saveProject(@Valid @RequestBody Project project) {
-		Project newProject = projectService.saveProject(project);
+		Project newProject = projectService.save(project);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newProject.getId())
 				.toUri();
 		return ResponseEntity.created(location).body(newProject);
@@ -76,43 +68,52 @@ public class ProjectController {
 
 	@PutMapping("/update")
 	public ResponseEntity<Project> updateProject(@Valid @RequestBody Project project) {
-		Project updatedProject = projectService.saveProject(project);
+		Project updatedProject = projectService.save(project);
 		return ResponseEntity.ok().body(updatedProject);
 	}
 
 	@DeleteMapping("/delete/{projectId}")
 	public ResponseEntity<Void> deleteProject(@PathVariable Integer projectId) {
-		projectService.deleteProject(projectId);
+		projectService.delete(projectId);
 		return ResponseEntity.ok().body(null);
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Project>> searchEMployees(@RequestParam(required = false) String name, @RequestParam(required = false) String code,
+	public ResponseEntity<SearchResult<Project>> searchProjects(@ModelAttribute ProjectSearchCriteria criteria,
 			Pageable pageable) {
-		return ResponseEntity.ok().body(projectService.searcProjects(name, code, pageable));
+		return ResponseEntity.ok().body(projectService.search(criteria, pageable));
 	}
-	
+
 	@PostMapping("/unassign-employee/{employeeId}")
 	public ResponseEntity<Void> unassignEmployee(@PathVariable Integer employeeId, @RequestBody Project project) {
 		projectService.unassignEmployee(employeeId, project);
 		return ResponseEntity.ok().body(null);
 	}
-	
+
 	@GetMapping("/history/{employeeId}")
 	public ResponseEntity<List<Project>> getProjectsByEmployee(@PathVariable Integer employeeId) {
-		List<Project> projects = projectService.getProjectsByEmployee(employeeId);
-		if (!projects.isEmpty()) {			
+		ProjectSearchCriteria criteria = new ProjectSearchCriteria();
+		criteria.setPhEmployeeId(employeeId);
+		List<Project> projects = projectService.search(criteria);
+		if (!projects.isEmpty()) {
 			return ResponseEntity.ok().body(projects);
 		} else {
 			return ResponseEntity.notFound().build();
 		}
 	}
-	
+
 	@GetMapping("/get-project/{employeeId}")
 	public ResponseEntity<Project> getProjectByEmployee(@PathVariable Integer employeeId) {
-		Project project = projectService.getByEmployeeId(employeeId);
-		if (project != null) {			
-			return ResponseEntity.ok().body(project);
+		ProjectSearchCriteria criteria = new ProjectSearchCriteria();
+		criteria.setEmployeeId(employeeId);
+		List<Project> projects = projectService.search(criteria);
+		if (projects != null) {
+			if (projects.size() > 0) {
+				return ResponseEntity.ok().body(projects.get(0));
+			} else {
+				throw new NoSuchElementException();
+			}
+
 		} else {
 			throw new NoSuchElementException();
 		}
@@ -151,7 +152,8 @@ public class ProjectController {
 		String message = "There is no project with submitted id";
 		String field = "project";
 		errors.put(field, message);
-		RestError re = new RestError(HttpStatus.NOT_FOUND.value(), "Not Found", false, "HttpErrorResponse", "There is not resource with given id.");
+		RestError re = new RestError(HttpStatus.NOT_FOUND.value(), "Not Found", false, "HttpErrorResponse",
+				"There is not resource with given id.");
 		return new ResponseEntity<>(re, HttpStatus.NOT_FOUND);
 	}
 

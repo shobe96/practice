@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mapping.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +28,6 @@ public class ProjectHistoryController {
 	private ProjectHistoryService projectHistoryService;
 	
 	
-	@Autowired
 	public ProjectHistoryController(ProjectHistoryService projectHistoryService) {
 		this.projectHistoryService = projectHistoryService;
 	}

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
@@ -36,7 +36,7 @@ import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.
     IconButtonComponent
   ]
 })
-export class ProjectListComponent implements OnInit {
+export class ProjectListComponent {
 
   projectId: number | null = 0;
   actionButtons: ActionButtons<Project>[] = [
@@ -60,12 +60,12 @@ export class ProjectListComponent implements OnInit {
     }
   ];
 
-  private _projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
-  private _formBuilder: FormBuilder = inject(FormBuilder);
-  private _router: Router = inject(Router);
-  private _dialogService: DialogService = inject(DialogService);
-  private _confirmationService: ConfirmationService = inject(ConfirmationService);
-  private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private readonly _projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
+  private readonly _formBuilder: FormBuilder = inject(FormBuilder);
+  private readonly _router: Router = inject(Router);
+  private readonly _dialogService: DialogService = inject(DialogService);
+  private readonly _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private readonly _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
 
   projectFormGroup = this._formBuilder.group({
     name: [''],
@@ -76,7 +76,7 @@ export class ProjectListComponent implements OnInit {
     initialValue: {}
   });
 
-  private readonly _employeeFormSignal = toSignal(
+  private readonly _projectFormSignal = toSignal(
     this.projectFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
     { initialValue: this.projectFormGroup.getRawValue() }
   );
@@ -105,7 +105,7 @@ export class ProjectListComponent implements OnInit {
     });
 
     effect(() => {
-      const value = this._employeeFormSignal();
+      const value = this._projectFormSignal();
       const { name, code } = value;
       if (name || code) {
         this._router.navigate([], {
@@ -114,10 +114,6 @@ export class ProjectListComponent implements OnInit {
         });
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._projectListFacade.retrieve();
   }
 
   addNew(): void {
