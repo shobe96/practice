@@ -1,9 +1,6 @@
 package com.example.employee.controllers;
 
-import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Pageable;
@@ -23,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.criteria.DepartmentSearchCriteria;
+import com.example.employee.models.ApiError;
 import com.example.employee.models.Department;
 import com.example.employee.models.SearchResult;
 import com.example.employee.services.DepartmentService;
@@ -78,66 +76,21 @@ public class DepartmentController {
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler(SQLException.class)
-	public Map<String, String> handleValidationExceptions(SQLException ex) {
-	    Map<String, String> errors = new HashMap<>();
-
-	    // Iterate over the chain of exceptions (if any)
-	    for (Throwable t : ex) {
-	        String fullMessage = t.getMessage();
-	        String field = "unknown"; // Default field name
-	        String message = "Database constraint violation occurred."; // Default error message
-
-	        // --- Step 1: Safely Extract the Field Name ---
-	        int firstQuote = fullMessage.indexOf("'");
-	        
-	        if (firstQuote != -1) {
-	            String temp = fullMessage.substring(firstQuote + 1);
-	            int secondQuote = temp.indexOf("'");
-	            
-	            // This is the CRITICAL safety check for the second quote
-	            if (secondQuote != -1) { 
-	                field = temp.substring(0, secondQuote);
-	            }
-	        }
-	        
-	        // --- Step 2: Determine User-Friendly Message ---
-	        if (fullMessage.contains("long")) {
-	            message = "Field exceeds maximum number of characters";
-	        } else if (fullMessage.contains("null")) {
-	            message = "Field is mandatory";
-	        } else if (fullMessage.contains("foreign key")) { // Catch the Foreign Key error explicitly
-	             message = "Cannot delete or update record because other data relies on it.";
-	             field = "data_integrity"; // Use a general field for non-field-specific errors
-	        }
-
-	        errors.put(field, message);
-	    }
-	    return errors;
-	}
-
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(PropertyReferenceException.class)
-	public Map<String, String> handleSortExceptions(PropertyReferenceException ex) {
-		Map<String, String> errors = new HashMap<>();
+	public ApiError handleSortExceptions(PropertyReferenceException ex) {
 		String message = "";
-		String field = "";
 		if (ex.getMessage().equals("No property 'string' found for type 'Department'")) {
 			message = "Parameter value is unsuported. Please use desc or asc";
-			field = "sort";
 		}
-		errors.put(field, message);
-		return errors;
+
+		return ApiError.builder().status(400).message(message).build();
 	}
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler(NoSuchElementException.class)
-	public Map<String, String> handleNotFoundExceptions(NoSuchElementException ex) {
-		Map<String, String> errors = new HashMap<>();
+	public ApiError handleNotFoundExceptions(NoSuchElementException ex) {
 		String message = "There is no department with submitted id";
-		String field = "department";
-		errors.put(field, message);
-		return errors;
+		return ApiError.builder().status(404).field("id").message(message).build();
 	}
 
 }

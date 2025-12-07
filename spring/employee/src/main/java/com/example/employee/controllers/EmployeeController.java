@@ -1,9 +1,7 @@
 package com.example.employee.controllers;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.springframework.data.domain.Pageable;
@@ -12,7 +10,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.example.employee.criteria.EmployeeSearchCriteria;
+import com.example.employee.models.ApiError;
 import com.example.employee.models.Employee;
 import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
@@ -55,7 +53,7 @@ public class EmployeeController {
 		Employee employee = employeeService.getById(employeeId);
 		if (employee == null) {
 			return ResponseEntity.notFound().build();
-		} else {			
+		} else {
 			return ResponseEntity.ok().body(employee);
 		}
 	}
@@ -92,19 +90,18 @@ public class EmployeeController {
 	@GetMapping("/search")
 	public ResponseEntity<SearchResult<Employee>> searchEmployees(@ModelAttribute EmployeeSearchCriteria criteria,
 			Pageable pageable) {
-		return ResponseEntity.ok().headers(new HttpHeaders())
-				.body(employeeService.search(criteria, pageable));
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeService.search(criteria, pageable));
 	}
-	
+
 	@PostMapping("/filter-by-active-and-skills/{departmentId}")
-	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId, @RequestBody List<Skill> skills) {
+	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId,
+			@RequestBody List<Skill> skills) {
 		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
 		searchCriteria.setSkills(skills);
 		searchCriteria.setActive(true);
-		return ResponseEntity.ok().headers(new HttpHeaders())
-				.body(employeeService.search(searchCriteria));
+		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeService.search(searchCriteria));
 	}
-	
+
 	@GetMapping("/find-by-user/{userId}")
 	public ResponseEntity<Object> findByUser(@PathVariable Integer userId) {
 		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
@@ -114,7 +111,7 @@ public class EmployeeController {
 			return ResponseEntity.notFound().build();
 		} else {
 			if (employees.size() > 0) {
-				
+
 				return ResponseEntity.ok().body(employees.get(0));
 			} else {
 				return ResponseEntity.notFound().build();
@@ -124,47 +121,36 @@ public class EmployeeController {
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public Map<String, String> handleValidationExceptions(MethodArgumentNotValidException ex) {
-		Map<String, String> errors = new HashMap<>();
+	public ApiError handleValidationExceptions(MethodArgumentNotValidException ex) {
+		final StringBuilder messageBuilder = new StringBuilder();
 		ex.getBindingResult().getAllErrors().forEach(error -> {
-			String fieldName = ((FieldError) error).getField();
-			String errorMessage = error.getDefaultMessage();
-			errors.put(fieldName, errorMessage);
+			messageBuilder.append(error.getDefaultMessage());
+			messageBuilder.append("\n");
 		});
-		return errors;
+		return ApiError.builder().message(messageBuilder.toString()).status(400).build();
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(PropertyReferenceException.class)
-	public Map<String, String> handleSortExceptions(PropertyReferenceException ex) {
-		Map<String, String> errors = new HashMap<>();
+	public ApiError handleSortExceptions(PropertyReferenceException ex) {
 		String message = "";
-		String field = "";
 		if (ex.getMessage().equals("No property 'string' found for type 'Employee'")) {
 			message = "Parameter value is unsuported. Please use desc or asc";
-			field = "sort";
 		}
-		errors.put(field, message);
-		return errors;
+		return ApiError.builder().message(message).status(400).build();
 	}
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler(NoSuchElementException.class)
-	public Map<String, String> handleNotFoundExceptions(NoSuchElementException ex) {
-		Map<String, String> errors = new HashMap<>();
+	public ApiError handleNotFoundExceptions(NoSuchElementException ex) {
 		String message = "There is no employee with submitted id";
-		String field = "employee";
-		errors.put(field, message);
-		return errors;
+		return ApiError.builder().message(message).status(404).build();
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public Map<String, String> handleMessageException(HttpMessageNotReadableException ex) {
-		Map<String, String> errors = new HashMap<>();
+	public ApiError handleMessageException(HttpMessageNotReadableException ex) {
 		String message = ex.getMessage();
-		String field = "employee";
-		errors.put(field, message);
-		return errors;
+		return ApiError.builder().message(message).status(400).build();
 	}
 }
