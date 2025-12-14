@@ -11,7 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.employee.models.RestError;
+import com.example.employee.models.ApiError;
 import com.example.employee.services.impl.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -83,13 +83,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	private void handleAuthError(String message, HttpServletResponse response) {
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		RestError re = new RestError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized", false, "HttpErrorResponse",
-				message);
+		ApiError apiError = ApiError.builder().status(HttpStatus.UNAUTHORIZED.value()).message(message).build();
 		OutputStream responseStream;
 		try {
 			responseStream = response.getOutputStream();
 			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(responseStream, re);
+			mapper.writeValue(responseStream, apiError);
 			responseStream.flush();
 		} catch (IOException e) {
 			logger.error(e.getMessage());
