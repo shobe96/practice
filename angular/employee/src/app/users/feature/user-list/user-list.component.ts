@@ -14,7 +14,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
-import { AuthFacadeService } from '../../../auth/data-access/auth.facade.service';
 
 @Component({
   selector: 'app-user-list',
@@ -45,7 +44,6 @@ export class UserListComponent implements OnInit {
   ];
 
   private readonly _userListFacade = inject(UserListFacadeService);
-  private readonly _authFacade = inject(AuthFacadeService);
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _router = inject(Router);
   private readonly _confirmationService = inject(ConfirmationService);
@@ -132,8 +130,7 @@ export class UserListComponent implements OnInit {
           label: 'Delete',
         },
         accept: () => {
-          this._authFacade.deleteUser(id);
-          this._userListFacade.retrieve();
+          this._userListFacade.delete(id);
         },
       });
     }

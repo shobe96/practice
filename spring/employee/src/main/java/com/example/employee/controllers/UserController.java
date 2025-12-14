@@ -5,8 +5,10 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,5 +37,11 @@ public class UserController {
 	public ResponseEntity<SearchResult<User>> searchEmployees(@ModelAttribute UserSearchCriteria criteria,
 			Pageable pageable) {
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(userService.search(criteria, pageable));
+	}
+	
+	@DeleteMapping("/delete/{userId}")
+	public ResponseEntity<Void> deleteUser(@PathVariable Integer userId) {
+		userService.delete(userId);
+		return ResponseEntity.ok().body(null);
 	}
 }
