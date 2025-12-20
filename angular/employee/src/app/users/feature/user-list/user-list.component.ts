@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { User } from '../../data-access/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -31,7 +31,7 @@ import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.
     IconButtonComponent
   ]
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent {
 
   userId: number | null = 0;
   actionButtons: ActionButtons<User>[] = [
@@ -95,10 +95,6 @@ export class UserListComponent implements OnInit {
         });
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._userListFacade.retrieve();
   }
 
   onPageChange(event: PaginatorState) {
