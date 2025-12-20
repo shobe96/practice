@@ -3,6 +3,8 @@ package com.example.employee.services.impl;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -19,6 +21,7 @@ public abstract class BaseServiceImpl <T, ID> implements BaseService<T, ID> {
     protected abstract JpaSpecificationExecutor<T> getSpecificationExecutor();
 
 	@Override
+	@Cacheable(cacheResolver = "entityCacheResolver")
 	public List<T> getAll() {
 		return getRepository().findAll();
 	}
@@ -34,17 +37,20 @@ public abstract class BaseServiceImpl <T, ID> implements BaseService<T, ID> {
 	}
 
 	@Override
+	@CacheEvict(allEntries = true, cacheResolver = "entityCacheResolver")
 	public T save(T entity) {
 		return getRepository().save(entity);
 	}
 
 	@Override
+	@CacheEvict(allEntries = true, cacheResolver = "entityCacheResolver")
 	public void delete(ID id) {
 		T entityToDelete = getById(id);
 		deleteEntity(entityToDelete);
 	}
 	
 	@Override
+	@CacheEvict(allEntries = true, cacheResolver = "entityCacheResolver")
 	public void deleteEntity(T entity) {
 		getRepository().delete(entity);
 	}
