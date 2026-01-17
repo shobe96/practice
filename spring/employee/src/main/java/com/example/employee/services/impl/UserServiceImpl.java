@@ -14,9 +14,12 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import com.example.employee.criteria.UserSearchCriteria;
+import com.example.employee.mappers.BaseMapper;
+import com.example.employee.mappers.UserMapper;
 import com.example.employee.models.Employee;
 import com.example.employee.models.RegisterRequest;
 import com.example.employee.models.User;
+import com.example.employee.models.dtos.UserDTO;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.UserRepository;
 import com.example.employee.services.UserService;
@@ -26,10 +29,11 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class UserServiceImpl extends BaseServiceImpl<User, Integer> implements UserService {
+public class UserServiceImpl extends BaseServiceImpl<User, UserDTO, Integer> implements UserService {
 
 	private UserRepository userRepository;
 	private EmployeeRepository employeeRepository;
+	private UserMapper userMapper;
 	private Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 	
 
@@ -42,14 +46,22 @@ public class UserServiceImpl extends BaseServiceImpl<User, Integer> implements U
 	protected JpaSpecificationExecutor<User> getSpecificationExecutor() {
 		return userRepository;
 	}
+	
+	@Override
+	protected BaseMapper<User, UserDTO> getMapper() {
+		return userMapper;
+	}
 
-	public UserServiceImpl(UserRepository userRepository, EmployeeRepository employeeRepository) {
+
+	public UserServiceImpl(UserRepository userRepository, EmployeeRepository employeeRepository, UserMapper userMapper) {
+		super();
 		this.userRepository = userRepository;
 		this.employeeRepository = employeeRepository;
+		this.userMapper = userMapper;
 	}
 
 	@Override
-	public User registerUser(RegisterRequest request) {
+	public UserDTO registerUser(RegisterRequest request) {
 		try {
 			String salt = BCrypt.gensalt(12);
 			UserSearchCriteria criteria = new UserSearchCriteria();
@@ -66,7 +78,8 @@ public class UserServiceImpl extends BaseServiceImpl<User, Integer> implements U
 				Employee employee = request.getEmployee();
 				employee.setUser(user);
 				employeeRepository.save(employee);
-				return user;
+				UserDTO userDTO = userMapper.toDto(user);
+				return userDTO;
 			} else {
 				return null;
 			}
@@ -123,6 +136,7 @@ public class UserServiceImpl extends BaseServiceImpl<User, Integer> implements U
 		}
 	}
 
+	
 //	@Override
 //	public SearchResult<User> searchUsers(String username, Pageable pageable) {
 //		if (username == null) {

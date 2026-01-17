@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.mappers.BaseMapper;
+import com.example.employee.mappers.DepartmentMapper;
 import com.example.employee.models.Department;
+import com.example.employee.models.dtos.DepartmentDTO;
 import com.example.employee.repositories.DepartmentRepository;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.services.DepartmentService;
@@ -13,10 +16,11 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class DepartmentServiceImpl extends BaseServiceImpl<Department, Integer> implements DepartmentService {
+public class DepartmentServiceImpl extends BaseServiceImpl<Department, DepartmentDTO, Integer> implements DepartmentService {
 
 	private DepartmentRepository departmentRepository;
 	private EmployeeRepository employeeRepository;
+	private DepartmentMapper departmentMapper;
 
 	@Override
 	protected JpaRepository<Department, Integer> getRepository() {
@@ -27,16 +31,22 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Integer> 
 	protected JpaSpecificationExecutor<Department> getSpecificationExecutor() {
 		return departmentRepository;
 	}
+	
+	@Override
+	protected BaseMapper<Department, DepartmentDTO> getMapper() {
+		return departmentMapper;
+	}
 
-	public DepartmentServiceImpl(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository) {
+	public DepartmentServiceImpl(DepartmentRepository departmentRepository, EmployeeRepository employeeRepository, DepartmentMapper departmentMapper) {
 		super();
 		this.departmentRepository = departmentRepository;
 		this.employeeRepository = employeeRepository;
+		this.departmentMapper = departmentMapper;
 	}
 
 	@Override
 	public void delete(Integer id) {
-		Department departmentToDelete = getById(id);
+		Department departmentToDelete = getEntityById(id).get();
 		employeeRepository.unassignEmployeesFromDepartment(id);
 		deleteEntity(departmentToDelete);
 	}
@@ -100,5 +110,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department, Integer> 
 //		departmentSearchResult.setSize(departmentRepository.searchResultCount(name));
 //		return departmentSearchResult;
 //	}
+
+	
 
 }

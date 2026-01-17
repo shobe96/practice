@@ -23,6 +23,7 @@ import com.example.employee.criteria.DepartmentSearchCriteria;
 import com.example.employee.models.ApiError;
 import com.example.employee.models.Department;
 import com.example.employee.models.SearchResult;
+import com.example.employee.models.dtos.DepartmentDTO;
 import com.example.employee.services.DepartmentService;
 
 @RestController
@@ -36,13 +37,13 @@ public class DepartmentController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<Department>> getAllDepartments() {
+	public ResponseEntity<List<DepartmentDTO>> getAllDepartments() {
 		return ResponseEntity.ok().body(departmentService.getAll());
 	}
 
 	@GetMapping("/get-one/{departmentId}")
-	public ResponseEntity<Department> getDepartmentById(@PathVariable Integer departmentId) {
-		Department department = departmentService.getById(departmentId);
+	public ResponseEntity<DepartmentDTO> getDepartmentById(@PathVariable Integer departmentId) {
+		DepartmentDTO department = departmentService.getById(departmentId);
 		if (department == null) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -52,20 +53,20 @@ public class DepartmentController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Department>> search(@ModelAttribute DepartmentSearchCriteria criteria,
+	public ResponseEntity<SearchResult<DepartmentDTO>> search(@ModelAttribute DepartmentSearchCriteria criteria,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(departmentService.search(criteria, pageable));
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Department> saveDepartment(@RequestBody Department department) {
-		Department newDepartment = departmentService.save(department);
+	public ResponseEntity<DepartmentDTO> saveDepartment(@RequestBody Department department) {
+		DepartmentDTO newDepartment = departmentService.save(department);
 		return ResponseEntity.ok().body(newDepartment);
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<Department> updateDepartment(@RequestBody Department department) {
-		Department newDepartment = departmentService.save(department);
+	public ResponseEntity<DepartmentDTO> updateDepartment(@RequestBody Department department) {
+		DepartmentDTO newDepartment = departmentService.save(department);
 		return ResponseEntity.ok().body(newDepartment);
 	}
 

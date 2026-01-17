@@ -13,7 +13,7 @@ import com.example.employee.models.ApiError;
 import com.example.employee.models.AuthRequest;
 import com.example.employee.models.AuthResponse;
 import com.example.employee.models.RegisterRequest;
-import com.example.employee.models.User;
+import com.example.employee.models.dtos.UserDTO;
 import com.example.employee.services.UserService;
 import com.example.employee.utils.CustomAuthenticationManager;
 import com.example.employee.utils.JwtUtil;
@@ -54,7 +54,7 @@ public class AuthController {
 
 	@PostMapping("/register-user")
 	public ResponseEntity<Object> registerUser(@RequestBody() RegisterRequest request) {
-		User user = userService.registerUser(request);
+		UserDTO user = userService.registerUser(request);
 		if (user == null) {
 			ApiError apiError = ApiError.builder().status(HttpStatus.BAD_REQUEST.value()).message("Username is already taken!").build();
 			return ResponseEntity.badRequest().body(apiError);

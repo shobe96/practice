@@ -4,8 +4,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.mappers.BaseMapper;
+import com.example.employee.mappers.EmployeeMapper;
 import com.example.employee.models.Employee;
 import com.example.employee.models.Project;
+import com.example.employee.models.dtos.EmployeeDTO;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.EmployeeService;
@@ -14,16 +17,18 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class EmployeeServiceImpl extends BaseServiceImpl<Employee, Integer> implements EmployeeService {
+public class EmployeeServiceImpl extends BaseServiceImpl<Employee, EmployeeDTO, Integer> implements EmployeeService {
 
 	EmployeeRepository employeeRepository;
 	ProjectHistoryRepository projectHistoryRepository;
+	EmployeeMapper employeeMapper;
 
 	public EmployeeServiceImpl(EmployeeRepository employeeRepository,
-			ProjectHistoryRepository projectHistoryRepository) {
+			ProjectHistoryRepository projectHistoryRepository, EmployeeMapper employeeMapper) {
 		super();
 		this.employeeRepository = employeeRepository;
 		this.projectHistoryRepository = projectHistoryRepository;
+		this.employeeMapper = employeeMapper;
 	}
 
 	@Override
@@ -37,8 +42,13 @@ public class EmployeeServiceImpl extends BaseServiceImpl<Employee, Integer> impl
 	}
 	
 	@Override
+	protected BaseMapper<Employee, EmployeeDTO> getMapper() {
+		return employeeMapper;
+	}
+	
+	@Override
 	public void delete(Integer id) {
-		Employee employeeToDelete = getById(id);
+		Employee employeeToDelete = getEntityById(id).get();
 		for (Project project : employeeToDelete.getProjects()) {
             project.getEmployees().remove(employeeToDelete); // Remove from owning side
         }
@@ -46,6 +56,8 @@ public class EmployeeServiceImpl extends BaseServiceImpl<Employee, Integer> impl
 		projectHistoryRepository.deleteProjectHistoryByEmployee(id);
 		deleteEntity(employeeToDelete);
 	}
+
+	
 
 //	@Autowired
 //	public EmployeeServiceImpl(EmployeeRepository employeeRepository, ProjectHistoryRepository projectHistoryRepository) {

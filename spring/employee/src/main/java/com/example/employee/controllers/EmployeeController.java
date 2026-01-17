@@ -29,6 +29,7 @@ import com.example.employee.models.ApiError;
 import com.example.employee.models.Employee;
 import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
+import com.example.employee.models.dtos.EmployeeDTO;
 import com.example.employee.services.EmployeeService;
 
 import jakarta.validation.Valid;
@@ -44,13 +45,13 @@ public class EmployeeController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<Employee>> getAllEmployees() {
+	public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
 		return ResponseEntity.ok().body(employeeService.getAll());
 	}
 
 	@GetMapping("/get-one/{employeeId}")
 	public ResponseEntity<Object> getEmployeeById(@PathVariable Integer employeeId) {
-		Employee employee = employeeService.getById(employeeId);
+		EmployeeDTO employee = employeeService.getById(employeeId);
 		if (employee == null) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -59,25 +60,25 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/get-by-department/{departmentId}")
-	public ResponseEntity<SearchResult<Employee>> getEmployeeByDepartmentId(Pageable pageable,
+	public ResponseEntity<SearchResult<EmployeeDTO>> getEmployeeByDepartmentId(Pageable pageable,
 			@PathVariable Integer departmentId) {
 		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
 		searchCriteria.setDepartmentId(departmentId);
-		SearchResult<Employee> employeeSearchResult = employeeService.search(searchCriteria, pageable);
+		SearchResult<EmployeeDTO> employeeSearchResult = employeeService.search(searchCriteria, pageable);
 		return ResponseEntity.ok().body(employeeSearchResult);
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Employee> saveEmployee(@Valid @RequestBody Employee employee) {
-		Employee newEmployee = employeeService.save(employee);
+	public ResponseEntity<EmployeeDTO> saveEmployee(@Valid @RequestBody Employee employee) {
+		EmployeeDTO newEmployee = employeeService.save(employee);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(newEmployee.getId()).toUri();
 		return ResponseEntity.created(location).body(newEmployee);
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<Employee> updateEmployee(@Valid @RequestBody Employee employee) {
-		Employee updatedEmployee = employeeService.save(employee);
+	public ResponseEntity<EmployeeDTO> updateEmployee(@Valid @RequestBody Employee employee) {
+		EmployeeDTO updatedEmployee = employeeService.save(employee);
 		return ResponseEntity.ok().body(updatedEmployee);
 	}
 
@@ -88,13 +89,13 @@ public class EmployeeController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Employee>> searchEmployees(@ModelAttribute EmployeeSearchCriteria criteria,
+	public ResponseEntity<SearchResult<EmployeeDTO>> searchEmployees(@ModelAttribute EmployeeSearchCriteria criteria,
 			Pageable pageable) {
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeService.search(criteria, pageable));
 	}
 
 	@PostMapping("/filter-by-active-and-skills/{departmentId}")
-	public ResponseEntity<List<Employee>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId,
+	public ResponseEntity<List<EmployeeDTO>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId,
 			@RequestBody List<Skill> skills) {
 		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
 		searchCriteria.setSkills(skills);
@@ -106,7 +107,7 @@ public class EmployeeController {
 	public ResponseEntity<Object> findByUser(@PathVariable Integer userId) {
 		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
 		searchCriteria.setUserId(userId);
-		List<Employee> employees = employeeService.search(searchCriteria);
+		List<EmployeeDTO> employees = employeeService.search(searchCriteria);
 		if (employees == null) {
 			return ResponseEntity.notFound().build();
 		} else {

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import com.example.employee.criteria.EmployeeSearchCriteria;
 import com.example.employee.models.Department;
 import com.example.employee.models.Employee;
+import com.example.employee.models.dtos.EmployeeDTO;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.impl.EmployeeServiceImpl;
@@ -51,7 +52,7 @@ class EmployeeServiceUnitTest {
 
 		when(employeeRepository.findAll(pageable)).thenReturn(new PageImpl<Employee>(employees));
 
-		List<Employee> employeesPage = employeeService.getAll();
+		List<EmployeeDTO> employeesPage = employeeService.getAll();
 
 		assertEquals(0, employeesPage);
 	}
@@ -121,7 +122,7 @@ class EmployeeServiceUnitTest {
 		when(employeeRepository.findAll()).thenReturn(employeesList);
 
 		EmployeeSearchCriteria criteria = EmployeeSearchCriteria.builder().active(true).build();
-		List<Employee> employees = employeeService.search(criteria);
+		List<EmployeeDTO> employees = employeeService.search(criteria);
 		assertEquals(1, employees.size());
 	}
 }

@@ -53,18 +53,18 @@ public class SecurityConfig {
 		this.authEntryPoint = authEntryPoint;
 		}
 
-	@Bean
-	public UserDetailsService userDetailsService() {
+    @Bean
+    UserDetailsService userDetailsService() {
 		return new UserDetailsServiceImpl(userService, roleService);
 	}
 
-	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring().requestMatchers("/swagger-ui/**", "/v3/api-docs/**");
 	}
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/login").permitAll()
@@ -89,13 +89,13 @@ public class SecurityConfig {
 
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
+    @Bean
+    PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	public AuthenticationProvider authenticationProvider() {
+    @Bean
+    AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(userDetailsService());
 		authenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -103,13 +103,13 @@ public class SecurityConfig {
 
 	}
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-	
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.addAllowedOrigin("http://localhost:4200");

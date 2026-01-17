@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.mappers.BaseMapper;
+import com.example.employee.mappers.SkillMapper;
 import com.example.employee.models.Skill;
+import com.example.employee.models.dtos.SkillDTO;
 import com.example.employee.repositories.SkillRepository;
 import com.example.employee.services.SkillService;
 
@@ -12,10 +15,17 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class SkillServiceImpl extends BaseServiceImpl<Skill, Integer> implements SkillService {
+public class SkillServiceImpl extends BaseServiceImpl<Skill, SkillDTO,Integer> implements SkillService {
 	
 	private SkillRepository skillRepository;
+	private SkillMapper skillMapper;
 	
+	public SkillServiceImpl(SkillRepository skillRepository, SkillMapper skillMapper) {
+		super();
+		this.skillRepository = skillRepository;
+		this.skillMapper = skillMapper;
+	}
+
 	@Override
 	protected JpaRepository<Skill, Integer> getRepository() {
 		return skillRepository;
@@ -26,8 +36,9 @@ public class SkillServiceImpl extends BaseServiceImpl<Skill, Integer> implements
 		return skillRepository;
 	}
 
-	public SkillServiceImpl(SkillRepository skillRepository) {
-		this.skillRepository = skillRepository;
+	@Override
+	protected BaseMapper<Skill, SkillDTO> getMapper() {
+		return skillMapper;
 	}
 
 //	@Override

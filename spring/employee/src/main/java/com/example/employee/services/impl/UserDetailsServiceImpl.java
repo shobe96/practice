@@ -40,7 +40,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		logger.info("Searching for user with username: {}", username);
 		UserSearchCriteria userCriteria = new UserSearchCriteria();
 		userCriteria.setUsername(username);
-		User user = userService.search(userCriteria).get(0);
+		User user = userService.searchEntities(userCriteria).get(0);
 		if (user == null) {
 			logger.error("User with username: {} is not found.", username);
 			throw new UsernameNotFoundException("could not found user..!!");
@@ -48,7 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 		RoleSearchCriteria criteria = new RoleSearchCriteria();
 		criteria.setUserId(user.getId());
 		
-		List<Role> roles = roleService.search(criteria);
+		List<Role> roles = roleService.searchEntities(criteria);
 		List<GrantedAuthority> auths = CommonUtils.convetRolesToAuthorities(roles);
 		return new CustomUserDetails(user, auths);
 	}

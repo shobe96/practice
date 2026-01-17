@@ -6,9 +6,13 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
+
+import com.example.employee.mappers.BaseMapper;
+import com.example.employee.mappers.ProjectMapper;
 import com.example.employee.models.Employee;
 import com.example.employee.models.Project;
 import com.example.employee.models.ProjectHistory;
+import com.example.employee.models.dtos.ProjectDTO;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.repositories.ProjectRepository;
@@ -18,12 +22,13 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class ProjectServiceImpl extends BaseServiceImpl<Project, Integer> implements ProjectService {
+public class ProjectServiceImpl extends BaseServiceImpl<Project, ProjectDTO, Integer> implements ProjectService {
 
 	private ProjectRepository projectRepository;
 	private EmployeeRepository employeeRepository;
 	private ProjectHistoryRepository projectHistoryRepository;
-	
+	private ProjectMapper projectMapper;
+
 	@Override
 	protected JpaRepository<Project, Integer> getRepository() {
 		return projectRepository;
@@ -34,11 +39,18 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Integer> implem
 		return projectRepository;
 	}
 
+	@Override
+	protected BaseMapper<Project, ProjectDTO> getMapper() {
+		return projectMapper;
+	}
+
 	public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeRepository employeeRepository,
-			ProjectHistoryRepository projectHistoryRepository) {
+			ProjectHistoryRepository projectHistoryRepository, ProjectMapper projectMapper) {
+		super();
 		this.projectRepository = projectRepository;
 		this.employeeRepository = employeeRepository;
 		this.projectHistoryRepository = projectHistoryRepository;
+		this.projectMapper = projectMapper;
 	}
 
 //	@Override
@@ -68,7 +80,7 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Integer> implem
 
 	@Override
 	public void delete(Integer projectId) {
-		Project projectToDelete = getById(projectId);
+		Project projectToDelete = getEntityById(projectId).get();
 		List<Employee> employees = new ArrayList<>(projectToDelete.getEmployees());
 		if (!employees.isEmpty()) {
 			for (Employee employee : employees) {
@@ -133,5 +145,4 @@ public class ProjectServiceImpl extends BaseServiceImpl<Project, Integer> implem
 //		return projectRepository.findByEmployeeId(employeeId);
 //	}
 
-	
 }

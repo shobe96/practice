@@ -4,7 +4,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.mappers.BaseMapper;
+import com.example.employee.mappers.RoleMapper;
 import com.example.employee.models.Role;
+import com.example.employee.models.dtos.RoleDTO;
 import com.example.employee.repositories.RoleRepository;
 import com.example.employee.services.RoleService;
 
@@ -12,24 +15,30 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class RoleServiceImpl extends BaseServiceImpl<Role, Integer> implements RoleService {
+public class RoleServiceImpl extends BaseServiceImpl<Role, RoleDTO, Integer> implements RoleService {
 
 	RoleRepository roleRepository;
+	RoleMapper roleMapper;
 
-	public RoleServiceImpl(RoleRepository roleRepository) {
+	public RoleServiceImpl(RoleRepository roleRepository, RoleMapper roleMapper) {
+		super();
 		this.roleRepository = roleRepository;
+		this.roleMapper = roleMapper;
 	}
 
 	@Override
 	protected JpaRepository<Role, Integer> getRepository() {
-		// TODO Auto-generated method stub
 		return roleRepository;
 	}
 
 	@Override
 	protected JpaSpecificationExecutor<Role> getSpecificationExecutor() {
-		// TODO Auto-generated method stub
 		return roleRepository;
+	}
+
+	@Override
+	protected BaseMapper<Role, RoleDTO> getMapper() {
+		return roleMapper;
 	}
 
 //	@Override

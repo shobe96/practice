@@ -23,6 +23,7 @@ import com.example.employee.criteria.RoleSearchCriteria;
 import com.example.employee.models.ApiError;
 import com.example.employee.models.Role;
 import com.example.employee.models.SearchResult;
+import com.example.employee.models.dtos.RoleDTO;
 import com.example.employee.services.RoleService;
 
 @RestController
@@ -36,15 +37,15 @@ public class RoleController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<Role>> getAllRoles() {
-		List<Role> roles = roleService.getAll();
+	public ResponseEntity<List<RoleDTO>> getAllRoles() {
+		List<RoleDTO> roles = roleService.getAll();
 
 		return ResponseEntity.ok().body(roles);
 	}
 
 	@GetMapping("/get-one/{roleId}")
-	public ResponseEntity<Role> getRoleById(@PathVariable Integer roleId) {
-		Role role = roleService.getById(roleId);
+	public ResponseEntity<RoleDTO> getRoleById(@PathVariable Integer roleId) {
+		RoleDTO role = roleService.getById(roleId);
 		if (role == null) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -54,20 +55,20 @@ public class RoleController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Role>> searchRoles(@ModelAttribute RoleSearchCriteria criteria,
+	public ResponseEntity<SearchResult<RoleDTO>> searchRoles(@ModelAttribute RoleSearchCriteria criteria,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(roleService.search(criteria, pageable));
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Role> saveRole(@RequestBody Role role) {
-		Role newRole = roleService.save(role);
+	public ResponseEntity<RoleDTO> saveRole(@RequestBody Role role) {
+		RoleDTO newRole = roleService.save(role);
 		return ResponseEntity.ok().body(newRole);
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<Role> updateRole(@RequestBody Role role) {
-		Role newRole = roleService.save(role);
+	public ResponseEntity<RoleDTO> updateRole(@RequestBody Role role) {
+		RoleDTO newRole = roleService.save(role);
 		return ResponseEntity.ok().body(newRole);
 	}
 

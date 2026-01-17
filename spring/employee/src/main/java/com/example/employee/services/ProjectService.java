@@ -1,8 +1,9 @@
 package com.example.employee.services;
 
 import com.example.employee.models.Project;
+import com.example.employee.models.dtos.ProjectDTO;
 
-public interface ProjectService extends BaseService<Project, Integer>{
+public interface ProjectService extends BaseService<Project, ProjectDTO, Integer>{
 //	public SearchResult<Project> getAllProjects(Pageable pageable);
 //	public List<Project> getAllProjects();
 //	public Project getProjectbyId(Integer projectId); 

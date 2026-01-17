@@ -63,9 +63,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 		} catch (ExpiredJwtException | SignatureException e) {
 			logger.error(e.getMessage());
+			e.printStackTrace();
 			handleAuthError("Token has expired. Login again.", response);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+			e.printStackTrace();
 			handleAuthError(e.getMessage(), response);
 		}
 

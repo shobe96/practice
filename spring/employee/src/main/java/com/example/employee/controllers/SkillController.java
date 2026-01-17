@@ -27,6 +27,7 @@ import com.example.employee.criteria.SkillSearchCriteria;
 import com.example.employee.models.ApiError;
 import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
+import com.example.employee.models.dtos.SkillDTO;
 import com.example.employee.services.SkillService;
 
 import jakarta.validation.Valid;
@@ -42,15 +43,15 @@ public class SkillController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<Skill>> getAllSkills() {
-		List<Skill> skills = skillService.getAll();
+	public ResponseEntity<List<SkillDTO>> getAllSkills() {
+		List<SkillDTO> skills = skillService.getAll();
 
 		return ResponseEntity.ok().body(skills);
 	}
 
 	@GetMapping("/get-one/{skillId}")
 	public ResponseEntity<Object> getSkillById(@PathVariable Integer skillId) {
-		Skill skill = skillService.getById(skillId);
+		SkillDTO skill = skillService.getById(skillId);
 		if (skill == null) {
 			return ResponseEntity.notFound().build();
 		} else {
@@ -59,16 +60,16 @@ public class SkillController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Skill> saveSkill(@Valid @RequestBody Skill skill) {
-		Skill newSkill = skillService.save(skill);
+	public ResponseEntity<SkillDTO> saveSkill(@Valid @RequestBody Skill skill) {
+		SkillDTO newSkill = skillService.save(skill);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newSkill.getId())
 				.toUri();
 		return ResponseEntity.created(location).body(newSkill);
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<Skill> updateSkill(@Valid @RequestBody Skill skill) {
-		Skill updatedSkill = skillService.save(skill);
+	public ResponseEntity<SkillDTO> updateSkill(@Valid @RequestBody Skill skill) {
+		SkillDTO updatedSkill = skillService.save(skill);
 		return ResponseEntity.ok().body(updatedSkill);
 	}
 
@@ -79,7 +80,7 @@ public class SkillController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Skill>> searchSkills(@ModelAttribute SkillSearchCriteria criteria,
+	public ResponseEntity<SearchResult<SkillDTO>> searchSkills(@ModelAttribute SkillSearchCriteria criteria,
 			Pageable pageable) {
 		return ResponseEntity.ok().body(skillService.search(criteria, pageable));
 	}

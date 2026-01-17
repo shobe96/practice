@@ -27,6 +27,7 @@ import com.example.employee.criteria.ProjectSearchCriteria;
 import com.example.employee.models.ApiError;
 import com.example.employee.models.Project;
 import com.example.employee.models.SearchResult;
+import com.example.employee.models.dtos.ProjectDTO;
 import com.example.employee.services.ProjectService;
 
 import jakarta.validation.Valid;
@@ -41,13 +42,13 @@ public class ProjectController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<Project>> getAllProjects() {
+	public ResponseEntity<List<ProjectDTO>> getAllProjects() {
 		return ResponseEntity.ok().body(projectService.getAll());
 	}
 
 	@GetMapping("/get-one/{projectId}")
 	public ResponseEntity<Object> getProjectById(@PathVariable Integer projectId) {
-		Project project = projectService.getById(projectId);
+		ProjectDTO project = projectService.getById(projectId);
 		if (project == null) {
 			throw new NoSuchElementException();
 		} else {
@@ -56,16 +57,16 @@ public class ProjectController {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<Project> saveProject(@Valid @RequestBody Project project) {
-		Project newProject = projectService.save(project);
+	public ResponseEntity<ProjectDTO> saveProject(@Valid @RequestBody Project project) {
+		ProjectDTO newProject = projectService.save(project);
 		URI location = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(newProject.getId())
 				.toUri();
 		return ResponseEntity.created(location).body(newProject);
 	}
 
 	@PutMapping("/update")
-	public ResponseEntity<Project> updateProject(@Valid @RequestBody Project project) {
-		Project updatedProject = projectService.save(project);
+	public ResponseEntity<ProjectDTO> updateProject(@Valid @RequestBody Project project) {
+		ProjectDTO updatedProject = projectService.save(project);
 		return ResponseEntity.ok().body(updatedProject);
 	}
 
@@ -76,7 +77,7 @@ public class ProjectController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<Project>> searchProjects(@ModelAttribute ProjectSearchCriteria criteria,
+	public ResponseEntity<SearchResult<ProjectDTO>> searchProjects(@ModelAttribute ProjectSearchCriteria criteria,
 			Pageable pageable) {
 		criteria.setActive(true);
 		return ResponseEntity.ok().body(projectService.search(criteria, pageable));
@@ -89,10 +90,10 @@ public class ProjectController {
 	}
 
 	@GetMapping("/history/{employeeId}")
-	public ResponseEntity<List<Project>> getProjectsByEmployee(@PathVariable Integer employeeId) {
+	public ResponseEntity<List<ProjectDTO>> getProjectsByEmployee(@PathVariable Integer employeeId) {
 		ProjectSearchCriteria criteria = new ProjectSearchCriteria();
 		criteria.setPhEmployeeId(employeeId);
-		List<Project> projects = projectService.search(criteria);
+		List<ProjectDTO> projects = projectService.search(criteria);
 		if (!projects.isEmpty()) {
 			return ResponseEntity.ok().body(projects);
 		} else {
@@ -101,10 +102,10 @@ public class ProjectController {
 	}
 
 	@GetMapping("/get-project/{employeeId}")
-	public ResponseEntity<Project> getProjectByEmployee(@PathVariable Integer employeeId) {
+	public ResponseEntity<ProjectDTO> getProjectByEmployee(@PathVariable Integer employeeId) {
 		ProjectSearchCriteria criteria = new ProjectSearchCriteria();
 		criteria.setEmployeeId(employeeId);
-		List<Project> projects = projectService.search(criteria);
+		List<ProjectDTO> projects = projectService.search(criteria);
 		if (projects != null) {
 			if (projects.size() > 0) {
 				return ResponseEntity.ok().body(projects.get(0));

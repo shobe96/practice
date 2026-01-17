@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.employee.criteria.UserSearchCriteria;
 import com.example.employee.models.SearchResult;
-import com.example.employee.models.User;
+import com.example.employee.models.dtos.UserDTO;
 import com.example.employee.services.UserService;
 
 @RestController
@@ -28,13 +28,13 @@ public class UserController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<List<User>> getAllUsers(Pageable pageable) {
-		List<User> userSearchResult = userService.getAll();
+	public ResponseEntity<List<UserDTO>> getAllUsers(Pageable pageable) {
+		List<UserDTO> userSearchResult = userService.getAll();
 		return ResponseEntity.ok().body(userSearchResult);
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<SearchResult<User>> searchEmployees(@ModelAttribute UserSearchCriteria criteria,
+	public ResponseEntity<SearchResult<UserDTO>> searchEmployees(@ModelAttribute UserSearchCriteria criteria,
 			Pageable pageable) {
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(userService.search(criteria, pageable));
 	}
