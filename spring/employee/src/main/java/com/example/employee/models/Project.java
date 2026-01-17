@@ -23,9 +23,15 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "project")
+@Getter
+@Setter
+@ToString
 public class Project {
 	@Id
 	@Column(name = "project_id")
@@ -70,95 +76,8 @@ public class Project {
 	@JsonIgnore
 	private Set<ProjectHistory> projectHistories = new HashSet<>();
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public Boolean getActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-	public Date getStartDate() {
-		return startDate;
-	}
-
-	public void setStartDate(Date startDate) {
-		this.startDate = startDate;
-	}
-
-	public Date getEndDate() {
-		return endDate;
-	}
-
-	public void setEndDate(Date endDate) {
-		this.endDate = endDate;
-	}
-
-	public Set<Employee> getEmployees() {
-		return employees;
-	}
-
-	public void setEmployees(Set<Employee> employees) {
-		this.employees = employees;
-	}
-
-	public Set<Skill> getSkills() {
-		return skills;
-	}
-
-	public void setSkills(Set<Skill> skills) {
-		this.skills = skills;
-	}
-
-	public Department getDepartment() {
-		return department;
-	}
-
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
-
-	public Set<ProjectHistory> getProjectHistories() {
-		return projectHistories;
-	}
-
-	public void setProjectHistories(Set<ProjectHistory> projectHistories) {
-		this.projectHistories = projectHistories;
-	}
-
 	@PrePersist
 	private void beforeCreate() {
 		this.active = true;
-	}
-
-	@Override
-	public String toString() {
-		return "Project [id=" + id + ", name=" + name + ", code=" + code + ", active=" + active + ", startDate="
-				+ startDate + ", endDate=" + endDate + ", employees=" + employees + ", skills=" + skills
-				+ ", department=" + department + ", projectHistories=" + projectHistories + "]";
 	}
 }
