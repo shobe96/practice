@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { User } from '../../data-access/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,7 +14,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
-import { AuthFacadeService } from '../../../auth/data-access/auth.facade.service';
 
 @Component({
   selector: 'app-user-list',
@@ -32,7 +31,7 @@ import { AuthFacadeService } from '../../../auth/data-access/auth.facade.service
     IconButtonComponent
   ]
 })
-export class UserListComponent implements OnInit {
+export class UserListComponent {
 
   userId: number | null = 0;
   actionButtons: ActionButtons<User>[] = [
@@ -45,7 +44,6 @@ export class UserListComponent implements OnInit {
   ];
 
   private readonly _userListFacade = inject(UserListFacadeService);
-  private readonly _authFacade = inject(AuthFacadeService);
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _router = inject(Router);
   private readonly _confirmationService = inject(ConfirmationService);
@@ -99,10 +97,6 @@ export class UserListComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    this._userListFacade.retrieve();
-  }
-
   onPageChange(event: PaginatorState) {
     this._userListFacade.onPageChange(event);
   }
@@ -132,8 +126,7 @@ export class UserListComponent implements OnInit {
           label: 'Delete',
         },
         accept: () => {
-          this._authFacade.deleteUser(id);
-          this._userListFacade.retrieve();
+          this._userListFacade.delete(id);
         },
       });
     }

@@ -7,7 +7,6 @@ import { DepartmentService } from '../../departments/data-access/department.serv
 import { Skill } from '../../skills/data-access/skill.model';
 import { Department } from '../../departments/data-access/department.model';
 import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
-import { SearchResult } from '../../shared/data-access/search-result.model';
 
 @Injectable()
 export class EmployeeEditFacadeService extends BaseEditFacade<Employee> {
@@ -34,10 +33,10 @@ export class EmployeeEditFacadeService extends BaseEditFacade<Employee> {
   }
 
   private _getSkills(): void {
-    this._withLoading(() => this._skillService.getAll(true).pipe(tap((value) => this._skills$.next(value.items ?? [])), this._handleError<SearchResult<Skill>>({ items: [], size: 0 }))).subscribe();
+    this._withLoading(() => this._skillService.getAll().pipe(tap((value) => this._skills$.next(value ?? [])), this._handleError<Skill[]>([]))).subscribe();
   }
 
   private _getDepartments(): void {
-    this._withLoading(() => this._departmentService.getAll(true).pipe(tap((value) => this._departments$.next(value.items ?? [])), this._handleError<SearchResult<Department>>({ items: [], size: 0 }))).subscribe();
+    this._withLoading(() => this._departmentService.getAll().pipe(tap((value) => this._departments$.next(value ?? [])), this._handleError<Department[]>([]))).subscribe();
   }
 }

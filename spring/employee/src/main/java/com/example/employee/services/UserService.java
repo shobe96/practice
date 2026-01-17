@@ -1,21 +1,14 @@
 package com.example.employee.services;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 
 import com.example.employee.models.RegisterRequest;
-import com.example.employee.models.SearchResult;
 import com.example.employee.models.User;
+import com.example.employee.models.dtos.UserDTO;
 
-public interface UserService {
+public interface UserService extends BaseService<User, UserDTO, Integer>{
 
-	public User registerUser(RegisterRequest request);
-	
-	public SearchResult<User> getAllUsers(Pageable pageable);
-	
-	public void deleteUser(Integer userId);
+	public UserDTO registerUser(RegisterRequest request);
 	
 	public Authentication getAuthenticatedUser(Authentication authentication);
-
-	public SearchResult<User> searchUsers(String username, Pageable pageable);
 }

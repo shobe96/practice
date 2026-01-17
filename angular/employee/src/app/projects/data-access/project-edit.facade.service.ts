@@ -9,16 +9,16 @@ import { SkillService } from '../../skills/data-access/skill.service';
 import { ProjectService } from './project.service';
 import { Project } from './project.model';
 import { BaseEditFacade } from '../../shared/data-access/services/base/base-edit.facade';
-import { SearchResult } from '../../shared/data-access/search-result.model';
+import { EmployeeSearchCriteria } from '../../employees/data-access/employee-search.criteria';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectEditFacadeService extends BaseEditFacade<Project> {
 
-  private _skills$: BehaviorSubject<Skill[]> = new BehaviorSubject<Skill[]>([]);
-  private _departments$: BehaviorSubject<Department[]> = new BehaviorSubject<Department[]>([]);
-  private _employees$: BehaviorSubject<Employee[]> = new BehaviorSubject<Employee[]>([]);
+  private _skills$ = new BehaviorSubject<Skill[]>([]);
+  private _departments$ = new BehaviorSubject<Department[]>([]);
+  private _employees$ = new BehaviorSubject<Employee[]>([]);
 
   override viewModel$ = combineLatest({
     skills: this._skills$.asObservable(),
@@ -42,7 +42,11 @@ export class ProjectEditFacadeService extends BaseEditFacade<Project> {
 
   getEmployees(skills: Skill[], department: Department) {
     if (skills.length > 0 && Object.keys(department).length > 0) {
-      this._withLoading(() => this._employeeService.filterEmployeesByActiveAndSkills(skills, department).pipe(tap((value) => this._employees$.next(value)))).subscribe();
+      const criteria: EmployeeSearchCriteria = {
+        skills: skills,
+        departmentId: department.id
+      }
+      this._withLoading(() => this._employeeService.search(criteria).pipe(tap((value) => this._employees$.next(value.items ?? [])))).subscribe();
     } else {
       this.clearEmployees();
     }
@@ -53,10 +57,10 @@ export class ProjectEditFacadeService extends BaseEditFacade<Project> {
   }
 
   private _getSkills(): void {
-    this._withLoading(() => this._skillService.getAll(true).pipe(tap((value) => this._skills$.next(value.items ?? [])), this._handleError<SearchResult<Skill>>({ items: [], size: 0 }))).subscribe();
+    this._withLoading(() => this._skillService.getAll().pipe(tap((value) => this._skills$.next(value ?? [])), this._handleError<Skill[]>([]))).subscribe();
   }
 
   private _getDepartments(): void {
-    this._withLoading(() => this._departmentService.getAll(true).pipe(tap((value) => this._departments$.next(value.items ?? [])), this._handleError<SearchResult<Department>>({ items: [], size: 0 }))).subscribe();
+    this._withLoading(() => this._departmentService.getAll().pipe(tap((value) => this._departments$.next(value ?? [])), this._handleError<Department[]>([]))).subscribe();
   }
 }

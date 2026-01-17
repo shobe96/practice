@@ -11,6 +11,7 @@ import { ProjectService } from '../../projects/data-access/project.service';
 import { Project } from '../../projects/data-access/project.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { SearchResult } from '../../shared/data-access/search-result.model';
+import { EmployeeSearchCriteria } from '../../employees/data-access/employee-search.criteria';
 
 @Injectable()
 export class HomeFacadeService {
@@ -58,6 +59,10 @@ export class HomeFacadeService {
   getPanelData(): void {
     const userId = this._authResponse?.userId;
     if (userId) {
+      //TODO: replace find by user with search
+      // const criteria: EmployeeSearchCriteria = {
+      //   userId: userId
+      // };
       this._withLoading(() =>
         this._employeeService.findByUser(userId).pipe(
           tap(employee => this._employee$.next(employee)),
@@ -90,8 +95,11 @@ export class HomeFacadeService {
 
   private _getAllEmployeesByDepartment(employee: Employee): Observable<SearchResult<Employee> | null> {
     if (!employee.department?.id) return of(null);
+    const criteria: EmployeeSearchCriteria = {
+      departmentId: employee.department.id
+    }
     return this._employeeService
-      .findByDepartment(employee.department.id, this._defaultPage)
+      .search(criteria, this._defaultPage)
       .pipe(this._handleError<SearchResult<Employee>>('Warning', {}));
   }
 

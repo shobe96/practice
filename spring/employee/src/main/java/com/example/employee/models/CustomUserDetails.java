@@ -1,10 +1,12 @@
 package com.example.employee.models;
 
 import java.util.Collection;
-
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import lombok.Getter;
+
+@Getter
 public class CustomUserDetails extends User implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
@@ -16,21 +18,6 @@ public class CustomUserDetails extends User implements UserDetails {
 		this.username = user.getUsername();
 		this.password = user.getPassword();
 		this.authorities = authorities;
-	}
-
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.authorities;
-	}
-
-	@Override
-	public String getPassword() {
-		return this.password;
-	}
-
-	@Override
-	public String getUsername() {
-		return this.username;
 	}
 
 	@Override

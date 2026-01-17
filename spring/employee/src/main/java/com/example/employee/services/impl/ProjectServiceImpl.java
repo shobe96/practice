@@ -3,17 +3,16 @@ package com.example.employee.services.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Service;
 
+import com.example.employee.mappers.BaseMapper;
+import com.example.employee.mappers.ProjectMapper;
 import com.example.employee.models.Employee;
 import com.example.employee.models.Project;
 import com.example.employee.models.ProjectHistory;
-import com.example.employee.models.SearchResult;
+import com.example.employee.models.dtos.ProjectDTO;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.repositories.ProjectRepository;
@@ -23,93 +22,90 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class ProjectServiceImpl implements ProjectService {
+public class ProjectServiceImpl extends BaseServiceImpl<Project, ProjectDTO, Integer> implements ProjectService {
 
 	private ProjectRepository projectRepository;
 	private EmployeeRepository employeeRepository;
 	private ProjectHistoryRepository projectHistoryRepository;
+	private ProjectMapper projectMapper;
 
-	@Autowired
+	@Override
+	protected JpaRepository<Project, Integer> getRepository() {
+		return projectRepository;
+	}
+
+	@Override
+	protected JpaSpecificationExecutor<Project> getSpecificationExecutor() {
+		return projectRepository;
+	}
+
+	@Override
+	protected BaseMapper<Project, ProjectDTO> getMapper() {
+		return projectMapper;
+	}
+
 	public ProjectServiceImpl(ProjectRepository projectRepository, EmployeeRepository employeeRepository,
-			ProjectHistoryRepository projectHistoryRepository) {
+			ProjectHistoryRepository projectHistoryRepository, ProjectMapper projectMapper) {
+		super();
 		this.projectRepository = projectRepository;
 		this.employeeRepository = employeeRepository;
 		this.projectHistoryRepository = projectHistoryRepository;
+		this.projectMapper = projectMapper;
 	}
 
-	@Override
-	public SearchResult<Project> getAllProjects(Pageable pageable) {
-		SearchResult<Project> projectSearchResult = new SearchResult<>();
-		List<Project> projects = projectRepository.findAllByActive(true, pageable).getContent();
-		if (projects.isEmpty()) {
-			Pageable newPage = PageRequest.of((pageable.getPageNumber() - 1), pageable.getPageSize());
-			projects = projectRepository.findAllByActive(true, newPage).getContent();
-		}
-		projectSearchResult.setSize(projectRepository.countAllActiveProjects());
-		projectSearchResult.setItems(projects);
-		return projectSearchResult;
-	}
+//	@Override
+//	public Project getProjectbyId(Integer projectId) {
+//		Optional<Project> optional = projectRepository.findById(projectId);
+//		if (optional.isPresent()) {
+//			return optional.get();
+//		} else {
+//			return null;
+//		}
+//	}
+
+//	@Override
+//	public Project saveProject(Project project) {
+//		for (Employee employee : project.getEmployees()) {
+//			employee.setActive(true);
+//			employee.setAssignmentDate(new Date());
+//			employeeRepository.save(employee);
+//		}
+//		return projectRepository.save(project);
+//	}
+//
+//	@Override
+//	public Project updateProject(Project project) {
+//		return projectRepository.save(project);
+//	}
 
 	@Override
-	public List<Project> getAllProjects() {
-		List<Project> projects = new ArrayList<>();
-		projectRepository.findAllByActive(true).forEach(projects::add);
-		return projects;
-	}
-
-	@Override
-	public Project getProjectbyId(Integer projectId) {
-		Optional<Project> optional = projectRepository.findById(projectId);
-		if (optional.isPresent()) {
-			return optional.get();
-		} else {
-			return null;
-		}
-	}
-
-	@Override
-	public Project saveProject(Project project) {
-		for (Employee employee : project.getEmployees()) {
-			employee.setActive(true);
-			employee.setAssignmentDate(new Date());
-			employeeRepository.save(employee);
-		}
-		return projectRepository.save(project);
-	}
-
-	@Override
-	public Project updateProject(Project project) {
-		return projectRepository.save(project);
-	}
-
-	@Override
-	public void deleteProject(Integer projectId) {
-		Project project = getProjectbyId(projectId);
-		List<Employee> employees = new ArrayList<>(project.getEmployees());
+	public void delete(Integer projectId) {
+		Project projectToDelete = getEntityById(projectId).get();
+		List<Employee> employees = new ArrayList<>(projectToDelete.getEmployees());
 		if (!employees.isEmpty()) {
 			for (Employee employee : employees) {
 				employee.setActive(false);
 				employeeRepository.save(employee);
-				unassignEmployee(employee, project);
+				unassignEmployee(employee, projectToDelete);
 			}
 		}
 
-		project.setActive(false);
-		projectRepository.save(project);
+		projectToDelete.setActive(false);
+		projectRepository.save(projectToDelete);
 
 	}
 
-	@Override
-	public SearchResult<Project> searcProjects(String name, String code, Pageable pageable) {
-		if (name == null) {
-			name = "";
-		}
-		SearchResult<Project> projectSearchResult = new SearchResult<>();
-		List<Project> projects = projectRepository.searchProjects(name, code, pageable).getContent();
-		projectSearchResult.setItems(projects);
-		projectSearchResult.setSize(projectRepository.searchResultCount(name));
-		return projectSearchResult;
-	}
+//	@Override
+//	public SearchResult<Project> search(@ModelAttribute ProjectSearchCriteria criteria, Pageable pageable) {
+//		if (name == null) {
+//			name = "";
+//		}
+//		SearchResult<Project> projectSearchResult = new SearchResult<>();
+//		List<Project> projects = projectRepository.searchProjects(name, code, pageable).getContent();
+//		projectSearchResult.setItems(projects);
+//		projectSearchResult.setSize(projectRepository.searchResultCount(name));
+//		return projectSearchResult;
+//	}
 
 	@Override
 	public void unassignEmployee(Integer employeeId, Project project) {
@@ -131,11 +127,6 @@ public class ProjectServiceImpl implements ProjectService {
 
 	}
 
-	@Override
-	public List<Project> getProjectsByEmployee(Integer employeeId) {
-		return projectRepository.findAllByEmployee(employeeId);
-	}
-
 	public void unassignEmployee(Employee employee, Project project) {
 		project.getEmployees().remove(employee);
 		projectRepository.save(project);
@@ -149,8 +140,9 @@ public class ProjectServiceImpl implements ProjectService {
 		projectHistoryRepository.save(projectHistory);
 	}
 
-	@Override
-	public Project getByEmployeeId(Integer employeeId) {
-		return projectRepository.findByEmployeeId(employeeId);
-	}
+//	@Override
+//	public Project getByEmployeeId(Integer employeeId) {
+//		return projectRepository.findByEmployeeId(employeeId);
+//	}
+
 }

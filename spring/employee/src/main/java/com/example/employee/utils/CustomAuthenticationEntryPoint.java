@@ -9,7 +9,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import com.example.employee.models.RestError;
+import com.example.employee.models.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;
@@ -22,12 +22,12 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 	@Override
 	public void commence(HttpServletRequest request, HttpServletResponse response,
 			AuthenticationException authException) throws IOException, ServletException {
-		RestError re = new RestError(HttpStatus.UNAUTHORIZED.value(),"Unauthorized", false, "HttpErrorResponse", "Authentication failed. Check credentials.");
+		ApiError apiError = ApiError.builder().status(HttpStatus.UNAUTHORIZED.value()).message("Authentication failed. Check credentials.").build();
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         OutputStream responseStream = response.getOutputStream();
         ObjectMapper mapper = new ObjectMapper();
-        mapper.writeValue(responseStream, re);
+        mapper.writeValue(responseStream, apiError);
         responseStream.flush();
 
 	}

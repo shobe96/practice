@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { Employee } from '../../data-access/employee.model';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState, Paginator } from 'primeng/paginator';
@@ -36,7 +36,7 @@ import { ActionButtons } from '../../../shared/data-access/action-buttons.model'
     SearchFilterWrapperComponent
   ]
 })
-export class EmployeeListComponent implements OnInit {
+export class EmployeeListComponent {
 
   employeeId: number | null = 0;
   actionButtons: ActionButtons<Employee>[] = [
@@ -115,10 +115,6 @@ export class EmployeeListComponent implements OnInit {
         });
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._employeeListFacade.retrieve();
   }
 
   addNew(): void {

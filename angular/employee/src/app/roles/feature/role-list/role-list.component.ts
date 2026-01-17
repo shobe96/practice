@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -35,7 +35,7 @@ import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-w
     SearchFilterWrapperComponent
   ]
 })
-export class RoleListComponent implements OnInit {
+export class RoleListComponent {
 
   roleId: number | null = 0;
   actionButtons: ActionButtons<Role>[] = [
@@ -112,10 +112,6 @@ export class RoleListComponent implements OnInit {
         });
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._roleListFacade.retrieve();
   }
 
   addNew(): void {

@@ -6,7 +6,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
-import com.example.employee.models.RestError;
+import com.example.employee.models.ApiError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.ServletException;
@@ -29,7 +29,7 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 			AccessDeniedException accessDeniedException) throws IOException, ServletException {
 		response.setStatus(HttpStatus.FORBIDDEN.value());
 		response.setContentType("application/json");
-		RestError re = new RestError(HttpStatus.FORBIDDEN.value(), "Forbiden", false, "HttpErrorResponse", "You do not have permission to access this resource.");
-		objectMapper.writeValue(response.getWriter(), re);
+		ApiError apiError = ApiError.builder().status(HttpStatus.FORBIDDEN.value()).message("You do not have permission to access this resource.").build();
+		objectMapper.writeValue(response.getWriter(), apiError);
 	}
 }

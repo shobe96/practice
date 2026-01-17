@@ -7,6 +7,7 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,9 +26,15 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "employee")
+@Getter
+@Setter
+@ToString
 public class Employee {
 
 	@Id
@@ -86,129 +93,9 @@ public class Employee {
 	@JsonIgnore
 	private Set<Project> projects = new HashSet<>();
 	
-	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "employee", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
 	@JsonIgnore
 	private Set<ProjectHistory> projectHistories = new HashSet<>();
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public String getSurname() {
-		return surname;
-	}
-
-	public void setSurname(String surname) {
-		this.surname = surname;
-	}
-
-	public Date getAddDate() {
-		return addDate;
-	}
-
-	public void setAddDate(Date addDate) {
-		this.addDate = addDate;
-	}
-
-	public Date getModDate() {
-		return modDate;
-	}
-
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
-
-	public String getAddUser() {
-		return addUser;
-	}
-
-	public void setAddUser(String addUser) {
-		this.addUser = addUser;
-	}
-
-	public String getModUser() {
-		return modUser;
-	}
-
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
-
-	public Boolean getActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-	public Department getDepartment() {
-		return department;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public Date getAssignmentDate() {
-		return assignmentDate;
-	}
-
-	public void setAssignmentDate(Date assignmentDate) {
-		this.assignmentDate = assignmentDate;
-	}
-
-	public void setDepartment(Department department) {
-		this.department = department;
-	}
-
-	public User getUser() {
-		return user;
-	}
-
-	public void setUser(User user) {
-		this.user = user;
-	}
-
-	public Set<Skill> getSkills() {
-		return skills;
-	}
-
-	public void setSkills(Set<Skill> skills) {
-		this.skills = skills;
-	}
-
-	public Set<Project> getProjects() {
-		return projects;
-	}
-
-	public void setProjects(Set<Project> projects) {
-		this.projects = projects;
-	}
-
-	public Set<ProjectHistory> getProjectHistories() {
-		return projectHistories;
-	}
-
-	public void setProjectHistories(Set<ProjectHistory> projectHistories) {
-		this.projectHistories = projectHistories;
-	}
 
 	@PrePersist
 	private void beforeCreate() {
@@ -219,12 +106,5 @@ public class Employee {
 	@PostUpdate
 	private void beforeUpdate() {
 		this.modDate = new Date();
-	}
-
-	@Override
-	public String toString() {
-		return "Employee [id=" + id + ", name=" + name + ", surname=" + surname + ", addDate=" + addDate + ", modDate="
-				+ modDate + ", addUser=" + addUser + ", modUser=" + modUser + ", active=" + active + ", department="
-				+ department + "]";
 	}
 }

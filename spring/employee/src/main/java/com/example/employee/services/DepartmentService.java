@@ -1,19 +1,8 @@
 package com.example.employee.services;
 
-import java.util.List;
-
-import org.springframework.data.domain.Pageable;
-
 import com.example.employee.models.Department;
-import com.example.employee.models.SearchResult;
+import com.example.employee.models.dtos.DepartmentDTO;
 
-public interface DepartmentService {
-	public SearchResult<Department> getAllDepartments(Pageable pageable);
-	public List<Department> getAllDepartments();
-	public Department getDepartmentById(Integer departmentId);
-	public Department getByDepartmentName(String departmentName);
-	public Department saveDepartment(Department department);
-	public Department updateDepartment(Department department);
-	public void deleteDepartment(Integer departmentId);
-	public SearchResult<Department> searchDepartments(String name, Pageable pageable);
+public interface DepartmentService extends BaseService<Department, DepartmentDTO, Integer> {
+
 }

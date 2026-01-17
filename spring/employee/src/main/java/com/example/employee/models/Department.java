@@ -17,9 +17,15 @@ import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @Table(name = "department")
+@Getter
+@Setter
+@ToString
 public class Department {
 
 	@Id
@@ -55,78 +61,6 @@ public class Department {
 	@JsonIgnore
 	private Set<Project> projects = new HashSet<>();
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public Date getAddDate() {
-		return addDate;
-	}
-
-	public void setAddDate(Date addDate) {
-		this.addDate = addDate;
-	}
-
-	public Date getModDate() {
-		return modDate;
-	}
-
-	public void setModDate(Date modDate) {
-		this.modDate = modDate;
-	}
-
-	public String getAddUser() {
-		return addUser;
-	}
-
-	public void setAddUser(String addUser) {
-		this.addUser = addUser;
-	}
-
-	public String getModUser() {
-		return modUser;
-	}
-
-	public void setModUser(String modUser) {
-		this.modUser = modUser;
-	}
-
-	public Boolean getActive() {
-		return active;
-	}
-
-	public void setActive(Boolean active) {
-		this.active = active;
-	}
-
-	public Set<Employee> getEmployees() {
-		return employees;
-	}
-
-	public void setEmployees(Set<Employee> employees) {
-		this.employees = employees;
-	}
-
-	public Set<Project> getProjects() {
-		return projects;
-	}
-
-	public void setProjects(Set<Project> projects) {
-		this.projects = projects;
-	}
-
 	@PrePersist
 	private void beforeCreate() {
 		this.active = true;
@@ -137,12 +71,4 @@ public class Department {
 	private void beforeUpdate() {
 		this.modDate = new Date();
 	}
-
-	@Override
-	public String toString() {
-		return "Department [id=" + id + ", name=" + name + ", addDate=" + addDate + ", modDate=" + modDate
-				+ ", addUser=" + addUser + ", modUser=" + modUser + ", active=" + active + ", employees=" + employees
-				+ ", projects=" + projects + "]";
-	}
-
 }

@@ -12,6 +12,7 @@ import { AuthRequest } from './auth-request.model';
 import { enumRoles } from '../../shared/constants.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { SearchResult } from '../../shared/data-access/search-result.model';
+import { EmployeeSearchCriteria } from '../../employees/data-access/employee-search.criteria';
 
 @Injectable({
   providedIn: 'root'
@@ -102,7 +103,10 @@ export class AuthFacadeService {
   }
 
   private _getEmployees(): void {
-    this._employeeService.getAll(true)
+    const criteria: EmployeeSearchCriteria = {
+      withoutUser: true
+    };
+    this._employeeService.search(criteria)
       .pipe(tap((res: SearchResult<Employee>) => {
         this._employees$.next(res.items ?? []);
       }),
@@ -115,9 +119,9 @@ export class AuthFacadeService {
   }
 
   private _getRoles(): void {
-    this._roleService.getAll(true)
-      .pipe(tap((res: SearchResult<Role>) => {
-        this._roles$.next(res.items ?? []);
+    this._roleService.getAll()
+      .pipe(tap((res: Role[]) => {
+        this._roles$.next(res ?? []);
       }),
         catchError((err) => {
           this._customMessageService.showError('Error', err.error.message);

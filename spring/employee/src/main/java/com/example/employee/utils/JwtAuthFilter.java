@@ -2,7 +2,6 @@ package com.example.employee.utils;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,7 +11,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import com.example.employee.models.RestError;
+import com.example.employee.models.ApiError;
 import com.example.employee.services.impl.UserDetailsServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -30,7 +29,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 	private JwtUtil jwtUtil;
 	private UserDetailsServiceImpl userDetailsServiceImpl;
 
-	@Autowired
 	public JwtAuthFilter(JwtUtil jwtUtil, UserDetailsServiceImpl userDetailsServiceImpl) {
 		this.jwtUtil = jwtUtil;
 		this.userDetailsServiceImpl = userDetailsServiceImpl;
@@ -50,8 +48,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			} else {
 				checkIfLogin(request);
 			}
-			
-			
 
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(username);
@@ -67,34 +63,34 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 			filterChain.doFilter(request, response);
 		} catch (ExpiredJwtException | SignatureException e) {
 			logger.error(e.getMessage());
+			e.printStackTrace();
 			handleAuthError("Token has expired. Login again.", response);
 		} catch (Exception e) {
 			logger.error(e.getMessage());
+			e.printStackTrace();
 			handleAuthError(e.getMessage(), response);
 		}
 
 	}
 
-	private void checkIfLogin(HttpServletRequest request) throws AuthException{
+	private void checkIfLogin(HttpServletRequest request) throws AuthException {
 		Boolean isLogin = request.getRequestURL().toString().contains("login");
 		if (Boolean.FALSE.equals(isLogin)) {
 			logger.error("Authorization header missing");
 			throw new AuthException("You need to be logged in to access this feature.");
 		}
-		
-		
+
 	}
-	
+
 	private void handleAuthError(String message, HttpServletResponse response) {
 		response.setStatus(HttpStatus.UNAUTHORIZED.value());
 		response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-		RestError re = new RestError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized", false, "HttpErrorResponse",
-				message);
+		ApiError apiError = ApiError.builder().status(HttpStatus.UNAUTHORIZED.value()).message(message).build();
 		OutputStream responseStream;
 		try {
 			responseStream = response.getOutputStream();
 			ObjectMapper mapper = new ObjectMapper();
-			mapper.writeValue(responseStream, re);
+			mapper.writeValue(responseStream, apiError);
 			responseStream.flush();
 		} catch (IOException e) {
 			logger.error(e.getMessage());

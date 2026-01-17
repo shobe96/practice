@@ -1,16 +1,8 @@
 package com.example.employee.services;
 
-import org.springframework.data.domain.Pageable;
-
-import com.example.employee.models.SearchResult;
 import com.example.employee.models.Skill;
+import com.example.employee.models.dtos.SkillDTO;
 
-public interface SkillService {
-	public SearchResult<Skill> getAllSkills(Pageable pageable);
-	public SearchResult<Skill> getAllSkills();
-	public Skill getSkillbyId(Integer skillId); 
-	public Skill saveSkill(Skill skill);
-	public Skill updateSkill(Skill skill);
-	public void deleteSkill(Integer skillId);
-	public SearchResult<Skill> searcSkills(String name, Pageable pageable);
+public interface SkillService extends BaseService<Skill, SkillDTO, Integer> {
+
 }

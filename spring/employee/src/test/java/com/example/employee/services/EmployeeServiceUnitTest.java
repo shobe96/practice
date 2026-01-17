@@ -8,6 +8,8 @@ import static org.mockito.Mockito.when;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,9 +20,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
+import com.example.employee.criteria.EmployeeSearchCriteria;
 import com.example.employee.models.Department;
 import com.example.employee.models.Employee;
-import com.example.employee.models.SearchResult;
+import com.example.employee.models.dtos.EmployeeDTO;
 import com.example.employee.repositories.EmployeeRepository;
 import com.example.employee.repositories.ProjectHistoryRepository;
 import com.example.employee.services.impl.EmployeeServiceImpl;
@@ -49,9 +52,9 @@ class EmployeeServiceUnitTest {
 
 		when(employeeRepository.findAll(pageable)).thenReturn(new PageImpl<Employee>(employees));
 
-		SearchResult<Employee> employeesPage = employeeService.getAllEmployees(pageable);
+		List<EmployeeDTO> employeesPage = employeeService.getAll();
 
-		assertEquals(0, employeesPage.getSize());
+		assertEquals(0, employeesPage);
 	}
 
 	@Test
@@ -60,8 +63,8 @@ class EmployeeServiceUnitTest {
 		employee.setName("Test");
 		employee.setSurname("Test");
 
-		employeeService.saveEmployee(employee);
-		employeeService.saveEmployee(employee);
+		employeeService.save(employee);
+		employeeService.save(employee);
 
 		verify(employeeRepository, times(2)).save(employee);
 	}
@@ -73,7 +76,7 @@ class EmployeeServiceUnitTest {
 		employee.setName("Test");
 		employee.setSurname("Test");
 
-		employeeService.updateEmployee(employee);
+		employeeService.save(employee);
 
 		verify(employeeRepository, times(1)).save(employee);
 	}
@@ -91,7 +94,7 @@ class EmployeeServiceUnitTest {
 		employee.setDepartment(department);
 
 		when(employeeRepository.findById(employee.getId())).thenReturn(Optional.of(employee));
-		employeeService.deleteEmployee(employee.getId());
+		employeeService.delete(employee.getId());
 
 		verify(employeeRepository, times(1)).delete(employee);
 	}
@@ -112,10 +115,14 @@ class EmployeeServiceUnitTest {
 		employeesMock.add(employee1);
 
 		Iterable<Employee> iterable = employeesMock;
+		List<Employee> employeesList = StreamSupport
+			    .stream(iterable.spliterator(), false)
+			    .collect(Collectors.toList());
 
-		when(employeeRepository.findAll()).thenReturn(iterable);
+		when(employeeRepository.findAll()).thenReturn(employeesList);
 
-		List<Employee> employees = employeeService.filterByActive(true);
+		EmployeeSearchCriteria criteria = EmployeeSearchCriteria.builder().active(true).build();
+		List<EmployeeDTO> employees = employeeService.search(criteria);
 		assertEquals(1, employees.size());
 	}
 }

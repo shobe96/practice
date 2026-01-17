@@ -3,7 +3,6 @@ package com.example.employee.config;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,8 +26,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import com.example.employee.repositories.RoleRepository;
-import com.example.employee.repositories.UserRepository;
+import com.example.employee.services.RoleService;
+import com.example.employee.services.UserService;
 import com.example.employee.services.impl.UserDetailsServiceImpl;
 import com.example.employee.utils.AuthoritiesConstants;
 import com.example.employee.utils.CustomAccessDeniedHandler;
@@ -40,33 +39,32 @@ import com.example.employee.utils.JwtAuthFilter;
 public class SecurityConfig {
 
 	private JwtAuthFilter jwtAuthFilter;
-	private UserRepository userRepository;
-	private RoleRepository roleRepository;
+	private UserService userService;
+	private RoleService roleService;
 	
 	private AuthenticationEntryPoint authEntryPoint;
 	private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-	@Autowired
-	public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserRepository userRepository, RoleRepository roleRepository, @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
+	public SecurityConfig(JwtAuthFilter jwtAuthFilter, UserService userService, RoleService roleService, @Qualifier("customAuthenticationEntryPoint") AuthenticationEntryPoint authEntryPoint, CustomAccessDeniedHandler customAccessDeniedHandler) {
 		this.customAccessDeniedHandler = customAccessDeniedHandler;
 		this.jwtAuthFilter = jwtAuthFilter;
-		this.userRepository = userRepository;
-		this.roleRepository = roleRepository;
+		this.userService = userService;
+		this.roleService = roleService;
 		this.authEntryPoint = authEntryPoint;
 		}
 
-	@Bean
-	public UserDetailsService userDetailsService() {
-		return new UserDetailsServiceImpl(userRepository, roleRepository);
+    @Bean
+    UserDetailsService userDetailsService() {
+		return new UserDetailsServiceImpl(userService, roleService);
 	}
 
-	@Bean
-	public WebSecurityCustomizer webSecurityCustomizer() {
+    @Bean
+    WebSecurityCustomizer webSecurityCustomizer() {
 		return web -> web.ignoring().requestMatchers("/swagger-ui/**", "/v3/api-docs/**");
 	}
 
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Bean
+    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.cors(cors -> cors.configurationSource(corsConfigurationSource())).csrf(AbstractHttpConfigurer::disable)
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/api/auth/login").permitAll()
@@ -91,13 +89,13 @@ public class SecurityConfig {
 
 	}
 
-	@Bean
-	public PasswordEncoder passwordEncoder() {
+    @Bean
+    PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
 
-	@Bean
-	public AuthenticationProvider authenticationProvider() {
+    @Bean
+    AuthenticationProvider authenticationProvider() {
 		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(userDetailsService());
 		authenticationProvider.setPasswordEncoder(passwordEncoder());
@@ -105,13 +103,13 @@ public class SecurityConfig {
 
 	}
 
-	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    @Bean
+    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
 		return config.getAuthenticationManager();
 	}
-	
-	@Bean
-	public CorsConfigurationSource corsConfigurationSource() {
+
+    @Bean
+    CorsConfigurationSource corsConfigurationSource() {
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 		CorsConfiguration configuration = new CorsConfiguration();
 		configuration.addAllowedOrigin("http://localhost:4200");

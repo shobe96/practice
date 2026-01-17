@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, effect, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
 import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { Skill } from '../../data-access/skill.model';
 import { PaginatorState, Paginator } from 'primeng/paginator';
@@ -35,7 +35,7 @@ import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-w
     SearchFilterWrapperComponent
   ]
 })
-export class SkillListComponent implements OnInit {
+export class SkillListComponent {
 
   skillId: number | null = 0;
   actionButtons: ActionButtons<Skill>[] = [
@@ -112,10 +112,6 @@ export class SkillListComponent implements OnInit {
         });
       }
     });
-  }
-
-  ngOnInit(): void {
-    this._skillListFacade.retrieve();
   }
 
   addNew(): void {
