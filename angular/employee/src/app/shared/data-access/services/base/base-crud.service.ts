@@ -1,13 +1,14 @@
 import { inject } from '@angular/core';
 import { environment } from '../../../../../environments/environment.development';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { PageEvent } from '../../page-event.model';
-import { buildPaginationParams, buildSearchParams } from '../../../utils';
 import { Observable } from 'rxjs';
 import { SearchResult } from '../../search-result.model';
 
-export abstract class BaseCrudService<T extends object, C extends object = object> {
-
+export abstract class BaseCrudService<
+  T extends object,
+  C extends object = object
+> {
   protected readonly backendURL = environment.BACKEND_URL;
   protected readonly http = inject(HttpClient);
 
@@ -30,10 +31,39 @@ export abstract class BaseCrudService<T extends object, C extends object = objec
   }
 
   delete(id: number): Observable<void> {
-    return this.http.delete<void>(`${this.backendURL}${this.baseUrl}/delete/${id}`);
+    return this.http.delete<void>(
+      `${this.backendURL}${this.baseUrl}/delete/${id}`
+    );
   }
 
   search(data: C, page?: PageEvent): Observable<SearchResult<T>> {
-    return this.http.get<SearchResult<T>>(`${this.backendURL}${this.baseUrl}/search?${buildSearchParams(data)}&${buildPaginationParams(page)}`);
+    let params = new HttpParams();
+    params = this.appendParams(params, data);
+    if (page) {
+      params = this.appendParams(params, page);
+    }
+    return this.http.get<SearchResult<T>>(
+      `${this.backendURL}${this.baseUrl}/search`,
+      { params: params }
+    );
+  }
+
+  private appendParams(params: HttpParams, obj: object): HttpParams {
+    let newParams = params;
+    Object.entries(obj).forEach(([key, value]) => {
+      if (value) {
+        newParams = newParams.set(key, String(value));
+      }
+    });
+
+    return newParams;
+  }
+
+  searchAll(data: C): Observable<T[]> {
+    let params = new HttpParams();
+    params = this.appendParams(params, data);
+    return this.http.get<T[]>(`${this.backendURL}${this.baseUrl}/search`, {
+      params: params,
+    });
   }
 }
