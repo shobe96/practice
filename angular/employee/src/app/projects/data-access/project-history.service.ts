@@ -3,17 +3,17 @@ import { inject, Injectable } from '@angular/core';
 import { ProjectHistory } from './project-history.model';
 import { environment } from '../../../environments/environment.development';
 import { Observable } from 'rxjs';
+import { BaseCrudService } from '../../shared/data-access/services/base/base-crud.service';
+import { ProjecetHistorySearchCriteria } from './project-history-search.criteria';
 
 @Injectable({
   providedIn: 'root'
 })
-export class ProjectHistoryService {
+export class ProjectHistoryService extends BaseCrudService<ProjectHistory, ProjecetHistorySearchCriteria>{
 
-  private _backendURL = environment.BACKEND_URL;
-  private _baseUrl = "/api/project-history";
-  private _http = inject(HttpClient);
+  baseUrl = "/api/project-history";
 
   getProjectsHistoryOfEmployee(employeeId: number | undefined): Observable<ProjectHistory[]> {
-    return this._http.get<ProjectHistory[]>(`${this._backendURL}${this._baseUrl}/${employeeId}`);
+    return this.http.get<ProjectHistory[]>(`${this.backendURL}${this.baseUrl}/${employeeId}`);
   }
 }
