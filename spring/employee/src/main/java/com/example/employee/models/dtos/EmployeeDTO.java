@@ -15,7 +15,8 @@ public class EmployeeDTO {
     private String email;
     private Boolean active;
     private Date assignmentDate;
+    private Date addDate;
     private DepartmentDTO department;
-    private Integer userId;
+    private UserDTO user;
     private Set<SkillDTO> skills;
 }
