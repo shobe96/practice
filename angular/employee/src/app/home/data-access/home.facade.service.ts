@@ -12,6 +12,8 @@ import { Project } from '../../projects/data-access/project.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { SearchResult } from '../../shared/data-access/search-result.model';
 import { EmployeeSearchCriteria } from '../../employees/data-access/employee-search.criteria';
+import { ProjectSearchCriteria } from '../../projects/data-access/project-search.criteria';
+import { ProjecetHistorySearchCriteria } from '../../projects/data-access/project-history-search.criteria';
 
 @Injectable()
 export class HomeFacadeService {
@@ -60,25 +62,31 @@ export class HomeFacadeService {
     const userId = this._authResponse?.userId;
     if (userId) {
       //TODO: replace find by user with search
-      // const criteria: EmployeeSearchCriteria = {
-      //   userId: userId
-      // };
+      const criteria: EmployeeSearchCriteria = {
+        userId: userId
+      };
       this._withLoading(() =>
-        this._employeeService.findByUser(userId).pipe(
-          tap(employee => this._employee$.next(employee)),
-          switchMap(employee =>
-            combineLatest([
-              this._getProjectHistory(employee),
-              this._getAllEmployeesByDepartment(employee),
-              this._getActiveProject(employee)
+        this._employeeService.search(criteria).pipe(
+          tap(searchResult => {
+            if (searchResult.items) {
+              this._employee$.next(searchResult.items[0])
+            }
+          }),
+          switchMap(searchResult => {
+            const items = searchResult.items ?? []
+            return combineLatest([
+              this._getProjectHistory(items[0]),
+              this._getAllEmployeesByDepartment(items[0]),
+              this._getActiveProject(items[0])
             ])
+          }
           ),
           tap(([history, searchResult, project]) => {
             this._projectsHistory$.next(history ?? []);
             this._defaultPage.pageCount = searchResult?.size ?? 0;
             this._page$.next({ ...this._defaultPage });
             this._employees$.next(searchResult?.items ?? []);
-            this._project$.next(project ?? {});
+            this._project$.next(project?.items ? project.items[0] : {});
           }),
           catchError(() => of(null))
         )
@@ -87,9 +95,12 @@ export class HomeFacadeService {
 
   }
 
-  private _getProjectHistory(employee: Employee): Observable<ProjectHistory[] | null> {
+  private _getProjectHistory(employee: Employee): Observable<ProjectHistory[]> {
+    const criteria: ProjecetHistorySearchCriteria = {
+      employeeId: employee.id
+    };
     return this._projectHistoryService
-      .getProjectsHistoryOfEmployee(employee.id)
+      .searchAll(criteria)
       .pipe(this._handleError<ProjectHistory[]>('Error', []));
   }
 
@@ -103,11 +114,14 @@ export class HomeFacadeService {
       .pipe(this._handleError<SearchResult<Employee>>('Warning', {}));
   }
 
-  private _getActiveProject(employee: Employee): Observable<Project | null> {
+  private _getActiveProject(employee: Employee): Observable<SearchResult<Project> | null> {
     if (!employee.id) return of(null);
+    const criteria: ProjectSearchCriteria = {
+      employeeId: employee.id
+    };
     return this._projectService
-      .getProjectByEmployee(employee.id)
-      .pipe(this._handleError<Project>('Error', {}));
+      .search(criteria)
+      .pipe(this._handleError<SearchResult<Project>>('Error', {}));
   }
 
   private _getAuthResponse(): AuthResponse | null {
