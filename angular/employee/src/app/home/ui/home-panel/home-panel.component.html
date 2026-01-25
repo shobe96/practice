@@ -64,11 +64,15 @@
       <p-tabpanel value="3">
         <label for="projectName">Name:</label>
         <p id="projectName">
-          {{ activeProject.name }}
+          @if (activeProject) {
+            {{ activeProject.name }}
+          }
         </p>
         <label for="projectCode">Code:</label>
         <p id="projectCode">
-          {{ activeProject.code }}
+          @if (activeProject) {
+            {{ activeProject.code }}
+          }
         </p>
       </p-tabpanel>
       <p-tabpanel value="4">
