@@ -33,7 +33,7 @@ export class HomeComponent implements OnInit {
   private _intialPage: PageEvent = {
     page: 0,
     first: 0,
-    rows: 5,
+    size: 5,
     pageCount: 0,
     sort: 'asc',
   }

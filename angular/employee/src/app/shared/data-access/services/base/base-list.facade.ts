@@ -13,9 +13,9 @@ export abstract class BaseListFacade<T extends object, C extends object> {
   private _defaultPage: PageEvent = {
     page: 0,
     first: 0,
-    rows: 5,
+    size: 5,
     pageCount: 0,
-    sort: 'asc',
+    sort: 'id,asc',
   }
   private readonly _page$ = new BehaviorSubject<PageEvent>(this._defaultPage);
   private readonly _rowsPerPage$ = new BehaviorSubject<number[]>(rowsPerPage);
@@ -58,7 +58,7 @@ export abstract class BaseListFacade<T extends object, C extends object> {
           if (currentData.length === 1 && currentPage.page > 0) {
             this._updatePage({
               page: currentPage.page - 1,
-              first: currentPage.first - currentPage.rows
+              first: currentPage.first - currentPage.size
             });
           }
 
@@ -73,7 +73,7 @@ export abstract class BaseListFacade<T extends object, C extends object> {
     this._updatePage({
       first: event.first ?? 0,
       page: event.page ?? 0,
-      rows: event.rows ?? 0
+      size: event.rows ?? 0
     });
     this.retrieve();
   }

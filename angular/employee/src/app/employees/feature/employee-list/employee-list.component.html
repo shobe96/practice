@@ -63,7 +63,7 @@
     <p-paginator
       (onPageChange)="onPageChange($event)"
       [first]="vm.page.first"
-      [rows]="vm.page.rows"
+      [rows]="vm.page.size"
       [totalRecords]="vm.page.pageCount"
       [rowsPerPageOptions]="vm.rowsPerPage"
     ></p-paginator>

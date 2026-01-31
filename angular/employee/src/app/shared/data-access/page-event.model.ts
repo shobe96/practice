@@ -1,6 +1,6 @@
 export interface PageEvent {
   first: number;
-  rows: number;
+  size: number;
   page: number;
   pageCount: number;
   sort: string;

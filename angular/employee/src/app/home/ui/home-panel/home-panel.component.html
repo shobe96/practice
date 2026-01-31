@@ -145,7 +145,7 @@
           <p-paginator
             (onPageChange)="onPageChange($event)"
             [first]="page.first"
-            [rows]="page.rows"
+            [rows]="page.size"
             [totalRecords]="page.pageCount"
             [rowsPerPageOptions]="[5, 10, 20, 30]"
           ></p-paginator>

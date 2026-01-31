@@ -28,7 +28,7 @@ export class HomePanelComponent {
   @Input() page: PageEvent = {
     page: 0,
     first: 0,
-    rows: 5,
+    size: 5,
     pageCount: 0,
     sort: 'asc',
   };
@@ -42,6 +42,6 @@ export class HomePanelComponent {
   onPageChange(event: PaginatorState) {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
-    this.page.rows = event.rows ?? 0;
+    this.page.size = event.rows ?? 0;
   }
 }
