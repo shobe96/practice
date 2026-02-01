@@ -26,7 +26,7 @@
           [rowHover]="true"
           [value]="employee.user?.roles ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
-        >
+          >
           <ng-template pTemplate="header">
             <tr>
               <th id="roleName">Name</th>
@@ -46,7 +46,7 @@
           [rowHover]="true"
           [value]="employee.skills ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
-        >
+          >
           <ng-template pTemplate="header">
             <tr>
               <th id="skillName">Name</th>
@@ -80,7 +80,7 @@
           [rowHover]="true"
           [value]="projectsHistory"
           [tableStyle]="{ 'min-width': '70rem' }"
-        >
+          >
           <ng-template pTemplate="header">
             <tr>
               <th id="projectName">Name</th>
@@ -100,18 +100,20 @@
         </p-table>
       </p-tabpanel>
       <p-tabpanel value="5">
-        <div class="card" *ngIf="employee.department">
-          <h1>Department {{ employee.department.id }}</h1>
-          <label for="name">Name:</label>
-          <p id="name">{{ employee.department.name }}</p>
-        </div>
+        @if (employee.department) {
+          <div class="card">
+            <h1>Department {{ employee.department.id }}</h1>
+            <label for="name">Name:</label>
+            <p id="name">{{ employee.department.name }}</p>
+          </div>
+        }
       </p-tabpanel>
       <p-tabpanel value="6">
         <p-table
           [rowHover]="true"
           [value]="departmentEmployees"
           [tableStyle]="{ 'min-width': '70rem' }"
-        >
+          >
           <ng-template pTemplate="header">
             <tr>
               <th id="id">ID</th>
@@ -130,12 +132,13 @@
               <td>{{ employee.email }}</td>
               <td>{{ employee.addDate | date: "dd/MM/yyyy hh:mm:ss" }}</td>
               <td>
-                <div *ngIf="employee.active; else elseBlock">
-                  <i class="pi pi-check"></i>
-                </div>
-                <ng-template #elseBlock>
+                @if (employee.active) {
+                  <div>
+                    <i class="pi pi-check"></i>
+                  </div>
+                } @else {
                   <i class="pi pi-times"></i>
-                </ng-template>
+                }
               </td>
             </tr>
           </ng-template>

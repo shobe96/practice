@@ -1,7 +1,9 @@
 {
-  "$schema": "node_modules/nx/schemas/project-schema.json",
   "name": "employee",
+  "$schema": "node_modules/nx/schemas/project-schema.json",
   "projectType": "application",
+  "sourceRoot": "src",
+  "prefix": "app",
   "generators": {
     "@schematics/angular:component": {
       "style": "scss",
@@ -14,8 +16,6 @@
       "standalone": false
     }
   },
-  "sourceRoot": "src",
-  "prefix": "app",
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:application",
@@ -70,7 +70,8 @@
           "buildTarget": "employee:build:development"
         }
       },
-      "defaultConfiguration": "development"
+      "defaultConfiguration": "development",
+      "continuous": true
     },
     "extract-i18n": {
       "executor": "@angular-devkit/build-angular:extract-i18n",
