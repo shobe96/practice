@@ -146,7 +146,7 @@ export class RoleListComponent {
       maximizable: true
     });
 
-    dialogRef.onClose.subscribe((value: boolean) => {
+    dialogRef?.onClose.subscribe((value: boolean) => {
       if (value) {
         this.refresh();
       }
