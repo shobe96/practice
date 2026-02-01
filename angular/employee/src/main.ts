@@ -5,7 +5,7 @@ import { providePrimeNG } from 'primeng/config';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app/app.component';
-import { importProvidersFrom } from '@angular/core';
+import { importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
 import Aura from '@primeng/themes/aura';
 import { appRoutes } from './app/app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -16,7 +16,7 @@ import { errorInterceptor } from './app/shared/data-access/interceptors/error/er
 
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(BrowserModule),
+    provideZoneChangeDetection(),importProvidersFrom(BrowserModule),
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor])),
     provideHttpClient(withInterceptorsFromDi()),
     providePrimeNG({
