@@ -13,6 +13,7 @@ import { enumRoles } from '../../shared/constants.model';
 import { CustomMessageService } from '../../shared/data-access/services/custom-message/custom-message.service';
 import { SearchResult } from '../../shared/data-access/search-result.model';
 import { EmployeeSearchCriteria } from '../../employees/data-access/employee-search.criteria';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -24,6 +25,7 @@ export class AuthFacadeService {
   private readonly _roleService = inject(RoleService);
   private readonly _employeeService = inject(EmployeeService);
   private readonly _customMessageService = inject(CustomMessageService);
+  private readonly _translate = inject(TranslateService);
 
   private readonly _employees$ = new BehaviorSubject<Employee[]>([]);
   private readonly _roles$ = new BehaviorSubject<Role[]>([]);
@@ -218,6 +220,24 @@ export class AuthFacadeService {
             }
           }
         ]
+      },
+      {
+        label: 'Language',
+        icon: PrimeIcons.LANGUAGE,
+        items: [
+          {
+            label: 'English',
+            command: () => {
+              this.changeLanguage('en');
+            }
+          },
+          {
+            label: 'Serbian',
+            command: () => {
+              this.changeLanguage('rs');
+            }
+          },
+        ]
       }
     ];
   }
@@ -235,5 +255,9 @@ export class AuthFacadeService {
       else this._customMessageService.showWarn(severity, msg);
       return of(fallback);
     });
+  }
+
+  private changeLanguage(lang: string) {
+    this._translate.use(lang);
   }
 }

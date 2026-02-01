@@ -1,6 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { NavBarComponent } from './shared/feature/nav-bar/nav-bar.component';
 import { RouterOutlet } from '@angular/router';
+import {
+    TranslateService,
+    TranslatePipe,
+    TranslateDirective
+} from "@ngx-translate/core";
 
 @Component({
   selector: 'app-root',
@@ -10,4 +15,12 @@ import { RouterOutlet } from '@angular/router';
 })
 export class AppComponent {
   title = 'employee';
+  private translate = inject(TranslateService);
+
+      constructor() {
+        this.translate.addLangs(['rs', 'en']);
+        this.translate.setFallbackLang('en');
+        this.translate.use('en');
+    }
+
 }

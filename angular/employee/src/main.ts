@@ -12,6 +12,8 @@ import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
 import { authInterceptor } from './app/shared/data-access/interceptors/auth/auth.interceptor';
 import { errorInterceptor } from './app/shared/data-access/interceptors/error/error.interceptor';
+import {provideTranslateService} from "@ngx-translate/core";
+import {provideTranslateHttpLoader} from "@ngx-translate/http-loader";
 
 
 bootstrapApplication(AppComponent, {
@@ -25,6 +27,14 @@ bootstrapApplication(AppComponent, {
       }
     }),
     provideAnimations(),
+    provideTranslateService({
+      loader: provideTranslateHttpLoader({
+        prefix: '/assets/i18n/',
+        suffix: '.json'
+      }),
+      fallbackLang: 'en',
+      lang: 'en'
+    }),
     appRoutes,
     MessageService,
     DialogService,
