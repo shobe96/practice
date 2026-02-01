@@ -9,7 +9,7 @@ import { Tabs, TabList, Tab, TabPanels, TabPanel } from 'primeng/tabs';
 import { Ripple } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { PrimeTemplate } from 'primeng/api';
-import { NgIf, DatePipe } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { Button } from 'primeng/button';
 
 @Component({
@@ -17,7 +17,7 @@ import { Button } from 'primeng/button';
   templateUrl: './home-panel.component.html',
   styleUrl: './home-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, NgIf, Paginator, Button, DatePipe]
+  imports: [Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Paginator, Button, DatePipe]
 })
 export class HomePanelComponent {
 

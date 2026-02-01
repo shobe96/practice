@@ -2,44 +2,45 @@
   <form class="role-form" [formGroup]="roleFormGroup" (ngSubmit)="submit()">
     <input formControlName="name" pInputText placeholder="Name of role" />
     @if(isInvalid('name')) {
-    <app-validation-messages
-      [control]="roleFormGroup.controls['name']"
+      <app-validation-messages
+        [control]="roleFormGroup.controls['name']"
       [messages]="{required: 'Name is required!',
         minlength: 'Name must be longer than 5 characters!',
         maxlength: 'Name must be shorter than 25 characters!'}"
-    />
+        />
     }
     <input formControlName="code" pInputText placeholder="Code" />
     @if(isInvalid('code')) {
-    <app-validation-messages
-      [control]="roleFormGroup.controls['code']"
+      <app-validation-messages
+        [control]="roleFormGroup.controls['code']"
       [messages]="{required: 'Code is required!',
         minlength: 'Code must be longer than 3 characters!',
         maxlength: 'Code must be shorter than 5 characters!'}"
-    />
+        />
     }
     <input formControlName="description" pInputText placeholder="Description" />
     @if(isInvalid('description')) {
-    <app-validation-messages
-      [control]="roleFormGroup.controls['description']"
+      <app-validation-messages
+        [control]="roleFormGroup.controls['description']"
       [messages]="{required: 'Description is required!',
         minlength: 'Description must be longer than 5 characters!',
         maxlength: 'Description must be shorter than 100 characters!'}"
-    />
-    } @if (viewModel(); as vm) { @if(vm.loading) {
-    <div class="card flex justify-center progress-spinner">
-      <p-progress-spinner ariaLabel="loading" />
-    </div>
-    } }
-    <div class="action-buttons">
-      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
-      <p-button
-        *ngIf="!disable"
-        severity="success"
-        [disabled]="roleFormGroup.invalid"
-        label="Submit"
-        type="submit"
-      />
-    </div>
-  </form>
-</div>
+        />
+      } @if (viewModel(); as vm) { @if(vm.loading) {
+      <div class="card flex justify-center progress-spinner">
+        <p-progress-spinner ariaLabel="loading" />
+      </div>
+      } }
+      <div class="action-buttons">
+        <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+        @if (!disable) {
+          <p-button
+            severity="success"
+            [disabled]="roleFormGroup.invalid"
+            label="Submit"
+            type="submit"
+            />
+        }
+      </div>
+    </form>
+  </div>

@@ -4,7 +4,7 @@ import { Role } from '../../data-access/role.model';
 import { RoleEditFacadeService } from '../../data-access/role-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputText } from 'primeng/inputtext';
-import { NgIf } from '@angular/common';
+
 import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';
@@ -15,7 +15,7 @@ import { ValidationMessagesComponent } from '../../../shared/ui/validation-messa
   templateUrl: './role-edit.component.html',
   styleUrl: './role-edit.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, InputText, NgIf, Button, ProgressSpinner, ValidationMessagesComponent]
+  imports: [ReactiveFormsModule, InputText, Button, ProgressSpinner, ValidationMessagesComponent]
 })
 export class RoleEditComponent implements OnInit {
   roleFormGroup!: FormGroup;
