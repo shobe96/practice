@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { EmployeeService } from '../../employees/data-access/employee.service';
-import { BehaviorSubject, catchError, combineLatest, finalize, Observable, of, tap } from 'rxjs';
+import { BehaviorSubject, catchError, combineLatest, finalize, map, Observable, of, startWith, tap } from 'rxjs';
 import { AuthService } from './auth.service';
 import { Router } from '@angular/router';
 import { Employee } from '../../employees/data-access/employee.model';
@@ -27,17 +27,29 @@ export class AuthFacadeService {
   private readonly _customMessageService = inject(CustomMessageService);
   private readonly _translate = inject(TranslateService);
 
+  private get _storedAuth() {
+    const stored = localStorage.getItem('authResponse');
+    return stored ? JSON.parse(stored) : null;
+  }
+
   private readonly _employees$ = new BehaviorSubject<Employee[]>([]);
-  private readonly _roles$ = new BehaviorSubject<Role[]>([]);
+  private readonly _roles$ = new BehaviorSubject<Role[]>(this._storedAuth?.roles ?? []);
   private readonly _loading$ = new BehaviorSubject<boolean>(false);
-  private readonly _menuItems$ = new BehaviorSubject<MenuItem[]>(this._buildMenuItems());
+  private readonly _isLoggedIn$ = new BehaviorSubject<boolean>(!!this._storedAuth);
+
+  public readonly menuItems$ = combineLatest([
+    this._translate.onLangChange.pipe(startWith(null)),
+    this._isLoggedIn$,
+    this._roles$
+  ]).pipe(map(([, isLoggedIn, roles])=> this._getProcessedMenu(isLoggedIn, roles)
+  ));
 
   private _tokenExpirationTimer?: ReturnType<typeof setTimeout>;
 
   viewModel$ = combineLatest({
     employees: this._employees$.asObservable(),
     roles: this._roles$.asObservable(),
-    menuItems: this._menuItems$.asObservable(),
+    menuItems: this.menuItems$,
     loading: this._loading$.asObservable()
   });
 
@@ -47,11 +59,13 @@ export class AuthFacadeService {
   }
 
   checkAuthResponse(): void {
-    const stored = localStorage.getItem('authResponse');
-    if (!stored) return;
-
-    const authResponse: AuthResponse = JSON.parse(stored);
-    this._updateMenuItems(true, authResponse.roles);
+    const auth = this._storedAuth;
+    if (auth) {
+      this._isLoggedIn$.next(true);
+      this._roles$.next(auth.roles ?? []);
+      // Re-initialize auto-logout timer if necessary
+      this._autoLogout(auth.expiration ?? 0);
+    }
   }
 
   loginUser(authRequest: AuthRequest): void {
@@ -60,7 +74,8 @@ export class AuthFacadeService {
       tap((response: AuthResponse) => {
         localStorage.setItem('authResponse', JSON.stringify(response));
         this._autoLogout(response.expiration ?? 0);
-        this._updateMenuItems(true, response.roles);
+        this._isLoggedIn$.next(true);
+        this._roles$.next(response.roles ?? []);
         this._customMessageService.showSuccess('Success', `Welcome ${response.username}`);
         this._router.navigate(["/home/panel"]);
       }),
@@ -92,9 +107,11 @@ export class AuthFacadeService {
   }
 
   logout(): void {
+    console.log("LOGOUT");
     localStorage.removeItem("authResponse");
     clearTimeout(this._tokenExpirationTimer);
-    this._updateMenuItems(false);
+    this._isLoggedIn$.next(false);
+    this._roles$.next([]);
     this._router.navigate(['/auth/login']);
   }
 
@@ -133,88 +150,69 @@ export class AuthFacadeService {
       .subscribe();
   }
 
-  private _updateMenuItems(isLoggedIn: boolean, roles: Role[] = []): void {
-    const items = this._buildMenuItems();
-
-    const isAdmin = roles.some(role => role.code === enumRoles.ADMIN);
-
-    items[1].visible = isAdmin;
-    const userItems = items[2].items ?? [];
-
-    userItems[0].visible = isAdmin;
-    userItems[1].visible = isAdmin;
-    userItems[2].visible = !isLoggedIn;
-    userItems[3].visible = isAdmin;
-    userItems[4].visible = isLoggedIn;
-
-    this._menuItems$.next(items);
-  }
-
   private _buildMenuItems(): MenuItem[] {
     return [
       {
-        label: 'Home',
+        label: this._translate.instant("NAVBAR.HOME"),
         icon: PrimeIcons.HOME,
         routerLink: "/home/panel",
       },
       {
-        label: 'Features',
+        label: this._translate.instant("NAVBAR.FEATURES.TITLE"),
         icon: PrimeIcons.LIST,
-        visible: false,
         items: [
           {
-            label: 'Employees',
+            label: this._translate.instant("NAVBAR.FEATURES.EMPLOYEES"),
             icon: PrimeIcons.USERS,
             routerLink: '/employee/list'
           },
           {
-            label: 'Departments',
+            label: this._translate.instant("NAVBAR.FEATURES.DEPARTMENTS"),
             icon: PrimeIcons.SITEMAP,
             routerLink: '/department/list'
           },
           {
-            label: 'Skills',
+            label: this._translate.instant("NAVBAR.FEATURES.SKILLS"),
             icon: PrimeIcons.ANDROID,
             routerLink: '/skill/list'
           },
           {
-            label: 'Projects',
+            label: this._translate.instant("NAVBAR.FEATURES.PROJECTS"),
             icon: PrimeIcons.CODE,
             routerLink: '/project/list'
           },
         ]
       },
       {
-        label: 'User',
+        label: this._translate.instant("NAVBAR.USER.TITLE"),
         icon: PrimeIcons.USER,
         items: [
           {
-            label: 'Users',
+            label: this._translate.instant("NAVBAR.USER.USERS"),
             icon: PrimeIcons.USERS,
             routerLink: '/user/list',
             visible: false
           },
           {
-            label: 'Roles',
+            label: this._translate.instant("NAVBAR.USER.ROLES"),
             icon: PrimeIcons.WRENCH,
             routerLink: '/role/list',
             visible: false
           },
           {
-            label: 'Login',
+            label: this._translate.instant("NAVBAR.USER.LOGIN"),
             icon: PrimeIcons.SIGN_IN,
             routerLink: '/auth/login'
           },
           {
-            label: 'Register',
+            label: this._translate.instant("NAVBAR.USER.REGISTER"),
             icon: PrimeIcons.USER_PLUS,
             routerLink: '/auth/register',
             visible: false
           },
           {
-            label: 'Logout',
+            label: this._translate.instant("NAVBAR.USER.LOGOUT"),
             icon: PrimeIcons.SIGN_OUT,
-            visible: false,
             command: () => {
               this.logout();
             }
@@ -222,19 +220,19 @@ export class AuthFacadeService {
         ]
       },
       {
-        label: 'Language',
+        label: this._translate.instant("NAVBAR.LANGUAGE.TITLE"),
         icon: PrimeIcons.LANGUAGE,
         items: [
           {
-            label: 'English',
+            label: this._translate.instant("NAVBAR.LANGUAGE.ENGLISH"),
             command: () => {
-              this.changeLanguage('en');
+              this._changeLanguage('en');
             }
           },
           {
-            label: 'Serbian',
+            label: this._translate.instant("NAVBAR.LANGUAGE.SERBIAN"),
             command: () => {
-              this.changeLanguage('rs');
+              this._changeLanguage('rs');
             }
           },
         ]
@@ -257,7 +255,22 @@ export class AuthFacadeService {
     });
   }
 
-  private changeLanguage(lang: string) {
+  private _changeLanguage(lang: string) {
     this._translate.use(lang);
+  }
+
+  private _getProcessedMenu(isLoggedIn: boolean, roles: Role[]): MenuItem[] {
+    const items = this._buildMenuItems();
+    const isAdmin = roles.some(role => role.code === enumRoles.ADMIN);
+
+    items[1].visible = isAdmin; // Features
+    const userItems = items[2].items ?? [];
+
+    userItems[0].visible = isAdmin;     // Users
+    userItems[1].visible = isAdmin;     // Roles
+    userItems[2].visible = !isLoggedIn; // Login
+    userItems[3].visible = isAdmin;     // Register
+    userItems[4].visible = isLoggedIn;  // Logout
+    return items;
   }
 }

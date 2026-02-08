@@ -1,0 +1,25 @@
+{
+  "NAVBAR": {
+    "HOME": "Home",
+    "FEATURES": {
+      "TITLE": "Features",
+      "EMPLOYEES": "Employees",
+      "DEPARTMENTS": "Departments",
+      "SKILLS": "Skills",
+      "PROJECTS": "Projects"
+    },
+    "USER": {
+      "TITLE": "User",
+      "USERS": "Users",
+      "ROLES": "Roles",
+      "LOGIN": "Login",
+      "REGISTER": "Register",
+      "LOGOUT": "Logout"
+    },
+    "LANGUAGE": {
+      "TITLE": "Language",
+      "ENGLISH": "English",
+      "SERBIAN": "Serbian"
+    }
+  }
+}

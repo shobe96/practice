@@ -1,0 +1,25 @@
+{
+  "NAVBAR": {
+    "HOME": "Početna",
+    "FEATURES": {
+      "TITLE": "Funkcije",
+      "EMPLOYEES": "Zaposleni",
+      "DEPARTMENTS": "Odeljenja",
+      "SKILLS": "Veštine",
+      "PROJECTS": "Projekti"
+    },
+    "USER": {
+      "TITLE": "Korisnik",
+      "USERS": "Korisnici",
+      "ROLES": "Uloge",
+      "LOGIN": "Prijava",
+      "REGISTER": "Registracija",
+      "LOGOUT": "Odjava"
+    },
+    "LANGUAGE": {
+      "TITLE": "Jezik",
+      "ENGLISH": "Engleski",
+      "SERBIAN": "Srpski"
+    }
+  }
+}
