@@ -21,5 +21,21 @@
       "ENGLISH": "Engleski",
       "SERBIAN": "Srpski"
     }
+  },
+  "AUTH": {
+    "LOGIN": {
+      "TITLE": "Prijava",
+      "USERNAME": "Korisničko Ime",
+      "PASSWORD": "Šifra",
+      "SUBMIT": "Pošalji",
+      "SHOW": "Pokaži šifru",
+      "HIDE": "Sakrij šifru"
+    }
+  },
+  "HOME": {
+    "NOT_LOGGED_IN": "Niste prijavljeni molimo vas da pritisnite dugme ispod ili idite u meni Korisnici da se prijavite."
+  },
+  "VALIDATIONS": {
+    "REQUIRED": "{{ field }} je obavezno!"
   }
 }

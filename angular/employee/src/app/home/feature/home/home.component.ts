@@ -9,6 +9,7 @@ import { Toast } from 'primeng/toast';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PageEvent } from '../../../shared/data-access/page-event.model';
+import { TranslatePipe } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home',
@@ -21,7 +22,8 @@ import { PageEvent } from '../../../shared/data-access/page-event.model';
     Tooltip,
     HomePanelComponent,
     Toast,
-    ProgressSpinner
+    ProgressSpinner,
+    TranslatePipe
   ]
 })
 export class HomeComponent implements OnInit {

@@ -21,5 +21,21 @@
       "ENGLISH": "English",
       "SERBIAN": "Serbian"
     }
+  },
+  "AUTH": {
+    "LOGIN": {
+      "TITLE": "Login",
+      "USERNAME": "Username",
+      "PASSWORD": "Password",
+      "SUBMIT": "Submit",
+      "SHOW": "Show Password",
+      "HIDE": "Hide Password"
+    }
+  },
+  "HOME": {
+    "NOT_LOGGED_IN": "You're not logged in please press button below or go to menu Users to login."
+  },
+  "VALIDATIONS": {
+    "REQUIRED": "{{ field }} is required!"
   }
 }

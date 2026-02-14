@@ -1,13 +1,19 @@
 <h1>
-  Login
+  {{ 'AUTH.LOGIN.TITLE' | translate }}
 </h1>
 <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="submit()">
-  <input formControlName="username" pInputText placeholder="Username" />
+  <input
+    formControlName="username"
+    pInputText
+    [placeholder]="usernameField()"
+  />
   @if(authFormGroup.controls['username'].invalid &&
   authFormGroup.controls['username'].dirty) {
   <div class="validation-messages">
     @if(authFormGroup.controls['username'].errors?.['required']) {
-    <span class="block">Username is required!</span>
+    <span class="block">{{
+      'VALIDATIONS.REQUIRED' | translate : { field: usernameField }
+    }}</span>
     }
   </div>
   }
@@ -16,7 +22,7 @@
     <input
       formControlName="password"
       pInputText
-      placeholder="Password"
+      [placeholder]="passwordField()"
       [type]="showPassword() ? 'text' : 'password'"
     />
 
@@ -38,11 +44,17 @@
   authFormGroup.controls['password'].dirty) {
   <div class="validation-messages">
     @if(authFormGroup.controls['password'].errors?.['required']) {
-    <span class="block">Password is required!</span>
+    <span class="block">{{
+      'VALIDATIONS.REQUIRED' | translate : { field: passwordField }
+    }}</span>
     }
   </div>
   }
-  <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
+  <p-button
+    [disabled]="authFormGroup.invalid"
+    [label]="submitTranslation"
+    type="submit"
+  />
 </form>
 @if(viewModel().loading) {
 <div class="card flex justify-center progress-spinner">
