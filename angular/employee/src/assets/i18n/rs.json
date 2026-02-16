@@ -29,13 +29,73 @@
       "PASSWORD": "Šifra",
       "SUBMIT": "Pošalji",
       "SHOW": "Pokaži šifru",
-      "HIDE": "Sakrij šifru"
+      "HIDE": "Sakrij šifru",
+      "WELCOME": "Dobrodošao"
     }
   },
   "HOME": {
-    "NOT_LOGGED_IN": "Niste prijavljeni molimo vas da pritisnite dugme ispod ili idite u meni Korisnici da se prijavite."
+    "NOT_LOGGED_IN": "Niste prijavljeni molimo vas da pritisnite dugme ispod ili idite u meni Korisnici da se prijavite.",
+    "PANEL": {
+      "GENERAL": {
+        "TITLE": "Genralno",
+        "EMPLOYEE": "Zaposleni",
+        "NAME": "Ime",
+        "SURNAME": "Prezime",
+        "EMAIL": "Elektronska Pošta",
+        "STATUS": "Status",
+        "ASSAIGNED": "Zadužen",
+        "FREE": "Slobodan"
+      },
+      "ROLES": {
+        "TITLE": "Uloge",
+        "NAME": "Ime",
+        "DESCRIPTION": "Opis"
+      },
+      "SKILLS": {
+        "TITLE": "Veštine",
+        "NAME": "Ime",
+        "DESCRIPTION": "Opis"
+      },
+      "CURRENTLY_ASSAIGNED_PROJECT": {
+        "TITLE": "Trenutni Projekat",
+        "NAME": "Ime",
+        "CODE": "Kod"
+      },
+      "PROJECT_HISTORY": {
+        "TITLE": "Istorija Projekata",
+        "NAME": "Ime",
+        "CODE": "Kod",
+        "ASSAIGNED_ON": "Zadužen na",
+        "UNASSAIGNED_ON": "Razadužen na"
+      },
+      "DEPARTMENT": {
+        "TITLE": "Odeljenje",
+        "NAME": "Ime"
+      },
+      "DEPARTMENT_EMPLOYEES": {
+        "TITLE": "Zaposleni Odeljenja",
+        "ID": "ID",
+        "NAME": "Ime",
+        "SURNAME": "Prezime",
+        "EMAIL": "Elektronska Pošta",
+        "EMPLOYMENT_DATE": "Datum Zaposlenja",
+        "ACTIVE": "Zadužen"
+      }
+    }
+  },
+  "EMPLOYEES": {
+    "LIST": {
+      "ADD": "",
+      "FILTERS": {},
+      "TABLE": {}
+    },
+    "FORM": {},
+    "DELETE": {}
   },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} je obavezno!"
+  },
+  "MODAL": {
+    "SUCCESS": "Uspeh"
   }
 }

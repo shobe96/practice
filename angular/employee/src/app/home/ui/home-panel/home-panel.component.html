@@ -1,36 +1,48 @@
 <div class="card">
   <p-tabs value="0">
     <p-tablist>
-      <p-tab value="0">General</p-tab>
-      <p-tab value="1">Roles</p-tab>
-      <p-tab value="2">Skills</p-tab>
-      <p-tab value="3">Currently Assigned project</p-tab>
-      <p-tab value="4">Projects History</p-tab>
-      <p-tab value="5">Department</p-tab>
-      <p-tab value="6">Department Employees</p-tab>
+      <p-tab value="0">{{ 'HOME.PANEL.GENERAL.TITLE' | translate }}</p-tab>
+      <p-tab value="1">{{ 'HOME.PANEL.ROLES.TITLE' | translate }}</p-tab>
+      <p-tab value="2">{{ 'HOME.PANEL.SKILLS.TITLE' | translate }}</p-tab>
+      <p-tab value="3">{{
+        'HOME.PANEL.CURRENTLY_ASSAIGNED_PROJECT.TITLE' | translate
+      }}</p-tab>
+      <p-tab value="4">{{
+        'HOME.PANEL.PROJECT_HISTORY.TITLE' | translate
+      }}</p-tab>
+      <p-tab value="5">{{ 'HOME.PANEL.DEPARTMENT.TITLE' | translate }}</p-tab>
+      <p-tab value="6">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.TITLE" | translate}}</p-tab>
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
-        <h1>Employee {{ employee.id }}</h1>
-        <label for="name">Name:</label>
+        <h1>
+          {{ 'HOME.PANEL.GENERAL.EMPLOYEE' | translate }} {{ employee.id }}
+        </h1>
+        <label for="name">{{ 'HOME.PANEL.GENERAL.NAME' | translate }}:</label>
         <p id="name">{{ employee.name }}</p>
-        <label for="surname">Surname:</label>
+        <label for="surname"
+          >{{ 'HOME.PANEL.GENERAL.SURNAME' | translate }}:</label
+        >
         <p id="surname">{{ employee.surname }}</p>
-        <label for="email">Email:</label>
+        <label for="email">{{ 'HOME.PANEL.GENERAL.EMAIL' | translate }}:</label>
         <p id="email">{{ employee.email }}</p>
-        <label for="status">Status:</label>
-        <p id="status">{{ employee.active ? 'Assaigned' : 'Free' }}</p>
+        <label for="status"
+          >{{ 'HOME.PANEL.GENERAL.STATUS' | translate }}:</label
+        >
+        <p id="status">{{ translateStatus(employee.active) }}</p>
       </p-tabpanel>
       <p-tabpanel value="1">
         <p-table
           [rowHover]="true"
           [value]="employee.user?.roles ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
-          >
+        >
           <ng-template pTemplate="header">
             <tr>
-              <th id="roleName">Name</th>
-              <th id="description">Description</th>
+              <th id="roleName">{{ 'HOME.PANEL.ROLES.NAME' | translate }}</th>
+              <th id="description">
+                {{ 'HOME.PANEL.ROLES.DESCRIPTION' | translate }}
+              </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-role>
@@ -46,11 +58,13 @@
           [rowHover]="true"
           [value]="employee.skills ?? []"
           [tableStyle]="{ 'min-width': '70rem' }"
-          >
+        >
           <ng-template pTemplate="header">
             <tr>
-              <th id="skillName">Name</th>
-              <th id="description">Description</th>
+              <th id="skillName">{{ 'HOME.PANEL.SKILLS.NAME' | translate }}</th>
+              <th id="description">
+                {{ 'HOME.PANEL.SKILLS.DESCRIPTION' | translate }}
+              </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-skill>
@@ -62,16 +76,24 @@
         </p-table>
       </p-tabpanel>
       <p-tabpanel value="3">
-        <label for="projectName">Name:</label>
+        <label for="projectName"
+          >{{
+            'HOME.PANEL.CURRENTLY_ASSAIGNED_PROJECT.NAME' | translate
+          }}:</label
+        >
         <p id="projectName">
           @if (activeProject) {
-            {{ activeProject.name }}
+          {{ activeProject.name }}
           }
         </p>
-        <label for="projectCode">Code:</label>
+        <label for="projectCode"
+          >{{
+            'HOME.PANEL.CURRENTLY_ASSAIGNED_PROJECT.CODE' | translate
+          }}:</label
+        >
         <p id="projectCode">
           @if (activeProject) {
-            {{ activeProject.code }}
+          {{ activeProject.code }}
           }
         </p>
       </p-tabpanel>
@@ -80,32 +102,45 @@
           [rowHover]="true"
           [value]="projectsHistory"
           [tableStyle]="{ 'min-width': '70rem' }"
-          >
+        >
           <ng-template pTemplate="header">
             <tr>
-              <th id="projectName">Name</th>
-              <th id="code">Code</th>
-              <th id="endDate">Assigned on</th>
-              <th id="endDate">Unassigned on</th>
+              <th id="projectName">
+                {{ 'HOME.PANEL.PROJECT_HISTORY.NAME' | translate }}
+              </th>
+              <th id="code">
+                {{ 'HOME.PANEL.PROJECT_HISTORY.CODE' | translate }}
+              </th>
+              <th id="startDate">
+                {{ 'HOME.PANEL.PROJECT_HISTORY.ASSAIGNED_ON' | translate }}
+              </th>
+              <th id="endDate">
+                {{ 'HOME.PANEL.PROJECT_HISTORY.UNASSAIGNED_ON' | translate }}
+              </th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-projectHistory>
             <tr>
               <td>{{ projectHistory.project.name }}</td>
               <td>{{ projectHistory.project.code }}</td>
-              <td>{{ projectHistory.startDate | date: "dd/MM/yyyy" }}</td>
-              <td>{{ projectHistory.endDate | date: "dd/MM/yyyy" }}</td>
+              <td>{{ projectHistory.startDate | date : 'dd/MM/yyyy' }}</td>
+              <td>{{ projectHistory.endDate | date : 'dd/MM/yyyy' }}</td>
             </tr>
           </ng-template>
         </p-table>
       </p-tabpanel>
       <p-tabpanel value="5">
         @if (employee.department) {
-          <div class="card">
-            <h1>Department {{ employee.department.id }}</h1>
-            <label for="name">Name:</label>
-            <p id="name">{{ employee.department.name }}</p>
-          </div>
+        <div class="card">
+          <h1>
+            {{ 'HOME.PANEL.DEPARTMENT.TITLE' | translate }}
+            {{ employee.department.id }}
+          </h1>
+          <label for="name"
+            >{{ 'HOME.PANEL.DEPARTMENT.NAME' | translate }}:</label
+          >
+          <p id="name">{{ employee.department.name }}</p>
+        </div>
         }
       </p-tabpanel>
       <p-tabpanel value="6">
@@ -113,15 +148,15 @@
           [rowHover]="true"
           [value]="departmentEmployees"
           [tableStyle]="{ 'min-width': '70rem' }"
-          >
+        >
           <ng-template pTemplate="header">
             <tr>
-              <th id="id">ID</th>
-              <th id="name">Name</th>
-              <th id="surname">Surname</th>
-              <th id="email">Email</th>
-              <th id="employmentDate">Employment Date</th>
-              <th id="active">Active</th>
+              <th id="id">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.ID" | translate}}</th>
+              <th id="name">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.NAME" | translate}}</th>
+              <th id="surname">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.SURNAME" | translate}}</th>
+              <th id="email">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.EMAIL" | translate}}</th>
+              <th id="employmentDate">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.EMPLOYMENT_DATE" | translate}}</th>
+              <th id="active">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.ACTIVE" | translate}}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-employee>
@@ -130,14 +165,14 @@
               <td>{{ employee.name }}</td>
               <td>{{ employee.surname }}</td>
               <td>{{ employee.email }}</td>
-              <td>{{ employee.addDate | date: "dd/MM/yyyy hh:mm:ss" }}</td>
+              <td>{{ employee.addDate | date : 'dd/MM/yyyy hh:mm:ss' }}</td>
               <td>
                 @if (employee.active) {
-                  <div>
-                    <i class="pi pi-check"></i>
-                  </div>
+                <div>
+                  <i class="pi pi-check"></i>
+                </div>
                 } @else {
-                  <i class="pi pi-times"></i>
+                <i class="pi pi-times"></i>
                 }
               </td>
             </tr>
@@ -156,7 +191,4 @@
       </p-tabpanel>
     </p-tabpanels>
   </p-tabs>
-  <div class="action-buttons">
-    <p-button label="Edit" (onClick)="goToEdit()" />
-  </div>
 </div>

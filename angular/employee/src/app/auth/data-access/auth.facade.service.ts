@@ -76,7 +76,9 @@ export class AuthFacadeService {
         this._autoLogout(response.expiration ?? 0);
         this._isLoggedIn$.next(true);
         this._roles$.next(response.roles ?? []);
-        this._customMessageService.showSuccess('Success', `Welcome ${response.username}`);
+        const message = this._translate.instant("AUTH.LOGIN.WELCOME");
+        const success = this._translate.instant("MODAL.SUCCESS");
+        this._customMessageService.showSuccess(success, `${message} ${response.username}`);
         this._router.navigate(["/home/panel"]);
       }),
       catchError((err) => {

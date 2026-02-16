@@ -29,13 +29,73 @@
       "PASSWORD": "Password",
       "SUBMIT": "Submit",
       "SHOW": "Show Password",
-      "HIDE": "Hide Password"
+      "HIDE": "Hide Password",
+      "WELCOME": "Welcome"
     }
   },
   "HOME": {
-    "NOT_LOGGED_IN": "You're not logged in please press button below or go to menu Users to login."
+    "NOT_LOGGED_IN": "You're not logged in please press button below or go to menu Users to login.",
+    "PANEL": {
+      "GENERAL": {
+        "TITLE": "General",
+        "EMPLOYEE": "Employee",
+        "NAME": "Name",
+        "SURNAME": "Surname",
+        "EMAIL": "Email",
+        "STATUS": "Status",
+        "ASSAIGNED": "Assaigned",
+        "FREE": "Free"
+      },
+      "ROLES": {
+        "TITLE": "Roles",
+        "NAME": "Name",
+        "DESCRIPTION": "Description"
+      },
+      "SKILLS": {
+        "TITLE": "Skills",
+        "NAME": "Name",
+        "DESCRIPTION": "Description"
+      },
+      "CURRENTLY_ASSAIGNED_PROJECT": {
+        "TITLE": "Currently Assigned Project",
+        "NAME": "Name",
+        "CODE": "Code"
+      },
+      "PROJECT_HISTORY": {
+        "TITLE": "Projects History",
+        "NAME": "Name",
+        "CODE": "Code",
+        "ASSAIGNED_ON": "Assaigned on",
+        "UNASSAIGNED_ON": "Unassaigned on"
+      },
+      "DEPARTMENT": {
+        "TITLE": "Department",
+        "NAME": "Name"
+      },
+      "DEPARTMENT_EMPLOYEES": {
+        "TITLE": "Department Employees",
+        "ID": "ID",
+        "NAME": "Name",
+        "SURNAME": "Surname",
+        "EMAIL": "Email",
+        "EMPLOYMENT_DATE": "Employment Date",
+        "ACTIVE": "ACTIVE"
+      }
+    }
+  },
+  "EMPLOYEES": {
+    "LIST": {
+      "ADD": "",
+      "FILTERS": {},
+      "TABLE": {}
+    },
+    "FORM": {},
+    "DELETE": {}
   },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} is required!"
+  },
+  "MODAL": {
+    "SUCCESS": "Success"
   }
 }
