@@ -85,9 +85,21 @@
   },
   "EMPLOYEES": {
     "LIST": {
-      "ADD": "",
-      "FILTERS": {},
-      "TABLE": {}
+      "ADD": "Dodaj",
+      "FILTERS": {
+        "NAME": "Ime Zaposlenog",
+        "SURNAME": "Prezime Zaposlenog",
+        "EMAIL": "Elektronska Pošta Zaposlenog"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Ime",
+        "SURNAME": "Prezime",
+        "EMAIL": "Elektronska Pošta",
+        "EMPLOYMENT_DATE": "Datum Zaposlenja",
+        "ACTIVE": "Zadužen",
+        "ACTIONS": "Akcije"
+      }
     },
     "FORM": {},
     "DELETE": {}
@@ -97,5 +109,17 @@
   },
   "MODAL": {
     "SUCCESS": "Uspeh"
+  },
+  "TABLE": {
+    "ACTIONS": {
+      "VIEW": "Pogledaj {{feature}}",
+      "EDIT": "Izmeni {{feature}}",
+      "DELETE": "Obriši {{feature}}"
+    }
+  },
+  "FILTERS": {
+    "TITLE": "Filteri za Pretragu",
+    "CLEAR": "Očistie Filtere",
+    "REFRESH": "Osveži Listu"
   }
 }

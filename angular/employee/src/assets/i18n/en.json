@@ -79,15 +79,27 @@
         "SURNAME": "Surname",
         "EMAIL": "Email",
         "EMPLOYMENT_DATE": "Employment Date",
-        "ACTIVE": "ACTIVE"
+        "ACTIVE": "Active"
       }
     }
   },
   "EMPLOYEES": {
     "LIST": {
-      "ADD": "",
-      "FILTERS": {},
-      "TABLE": {}
+      "ADD": "Add new",
+      "FILTERS": {
+        "NAME": "Name of employee",
+        "SURNAME": "Surname of employee",
+        "EMAIL": "Email of employee"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Name",
+        "SURNAME": "Surname",
+        "EMAIL": "Email",
+        "EMPLOYMENT_DATE": "Employment Date",
+        "ACTIVE": "Active",
+        "ACTIONS": "Actions"
+      }
     },
     "FORM": {},
     "DELETE": {}
@@ -97,5 +109,17 @@
   },
   "MODAL": {
     "SUCCESS": "Success"
+  },
+  "TABLE": {
+    "ACTIONS": {
+      "VIEW": "View {{feature}}",
+      "EDIT": "Edit {{feature}}",
+      "DELETE": "Delete {{feature}}"
+    }
+  },
+  "FILTERS": {
+    "TITLE": "Search Filters",
+    "CLEAR": "Clear Filters",
+    "REFRESH": "Refresh List"
   }
 }

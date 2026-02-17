@@ -5,15 +5,15 @@
     (clear)="clear()"
     (refresh)="refresh()"
   >
-    <input formControlName="name" pInputText placeholder="Name of employee" />
+    <input formControlName="name" pInputText [placeholder]="nameSearch()" />
     <input
       formControlName="surname"
       pInputText
-      placeholder="Surname of employee"
+      [placeholder]="surnameSearch()"
     />
-    <input pInputText formControlName="email" placeholder="Email of employee" />
+    <input pInputText formControlName="email" [placeholder]="emailSearch()" />
   </app-search-filter-wrapper>
-  <p-button label="Add New" (onClick)="addNew()" />
+  <p-button [label]="addNewLabel()" (onClick)="addNew()" />
   @if(vm.data.length) {
   <p-table
     [rowHover]="true"
@@ -22,13 +22,13 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th id="id">ID</th>
-        <th id="name">Name</th>
-        <th id="surname">Surname</th>
-        <th id="email">Email</th>
-        <th id="employmentDate">Employment Date</th>
-        <th id="active">Active</th>
-        <th id="actions">Actions</th>
+        <th id="id">{{"EMPLOYEES.LIST.TABLE.ID" | translate}}</th>
+        <th id="name">{{"EMPLOYEES.LIST.TABLE.NAME" | translate}}</th>
+        <th id="surname">{{"EMPLOYEES.LIST.TABLE.SURNAME" | translate}}</th>
+        <th id="email">{{"EMPLOYEES.LIST.TABLE.EMAIL" | translate}}</th>
+        <th id="employmentDate">{{"EMPLOYEES.LIST.TABLE.EMPLOYMENT_DATE" | translate}}</th>
+        <th id="active">{{"EMPLOYEES.LIST.TABLE.ACTIVE" | translate}}</th>
+        <th id="actions">{{"EMPLOYEES.LIST.TABLE.ACTIONS" | translate}}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-employee>
@@ -46,7 +46,7 @@
           }
         </td>
         <td>
-          @for(btn of actionButtons; track $index) {
+          @for(btn of actionButtons(); track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(employee)"
