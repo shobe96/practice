@@ -101,14 +101,22 @@
         "ACTIONS": "Akcije"
       }
     },
-    "FORM": {},
+    "FORM": {
+      "NAME": "Ime Zaposlenog",
+      "SURNAME": "Prezime Zaposlenog",
+      "EMAIL": "Elektronska Pošta Zaposlenog"
+    },
     "DELETE": {}
   },
   "VALIDATIONS": {
-    "REQUIRED": "{{ field }} je obavezno!"
+    "REQUIRED": "{{ field }} je obavezno!",
+    "MIN_LENGTH": "{{ field }} mora biti duže od {{ length }} karaktera!",
+    "MAX_LENGTH": "{{ field }} mora biti kraće od {{ length }} karaktera!",
+    "EMAIL": "Adresa Elektronske Pošte nije validna!"
   },
   "MODAL": {
-    "SUCCESS": "Uspeh"
+    "SUCCESS": "Uspeh",
+    "ERROR": "Greška"
   },
   "TABLE": {
     "ACTIONS": {
@@ -121,5 +129,14 @@
     "TITLE": "Filteri za Pretragu",
     "CLEAR": "Očistie Filtere",
     "REFRESH": "Osveži Listu"
-  }
+  },
+  "FORM": {
+    "TITLE": "Dodaj novog {{ feature }}",
+    "SELECT": "Odaberi {{ feature }}",
+    "SUBMIT": "Pošalji",
+    "CANCEL": "Otkaži",
+    "SAVED": "Sačuvano",
+    "UNKNOWN_ERROR": "Nepoznata greška"
+  },
+  "LOADING": "Učitavanje"
 }

@@ -101,14 +101,23 @@
         "ACTIONS": "Actions"
       }
     },
-    "FORM": {},
+    "FORM": {
+      "NAME": "Name of employee",
+      "SURNAME": "Surname of employee",
+      "EMAIL": "Email of employee"
+
+    },
     "DELETE": {}
   },
   "VALIDATIONS": {
-    "REQUIRED": "{{ field }} is required!"
+    "REQUIRED": "{{ field }} is required!",
+    "MIN_LENGTH": "{{ field }} must be longer than {{ length }} characters!",
+    "MAX_LENGTH": "{{ field }} must be shorter than {{ length }} characters!",
+    "EMAIL": "Email address is not valid!"
   },
   "MODAL": {
-    "SUCCESS": "Success"
+    "SUCCESS": "Success",
+    "ERROR": "Error"
   },
   "TABLE": {
     "ACTIONS": {
@@ -121,5 +130,14 @@
     "TITLE": "Search Filters",
     "CLEAR": "Clear Filters",
     "REFRESH": "Refresh List"
-  }
+  },
+  "FORM": {
+    "TITLE": "Add new {{ feature }}",
+    "SELECT": "Select {{ feature }}",
+    "CANCEL": "Cancel",
+    "SUBMIT": "Submit",
+    "SAVED": "Saved",
+    "UNKNOWN_ERROR": "Unknown error"
+  },
+  "LOADING": "Loading"
 }

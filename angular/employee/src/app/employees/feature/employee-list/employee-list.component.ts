@@ -184,7 +184,9 @@ export class EmployeeListComponent {
   }
 
   goToEdit(employee: Employee | null, disable: boolean): void {
-    const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
+    const newLabel = this.currentLang() === "en" ? "Employee" : "Zaposlenog";
+    const updateLabel = this.currentLang() === "en" ? "Employee" : "Zaposleni";
+    const title = employee ? `${this._translateService.instant("HOME.PANEL.GENERAL.EMPLOYEE")} ${employee.id}` : this._translateService.instant("FORM.TITLE", {feature: newLabel});
     const dialogRef = this._dialogService.open(EmployeeEditComponent, {
       header: title,
       modal: true,
