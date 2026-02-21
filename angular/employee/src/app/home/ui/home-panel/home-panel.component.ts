@@ -34,7 +34,7 @@ export class HomePanelComponent {
   };
 
   private _router = inject(Router);
-  private _translate = inject(TranslateService);
+  private _translateService = inject(TranslateService);
 
   goToEdit() {
     this._router.navigate([`/employee/edit/${this.employee.id}`])
@@ -48,9 +48,9 @@ export class HomePanelComponent {
 
   translateStatus(active: boolean | undefined) {
     if (active) {
-      return this._translate.instant("HOME.PANEL.GENERAL.ASSAIGNED");
+      return this._translateService.instant("HOME.PANEL.GENERAL.ASSAIGNED");
     } else {
-      return this._translate.instant("HOME.PANEL.GENERAL.FREE");
+      return this._translateService.instant("HOME.PANEL.GENERAL.FREE");
     }
   }
 }

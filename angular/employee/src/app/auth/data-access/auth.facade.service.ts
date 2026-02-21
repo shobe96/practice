@@ -25,7 +25,7 @@ export class AuthFacadeService {
   private readonly _roleService = inject(RoleService);
   private readonly _employeeService = inject(EmployeeService);
   private readonly _customMessageService = inject(CustomMessageService);
-  private readonly _translate = inject(TranslateService);
+  private readonly _translateService = inject(TranslateService);
 
   private get _storedAuth() {
     const stored = localStorage.getItem('authResponse');
@@ -38,7 +38,7 @@ export class AuthFacadeService {
   private readonly _isLoggedIn$ = new BehaviorSubject<boolean>(!!this._storedAuth);
 
   public readonly menuItems$ = combineLatest([
-    this._translate.onLangChange.pipe(startWith(null)),
+    this._translateService.onLangChange.pipe(startWith(null)),
     this._isLoggedIn$,
     this._roles$
   ]).pipe(map(([, isLoggedIn, roles])=> this._getProcessedMenu(isLoggedIn, roles)
@@ -76,8 +76,8 @@ export class AuthFacadeService {
         this._autoLogout(response.expiration ?? 0);
         this._isLoggedIn$.next(true);
         this._roles$.next(response.roles ?? []);
-        const message = this._translate.instant("AUTH.LOGIN.WELCOME");
-        const success = this._translate.instant("MODAL.SUCCESS");
+        const message = this._translateService.instant("AUTH.LOGIN.WELCOME");
+        const success = this._translateService.instant("MODAL.SUCCESS");
         this._customMessageService.showSuccess(success, `${message} ${response.username}`);
         this._router.navigate(["/home/panel"]);
       }),
@@ -155,65 +155,65 @@ export class AuthFacadeService {
   private _buildMenuItems(): MenuItem[] {
     return [
       {
-        label: this._translate.instant("NAVBAR.HOME"),
+        label: this._translateService.instant("NAVBAR.HOME"),
         icon: PrimeIcons.HOME,
         routerLink: "/home/panel",
       },
       {
-        label: this._translate.instant("NAVBAR.FEATURES.TITLE"),
+        label: this._translateService.instant("NAVBAR.FEATURES.TITLE"),
         icon: PrimeIcons.LIST,
         items: [
           {
-            label: this._translate.instant("NAVBAR.FEATURES.EMPLOYEES"),
+            label: this._translateService.instant("NAVBAR.FEATURES.EMPLOYEES"),
             icon: PrimeIcons.USERS,
             routerLink: '/employee/list'
           },
           {
-            label: this._translate.instant("NAVBAR.FEATURES.DEPARTMENTS"),
+            label: this._translateService.instant("NAVBAR.FEATURES.DEPARTMENTS"),
             icon: PrimeIcons.SITEMAP,
             routerLink: '/department/list'
           },
           {
-            label: this._translate.instant("NAVBAR.FEATURES.SKILLS"),
+            label: this._translateService.instant("NAVBAR.FEATURES.SKILLS"),
             icon: PrimeIcons.ANDROID,
             routerLink: '/skill/list'
           },
           {
-            label: this._translate.instant("NAVBAR.FEATURES.PROJECTS"),
+            label: this._translateService.instant("NAVBAR.FEATURES.PROJECTS"),
             icon: PrimeIcons.CODE,
             routerLink: '/project/list'
           },
         ]
       },
       {
-        label: this._translate.instant("NAVBAR.USER.TITLE"),
+        label: this._translateService.instant("NAVBAR.USER.TITLE"),
         icon: PrimeIcons.USER,
         items: [
           {
-            label: this._translate.instant("NAVBAR.USER.USERS"),
+            label: this._translateService.instant("NAVBAR.USER.USERS"),
             icon: PrimeIcons.USERS,
             routerLink: '/user/list',
             visible: false
           },
           {
-            label: this._translate.instant("NAVBAR.USER.ROLES"),
+            label: this._translateService.instant("NAVBAR.USER.ROLES"),
             icon: PrimeIcons.WRENCH,
             routerLink: '/role/list',
             visible: false
           },
           {
-            label: this._translate.instant("NAVBAR.USER.LOGIN"),
+            label: this._translateService.instant("NAVBAR.USER.LOGIN"),
             icon: PrimeIcons.SIGN_IN,
             routerLink: '/auth/login'
           },
           {
-            label: this._translate.instant("NAVBAR.USER.REGISTER"),
+            label: this._translateService.instant("NAVBAR.USER.REGISTER"),
             icon: PrimeIcons.USER_PLUS,
             routerLink: '/auth/register',
             visible: false
           },
           {
-            label: this._translate.instant("NAVBAR.USER.LOGOUT"),
+            label: this._translateService.instant("NAVBAR.USER.LOGOUT"),
             icon: PrimeIcons.SIGN_OUT,
             command: () => {
               this.logout();
@@ -222,17 +222,17 @@ export class AuthFacadeService {
         ]
       },
       {
-        label: this._translate.instant("NAVBAR.LANGUAGE.TITLE"),
+        label: this._translateService.instant("NAVBAR.LANGUAGE.TITLE"),
         icon: PrimeIcons.LANGUAGE,
         items: [
           {
-            label: this._translate.instant("NAVBAR.LANGUAGE.ENGLISH"),
+            label: this._translateService.instant("NAVBAR.LANGUAGE.ENGLISH"),
             command: () => {
               this._changeLanguage('en');
             }
           },
           {
-            label: this._translate.instant("NAVBAR.LANGUAGE.SERBIAN"),
+            label: this._translateService.instant("NAVBAR.LANGUAGE.SERBIAN"),
             command: () => {
               this._changeLanguage('rs');
             }
@@ -258,7 +258,7 @@ export class AuthFacadeService {
   }
 
   private _changeLanguage(lang: string) {
-    this._translate.use(lang);
+    this._translateService.use(lang);
   }
 
   private _getProcessedMenu(isLoggedIn: boolean, roles: Role[]): MenuItem[] {
