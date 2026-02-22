@@ -184,9 +184,13 @@ export class EmployeeListComponent {
   }
 
   goToEdit(employee: Employee | null, disable: boolean): void {
-    const newLabel = this.currentLang() === "en" ? "Employee" : "Zaposlenog";
-    const updateLabel = this.currentLang() === "en" ? "Employee" : "Zaposleni";
-    const title = employee ? `${this._translateService.instant("HOME.PANEL.GENERAL.EMPLOYEE")} ${employee.id}` : this._translateService.instant("FORM.TITLE", {feature: newLabel});
+    const newLabel = this.currentLang() === 'en' ? 'Employee' : 'Zaposlenog';
+    const updateLabel = this.currentLang() === 'en' ? 'Employee' : 'Zaposleni';
+    const title = employee
+      ? `${this._translateService.instant('HOME.PANEL.GENERAL.EMPLOYEE')} ${
+          employee.id
+        }`
+      : this._translateService.instant('FORM.TITLE', { feature: newLabel });
     const dialogRef = this._dialogService.open(EmployeeEditComponent, {
       header: title,
       modal: true,
@@ -217,18 +221,22 @@ export class EmployeeListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'employee' : 'zaposlenog';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete employee with id: ${id}`,
-        header: 'Confirmation',
+        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
+        header: this._translateService.instant('CONFITMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
+          label: this._translateService.instant('CONFITMATION.CANCEL'),
           severity: 'danger',
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFITMATION.ACCEPT'),
         },
         accept: () => {
           this._employeeListFacade.delete(id);

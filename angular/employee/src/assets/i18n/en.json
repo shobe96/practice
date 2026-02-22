@@ -139,5 +139,11 @@
     "SAVED": "Saved",
     "UNKNOWN_ERROR": "Unknown error"
   },
-  "LOADING": "Loading"
+  "LOADING": "Loading",
+  "CONFITMATION": {
+    "TITLE": "Confirmation",
+    "MESSAGE": "Are you sure you want to delete {{ feature }} with id: {{ id }}",
+    "CANCEL": "Cancel",
+    "ACCEPT": "Delete"
+  }
 }
