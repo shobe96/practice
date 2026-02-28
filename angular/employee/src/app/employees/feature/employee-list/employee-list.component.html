@@ -22,13 +22,15 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th id="id">{{"EMPLOYEES.LIST.TABLE.ID" | translate}}</th>
-        <th id="name">{{"EMPLOYEES.LIST.TABLE.NAME" | translate}}</th>
-        <th id="surname">{{"EMPLOYEES.LIST.TABLE.SURNAME" | translate}}</th>
-        <th id="email">{{"EMPLOYEES.LIST.TABLE.EMAIL" | translate}}</th>
-        <th id="employmentDate">{{"EMPLOYEES.LIST.TABLE.EMPLOYMENT_DATE" | translate}}</th>
-        <th id="active">{{"EMPLOYEES.LIST.TABLE.ACTIVE" | translate}}</th>
-        <th id="actions">{{"EMPLOYEES.LIST.TABLE.ACTIONS" | translate}}</th>
+        <th id="id">{{ 'EMPLOYEES.LIST.TABLE.ID' | translate }}</th>
+        <th id="name">{{ 'EMPLOYEES.LIST.TABLE.NAME' | translate }}</th>
+        <th id="surname">{{ 'EMPLOYEES.LIST.TABLE.SURNAME' | translate }}</th>
+        <th id="email">{{ 'EMPLOYEES.LIST.TABLE.EMAIL' | translate }}</th>
+        <th id="employmentDate">
+          {{ 'EMPLOYEES.LIST.TABLE.EMPLOYMENT_DATE' | translate }}
+        </th>
+        <th id="active">{{ 'EMPLOYEES.LIST.TABLE.ACTIVE' | translate }}</th>
+        <th id="actions">{{ 'EMPLOYEES.LIST.TABLE.ACTIONS' | translate }}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-employee>
@@ -37,7 +39,7 @@
         <td>{{ employee.name }}</td>
         <td>{{ employee.surname }}</td>
         <td>{{ employee.email }}</td>
-        <td>{{ employee.addDate | date: "dd/MM/yyyy hh:mm:ss" }}</td>
+        <td>{{ employee.addDate | date : 'dd/MM/yyyy hh:mm:ss' }}</td>
         <td>
           @if(employee.active) {
           <i class="pi pi-check"></i>
@@ -69,9 +71,7 @@
     ></p-paginator>
   </div>
   } @else {
-  <p>
-    No results.
-  </p>
+  <p>No results.</p>
   }
   <div>
     @if(vm.loading) {
