@@ -12,7 +12,7 @@
   <div class="validation-messages">
     @if(authFormGroup.controls['username'].errors?.['required']) {
     <span class="block">{{
-      'VALIDATIONS.REQUIRED' | translate : { field: usernameField }
+      'VALIDATIONS.REQUIRED' | translate : { field: usernameField() }
     }}</span>
     }
   </div>
@@ -45,7 +45,7 @@
   <div class="validation-messages">
     @if(authFormGroup.controls['password'].errors?.['required']) {
     <span class="block">{{
-      'VALIDATIONS.REQUIRED' | translate : { field: passwordField }
+      'VALIDATIONS.REQUIRED' | translate : { field: passwordField() }
     }}</span>
     }
   </div>
