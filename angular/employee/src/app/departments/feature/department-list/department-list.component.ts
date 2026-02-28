@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { Department } from '../../data-access/department.model';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { DepartmentListFacadeService } from '../../data-access/department-list.facade.service';
@@ -17,6 +17,7 @@ import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
 import { Button } from 'primeng/button';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-department-list',
@@ -32,10 +33,13 @@ import { Button } from 'primeng/button';
     Paginator,
     ProgressSpinner,
     SearchFilterWrapperComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    TranslatePipe
   ]
 })
 export class DepartmentListComponent {
+
+  private readonly _translateService = inject(TranslateService);
 
   departmentId: number | null = 0;
 
@@ -59,6 +63,13 @@ export class DepartmentListComponent {
       tooltip: 'Delete Department'
     }
   ];
+
+  readonly currentLang = toSignal(
+      this._translateService.onLangChange.pipe(
+        map((event) => event.lang),
+        startWith(this._translateService.getCurrentLang() || 'en')
+      )
+    );
 
   private readonly _departmentListFacade = inject(DepartmentListFacadeService);
   private readonly _formBuilder = inject(FormBuilder);
@@ -179,6 +190,16 @@ export class DepartmentListComponent {
       });
     }
   }
+
+  nameSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('DEPARTMENT.LIST.FILTERS.NAME');
+  });
+
+  addNewLabel = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('EMPLOYEES.LIST.ADD');
+  });
 
   private _clearSearchFields() {
     this.departmentFormGroup.controls['name'].setValue('');

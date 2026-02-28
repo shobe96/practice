@@ -108,6 +108,22 @@
     },
     "DELETE": {}
   },
+  "DEPARTMENT": {
+    "LIST": {
+      "ADD": "Dodaj",
+      "FILTERS": {
+        "NAME": "Ime Odeljenja"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Ime",
+        "ACTIONS": "Akcije"
+      }
+    },
+    "FORM": {
+      "NAME": "Ime Odeljenja"
+    }
+  },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} je obavezno!",
     "MIN_LENGTH": "{{ field }} mora biti duže od {{ length }} karaktera!",

@@ -105,9 +105,23 @@
       "NAME": "Name of employee",
       "SURNAME": "Surname of employee",
       "EMAIL": "Email of employee"
-
+    }
+  },
+  "DEPARTMENT": {
+    "LIST": {
+      "ADD": "Add new",
+      "FILTERS": {
+        "NAME": "Name of department"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Name",
+        "ACTIONS": "Actions"
+      }
     },
-    "DELETE": {}
+    "FORM": {
+      "NAME": "Name of department"
+    }
   },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} is required!",
