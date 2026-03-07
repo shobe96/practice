@@ -184,8 +184,7 @@ export class EmployeeListComponent {
   }
 
   goToEdit(employee: Employee | null, disable: boolean): void {
-    const newLabel = this.currentLang() === 'en' ? 'Employee' : 'Zaposlenog';
-    const updateLabel = this.currentLang() === 'en' ? 'Employee' : 'Zaposleni';
+    const newLabel = this.currentLang() === 'en' ? 'Employee' : 'novog Zaposlenog';
     const title = employee
       ? `${this._translateService.instant('HOME.PANEL.GENERAL.EMPLOYEE')} ${
           employee.id

@@ -147,7 +147,7 @@
     "REFRESH": "Osveži Listu"
   },
   "FORM": {
-    "TITLE": "Dodaj novog {{ feature }}",
+    "TITLE": "Dodaj {{ feature }}",
     "SELECT": "Odaberi {{ feature }}",
     "SUBMIT": "Pošalji",
     "CANCEL": "Otkaži",
