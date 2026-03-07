@@ -27,7 +27,7 @@
         <td>{{ department.id }}</td>
         <td>{{ department.name }}</td>
         <td>
-          @for(btn of actionButtons; track $index) {
+          @for(btn of actionButtons(); track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(department)"

@@ -43,26 +43,37 @@ export class DepartmentListComponent {
 
   departmentId: number | null = 0;
 
-  actionButtons: ActionButtons<Department>[] = [
-    {
-      icon: 'pi pi-eye',
-      action: (dep: Department) => this.goToDetails(dep),
-      severity: 'success',
-      tooltip: 'View Department'
-    },
-    {
-      icon: 'pi pi-pencil',
-      action: (dep: Department) => this.goToEdit(dep, false),
-      severity: 'warn',
-      tooltip: 'Edit Department'
-    },
-    {
-      icon: 'pi pi-trash',
-      action: (dep: Department) => this.showDeleteDialog(dep.id),
-      severity: 'danger',
-      tooltip: 'Delete Department'
-    }
-  ];
+  readonly actionButtons = computed((): ActionButtons<Department>[] => {
+      const feature = this.currentLang() === 'en' ? 'Department' : 'Odeljenje';
+  
+      return [
+        {
+          icon: 'pi pi-eye',
+          action: (dep: Department) => this.goToDetails(dep),
+          severity: 'success',
+          // Translate the tooltips
+          tooltip: this._translateService.instant('TABLE.ACTIONS.VIEW', {
+            feature: feature,
+          }),
+        },
+        {
+          icon: 'pi pi-pencil',
+          action: (dep: Department) => this.goToEdit(dep, false),
+          severity: 'warn',
+          tooltip: this._translateService.instant('TABLE.ACTIONS.EDIT', {
+            feature: feature,
+          }),
+        },
+        {
+          icon: 'pi pi-trash',
+          action: (dep: Department) => this.showDeleteDialog(dep.id),
+          severity: 'danger',
+          tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
+            feature: feature,
+          }),
+        },
+      ];
+    });
 
   readonly currentLang = toSignal(
       this._translateService.onLangChange.pipe(
@@ -140,7 +151,12 @@ export class DepartmentListComponent {
   }
 
   goToEdit(department: Department | null, disable: boolean): void {
-    const title = department ? `Department ${department.id}` : 'Add new Department';
+    const newLabel = this.currentLang() === 'en' ? 'Department' : 'novo Odeljenje';
+    const title = department
+      ? `${this._translateService.instant('HOME.PANEL.DEPARTMENT.TITLE')} ${
+          department.id
+        }`
+      : this._translateService.instant('FORM.TITLE', { feature: newLabel });
     const dialogRef = this._dialogService.open(DepartmentEditComponent, {
       header: title,
       modal: true,

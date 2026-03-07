@@ -8,6 +8,7 @@ import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-department-edit',
@@ -29,6 +30,7 @@ export class DepartmentEditComponent implements OnInit {
 
   private _formBuilder = inject(FormBuilder);
   private _dialogRef = inject(DynamicDialogRef);
+  private _translateService = inject(TranslateService);
 
   ngOnInit(): void {
     this.buildForm();
@@ -85,5 +87,44 @@ export class DepartmentEditComponent implements OnInit {
   isInvalid(controlName: string): boolean {
     const control = this.departmentFormGroup.get(controlName);
     return !!control && control.invalid && control.dirty;
+  }
+
+  minLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MIN_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  maxLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MAX_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  requiredTranslation(key: string): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.REQUIRED', {
+      field: field,
+    });
+  }
+
+  get submitLabel(): string {
+    return this._translateService.instant('FORM.SUBMIT');
+  }
+
+  get cancelLabel(): string {
+    return this._translateService.instant('FORM.CANCEL');
+  }
+
+  get loadingLabel(): string {
+    return this._translateService.instant('LOADING');
+  }
+
+  get namePlaceholder(): string {
+    return this._translateService.instant('DEPARTMENT.FORM.NAME');
   }
 }
