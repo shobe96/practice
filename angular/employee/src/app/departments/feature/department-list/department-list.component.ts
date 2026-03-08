@@ -187,18 +187,22 @@ export class DepartmentListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'department' : 'odeljenje';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete department with id: ${id}`,
-        header: 'Confirmation',
+        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
+        header: this._translateService.instant('CONFITMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
-          severity: 'danger'
+          label: this._translateService.instant('CONFITMATION.CANCEL'),
+          severity: 'danger',
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFITMATION.ACCEPT'),
         },
         accept: () => {
           this._departmentListFacade.delete(id);
