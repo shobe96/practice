@@ -8,6 +8,7 @@ import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-skill-edit',
@@ -28,6 +29,7 @@ export class SkillEditComponent implements OnInit {
 
   private _formBuilder = inject(FormBuilder);
   private _dialogRef = inject(DynamicDialogRef);
+  private _translateService = inject(TranslateService);
 
   ngOnInit(): void {
     this._buildForm();
@@ -86,5 +88,44 @@ export class SkillEditComponent implements OnInit {
   isInvalid(controlName: string): boolean {
     const control = this.skillFormGroup.get(controlName);
     return !!control && control.invalid && control.dirty;
+  }
+
+   get submitLabel(): string {
+    return this._translateService.instant('FORM.SUBMIT');
+  }
+
+  get cancelLabel(): string {
+    return this._translateService.instant('FORM.CANCEL');
+  }
+
+  get loadingLabel(): string {
+    return this._translateService.instant('LOADING');
+  }
+
+  get namePlaceholder(): string {
+    return this._translateService.instant('SKILL.FORM.NAME');
+  }
+
+  minLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MIN_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  maxLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MAX_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  requiredTranslation(key: string): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.REQUIRED', {
+      field: field,
+    });
   }
 }

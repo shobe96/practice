@@ -4,14 +4,16 @@
       [readonly]="disable"
       formControlName="name"
       pInputText
-      placeholder="Name of skill"
+      [placeholder]="namePlaceholder"
     />
     @if (isInvalid('name')) {
     <app-validation-messages
       [control]="skillFormGroup.controls['name']"
-      [messages]="{required: 'Name is required!',
-      minlength: 'Name must be longer than 5 characters!',
-      maxlength: 'Name must be shorter than 25 characters!'}"
+      [messages]="{
+        required: requiredTranslation('SKILL.LIST.TABLE.NAME'),
+        minlength: minLengthTranslation('SKILL.LIST.TABLE.NAME', 5),
+        maxlength: maxLengthTranslation('SKILL.LIST.TABLE.NAME', 25)
+      }"
     />
     }
     <input
@@ -23,9 +25,11 @@
     @if (isInvalid('description')) {
     <app-validation-messages
       [control]="skillFormGroup.controls['description']"
-      [messages]="{required: 'Description is required!',
-      minlength: 'Description must be longer than 5 characters!',
-      maxlength: 'Description must be shorter than 25 characters!'}"
+      [messages]="{
+        required: requiredTranslation('SKILL.FORM.DESCRIPTION'),
+        minlength: minLengthTranslation('SKILL.FORM.DESCRIPTION', 5),
+        maxlength: maxLengthTranslation('SKILL.FORM.DESCRIPTION', 25)
+      }"
     />
     } @if (viewModel(); as vm) { @if(vm.loading) {
     <div class="card flex justify-center progress-spinner">
