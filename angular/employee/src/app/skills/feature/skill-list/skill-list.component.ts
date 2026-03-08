@@ -173,7 +173,12 @@ export class SkillListComponent {
   }
 
   goToEdit(skill: Skill | null, disable: boolean): void {
-    const title = skill ? `Skill ${skill.id}` : 'Add new Skill';
+    const newLabel = this.currentLang() === 'en' ? 'Skill' : 'novu Veštinu';
+    const title = skill
+      ? `${this._translateService.instant('HOME.PANEL.GENERAL.EMPLOYEE')} ${
+          skill.id
+        }`
+      : this._translateService.instant('FORM.TITLE', { feature: newLabel });
     const dialogRef = this._dialogService.open(SkillEditComponent, {
       header: title,
       modal: true,
@@ -204,18 +209,22 @@ export class SkillListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'skill' : 'veštinu';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete skill with id: ${id}`,
-        header: 'Confirmation',
+        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
+        header: this._translateService.instant('CONFITMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
+          label: this._translateService.instant('CONFITMATION.CANCEL'),
           severity: 'danger',
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFITMATION.ACCEPT'),
         },
         accept: () => {
           this._skillListFacade.delete(id);
