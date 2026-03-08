@@ -214,7 +214,7 @@ export class DepartmentListComponent {
 
   addNewLabel = computed(() => {
     this.currentLang();
-    return this._translateService.instant('EMPLOYEES.LIST.ADD');
+    return this._translateService.instant('DEPARTMENT.LIST.ADD');
   });
 
   private _clearSearchFields() {
