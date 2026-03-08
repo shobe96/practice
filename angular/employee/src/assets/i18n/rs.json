@@ -124,6 +124,23 @@
       "NAME": "Ime Odeljenja"
     }
   },
+  "SKILL": {
+    "LIST": {
+      "ADD": "Dodaj",
+      "FILTERS": {
+        "NAME": "Ime Veštine"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Ime",
+        "ACTIONS": "Akcije"
+      }
+    },
+    "FORM": {
+      "NAME": "Ime Veštine",
+      "DESCRIPTION": "Opis"
+    }
+  },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} je obavezno!",
     "MIN_LENGTH": "{{ field }} mora biti duže od {{ length }} karaktera!",

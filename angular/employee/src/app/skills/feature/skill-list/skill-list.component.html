@@ -5,10 +5,10 @@
     (clear)="clear()"
     (refresh)="refresh()"
   >
-    <input formControlName="name" pInputText placeholder="Name of skill" />
+    <input formControlName="name" pInputText [placeholder]="nameSearch()" />
   </app-search-filter-wrapper>
 
-  <p-button label="Add New" (onClick)="addNew()" />
+  <p-button [label]="addNewLabel()" (onClick)="addNew()" />
   @if(vm.data.length) {
   <p-table
     [rowHover]="true"
@@ -17,9 +17,9 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th id="skill_id">ID</th>
-        <th id="skill_name">Name</th>
-        <th id="skill_actions">Actions</th>
+        <th id="skill_id">{{ 'SKILL.LIST.TABLE.ID' | translate }}</th>
+        <th id="skill_name">{{ 'SKILL.LIST.TABLE.NAME' | translate }}</th>
+        <th id="skill_actions">{{ 'SKILL.LIST.TABLE.ACTIONS' | translate }}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-skill>
@@ -27,7 +27,7 @@
         <td>{{ skill.id }}</td>
         <td>{{ skill.name }}</td>
         <td>
-          @for(btn of actionButtons; track $index) {
+          @for(btn of actionButtons(); track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(skill)"

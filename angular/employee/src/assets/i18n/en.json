@@ -123,6 +123,23 @@
       "NAME": "Name of department"
     }
   },
+  "SKILL": {
+    "LIST": {
+      "ADD": "Add new",
+      "FILTERS": {
+        "NAME": "Name of skill"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Name",
+        "ACTIONS": "Actions"
+      }
+    },
+    "FORM": {
+      "NAME": "Name of skill",
+      "DESCRIPTION": "Description"
+    }
+  },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} is required!",
     "MIN_LENGTH": "{{ field }} must be longer than {{ length }} characters!",
