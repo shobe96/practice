@@ -21,7 +21,9 @@ public class ProjectDTO {
 
 	private Date endDate;
 
-	private Integer departmentId;
+	private DepartmentDTO department;
 
 	private Set<SkillDTO> skills;
+	
+	private Set<EmployeeDTO> employees;
 }
