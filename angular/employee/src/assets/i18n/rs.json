@@ -159,13 +159,34 @@
     "FORM": {
       "TITLE": "Projekat",
       "NAME": "Ime projekta",
-      "DESCRIPTION": "Description",
+      "DESCRIPTION": "Opis",
       "CODE": "Kod projekta",
       "DEPARTMENT": "Odaberi Odeljenje",
       "SKILLS": "Odaberi Veštine",
       "EMPLOYEES": "Odaberi Zaposlene",
       "START": "Početak",
       "END": "Kraj"
+    },
+    "DETAILS": {
+      "BACK": "Nazad",
+      "GENERAL": {
+        "TITLE": "Generalno",
+        "SUBTITLE": "Projekat",
+        "NAME": "Ime",
+        "CODE":"Kod"
+      },
+      "SKILLS": {
+        "TITLE": "Neophodne Veštine",
+        "NAME": "Ime",
+        "DESCRIPTION": "Opis"
+      },
+      "EMPLOYEES": {
+        "TITLE": "Angažovani Zaposleni",
+        "NAME": "Ime",
+        "SURNAME":"Prezime",
+        "ACTIONS":"Akcije",
+        "UNASSIGN": "Ukloni Zaposlenog"
+      }
     }
   },
   "VALIDATIONS": {

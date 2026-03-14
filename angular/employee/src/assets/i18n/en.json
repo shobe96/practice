@@ -165,6 +165,27 @@
       "EMPLOYEES": "Select Employees",
       "START": "Start Date",
       "END": "End Date"
+    },
+    "DETAILS": {
+      "BACK": "Back",
+      "GENERAL": {
+        "TITLE": "General",
+        "SUBTITLE": "Project",
+        "NAME": "Name",
+        "CODE":"Code"
+      },
+      "SKILLS": {
+        "TITLE": "Necessary Skills",
+        "NAME": "Name",
+        "DESCRIPTION": "Description"
+      },
+      "EMPLOYEES": {
+        "TITLE": "Assigned Employees",
+        "NAME": "Name",
+        "SURNAME":"Surname",
+        "ACTIONS":"Actions",
+        "UNASSIGN": "Unassign Employee"
+      }
     }
   },
   "VALIDATIONS": {
