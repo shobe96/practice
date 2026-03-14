@@ -156,8 +156,15 @@
       }
     },
     "FORM": {
+      "TITLE": "Project",
       "NAME": "Name of project",
-      "DESCRIPTION": "Description"
+      "DESCRIPTION": "Description",
+      "CODE": "Code of project",
+      "DEPARTMENT": "Select a Department",
+      "SKILLS": "Select Skills",
+      "EMPLOYEES": "Select Employees",
+      "START": "Start Date",
+      "END": "End Date"
     }
   },
   "VALIDATIONS": {

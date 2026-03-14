@@ -171,7 +171,12 @@ export class ProjectListComponent {
   }
 
   goToEdit(project: Project | null): void {
-    const title = project ? `Project ${project.id}` : 'Add new Project';
+    const newLabel = this.currentLang() === 'en' ? 'Project' : 'novi Projekat';
+    const title = project
+      ? `${this._translateService.instant('PROJECT.FORM.TITLE')} ${
+          project.id
+        }`
+      : this._translateService.instant('FORM.TITLE', { feature: newLabel });
     const dialogRef = this._dialogService.open(ProjectEditComponent, {
       header: title,
       modal: true,

@@ -9,14 +9,16 @@
         <input
           formControlName="name"
           pInputText
-          placeholder="Name of project"
+          [placeholder]="namePlaceholder"
         />
         @if(isInvalid('name')) {
         <app-validation-messages
           [control]="projectFormGroup.controls['name']"
-          [messages]="{required: 'Name is required!',
-      minlength: 'Name must be longer than 5 characters!',
-      maxlength: 'Name must be shorter than 25 characters!'}"
+          [messages]="{
+            required: requiredTranslation('PROJECT.LIST.TABLE.NAME'),
+            minlength: minLengthTranslation('PROJECT.LIST.TABLE.NAME', 5),
+            maxlength: maxLengthTranslation('PROJECT.LIST.TABLE.NAME', 25)
+          }"
         />
         }
       </div>
@@ -24,14 +26,16 @@
         <input
           formControlName="code"
           pInputText
-          placeholder="Code of project"
+          [placeholder]="codePlaceholder"
         />
         @if(isInvalid('code')) {
         <app-validation-messages
           [control]="projectFormGroup.controls['code']"
-          [messages]="{required: 'Name is required!',
-      minlength: 'Code must be longer than 3 characters!',
-      maxlength: 'Code must be shorter than 5 characters!'}"
+          [messages]="{
+            required: requiredTranslation('PROJECT.FORM.CODE'),
+            minlength: minLengthTranslation('PROJECT.FORM.CODE', 5),
+            maxlength: maxLengthTranslation('PROJECT.FORM.CODE', 25)
+          }"
         />
         }
       </div>
@@ -44,7 +48,7 @@
           formControlName="department"
           [options]="vm.departments"
           optionLabel="name"
-          placeholder="Select a Department"
+          [placeholder]="departmentPlaceholder"
           dataKey="id"
           (onChange)="getEmployees()"
         />
@@ -55,13 +59,13 @@
           [options]="vm.skills"
           formControlName="skills"
           optionLabel="name"
-          placeholder="Select Skills"
+          [placeholder]="skillsPlaceholder"
           (onChange)="getEmployees()"
         />
         @if(isInvalid('skills')) {
         <app-validation-messages
           [control]="projectFormGroup.controls['skills']"
-          [messages]="{required: 'Skills are required!'}"
+          [messages]="{ required: requiredTranslation('NAVBAR.FEATURES.SKILLS') }"
         />
         }
       </div>
@@ -74,13 +78,13 @@
           [options]="vm.employees"
           formControlName="employees"
           optionLabel="name"
-          placeholder="Select Employees"
+          [placeholder]="employeesPlaceholder"
           optionDisabled="active"
         />
         } @if(isInvalid('employees')) {
         <app-validation-messages
           [control]="projectFormGroup.controls['employees']"
-          [messages]="{required: 'Employees are required!'}"
+          [messages]="{ required: requiredTranslation('NAVBAR.FEATURES.EMPLOYEES') }"
         />
         }
       </div>
@@ -93,7 +97,7 @@
 
     <div class="custom-row">
       <div class="custom-column">
-        <label for="startDate">Start Date</label>
+        <label for="startDate">{{ 'PROJECT.FORM.START' | translate }}</label>
         <p-datepicker
           appendTo="body"
           formControlName="startDate"
@@ -104,12 +108,12 @@
         @if(isInvalid('startDate')) {
         <app-validation-messages
           [control]="projectFormGroup.controls['startDate']"
-          [messages]="{required: 'Start Date is required!'}"
+          [messages]="{ required: requiredTranslation('PROJECT.FORM.START')}"
         />
         }
       </div>
       <div class="custom-column">
-        <label for="endDate">End Date</label>
+        <label for="endDate">{{ 'PROJECT.FORM.END' | translate }}</label>
         <p-datepicker
           appendTo="body"
           formControlName="endDate"
@@ -120,18 +124,18 @@
         @if(isInvalid('endDate')) {
         <app-validation-messages
           [control]="projectFormGroup.controls['endDate']"
-          [messages]="{required: 'End Date is required!'}"
+          [messages]="{ required: requiredTranslation('PROJECT.FORM.END') }"
         />
         }
       </div>
     </div>
 
     <div class="action-buttons">
-      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+      <p-button severity="danger" [label]="cancelLabel" (onClick)="cancel()" />
       <p-button
         severity="success"
         [disabled]="projectFormGroup.invalid"
-        label="Submit"
+        [label]="submitLabel"
         type="submit"
       />
     </div>

@@ -11,6 +11,7 @@ import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-edit',
@@ -25,7 +26,8 @@ import { ValidationMessagesComponent } from '../../../shared/ui/validation-messa
     DatePicker,
     Button,
     ProgressSpinner,
-    ValidationMessagesComponent
+    ValidationMessagesComponent,
+    TranslatePipe
   ],
   providers: [ProjectEditFacadeService]
 })
@@ -36,6 +38,7 @@ export class ProjectEditComponent implements OnInit {
   @Input() project: Project = {};
 
   private _projectEditFacade = inject(ProjectEditFacadeService);
+  private _translateService = inject(TranslateService);
 
   viewModel = toSignal(this._projectEditFacade.viewModel$, {
     initialValue: {
@@ -125,5 +128,56 @@ export class ProjectEditComponent implements OnInit {
   isInvalid(controlName: string): boolean {
     const control = this.projectFormGroup.get(controlName);
     return !!control && control.invalid && control.dirty;
+  }
+
+  get namePlaceholder(): string {
+    return this._translateService.instant('PROJECT.FORM.NAME');
+  }
+
+  get codePlaceholder(): string {
+    return this._translateService.instant('PROJECT.FORM.CODE');
+  }
+
+  get departmentPlaceholder(): string {
+    return this._translateService.instant('PROJECT.FORM.DEPARTMENT');
+  }
+
+  get skillsPlaceholder(): string {
+    return this._translateService.instant('PROJECT.FORM.SKILLS');
+  }
+
+  get employeesPlaceholder(): string {
+    return this._translateService.instant('PROJECT.FORM.EMPLOYEES');
+  }
+
+  get submitLabel(): string {
+    return this._translateService.instant('FORM.SUBMIT');
+  }
+
+  get cancelLabel(): string {
+    return this._translateService.instant('FORM.CANCEL');
+  }
+
+  minLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MIN_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  maxLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MAX_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  requiredTranslation(key: string): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.REQUIRED', {
+      field: field,
+    });
   }
 }

@@ -157,8 +157,15 @@
       }
     },
     "FORM": {
+      "TITLE": "Projekat",
       "NAME": "Ime projekta",
-      "DESCRIPTION": "Description"
+      "DESCRIPTION": "Description",
+      "CODE": "Kod projekta",
+      "DEPARTMENT": "Odaberi Odeljenje",
+      "SKILLS": "Odaberi Veštine",
+      "EMPLOYEES": "Odaberi Zaposlene",
+      "START": "Početak",
+      "END": "Kraj"
     }
   },
   "VALIDATIONS": {
