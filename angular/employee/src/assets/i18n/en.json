@@ -140,6 +140,26 @@
       "DESCRIPTION": "Description"
     }
   },
+  "PROJECT": {
+    "LIST": {
+      "ADD": "Add new",
+      "FILTERS": {
+        "NAME": "Name of project",
+        "CODE": "Code of project"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Name",
+        "START": "Start Date",
+        "END": "End Date",
+        "ACTIONS": "Actions"
+      }
+    },
+    "FORM": {
+      "NAME": "Name of project",
+      "DESCRIPTION": "Description"
+    }
+  },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} is required!",
     "MIN_LENGTH": "{{ field }} must be longer than {{ length }} characters!",

@@ -141,6 +141,26 @@
       "DESCRIPTION": "Opis"
     }
   },
+  "PROJECT": {
+    "LIST": {
+      "ADD": "Dodaj",
+      "FILTERS": {
+        "NAME": "Ime projekta",
+        "CODE": "Kod projekta"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Ime",
+        "START": "Početak",
+        "END": "Kraj",
+        "ACTIONS": "Akcije"
+      }
+    },
+    "FORM": {
+      "NAME": "Ime projekta",
+      "DESCRIPTION": "Description"
+    }
+  },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} je obavezno!",
     "MIN_LENGTH": "{{ field }} mora biti duže od {{ length }} karaktera!",
