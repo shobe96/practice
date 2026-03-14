@@ -28,7 +28,6 @@ import com.example.employee.criteria.EmployeeSearchCriteria;
 import com.example.employee.models.ApiError;
 import com.example.employee.models.Employee;
 import com.example.employee.models.SearchResult;
-import com.example.employee.models.Skill;
 import com.example.employee.models.dtos.EmployeeDTO;
 import com.example.employee.services.EmployeeService;
 
@@ -96,9 +95,9 @@ public class EmployeeController {
 
 	@PostMapping("/filter-by-active-and-skills/{departmentId}")
 	public ResponseEntity<List<EmployeeDTO>> filterEmployeesByActiveAndSkills(@PathVariable Integer departmentId,
-			@RequestBody List<Skill> skills) {
+			@RequestBody List<Integer> skillIds) {
 		EmployeeSearchCriteria searchCriteria = new EmployeeSearchCriteria();
-		searchCriteria.setSkills(skills);
+		searchCriteria.setSkillIds(skillIds);
 		searchCriteria.setActive(true);
 		return ResponseEntity.ok().headers(new HttpHeaders()).body(employeeService.search(searchCriteria));
 	}

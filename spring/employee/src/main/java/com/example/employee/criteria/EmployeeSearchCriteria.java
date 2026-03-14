@@ -6,9 +6,6 @@ import java.util.List;
 import org.springframework.data.jpa.domain.Specification;
 
 import com.example.employee.models.Employee;
-import com.example.employee.models.Skill;
-import com.example.employee.utils.CommonUtils;
-
 import jakarta.persistence.criteria.Predicate;
 
 import lombok.AllArgsConstructor;
@@ -30,7 +27,7 @@ public class EmployeeSearchCriteria implements SearchCriteria<Employee> {
     private Integer departmentId;
     private Integer userId;
     private Boolean active;
-    private List<Skill> skills;
+    private List<Integer> skillIds;
     private Boolean withoutUser;
 
 	@Override
@@ -56,8 +53,7 @@ public class EmployeeSearchCriteria implements SearchCriteria<Employee> {
             if (active != null) {
             	predicates.add(cb.equal(root.get("active"), active));
             }
-            if (skills != null && !skills.isEmpty()) {
-            	List<Integer> skillIds = CommonUtils.extractIds(skills);
+            if (skillIds != null && !skillIds.isEmpty()) {
                 predicates.add(root.joinSet("skills").get("id").in(skillIds));
                 query.distinct(true);
             }

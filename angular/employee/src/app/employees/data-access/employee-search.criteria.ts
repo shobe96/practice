@@ -7,6 +7,6 @@ export interface EmployeeSearchCriteria {
   departmentId?: number;
   userId?: number;
   active?: boolean;
-  skills?: Skill[];
+  skillIds?: number[];
   withoutUser?: boolean;
 }

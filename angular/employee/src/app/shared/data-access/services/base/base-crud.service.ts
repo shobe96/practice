@@ -38,6 +38,7 @@ export abstract class BaseCrudService<
 
   search(data: C, page?: PageEvent): Observable<SearchResult<T>> {
     let params = new HttpParams();
+
     params = this.appendParams(params, data);
     if (page) {
       params = this.appendParams(params, page);
@@ -48,15 +49,23 @@ export abstract class BaseCrudService<
     );
   }
 
-  private appendParams(params: HttpParams, obj: object): HttpParams {
-    let newParams = params;
-    Object.entries(obj).forEach(([key, value]) => {
-      if (value) {
-        newParams = newParams.set(key, String(value));
+  private appendParams<T extends object>(
+    params: HttpParams,
+    obj: T
+  ): HttpParams {
+    Object.entries(obj as Record<string, unknown>).forEach(([key, value]) => {
+      if (value === null || value === undefined) return;
+
+      if (Array.isArray(value)) {
+        value.forEach((v) => {
+          params = params.append(key, String(v));
+        });
+      } else {
+        params = params.append(key, String(value));
       }
     });
 
-    return newParams;
+    return params;
   }
 
   searchAll(data: C): Observable<T[]> {
