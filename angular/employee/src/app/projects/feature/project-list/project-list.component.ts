@@ -212,7 +212,7 @@ export class ProjectListComponent {
           feature: feature,
           id: id,
         }),
-        header: 'Confirmation',
+        header: this._translateService.instant('CONFITMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',

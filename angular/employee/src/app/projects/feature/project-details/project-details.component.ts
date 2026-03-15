@@ -48,8 +48,8 @@ export class ProjectDetailsComponent {
 
   unassignEmployee(employeeId: number, project: Project) {
     this._confirmationService.confirm({
-      message: `Are you sure you want to unassign employee with id: ${employeeId} from project ${project.name}`,
-      header: 'Confirmation',
+      message: this._translateService.instant('PROJECT.DETAILS.EMPLOYEES.UNASSIGN_MESSAGE', { employeeId: employeeId, projectName: project.name, }),
+      header: this._translateService.instant('CONFITMATION.TITLE'),
       closable: true,
       closeOnEscape: true,
       icon: 'pi pi-exclamation-triangle',

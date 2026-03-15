@@ -173,7 +173,7 @@
         "TITLE": "Generalno",
         "SUBTITLE": "Projekat",
         "NAME": "Ime",
-        "CODE":"Kod"
+        "CODE": "Kod"
       },
       "SKILLS": {
         "TITLE": "Neophodne Veštine",
@@ -183,18 +183,19 @@
       "EMPLOYEES": {
         "TITLE": "Angažovani Zaposleni",
         "NAME": "Ime",
-        "SURNAME":"Prezime",
-        "ACTIONS":"Akcije",
-        "UNASSIGN": "Ukloni Zaposlenog"
+        "SURNAME": "Prezime",
+        "ACTIONS": "Akcije",
+        "UNASSIGN": "Ukloni Zaposlenog",
+        "UNASSIGN_MESSAGE": "Da li ste sigurni da želite da uklonite zaposlenog sa id: {{employeeId}} sa projekta {{projectName}}"
       }
     }
   },
   "USER": {
     "TABLE": {
-        "ID": "ID",
-        "USERNAME": "Korisničko Ime",
-        "ACTIONS": "Akcije"
-      }
+      "ID": "ID",
+      "USERNAME": "Korisničko Ime",
+      "ACTIONS": "Akcije"
+    }
   },
   "ROLE": {
     "LIST": {
