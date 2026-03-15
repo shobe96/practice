@@ -5,7 +5,7 @@
     (clear)="clear()"
     (refresh)="refresh()"
   >
-    <input formControlName="username" pInputText placeholder="Username" />
+    <input formControlName="username" pInputText [placeholder]="ussernameSearch()" />
   </app-search-filter-wrapper>
   @if(vm.data.length) {
   <p-table
@@ -15,9 +15,9 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th id="id">ID</th>
-        <th id="username">Username</th>
-        <th id="actions">Actions</th>
+        <th id="id">{{ 'USER.TABLE.ID' | translate}}</th>
+        <th id="username">{{ 'USER.TABLE.USERNAME' | translate}}</th>
+        <th id="actions">{{ 'USER.TABLE.ACTIONS' | translate}}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-user>
@@ -25,7 +25,7 @@
         <td>{{ user.id }}</td>
         <td>{{ user.username }}</td>
         <td>
-          @for(btn of actionButtons; track $index) {
+          @for(btn of actionButtons(); track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(user)"

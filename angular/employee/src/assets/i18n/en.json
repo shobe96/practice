@@ -188,6 +188,13 @@
       }
     }
   },
+  "USER": {
+    "TABLE": {
+        "ID": "ID",
+        "USERNAME": "Username",
+        "ACTIONS": "Actions"
+      }
+  },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} is required!",
     "MIN_LENGTH": "{{ field }} must be longer than {{ length }} characters!",

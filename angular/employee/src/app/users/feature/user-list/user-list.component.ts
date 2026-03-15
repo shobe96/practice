@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { User } from '../../data-access/user.model';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PaginatorState, Paginator } from 'primeng/paginator';
@@ -14,6 +14,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-user-list',
@@ -28,26 +29,40 @@ import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.
     Paginator,
     ProgressSpinner,
     SearchFilterWrapperComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    TranslatePipe
   ]
 })
 export class UserListComponent {
 
   userId: number | null = 0;
-  actionButtons: ActionButtons<User>[] = [
-    {
+  readonly actionButtons = computed((): ActionButtons<User>[] => {
+    const feature = this.currentLang() === 'en' ? 'User' : 'Korisnika';
+    return [
+      {
       icon: 'pi pi-trash',
       action: (usr: User) => this.showDeleteDialog(usr.id),
       severity: 'danger',
-      tooltip: 'Delete Employee'
+      tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
+          feature: feature,
+        })
     }
-  ];
+    ]
+  });
 
   private readonly _userListFacade = inject(UserListFacadeService);
   private readonly _formBuilder = inject(FormBuilder);
   private readonly _router = inject(Router);
   private readonly _confirmationService = inject(ConfirmationService);
   private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _translateService = inject(TranslateService);
+
+  readonly currentLang = toSignal(
+    this._translateService.onLangChange.pipe(
+      map((event) => event.lang),
+      startWith(this._translateService.getCurrentLang() || 'en')
+    )
+  );
 
   userFormGroup = this._formBuilder.group({
     username: [''],
@@ -112,8 +127,12 @@ export class UserListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'user' : 'korisnika';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete project with id: ${id}`,
+        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
         header: 'Confirmation',
         closable: true,
         closeOnEscape: true,
@@ -136,4 +155,9 @@ export class UserListComponent {
     this.userFormGroup.controls['username'].setValue('');
     this._router.navigate([], { queryParams: { username: '' }, queryParamsHandling: 'merge' })
   }
+
+  ussernameSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('USER.TABLE.USERNAME');
+  });
 }
