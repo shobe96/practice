@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { Role } from '../../data-access/role.model';
@@ -17,6 +17,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-role-list',
@@ -32,32 +33,44 @@ import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-w
     Paginator,
     ProgressSpinner,
     IconButtonComponent,
-    SearchFilterWrapperComponent
+    SearchFilterWrapperComponent,
+    TranslatePipe
   ]
 })
 export class RoleListComponent {
 
   roleId: number | null = 0;
-  actionButtons: ActionButtons<Role>[] = [
-    {
-      icon: 'pi pi-eye',
-      action: (role: Role) => this.goToDetails(role),
-      severity: 'success',
-      tooltip: 'View Role'
-    },
-    {
-      icon: 'pi pi-pencil',
-      action: (role: Role) => this.goToEdit(role, false),
-      severity: 'warn',
-      tooltip: 'Edit Role'
-    },
-    {
-      icon: 'pi pi-trash',
-      action: (role: Role) => this.showDeleteDialog(role.id),
-      severity: 'danger',
-      tooltip: 'Delete Role'
-    }
-  ];
+  readonly actionButtons = computed((): ActionButtons<Role>[] => {
+      const feature = this.currentLang() === 'en' ? 'Role' : 'Ulogu';
+  
+      return [
+        {
+          icon: 'pi pi-eye',
+          action: (usr: Role) => this.goToDetails(usr),
+          severity: 'success',
+          // Translate the tooltips
+          tooltip: this._translateService.instant('TABLE.ACTIONS.VIEW', {
+            feature: feature,
+          }),
+        },
+        {
+          icon: 'pi pi-pencil',
+          action: (usr: Role) => this.goToEdit(usr, false),
+          severity: 'warn',
+          tooltip: this._translateService.instant('TABLE.ACTIONS.EDIT', {
+            feature: feature,
+          }),
+        },
+        {
+          icon: 'pi pi-trash',
+          action: (usr: Role) => this.showDeleteDialog(usr.id),
+          severity: 'danger',
+          tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
+            feature: feature,
+          }),
+        },
+      ];
+    });
 
   private readonly _roleListFacade = inject(RoleListFacadeService);
   private readonly _formBuilder = inject(FormBuilder);
@@ -65,6 +78,14 @@ export class RoleListComponent {
   private readonly _dialogService = inject(DialogService);
   private readonly _confirmationService = inject(ConfirmationService);
   private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _translateService = inject(TranslateService);
+
+  readonly currentLang = toSignal(
+    this._translateService.onLangChange.pipe(
+      map((event) => event.lang),
+      startWith(this._translateService.getCurrentLang() || 'en')
+    )
+  );
 
   roleFormGroup = this._formBuilder.group({
     name: [''],
@@ -163,9 +184,13 @@ export class RoleListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'role' : 'ulogu';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete role with id: ${id}`,
-        header: 'Confirmation',
+        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
+        header: this._translateService.instant('CONFITMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
@@ -187,5 +212,15 @@ export class RoleListComponent {
     this.roleFormGroup.controls['name'].setValue('');
     this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
   }
+
+  nameSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('EMPLOYEES.LIST.FILTERS.NAME');
+  });
+
+  addNewLabel = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('EMPLOYEES.LIST.ADD');
+  });
 }
 

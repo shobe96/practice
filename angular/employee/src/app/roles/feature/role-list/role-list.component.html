@@ -5,10 +5,10 @@
     (clear)="clear()"
     (refresh)="refresh()"
   >
-    <input formControlName="name" pInputText placeholder="Name of employee" />
+    <input formControlName="name" pInputText [placeholder]="nameSearch()" />
   </app-search-filter-wrapper>
 
-  <p-button label="Add New" (onClick)="addNew()" />
+  <p-button [label]="addNewLabel()" (onClick)="addNew()" />
   @if(vm.data.length) {
   <p-table
     [rowHover]="true"
@@ -17,9 +17,9 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th id="role_id">ID</th>
-        <th id="role_name">Name</th>
-        <th id="role_actions">Actions</th>
+        <th id="role_id">{{ 'ROLE.LIST.TABLE.ID' | translate}}</th>
+        <th id="role_name">{{ 'ROLE.LIST.TABLE.NAME' | translate}}</th>
+        <th id="role_actions">{{ 'ROLE.LIST.TABLE.ACTIONS' | translate}}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-role>
@@ -27,7 +27,7 @@
         <td>{{ role.id }}</td>
         <td>{{ role.name }}</td>
         <td>
-          @for(btn of actionButtons; track $index) {
+          @for(btn of actionButtons(); track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(role)"

@@ -195,6 +195,23 @@
         "ACTIONS": "Actions"
       }
   },
+  "ROLE": {
+    "LIST": {
+      "ADD": "Add new",
+      "FILTERS": {
+        "NAME": "Name of role"
+      },
+      "TABLE": {
+        "ID": "ID",
+        "NAME": "Name",
+        "ACTIONS": "Actions"
+      }
+    },
+    "FORM": {
+      "NAME": "Name of role",
+      "DESCRIPTION": "Description"
+      }
+  },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} is required!",
     "MIN_LENGTH": "{{ field }} must be longer than {{ length }} characters!",
