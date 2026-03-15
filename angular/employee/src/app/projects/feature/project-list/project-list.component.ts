@@ -206,8 +206,12 @@ export class ProjectListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'project' : 'projekat';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete project with id: ${id}`,
+        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
         header: 'Confirmation',
         closable: true,
         closeOnEscape: true,
