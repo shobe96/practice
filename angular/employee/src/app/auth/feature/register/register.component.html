@@ -1,15 +1,19 @@
 <div class="card">
-  <h1>
-    Register new user
-  </h1>
+  <h1>Register new user</h1>
   <form class="auth-form" [formGroup]="authFormGroup" (ngSubmit)="submit()">
-    <input formControlName="username" pInputText placeholder="Username" />
+    <input
+      formControlName="username"
+      pInputText
+      [placeholder]="ussernamePlaceholder()"
+    />
     @if(isInvalid('username')) {
     <app-validation-messages
       [control]="authFormGroup.controls['username']"
-      [messages]="{required: 'Username is required!',
-    minlength: 'Username must be longer than 5 characters!',
-    maxlength: 'Username must be shorter than 100 characters!'}"
+      [messages]="{
+        required: requiredTranslation(usernameKey),
+        minlength: minLengthTranslation(usernameKey, 5),
+        maxlength: maxLengthTranslation(usernameKey, 100)
+      }"
     />
     }
     <div class="password-input">
@@ -68,7 +72,9 @@
     />
     } @if(authFormGroup.errors?.['passwordMissmatch']) {
     <div class="validation-messages">
-      <span class="block">Passwords missmatch. </span>
+      <span class="block"
+        >{{ 'AUTH.REGISTER.PASSWORD_MISSMATCH' | translate }}
+      </span>
     </div>
     }
     <p-multiSelect
@@ -80,9 +86,12 @@
     @if(isInvalid('selectedRoles')) {
     <div class="validation-messages">
       @if(authFormGroup.controls['selectedRoles'].errors?.['required']) {
-      <div>
-        Roles are required!
-      </div>
+      <app-validation-messages
+        [control]="authFormGroup.controls['username']"
+        [messages]="{
+        required: requiredTranslation('AUTH.REGISTER.ROLES'),
+      }"
+      />
       }
     </div>
     }
@@ -96,13 +105,16 @@
     @if(isInvalid('employee')) {
     <div class="validation-messages">
       @if(authFormGroup.controls['employee'].errors?.['required']) {
-      <div>
-        Employee is required!
-      </div>
+      <app-validation-messages
+        [control]="authFormGroup.controls['username']"
+        [messages]="{
+        required: requiredTranslation('AUTH.REGISTER.EMPLOYEE'),
+      }"
+      />
       }
     </div>
     }
-    <p-button [disabled]="authFormGroup.invalid" label="Submit" type="submit" />
+    <p-button [disabled]="authFormGroup.invalid" [label]="submitLabel" type="submit" />
   </form>
   @if(viewModel().loading) {
   <div class="card flex justify-center progress-spinner">

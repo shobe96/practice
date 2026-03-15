@@ -31,6 +31,17 @@
       "SHOW": "Show Password",
       "HIDE": "Hide Password",
       "WELCOME": "Welcome"
+    },
+    "REGISTER": {
+      "TITLE": "Register new user",
+      "USERNAME": "Username",
+      "PASSWORD": "Password",
+      "CONFIRM_PASSWORD": "Confirm Password",
+      "ROLES": "Roles",
+      "EMPLOYEE": "Employee",
+      "SHOW_PASSWORD": "Show Password",
+      "HIDE_PASSWORD": "Hide Password",
+      "PASSWORD_MISSMATCH": "Passwords missmatch."
     }
   },
   "HOME": {
@@ -217,7 +228,14 @@
     "REQUIRED": "{{ field }} is required!",
     "MIN_LENGTH": "{{ field }} must be longer than {{ length }} characters!",
     "MAX_LENGTH": "{{ field }} must be shorter than {{ length }} characters!",
-    "EMAIL": "Email address is not valid!"
+    "EMAIL": "Email address is not valid!",
+    "PASSWORD": {
+      "ONE_UPPER_CASE": "At least one uppercase letter.",
+      "ONE_LOWER_CASE": "At least one lowercase letter.",
+      "MIN_LENGTH": "At least one special character.",
+      "ONE_SPECIAL_CHARACTER": "At least 8 characters long.",
+      "ONE_DIGIT": "At least one digit."
+    }
   },
   "MODAL": {
     "SUCCESS": "Success",

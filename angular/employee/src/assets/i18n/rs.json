@@ -31,6 +31,17 @@
       "SHOW": "Pokaži šifru",
       "HIDE": "Sakrij šifru",
       "WELCOME": "Dobrodošao"
+    },
+    "REGISTER": {
+      "TITLE": "Registruj novog korisnika",
+      "USERNAME": "Korisničko Ime",
+      "PASSWORD": "Šifra",
+      "CONFIRM_PASSWORD": "Potvrdi šifru",
+      "ROLES": "Uloge",
+      "EMPLOYEE": "Zaposleni",
+      "SHOW_PASSWORD": "Prikaži šifru",
+      "HIDE_PASSWORD": "Sakrij šifru",
+      "PASSWORD_MISSMATCH": "Šifre se ne poklapaju"
     }
   },
   "HOME": {
@@ -218,7 +229,14 @@
     "REQUIRED": "{{ field }} je obavezno!",
     "MIN_LENGTH": "{{ field }} mora biti duže od {{ length }} karaktera!",
     "MAX_LENGTH": "{{ field }} mora biti kraće od {{ length }} karaktera!",
-    "EMAIL": "Adresa Elektronske Pošte nije validna!"
+    "EMAIL": "Adresa Elektronske Pošte nije validna!",
+    "PASSWORD": {
+      "ONE_UPPER_CASE": "Jedno veliko slovo.",
+      "ONE_LOWER_CASE": "Jedno malo slovo.",
+      "MIN_LENGTH": "Jedan specijalni karakter.",
+      "ONE_SPECIAL_CHARACTER": "Minimum 8 karaktera.",
+      "ONE_DIGIT": "Jedan broj."
+    }
   },
   "MODAL": {
     "SUCCESS": "Uspeh",
