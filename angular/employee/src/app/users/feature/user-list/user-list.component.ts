@@ -138,11 +138,11 @@ export class UserListComponent {
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
+          label: this._translateService.instant('CONFITMATION.CANCEL'),
           severity: 'danger'
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFITMATION.ACCEPT'),
         },
         accept: () => {
           this._userListFacade.delete(id);

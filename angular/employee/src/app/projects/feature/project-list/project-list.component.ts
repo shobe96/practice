@@ -217,11 +217,11 @@ export class ProjectListComponent {
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
+          label: this._translateService.instant('CONFITMATION.CANCEL'),
           severity: 'danger'
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFITMATION.ACCEPT'),
         },
         accept: () => {
           this._projectListFacade.delete(id);

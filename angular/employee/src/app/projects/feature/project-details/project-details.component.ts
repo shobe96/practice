@@ -54,11 +54,11 @@ export class ProjectDetailsComponent {
       closeOnEscape: true,
       icon: 'pi pi-exclamation-triangle',
       rejectButtonProps: {
-        label: 'Cancel',
+        label: this._translateService.instant('CONFITMATION.CANCEL'),
         severity: 'danger'
       },
       acceptButtonProps: {
-        label: 'Unassign',
+        label: this._translateService.instant('PROJECT.DETAILS.EMPLOYEES.UNASSIGN'),
       },
       accept: () => {
         this._projectDetailsFacade.unassignEmployee(employeeId, project);

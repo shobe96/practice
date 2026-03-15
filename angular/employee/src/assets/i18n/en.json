@@ -184,7 +184,7 @@
         "NAME": "Name",
         "SURNAME":"Surname",
         "ACTIONS":"Actions",
-        "UNASSIGN": "Unassign Employee",
+        "UNASSIGN": "Unassign",
         "UNASSIGN_MESSAGE": "Are you sure you want to unassign employee with id: {{employeeId}} from project {{projectName}}"
       }
     }
