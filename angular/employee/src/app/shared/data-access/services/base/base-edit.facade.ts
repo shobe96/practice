@@ -1,8 +1,7 @@
 import { inject } from "@angular/core";
-import { BehaviorSubject, catchError, finalize, map, Observable, of, OperatorFunction, startWith, tap } from "rxjs";
+import { BehaviorSubject, catchError, finalize, map, Observable, of, OperatorFunction, tap } from "rxjs";
 import { CustomMessageService } from "../custom-message/custom-message.service";
 import { BaseCrudService } from "./base-crud.service";
-import { toSignal } from "@angular/core/rxjs-interop";
 import { TranslateService } from "@ngx-translate/core";
 
 export abstract class BaseEditFacade<T extends { id?: number }> {
