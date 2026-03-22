@@ -77,7 +77,7 @@ export class AuthFacadeService {
         this._isLoggedIn$.next(true);
         this._roles$.next(response.roles ?? []);
         const message = this._translateService.instant("AUTH.LOGIN.WELCOME");
-        const success = this._translateService.instant("MODAL.SUCCESS");
+        const success = this._translateService.instant("COMMON.SUCCESS");
         this._customMessageService.showSuccess(success, `${message} ${response.username}`);
         this._router.navigate(["/home/panel"]);
       }),

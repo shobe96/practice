@@ -2,15 +2,15 @@
   <p-tabs value="0">
     <p-tablist>
       <p-tab value="0">{{ 'HOME.PANEL.GENERAL.TITLE' | translate }}</p-tab>
-      <p-tab value="1">{{ 'HOME.PANEL.ROLES.TITLE' | translate }}</p-tab>
-      <p-tab value="2">{{ 'HOME.PANEL.SKILLS.TITLE' | translate }}</p-tab>
+      <p-tab value="1">{{ 'NAVBAR.USER.ROLES' | translate }}</p-tab>
+      <p-tab value="2">{{ 'NAVBAR.FEATURES.SKILLS' | translate }}</p-tab>
       <p-tab value="3">{{
-        'HOME.PANEL.CURRENTLY_ASSAIGNED_PROJECT.TITLE' | translate
+        'HOME.PANEL.CURRENTLY_ASSIGNED_PROJECT.TITLE' | translate
       }}</p-tab>
       <p-tab value="4">{{
         'HOME.PANEL.PROJECT_HISTORY.TITLE' | translate
       }}</p-tab>
-      <p-tab value="5">{{ 'HOME.PANEL.DEPARTMENT.TITLE' | translate }}</p-tab>
+      <p-tab value="5">{{ 'COMMON.DEPARTMENT' | translate }}</p-tab>
       <p-tab value="6">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.TITLE" | translate}}</p-tab>
     </p-tablist>
     <p-tabpanels>
@@ -18,7 +18,7 @@
         <h1>
           {{ 'HOME.PANEL.GENERAL.EMPLOYEE' | translate }} {{ employee.id }}
         </h1>
-        <label for="name">{{ 'HOME.PANEL.GENERAL.NAME' | translate }}:</label>
+        <label for="name">{{ 'COMMON.NAME' | translate }}:</label>
         <p id="name">{{ employee.name }}</p>
         <label for="surname"
           >{{ 'HOME.PANEL.GENERAL.SURNAME' | translate }}:</label
@@ -39,9 +39,9 @@
         >
           <ng-template pTemplate="header">
             <tr>
-              <th id="roleName">{{ 'HOME.PANEL.ROLES.NAME' | translate }}</th>
+              <th id="roleName">{{ 'COMMON.NAME' | translate }}</th>
               <th id="description">
-                {{ 'HOME.PANEL.ROLES.DESCRIPTION' | translate }}
+                {{ 'COMMON.DESCRIPTION' | translate }}
               </th>
             </tr>
           </ng-template>
@@ -61,9 +61,9 @@
         >
           <ng-template pTemplate="header">
             <tr>
-              <th id="skillName">{{ 'HOME.PANEL.SKILLS.NAME' | translate }}</th>
+              <th id="skillName">{{ 'COMMON.NAME' | translate }}</th>
               <th id="description">
-                {{ 'HOME.PANEL.SKILLS.DESCRIPTION' | translate }}
+                {{ 'COMMON.DESCRIPTION' | translate }}
               </th>
             </tr>
           </ng-template>
@@ -78,7 +78,7 @@
       <p-tabpanel value="3">
         <label for="projectName"
           >{{
-            'HOME.PANEL.CURRENTLY_ASSAIGNED_PROJECT.NAME' | translate
+            'COMMON.NAME' | translate
           }}:</label
         >
         <p id="projectName">
@@ -88,7 +88,7 @@
         </p>
         <label for="projectCode"
           >{{
-            'HOME.PANEL.CURRENTLY_ASSAIGNED_PROJECT.CODE' | translate
+            'HOME.PANEL.CURRENTLY_ASSIGNED_PROJECT.CODE' | translate
           }}:</label
         >
         <p id="projectCode">
@@ -106,16 +106,16 @@
           <ng-template pTemplate="header">
             <tr>
               <th id="projectName">
-                {{ 'HOME.PANEL.PROJECT_HISTORY.NAME' | translate }}
+                {{ 'COMMON.NAME' | translate }}
               </th>
               <th id="code">
                 {{ 'HOME.PANEL.PROJECT_HISTORY.CODE' | translate }}
               </th>
               <th id="startDate">
-                {{ 'HOME.PANEL.PROJECT_HISTORY.ASSAIGNED_ON' | translate }}
+                {{ 'HOME.PANEL.PROJECT_HISTORY.ASSIGNED_ON' | translate }}
               </th>
               <th id="endDate">
-                {{ 'HOME.PANEL.PROJECT_HISTORY.UNASSAIGNED_ON' | translate }}
+                {{ 'HOME.PANEL.PROJECT_HISTORY.UNASSIGNED_ON' | translate }}
               </th>
             </tr>
           </ng-template>
@@ -133,11 +133,11 @@
         @if (employee.department) {
         <div class="card">
           <h1>
-            {{ 'HOME.PANEL.DEPARTMENT.TITLE' | translate }}
+            {{ 'COMMON.DEPARTMENT' | translate }}
             {{ employee.department.id }}
           </h1>
           <label for="name"
-            >{{ 'HOME.PANEL.DEPARTMENT.NAME' | translate }}:</label
+            >{{ 'COMMON.NAME' | translate }}:</label
           >
           <p id="name">{{ employee.department.name }}</p>
         </div>
@@ -151,8 +151,8 @@
         >
           <ng-template pTemplate="header">
             <tr>
-              <th id="id">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.ID" | translate}}</th>
-              <th id="name">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.NAME" | translate}}</th>
+              <th id="id">{{ "COMMON.ID" | translate}}</th>
+              <th id="name">{{ "COMMON.NAME" | translate}}</th>
               <th id="surname">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.SURNAME" | translate}}</th>
               <th id="email">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.EMAIL" | translate}}</th>
               <th id="employmentDate">{{ "HOME.PANEL.DEPARTMENT_EMPLOYEES.EMPLOYMENT_DATE" | translate}}</th>

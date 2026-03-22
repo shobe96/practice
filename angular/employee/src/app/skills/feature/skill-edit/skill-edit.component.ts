@@ -103,7 +103,11 @@ export class SkillEditComponent implements OnInit {
   }
 
   get namePlaceholder(): string {
-    return this._translateService.instant('SKILL.FORM.NAME');
+    return this._translateService.instant('COMMON.NAME');
+  }
+
+  get descriptionPlaceholder(): string {
+    return this._translateService.instant('COMMON.DESCRIPTION');
   }
 
   minLengthTranslation(key: string, length: number): string {

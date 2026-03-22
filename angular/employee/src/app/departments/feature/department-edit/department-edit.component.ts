@@ -113,18 +113,18 @@ export class DepartmentEditComponent implements OnInit {
   }
 
   get submitLabel(): string {
-    return this._translateService.instant('FORM.SUBMIT');
+    return this._translateService.instant('COMMON.SUBMIT');
   }
 
   get cancelLabel(): string {
-    return this._translateService.instant('FORM.CANCEL');
+    return this._translateService.instant('COMMON.CANCEL');
   }
 
   get loadingLabel(): string {
-    return this._translateService.instant('LOADING');
+    return this._translateService.instant('COMMON.LOADING');
   }
 
   get namePlaceholder(): string {
-    return this._translateService.instant('DEPARTMENT.FORM.NAME');
+    return this._translateService.instant('COMMON.NAME');
   }
 }

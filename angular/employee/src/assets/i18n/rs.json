@@ -1,4 +1,27 @@
 {
+  "COMMON": {
+    "ID": "ID",
+    "NAME": "Ime",
+    "DEPARTMENT": "Odeljenje",
+    "SKILL": "Veština",
+    "DESCRIPTION": "Opis",
+    "ACTIONS": "Akcije",
+    "SUBMIT": "Pošalji",
+    "CANCEL": "Otkaži",
+    "SAVE": "Sačuvaj",
+    "EDIT": "Izmeni",
+    "DELETE": "Obriši",
+    "VIEW": "Pogledaj",
+    "LOADING": "Učitavanje...",
+    "SUCCESS": "Uspeh",
+    "ERROR": "Greška",
+    "FILTERS": {
+      "NAME": "Pretraži po imenu"
+    },
+    "LIST": {
+      "ADD": "Dodaj {{ feature }}"
+    }
+  },
   "NAVBAR": {
     "HOME": "Početna",
     "FEATURES": {
@@ -25,248 +48,118 @@
   "AUTH": {
     "LOGIN": {
       "TITLE": "Prijava",
-      "USERNAME": "Korisničko Ime",
-      "PASSWORD": "Šifra",
-      "SUBMIT": "Pošalji",
-      "SHOW": "Pokaži šifru",
-      "HIDE": "Sakrij šifru",
-      "WELCOME": "Dobrodošao"
+      "USERNAME": "Korisničko ime",
+      "PASSWORD": "Lozinka",
+      "SHOW": "Prikaži lozinku",
+      "HIDE": "Sakrij lozinku",
+      "WELCOME": "Dobrodošli"
     },
     "REGISTER": {
-      "TITLE": "Registruj novog korisnika",
-      "USERNAME": "Korisničko Ime",
-      "PASSWORD": "Šifra",
-      "CONFIRM_PASSWORD": "Potvrdi šifru",
+      "TITLE": "Registracija novog korisnika",
+      "USERNAME": "Korisničko ime",
+      "PASSWORD": "Lozinka",
+      "CONFIRM_PASSWORD": "Potvrdi lozinku",
       "ROLES": "Uloge",
       "EMPLOYEE": "Zaposleni",
-      "SHOW_PASSWORD": "Prikaži šifru",
-      "HIDE_PASSWORD": "Sakrij šifru",
-      "PASSWORD_MISSMATCH": "Šifre se ne poklapaju"
+      "SHOW_PASSWORD": "Prikaži lozinku",
+      "HIDE_PASSWORD": "Sakrij lozinku",
+      "PASSWORD_MISMATCH": "Lozinke se ne podudaraju."
     }
   },
   "HOME": {
-    "NOT_LOGGED_IN": "Niste prijavljeni molimo vas da pritisnite dugme ispod ili idite u meni Korisnici da se prijavite.",
+    "NOT_LOGGED_IN": "Niste prijavljeni. Molimo kliknite na dugme ispod ili idite na stranicu za prijavu.",
     "PANEL": {
       "GENERAL": {
-        "TITLE": "Genralno",
+        "TITLE": "Generalno",
         "EMPLOYEE": "Zaposleni",
-        "NAME": "Ime",
         "SURNAME": "Prezime",
-        "EMAIL": "Elektronska Pošta",
+        "EMAIL": "Email",
         "STATUS": "Status",
-        "ASSAIGNED": "Zadužen",
+        "ASSIGNED": "Zadužen",
         "FREE": "Slobodan"
       },
-      "ROLES": {
-        "TITLE": "Uloge",
-        "NAME": "Ime",
-        "DESCRIPTION": "Opis"
-      },
-      "SKILLS": {
-        "TITLE": "Veštine",
-        "NAME": "Ime",
-        "DESCRIPTION": "Opis"
-      },
-      "CURRENTLY_ASSAIGNED_PROJECT": {
-        "TITLE": "Trenutni Projekat",
-        "NAME": "Ime",
+      "CURRENTLY_ASSIGNED_PROJECT": {
+        "TITLE": "Trenutni projekat",
         "CODE": "Kod"
       },
       "PROJECT_HISTORY": {
-        "TITLE": "Istorija Projekata",
-        "NAME": "Ime",
+        "TITLE": "Istorija projekata",
         "CODE": "Kod",
-        "ASSAIGNED_ON": "Zadužen na",
-        "UNASSAIGNED_ON": "Razadužen na"
-      },
-      "DEPARTMENT": {
-        "TITLE": "Odeljenje",
-        "NAME": "Ime"
+        "ASSIGNED_ON": "Zadužen od",
+        "UNASSIGNED_ON": "Razadužen od"
       },
       "DEPARTMENT_EMPLOYEES": {
-        "TITLE": "Zaposleni Odeljenja",
-        "ID": "ID",
-        "NAME": "Ime",
+        "TITLE": "Zaposleni u odeljenju",
         "SURNAME": "Prezime",
-        "EMAIL": "Elektronska Pošta",
-        "EMPLOYMENT_DATE": "Datum Zaposlenja",
-        "ACTIVE": "Zadužen"
+        "EMAIL": "Email",
+        "EMPLOYMENT_DATE": "Datum zaposlenja",
+        "ACTIVE": "Aktivan"
       }
     }
   },
-  "EMPLOYEES": {
+  "EMPLOYEE": {
     "LIST": {
-      "ADD": "Dodaj",
       "FILTERS": {
-        "NAME": "Ime Zaposlenog",
-        "SURNAME": "Prezime Zaposlenog",
-        "EMAIL": "Elektronska Pošta Zaposlenog"
+        "NAME": "Pretraži po imenu",
+        "SURNAME": "Pretraži po prezimenu",
+        "EMAIL": "Pretraži po email-u"
       },
       "TABLE": {
-        "ID": "ID",
-        "NAME": "Ime",
         "SURNAME": "Prezime",
-        "EMAIL": "Elektronska Pošta",
-        "EMPLOYMENT_DATE": "Datum Zaposlenja",
-        "ACTIVE": "Zadužen",
-        "ACTIONS": "Akcije"
+        "EMAIL": "Email",
+        "EMPLOYMENT_DATE": "Datum zaposlenja",
+        "ACTIVE": "Aktivan"
       }
-    },
-    "FORM": {
-      "NAME": "Ime Zaposlenog",
-      "SURNAME": "Prezime Zaposlenog",
-      "EMAIL": "Elektronska Pošta Zaposlenog"
-    },
-    "DELETE": {}
-  },
-  "DEPARTMENT": {
-    "LIST": {
-      "ADD": "Dodaj",
-      "FILTERS": {
-        "NAME": "Ime Odeljenja"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Ime",
-        "ACTIONS": "Akcije"
-      }
-    },
-    "FORM": {
-      "NAME": "Ime Odeljenja"
-    }
-  },
-  "SKILL": {
-    "LIST": {
-      "ADD": "Dodaj",
-      "FILTERS": {
-        "NAME": "Ime Veštine"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Ime",
-        "ACTIONS": "Akcije"
-      }
-    },
-    "FORM": {
-      "NAME": "Ime Veštine",
-      "DESCRIPTION": "Opis"
     }
   },
   "PROJECT": {
-    "LIST": {
-      "ADD": "Dodaj",
-      "FILTERS": {
-        "NAME": "Ime projekta",
-        "CODE": "Kod projekta"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Ime",
-        "START": "Početak",
-        "END": "Kraj",
-        "ACTIONS": "Akcije"
-      }
-    },
     "FORM": {
-      "TITLE": "Projekat",
-      "NAME": "Ime projekta",
-      "DESCRIPTION": "Opis",
+      "TITLE": "Detalji projekta",
       "CODE": "Kod projekta",
-      "DEPARTMENT": "Odaberi Odeljenje",
-      "SKILLS": "Odaberi Veštine",
-      "EMPLOYEES": "Odaberi Zaposlene",
-      "START": "Početak",
-      "END": "Kraj"
+      "DEPARTMENT": "Odaberi odeljenje",
+      "SKILLS": "Odaberi veštine",
+      "EMPLOYEES": "Odaberi zaposlene",
+      "START": "Datum početka",
+      "END": "Datum završetka"
     },
     "DETAILS": {
-      "BACK": "Nazad",
-      "GENERAL": {
-        "TITLE": "Generalno",
-        "SUBTITLE": "Projekat",
-        "NAME": "Ime",
-        "CODE": "Kod"
-      },
-      "SKILLS": {
-        "TITLE": "Neophodne Veštine",
-        "NAME": "Ime",
-        "DESCRIPTION": "Opis"
-      },
+      "BACK": "Nazad na listu",
+      "SKILLS": { "TITLE": "Neophodne veštine" },
       "EMPLOYEES": {
-        "TITLE": "Angažovani Zaposleni",
-        "NAME": "Ime",
-        "SURNAME": "Prezime",
-        "ACTIONS": "Akcije",
+        "TITLE": "Angažovani tim",
         "UNASSIGN": "Ukloni",
-        "UNASSIGN_MESSAGE": "Da li ste sigurni da želite da uklonite zaposlenog sa id: {{employeeId}} sa projekta {{projectName}}"
+        "UNASSIGN_CONFIRM": "Da li ste sigurni da želite da uklonite korisnika {{employeeName}} sa projekta {{projectName}}?"
       }
-    }
-  },
-  "USER": {
-    "TABLE": {
-      "ID": "ID",
-      "USERNAME": "Korisničko Ime",
-      "ACTIONS": "Akcije"
-    }
-  },
-  "ROLE": {
-    "LIST": {
-      "ADD": "Dodaj",
-      "FILTERS": {
-        "NAME": "Ime uloge"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Ime",
-        "ACTIONS": "Akcije"
-      }
-    },
-    "FORM": {
-      "NAME": "Ime uloge",
-      "DESCRIPTION": "Opis"
     }
   },
   "VALIDATIONS": {
-    "REQUIRED": "{{ field }} je obavezno!",
-    "MIN_LENGTH": "{{ field }} mora biti duže od {{ length }} karaktera!",
-    "MAX_LENGTH": "{{ field }} mora biti kraće od {{ length }} karaktera!",
-    "EMAIL": "Adresa Elektronske Pošte nije validna!",
+    "REQUIRED": "{{ field }} je obavezno polje!",
+    "MIN_LENGTH": "{{ field }} mora imati bar {{ length }} karaktera!",
+    "MAX_LENGTH": "{{ field }} ne sme imati više od {{ length }} karaktera!",
+    "EMAIL": "Email adresa nije validna!",
     "PASSWORD": {
-      "ONE_UPPER_CASE": "Jedno veliko slovo.",
-      "ONE_LOWER_CASE": "Jedno malo slovo.",
-      "MIN_LENGTH": "Jedan specijalni karakter.",
-      "ONE_SPECIAL_CHARACTER": "Minimum 8 karaktera.",
-      "ONE_DIGIT": "Jedan broj."
-    }
-  },
-  "MODAL": {
-    "SUCCESS": "Uspeh",
-    "ERROR": "Greška"
-  },
-  "TABLE": {
-    "ACTIONS": {
-      "VIEW": "Pogledaj {{feature}}",
-      "EDIT": "Izmeni {{feature}}",
-      "DELETE": "Obriši {{feature}}"
+      "UPPER": "Mora sadržati bar jedno veliko slovo.",
+      "LOWER": "Mora sadržati bar jedno malo slovo.",
+      "SPECIAL": "Mora sadržati bar jedan specijalni karakter.",
+      "LENGTH": "Mora imati najmanje 8 karaktera.",
+      "DIGIT": "Mora sadržati bar jednu cifru."
     }
   },
   "FILTERS": {
-    "TITLE": "Filteri za Pretragu",
-    "CLEAR": "Očistie Filtere",
-    "REFRESH": "Osveži Listu"
+    "TITLE": "Filteri pretrage",
+    "CLEAR": "Očisti filtere",
+    "REFRESH": "Osveži listu"
   },
   "FORM": {
-    "TITLE": "Dodaj {{ feature }}",
-    "SELECT": "Odaberi {{ feature }}",
-    "SUBMIT": "Pošalji",
-    "CANCEL": "Otkaži",
-    "SAVED": "Sačuvano",
-    "UNKNOWN_ERROR": "Nepoznata greška"
+    "CREATE_TITLE": "Dodaj {{ feature }}",
+    "SELECT_LABEL": "Odaberi {{ feature }}",
+    "SAVED_SUCCESS": "{{ feature }} uspešno sačuvan/a!",
+    "ERROR_GENERIC": "Došlo je do neočekivane greške."
   },
-  "LOADING": "Učitavanje",
-  "CONFITMATION": {
-    "TITLE": "Potvrda",
-    "MESSAGE": "Da li ste sigurni da želite da obrišete {{ feature }} sa id-jem: {{ id }}",
-    "CANCEL": "Otkaži",
-    "ACCEPT": "Obriši"
+  "CONFIRMATION": {
+    "TITLE": "Da li ste sigurni?",
+    "DELETE_MESSAGE": "Upravo ćete obrisati {{ feature }} (ID: {{ id }}). Ova radnja je nepovratna.",
+    "CANCEL": "Odustani",
+    "ACCEPT": "Da, obriši"
   }
 }

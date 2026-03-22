@@ -1,4 +1,10 @@
-import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { Department } from '../../data-access/department.model';
 import { PaginatorState, Paginator } from 'primeng/paginator';
@@ -34,53 +40,52 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
     ProgressSpinner,
     SearchFilterWrapperComponent,
     IconButtonComponent,
-    TranslatePipe
-  ]
+    TranslatePipe,
+  ],
 })
 export class DepartmentListComponent {
-
   private readonly _translateService = inject(TranslateService);
 
   departmentId: number | null = 0;
 
   readonly actionButtons = computed((): ActionButtons<Department>[] => {
-      const feature = this.currentLang() === 'en' ? 'Department' : 'Odeljenje';
-  
-      return [
-        {
-          icon: 'pi pi-eye',
-          action: (dep: Department) => this.goToDetails(dep),
-          severity: 'success',
-          // Translate the tooltips
-          tooltip: this._translateService.instant('TABLE.ACTIONS.VIEW', {
-            feature: feature,
-          }),
-        },
-        {
-          icon: 'pi pi-pencil',
-          action: (dep: Department) => this.goToEdit(dep, false),
-          severity: 'warn',
-          tooltip: this._translateService.instant('TABLE.ACTIONS.EDIT', {
-            feature: feature,
-          }),
-        },
-        {
-          icon: 'pi pi-trash',
-          action: (dep: Department) => this.showDeleteDialog(dep.id),
-          severity: 'danger',
-          tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
-            feature: feature,
-          }),
-        },
-      ];
-    });
+    const feature = this.currentLang() === 'en' ? 'Department' : 'Odeljenje';
+
+    return [
+      {
+        icon: 'pi pi-eye',
+        action: (dep: Department) => this.goToDetails(dep),
+        severity: 'success',
+        // Translate the tooltips
+        tooltip: this._translateService.instant('COMMON.VIEW', {
+          feature: feature,
+        }),
+      },
+      {
+        icon: 'pi pi-pencil',
+        action: (dep: Department) => this.goToEdit(dep, false),
+        severity: 'warn',
+        tooltip: this._translateService.instant('COMMON.EDIT', {
+          feature: feature,
+        }),
+      },
+      {
+        icon: 'pi pi-trash',
+        action: (dep: Department) => this.showDeleteDialog(dep.id),
+        severity: 'danger',
+        tooltip: this._translateService.instant('COMMON.DELETE', {
+          feature: feature,
+        }),
+      },
+    ];
+  });
 
   readonly currentLang = toSignal(
-      this._translateService.onLangChange.pipe(
-        map((event) => event.lang),
-        startWith(this._translateService.getCurrentLang() || 'en')
-      )
-    );
+    this._translateService.onLangChange.pipe(
+      map((event) => event.lang),
+      startWith(this._translateService.getCurrentLang() || 'en')
+    )
+  );
 
   private readonly _departmentListFacade = inject(DepartmentListFacadeService);
   private readonly _formBuilder = inject(FormBuilder);
@@ -90,15 +95,21 @@ export class DepartmentListComponent {
   private readonly _activatedRoute = inject(ActivatedRoute);
 
   departmentFormGroup = this._formBuilder.group({
-    name: ['']
+    name: [''],
   });
 
-  private readonly _queryParamsSignal = toSignal(this._activatedRoute.queryParams, {
-    initialValue: {}
-  });
+  private readonly _queryParamsSignal = toSignal(
+    this._activatedRoute.queryParams,
+    {
+      initialValue: {},
+    }
+  );
 
   private readonly _departmentFormSignal = toSignal(
-    this.departmentFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
+    this.departmentFormGroup.valueChanges.pipe(
+      debounceTime(2000),
+      distinctUntilChanged()
+    ),
     { initialValue: this.departmentFormGroup.getRawValue() }
   );
 
@@ -115,8 +126,8 @@ export class DepartmentListComponent {
       data: [],
       page: this._defaultPage,
       rowsPerPage: [],
-      loading: false
-    }
+      loading: false,
+    },
   });
 
   constructor() {
@@ -151,12 +162,14 @@ export class DepartmentListComponent {
   }
 
   goToEdit(department: Department | null, disable: boolean): void {
-    const newLabel = this.currentLang() === 'en' ? 'Department' : 'novo Odeljenje';
+    const newLabel = this.currentLang() === 'en' ? 'Department' : 'Odeljenje';
     const title = department
-      ? `${this._translateService.instant('HOME.PANEL.DEPARTMENT.TITLE')} ${
+      ? `${this._translateService.instant('COMMON.DEPARTMENT')} ${
           department.id
         }`
-      : this._translateService.instant('FORM.TITLE', { feature: newLabel });
+      : this._translateService.instant('FORM.CREATE_TITLE', {
+          feature: newLabel,
+        });
     const dialogRef = this._dialogService.open(DepartmentEditComponent, {
       header: title,
       modal: true,
@@ -164,10 +177,10 @@ export class DepartmentListComponent {
       contentStyle: { overflow: 'auto' },
       inputValues: {
         department: department,
-        disable: disable
+        disable: disable,
       },
       baseZIndex: 10000,
-      maximizable: true
+      maximizable: true,
     });
 
     dialogRef?.onClose.subscribe((value: boolean) => {
@@ -189,20 +202,20 @@ export class DepartmentListComponent {
     if (id) {
       const feature = this.currentLang() === 'en' ? 'department' : 'odeljenje';
       this._confirmationService.confirm({
-        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+        message: this._translateService.instant('CONFIRMATION.DELETE_MESSAGE', {
           feature: feature,
           id: id,
         }),
-        header: this._translateService.instant('CONFITMATION.TITLE'),
+        header: this._translateService.instant('CONFIRMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: this._translateService.instant('CONFITMATION.CANCEL'),
+          label: this._translateService.instant('CONFIRMATION.CANCEL'),
           severity: 'danger',
         },
         acceptButtonProps: {
-          label: this._translateService.instant('CONFITMATION.ACCEPT'),
+          label: this._translateService.instant('CONFIRMATION.ACCEPT'),
         },
         accept: () => {
           this._departmentListFacade.delete(id);
@@ -213,16 +226,22 @@ export class DepartmentListComponent {
 
   nameSearch = computed(() => {
     this.currentLang();
-    return this._translateService.instant('DEPARTMENT.LIST.FILTERS.NAME');
+    return this._translateService.instant('COMMON.FILTERS.NAME');
   });
 
   addNewLabel = computed(() => {
     this.currentLang();
-    return this._translateService.instant('DEPARTMENT.LIST.ADD');
+    const feature = this.currentLang() === 'en' ? 'Department' : 'Odeljenje';
+    return this._translateService.instant('COMMON.LIST.ADD', {
+      feature,
+    });
   });
 
   private _clearSearchFields() {
     this.departmentFormGroup.controls['name'].setValue('');
-    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
+    this._router.navigate([], {
+      queryParams: { name: '' },
+      queryParamsHandling: 'merge',
+    });
   }
 }

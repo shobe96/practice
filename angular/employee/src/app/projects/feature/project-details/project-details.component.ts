@@ -49,12 +49,12 @@ export class ProjectDetailsComponent {
   unassignEmployee(employeeId: number, project: Project) {
     this._confirmationService.confirm({
       message: this._translateService.instant('PROJECT.DETAILS.EMPLOYEES.UNASSIGN_MESSAGE', { employeeId: employeeId, projectName: project.name, }),
-      header: this._translateService.instant('CONFITMATION.TITLE'),
+      header: this._translateService.instant('CONFIRMATION.TITLE'),
       closable: true,
       closeOnEscape: true,
       icon: 'pi pi-exclamation-triangle',
       rejectButtonProps: {
-        label: this._translateService.instant('CONFITMATION.CANCEL'),
+        label: this._translateService.instant('CONFIRMATION.CANCEL'),
         severity: 'danger'
       },
       acceptButtonProps: {

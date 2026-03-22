@@ -9,9 +9,9 @@
     <app-validation-messages
       [control]="departmentFormGroup.controls['name']"
       [messages]="{
-        required: requiredTranslation('DEPARTMENT.LIST.TABLE.NAME'),
-        minlength: minLengthTranslation('DEPARTMENT.LIST.TABLE.NAME', 5),
-        maxlength: maxLengthTranslation('DEPARTMENT.LIST.TABLE.NAME', 25)
+        required: requiredTranslation('COMMON.NAME'),
+        minlength: minLengthTranslation('COMMON.NAME', 5),
+        maxlength: maxLengthTranslation('COMMON.NAME', 25)
       }"
     />
     } @if (viewModel(); as vm) { @if(vm.loading) {

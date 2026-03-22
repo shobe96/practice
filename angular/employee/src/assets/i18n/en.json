@@ -1,4 +1,27 @@
 {
+  "COMMON": {
+    "ID": "ID",
+    "NAME": "Name",
+    "DEPARTMENT": "Department",
+    "SKILL": "Skill",
+    "DESCRIPTION": "Description",
+    "ACTIONS": "Actions",
+    "SUBMIT": "Submit",
+    "CANCEL": "Cancel",
+    "SAVE": "Save",
+    "EDIT": "Edit",
+    "DELETE": "Delete",
+    "VIEW": "View",
+    "LOADING": "Loading...",
+    "SUCCESS": "Success",
+    "ERROR": "Error",
+    "FILTERS": {
+      "NAME": "Search by Name"
+    },
+    "LIST": {
+      "ADD": "Add {{ feature }}"
+    }
+  },
   "NAVBAR": {
     "HOME": "Home",
     "FEATURES": {
@@ -27,7 +50,6 @@
       "TITLE": "Login",
       "USERNAME": "Username",
       "PASSWORD": "Password",
-      "SUBMIT": "Submit",
       "SHOW": "Show Password",
       "HIDE": "Hide Password",
       "WELCOME": "Welcome"
@@ -41,52 +63,33 @@
       "EMPLOYEE": "Employee",
       "SHOW_PASSWORD": "Show Password",
       "HIDE_PASSWORD": "Hide Password",
-      "PASSWORD_MISSMATCH": "Passwords missmatch."
+      "PASSWORD_MISMATCH": "Passwords do not match."
     }
   },
   "HOME": {
-    "NOT_LOGGED_IN": "You're not logged in please press button below or go to menu Users to login.",
+    "NOT_LOGGED_IN": "You're not logged in. Please use the button below or navigate to the Login page.",
     "PANEL": {
       "GENERAL": {
         "TITLE": "General",
         "EMPLOYEE": "Employee",
-        "NAME": "Name",
         "SURNAME": "Surname",
         "EMAIL": "Email",
         "STATUS": "Status",
-        "ASSAIGNED": "Assaigned",
+        "ASSIGNED": "Assigned",
         "FREE": "Free"
       },
-      "ROLES": {
-        "TITLE": "Roles",
-        "NAME": "Name",
-        "DESCRIPTION": "Description"
-      },
-      "SKILLS": {
-        "TITLE": "Skills",
-        "NAME": "Name",
-        "DESCRIPTION": "Description"
-      },
-      "CURRENTLY_ASSAIGNED_PROJECT": {
+      "CURRENTLY_ASSIGNED_PROJECT": {
         "TITLE": "Currently Assigned Project",
-        "NAME": "Name",
         "CODE": "Code"
       },
       "PROJECT_HISTORY": {
-        "TITLE": "Projects History",
-        "NAME": "Name",
+        "TITLE": "Project History",
         "CODE": "Code",
-        "ASSAIGNED_ON": "Assaigned on",
-        "UNASSAIGNED_ON": "Unassaigned on"
-      },
-      "DEPARTMENT": {
-        "TITLE": "Department",
-        "NAME": "Name"
+        "ASSIGNED_ON": "Assigned on",
+        "UNASSIGNED_ON": "Unassigned on"
       },
       "DEPARTMENT_EMPLOYEES": {
         "TITLE": "Department Employees",
-        "ID": "ID",
-        "NAME": "Name",
         "SURNAME": "Surname",
         "EMAIL": "Email",
         "EMPLOYMENT_DATE": "Employment Date",
@@ -94,158 +97,52 @@
       }
     }
   },
-  "EMPLOYEES": {
+  "EMPLOYEE": {
     "LIST": {
-      "ADD": "Add new",
+      "ADD": "Add Employee",
       "FILTERS": {
-        "NAME": "Name of employee",
-        "SURNAME": "Surname of employee",
-        "EMAIL": "Email of employee"
+        "SURNAME": "Search by Surname",
+        "EMAIL": "Search by Email"
       },
       "TABLE": {
-        "ID": "ID",
-        "NAME": "Name",
         "SURNAME": "Surname",
         "EMAIL": "Email",
         "EMPLOYMENT_DATE": "Employment Date",
-        "ACTIVE": "Active",
-        "ACTIONS": "Actions"
+        "ACTIVE": "Active"
       }
-    },
-    "FORM": {
-      "NAME": "Name of employee",
-      "SURNAME": "Surname of employee",
-      "EMAIL": "Email of employee"
-    }
-  },
-  "DEPARTMENT": {
-    "LIST": {
-      "ADD": "Add new",
-      "FILTERS": {
-        "NAME": "Name of department"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Name",
-        "ACTIONS": "Actions"
-      }
-    },
-    "FORM": {
-      "NAME": "Name of department"
-    }
-  },
-  "SKILL": {
-    "LIST": {
-      "ADD": "Add new",
-      "FILTERS": {
-        "NAME": "Name of skill"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Name",
-        "ACTIONS": "Actions"
-      }
-    },
-    "FORM": {
-      "NAME": "Name of skill",
-      "DESCRIPTION": "Description"
     }
   },
   "PROJECT": {
-    "LIST": {
-      "ADD": "Add new",
-      "FILTERS": {
-        "NAME": "Name of project",
-        "CODE": "Code of project"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Name",
-        "START": "Start Date",
-        "END": "End Date",
-        "ACTIONS": "Actions"
-      }
-    },
     "FORM": {
-      "TITLE": "Project",
-      "NAME": "Name of project",
-      "DESCRIPTION": "Description",
-      "CODE": "Code of project",
-      "DEPARTMENT": "Select a Department",
+      "TITLE": "Project Details",
+      "CODE": "Project Code",
+      "DEPARTMENT": "Select Department",
       "SKILLS": "Select Skills",
       "EMPLOYEES": "Select Employees",
       "START": "Start Date",
       "END": "End Date"
     },
     "DETAILS": {
-      "BACK": "Back",
-      "GENERAL": {
-        "TITLE": "General",
-        "SUBTITLE": "Project",
-        "NAME": "Name",
-        "CODE":"Code"
-      },
-      "SKILLS": {
-        "TITLE": "Necessary Skills",
-        "NAME": "Name",
-        "DESCRIPTION": "Description"
-      },
+      "BACK": "Back to List",
+      "SKILLS": { "TITLE": "Required Skills" },
       "EMPLOYEES": {
-        "TITLE": "Assigned Employees",
-        "NAME": "Name",
-        "SURNAME":"Surname",
-        "ACTIONS":"Actions",
+        "TITLE": "Assigned Team",
         "UNASSIGN": "Unassign",
-        "UNASSIGN_MESSAGE": "Are you sure you want to unassign employee with id: {{employeeId}} from project {{projectName}}"
+        "UNASSIGN_CONFIRM": "Are you sure you want to unassign {{employeeName}} from {{projectName}}?"
       }
-    }
-  },
-  "USER": {
-    "TABLE": {
-        "ID": "ID",
-        "USERNAME": "Username",
-        "ACTIONS": "Actions"
-      }
-  },
-  "ROLE": {
-    "LIST": {
-      "ADD": "Add new",
-      "FILTERS": {
-        "NAME": "Name of role"
-      },
-      "TABLE": {
-        "ID": "ID",
-        "NAME": "Name",
-        "ACTIONS": "Actions"
-      }
-    },
-    "FORM": {
-      "NAME": "Name of role",
-      "DESCRIPTION": "Description"
     }
   },
   "VALIDATIONS": {
     "REQUIRED": "{{ field }} is required!",
-    "MIN_LENGTH": "{{ field }} must be longer than {{ length }} characters!",
-    "MAX_LENGTH": "{{ field }} must be shorter than {{ length }} characters!",
-    "EMAIL": "Email address is not valid!",
+    "MIN_LENGTH": "{{ field }} must be at least {{ length }} characters!",
+    "MAX_LENGTH": "{{ field }} cannot exceed {{ length }} characters!",
+    "EMAIL": "Invalid email address!",
     "PASSWORD": {
-      "ONE_UPPER_CASE": "At least one uppercase letter.",
-      "ONE_LOWER_CASE": "At least one lowercase letter.",
-      "MIN_LENGTH": "At least one special character.",
-      "ONE_SPECIAL_CHARACTER": "At least 8 characters long.",
-      "ONE_DIGIT": "At least one digit."
-    }
-  },
-  "MODAL": {
-    "SUCCESS": "Success",
-    "ERROR": "Error"
-  },
-  "TABLE": {
-    "ACTIONS": {
-      "VIEW": "View {{feature}}",
-      "EDIT": "Edit {{feature}}",
-      "DELETE": "Delete {{feature}}"
+      "UPPER": "Include at least one uppercase letter.",
+      "LOWER": "Include at least one lowercase letter.",
+      "SPECIAL": "Include at least one special character.",
+      "LENGTH": "Must be at least 8 characters long.",
+      "DIGIT": "Include at least one digit."
     }
   },
   "FILTERS": {
@@ -254,18 +151,15 @@
     "REFRESH": "Refresh List"
   },
   "FORM": {
-    "TITLE": "Add new {{ feature }}",
-    "SELECT": "Select {{ feature }}",
-    "CANCEL": "Cancel",
-    "SUBMIT": "Submit",
-    "SAVED": "Saved",
-    "UNKNOWN_ERROR": "Unknown error"
+    "CREATE_TITLE": "Add New {{ feature }}",
+    "SELECT_LABEL": "Select {{ feature }}",
+    "SAVED_SUCCESS": "{{ feature }} saved successfully!",
+    "ERROR_GENERIC": "An unexpected error occurred."
   },
-  "LOADING": "Loading",
-  "CONFITMATION": {
-    "TITLE": "Confirmation",
-    "MESSAGE": "Are you sure you want to delete {{ feature }} with id: {{ id }}",
-    "CANCEL": "Cancel",
-    "ACCEPT": "Delete"
+  "CONFIRMATION": {
+    "TITLE": "Are you sure?",
+    "DELETE_MESSAGE": "You are about to delete {{ feature }} (ID: {{ id }}). This action cannot be undone.",
+    "CANCEL": "Keep it",
+    "ACCEPT": "Yes, Delete"
   }
 }

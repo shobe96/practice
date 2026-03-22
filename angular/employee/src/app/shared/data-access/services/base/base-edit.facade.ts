@@ -25,7 +25,7 @@ export abstract class BaseEditFacade<T extends { id?: number }> {
     return this._withLoading(() => {
 
       return request$.pipe(
-        tap(() => this._customMessageService.showSuccess(this._translateService.instant("MODAL.SUCCESS"), this._translateService.instant("FORM.SAVED"))),
+        tap(() => this._customMessageService.showSuccess(this._translateService.instant("COMMON.SUCCESS"), this._translateService.instant("FORM.SAVED"))),
         map(() => true),
         this._handleError<boolean>(false)
       );

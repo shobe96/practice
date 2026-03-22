@@ -55,7 +55,7 @@ export class SkillListComponent {
         action: (dep: Skill) => this.goToDetails(dep),
         severity: 'success',
         // Translate the tooltips
-        tooltip: this._translateService.instant('TABLE.ACTIONS.VIEW', {
+        tooltip: this._translateService.instant('COMMON.VIEW', {
           feature: feature,
         }),
       },
@@ -63,7 +63,7 @@ export class SkillListComponent {
         icon: 'pi pi-pencil',
         action: (dep: Skill) => this.goToEdit(dep, false),
         severity: 'warn',
-        tooltip: this._translateService.instant('TABLE.ACTIONS.EDIT', {
+        tooltip: this._translateService.instant('COMMON.EDIT', {
           feature: feature,
         }),
       },
@@ -71,7 +71,7 @@ export class SkillListComponent {
         icon: 'pi pi-trash',
         action: (dep: Skill) => this.showDeleteDialog(dep.id),
         severity: 'danger',
-        tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
+        tooltip: this._translateService.instant('COMMON.DELETE', {
           feature: feature,
         }),
       },
@@ -98,12 +98,13 @@ export class SkillListComponent {
 
   nameSearch = computed(() => {
     this.currentLang();
-    return this._translateService.instant('SKILL.LIST.FILTERS.NAME');
+    return this._translateService.instant('COMMON.FILTERS.NAME');
   });
 
   addNewLabel = computed(() => {
     this.currentLang();
-    return this._translateService.instant('SKILL.LIST.ADD');
+    const feature = this.currentLang() === 'en' ? 'Skill' : 'Veštinu';
+    return this._translateService.instant('COMMON.LIST.ADD', { feature });
   });
   skillFormGroup = this._formBuilder.group({
     name: [''],
@@ -173,12 +174,12 @@ export class SkillListComponent {
   }
 
   goToEdit(skill: Skill | null, disable: boolean): void {
-    const newLabel = this.currentLang() === 'en' ? 'Skill' : 'novu Veštinu';
+    const newLabel = this.currentLang() === 'en' ? 'Skill' : 'Veštinu';
     const title = skill
-      ? `${this._translateService.instant('HOME.PANEL.GENERAL.EMPLOYEE')} ${
+      ? `${this._translateService.instant('COMMON.SKILL')} ${
           skill.id
         }`
-      : this._translateService.instant('FORM.TITLE', { feature: newLabel });
+      : this._translateService.instant('COMMON.LIST.ADD', { feature: newLabel });
     const dialogRef = this._dialogService.open(SkillEditComponent, {
       header: title,
       modal: true,
@@ -211,20 +212,20 @@ export class SkillListComponent {
     if (id) {
       const feature = this.currentLang() === 'en' ? 'skill' : 'veštinu';
       this._confirmationService.confirm({
-        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+        message: this._translateService.instant('CONFIRMATION.DELETE_MESSAGE', {
           feature: feature,
           id: id,
         }),
-        header: this._translateService.instant('CONFITMATION.TITLE'),
+        header: this._translateService.instant('CONFIRMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: this._translateService.instant('CONFITMATION.CANCEL'),
+          label: this._translateService.instant('CONFIRMATION.CANCEL'),
           severity: 'danger',
         },
         acceptButtonProps: {
-          label: this._translateService.instant('CONFITMATION.ACCEPT'),
+          label: this._translateService.instant('CONFIRMATION.ACCEPT'),
         },
         accept: () => {
           this._skillListFacade.delete(id);

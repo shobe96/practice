@@ -150,37 +150,37 @@ export class EmployeeEditComponent implements OnInit {
   }
 
   get submitLabel(): string {
-    return this._translateService.instant('FORM.SUBMIT');
+    return this._translateService.instant('COMMON.SUBMIT');
   }
 
   get cancelLabel(): string {
-    return this._translateService.instant('FORM.CANCEL');
+    return this._translateService.instant('COMMON.CANCEL');
   }
 
   get loadingLabel(): string {
-    return this._translateService.instant('LOADING');
+    return this._translateService.instant('COMMON.LOADING');
   }
 
   get namePlaceholder(): string {
-    return this._translateService.instant('EMPLOYEES.FORM.NAME');
+    return this._translateService.instant('COMMON.NAME');
   }
 
   get surnamePlaceholder(): string {
-    return this._translateService.instant('EMPLOYEES.FORM.SURNAME');
+    return this._translateService.instant('EMPLOYEE.LIST.TABLE.SURNAME');
   }
 
   get emailPlaceholder(): string {
-    return this._translateService.instant('EMPLOYEES.FORM.EMAIL');
+    return this._translateService.instant('EMPLOYEE.LIST.TABLE.EMAIL');
   }
 
   get selectDepratment(): string {
     const feature = this._setTranslation('Department', 'Odeljenje');
-    return this._translateService.instant('FORM.SELECT', { feature: feature });
+    return this._translateService.instant('FORM.SELECT_LABEL', { feature: feature });
   }
 
   get selectSkills(): string {
     const feature = this._setTranslation('Skills', 'Veštine');
-    return this._translateService.instant('FORM.SELECT', { feature: feature });
+    return this._translateService.instant('FORM.SELECT_LABEL', { feature: feature });
   }
 
   minLengthTranslation(key: string, length: number): string {

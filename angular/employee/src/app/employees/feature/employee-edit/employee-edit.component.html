@@ -15,9 +15,9 @@
         <app-validation-messages
           [control]="employeeFormGroup.controls['name']"
           [messages]="{
-            required: requiredTranslation('EMPLOYEES.LIST.TABLE.NAME'),
-            minlength: minLengthTranslation('EMPLOYEES.LIST.TABLE.NAME', 5),
-            maxlength: maxLengthTranslation('EMPLOYEES.LIST.TABLE.NAME', 25)
+            required: requiredTranslation('COMMON.NAME'),
+            minlength: minLengthTranslation('COMMON.NAME', 5),
+            maxlength: maxLengthTranslation('COMMON.NAME', 25)
           }"
         />
         }
@@ -32,9 +32,9 @@
         <app-validation-messages
           [control]="employeeFormGroup.controls['surname']"
           [messages]="{
-            required: requiredTranslation('EMPLOYEES.LIST.TABLE.SURNAME'),
-            minlength: minLengthTranslation('EMPLOYEES.LIST.TABLE.SURNAME', 5),
-            maxlength: maxLengthTranslation('EMPLOYEES.LIST.TABLE.SURNAME', 25)
+            required: requiredTranslation('EMPLOYEE.LIST.TABLE.SURNAME'),
+            minlength: minLengthTranslation('EMPLOYEE.LIST.TABLE.SURNAME', 5),
+            maxlength: maxLengthTranslation('EMPLOYEE.LIST.TABLE.SURNAME', 25)
           }"
         />
         }
@@ -51,9 +51,9 @@
         <app-validation-messages
           [control]="employeeFormGroup.controls['email']"
           [messages]="{
-            required: requiredTranslation('EMPLOYEES.LIST.TABLE.EMAIL'),
+            required: requiredTranslation('EMPLOYEE.LIST.TABLE.EMAIL'),
             email: emailTranslation,
-            maxlength: maxLengthTranslation('EMPLOYEES.LIST.TABLE.EMAIL', 50)
+            maxlength: maxLengthTranslation('EMPLOYEE.LIST.TABLE.EMAIL', 50)
           }"
         />
         }

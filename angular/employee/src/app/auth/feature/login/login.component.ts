@@ -101,7 +101,7 @@ export class LoginComponent {
   );
 
   get submitTranslation(): string {
-    return this._translateService.instant("AUTH.LOGIN.SUBMIT");
+    return this._translateService.instant("COMMON.SUBMIT");
   }
 
   private _getFieldTranslation(enValue: string, rsValue: string): string {

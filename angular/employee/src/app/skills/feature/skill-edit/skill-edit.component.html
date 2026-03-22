@@ -10,9 +10,9 @@
     <app-validation-messages
       [control]="skillFormGroup.controls['name']"
       [messages]="{
-        required: requiredTranslation('SKILL.LIST.TABLE.NAME'),
-        minlength: minLengthTranslation('SKILL.LIST.TABLE.NAME', 5),
-        maxlength: maxLengthTranslation('SKILL.LIST.TABLE.NAME', 25)
+        required: requiredTranslation('COMMON.NAME'),
+        minlength: minLengthTranslation('COMMON.NAME', 5),
+        maxlength: maxLengthTranslation('COMMON.NAME', 25)
       }"
     />
     }
@@ -20,15 +20,15 @@
       [readonly]="disable"
       formControlName="description"
       pInputText
-      placeholder="Description of skill"
+      [placeholder]="descriptionPlaceholder"
     />
     @if (isInvalid('description')) {
     <app-validation-messages
       [control]="skillFormGroup.controls['description']"
       [messages]="{
-        required: requiredTranslation('SKILL.FORM.DESCRIPTION'),
-        minlength: minLengthTranslation('SKILL.FORM.DESCRIPTION', 5),
-        maxlength: maxLengthTranslation('SKILL.FORM.DESCRIPTION', 25)
+        required: requiredTranslation('COMMON.DESCRIPTION'),
+        minlength: minLengthTranslation('COMMON.DESCRIPTION', 5),
+        maxlength: maxLengthTranslation('COMMON.DESCRIPTION', 25)
       }"
     />
     } @if (viewModel(); as vm) { @if(vm.loading) {

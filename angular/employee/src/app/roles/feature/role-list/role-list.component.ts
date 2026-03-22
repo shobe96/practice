@@ -186,20 +186,20 @@ export class RoleListComponent {
     if (id) {
       const feature = this.currentLang() === 'en' ? 'role' : 'ulogu';
       this._confirmationService.confirm({
-        message: this._translateService.instant('CONFITMATION.MESSAGE', {
+        message: this._translateService.instant('CONFIRMATION.DELETE_MESSAGE', {
           feature: feature,
           id: id,
         }),
-        header: this._translateService.instant('CONFITMATION.TITLE'),
+        header: this._translateService.instant('CONFIRMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: this._translateService.instant('CONFITMATION.CANCEL'),
+          label: this._translateService.instant('CONFIRMATION.CANCEL'),
           severity: 'danger'
         },
         acceptButtonProps: {
-          label: this._translateService.instant('CONFITMATION.ACCEPT'),
+          label: this._translateService.instant('CONFIRMATION.ACCEPT'),
         },
         accept: () => {
           this._roleListFacade.delete(id);
