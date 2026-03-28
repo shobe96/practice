@@ -37,12 +37,12 @@
     </div>
     } }
     <div class="action-buttons">
-      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+      <p-button severity="danger" [label]="cancelLabel" (onClick)="cancel()" />
       @if(!disable) {
       <p-button
         severity="success"
         [disabled]="skillFormGroup.invalid"
-        label="Submit"
+        [label]="submitLabel"
         type="submit"
       />
       }

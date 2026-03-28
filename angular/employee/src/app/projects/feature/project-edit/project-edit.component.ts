@@ -131,7 +131,7 @@ export class ProjectEditComponent implements OnInit {
   }
 
   get namePlaceholder(): string {
-    return this._translateService.instant('PROJECT.FORM.NAME');
+    return this._translateService.instant('COMMON.NAME');
   }
 
   get codePlaceholder(): string {
@@ -151,11 +151,11 @@ export class ProjectEditComponent implements OnInit {
   }
 
   get submitLabel(): string {
-    return this._translateService.instant('FORM.SUBMIT');
+    return this._translateService.instant('COMMON.SUBMIT');
   }
 
   get cancelLabel(): string {
-    return this._translateService.instant('FORM.CANCEL');
+    return this._translateService.instant('COMMON.CANCEL');
   }
 
   minLengthTranslation(key: string, length: number): string {

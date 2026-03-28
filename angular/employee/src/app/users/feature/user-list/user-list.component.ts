@@ -43,7 +43,7 @@ export class UserListComponent {
       icon: 'pi pi-trash',
       action: (usr: User) => this.showDeleteDialog(usr.id),
       severity: 'danger',
-      tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
+      tooltip: this._translateService.instant('COMMON.DELETE', {
           feature: feature,
         })
     }
@@ -158,6 +158,6 @@ export class UserListComponent {
 
   ussernameSearch = computed(() => {
     this.currentLang();
-    return this._translateService.instant('USER.TABLE.USERNAME');
+    return this._translateService.instant('USER.LIST.FILTERS.USERNAME');
   });
 }

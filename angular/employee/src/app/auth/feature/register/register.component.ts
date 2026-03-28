@@ -195,6 +195,6 @@ export class RegisterComponent implements OnInit {
   }
 
   get submitLabel(): string {
-    return this._translateService.instant('FORM.SUBMIT');
+    return this._translateService.instant('COMMON.SUBMIT');
   }
 }

@@ -59,7 +59,7 @@ export class ProjectListComponent {
           action: (pro: Project) => this.goToDetails(pro),
           severity: 'success',
           // Translate the tooltips
-          tooltip: this._translateService.instant('TABLE.ACTIONS.VIEW', {
+          tooltip: this._translateService.instant('COMMON.VIEW', {
             feature: feature,
           }),
         },
@@ -67,7 +67,7 @@ export class ProjectListComponent {
           icon: 'pi pi-pencil',
           action: (pro: Project) => this.goToEdit(pro),
           severity: 'warn',
-          tooltip: this._translateService.instant('TABLE.ACTIONS.EDIT', {
+          tooltip: this._translateService.instant('COMMON.EDIT', {
             feature: feature,
           }),
         },
@@ -75,7 +75,7 @@ export class ProjectListComponent {
           icon: 'pi pi-trash',
           action: (pro: Project) => this.showDeleteDialog(pro.id),
           severity: 'danger',
-          tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
+          tooltip: this._translateService.instant('COMMON.DELETE', {
             feature: feature,
           }),
         },
@@ -140,17 +140,18 @@ export class ProjectListComponent {
   
   addNewLabel = computed(() => {
     this.currentLang();
-    return this._translateService.instant('PROJECT.LIST.ADD');
+    const feature = this.currentLang() === 'en' ? 'Project' : 'Projekat';
+    return this._translateService.instant('COMMON.LIST.ADD', { feature });
   });
 
   nameSearch = computed(() => {
     this.currentLang();
-    return this._translateService.instant('PROJECT.LIST.FILTERS.NAME');
+    return this._translateService.instant('COMMON.FILTERS.NAME');
   });
 
   codeSearch = computed(() => {
     this.currentLang();
-    return this._translateService.instant('PROJECT.LIST.FILTERS.CODE');
+    return this._translateService.instant('PROJECT.FILTERS.CODE');
   });
 
   addNew(): void {
@@ -173,10 +174,10 @@ export class ProjectListComponent {
   goToEdit(project: Project | null): void {
     const newLabel = this.currentLang() === 'en' ? 'Project' : 'novi Projekat';
     const title = project
-      ? `${this._translateService.instant('PROJECT.FORM.TITLE')} ${
+      ? `${this._translateService.instant('COMMON.PROJECT')} ${
           project.id
         }`
-      : this._translateService.instant('FORM.TITLE', { feature: newLabel });
+      : this._translateService.instant('COMMON.LIST.ADD', { feature: newLabel });
     const dialogRef = this._dialogService.open(ProjectEditComponent, {
       header: title,
       modal: true,

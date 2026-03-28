@@ -91,11 +91,11 @@ export class SkillEditComponent implements OnInit {
   }
 
    get submitLabel(): string {
-    return this._translateService.instant('FORM.SUBMIT');
+    return this._translateService.instant('COMMON.SUBMIT');
   }
 
   get cancelLabel(): string {
-    return this._translateService.instant('FORM.CANCEL');
+    return this._translateService.instant('COMMON.CANCEL');
   }
 
   get loadingLabel(): string {

@@ -15,6 +15,7 @@
     "LOADING": "Učitavanje...",
     "SUCCESS": "Uspeh",
     "ERROR": "Greška",
+    "PROJECT": "Projekat",
     "FILTERS": {
       "NAME": "Pretraži po imenu"
     },
@@ -113,6 +114,9 @@
     }
   },
   "PROJECT": {
+    "FILTERS": {
+      "CODE":"Pretraži po kodu"
+    },
     "FORM": {
       "TITLE": "Detalji projekta",
       "CODE": "Kod projekta",
@@ -161,5 +165,12 @@
     "DELETE_MESSAGE": "Upravo ćete obrisati {{ feature }} (ID: {{ id }}). Ova radnja je nepovratna.",
     "CANCEL": "Odustani",
     "ACCEPT": "Da, obriši"
+  },
+  "USER": {
+    "LIST": {
+      "FILTERS": {
+        "USERNAME": "Pretraži po Korisničkom imenu"
+      }
+    }
   }
 }

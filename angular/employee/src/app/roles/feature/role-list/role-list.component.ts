@@ -49,7 +49,7 @@ export class RoleListComponent {
           action: (usr: Role) => this.goToDetails(usr),
           severity: 'success',
           // Translate the tooltips
-          tooltip: this._translateService.instant('TABLE.ACTIONS.VIEW', {
+          tooltip: this._translateService.instant('COMMON.VIEW', {
             feature: feature,
           }),
         },
@@ -57,7 +57,7 @@ export class RoleListComponent {
           icon: 'pi pi-pencil',
           action: (usr: Role) => this.goToEdit(usr, false),
           severity: 'warn',
-          tooltip: this._translateService.instant('TABLE.ACTIONS.EDIT', {
+          tooltip: this._translateService.instant('COMMON.EDIT', {
             feature: feature,
           }),
         },
@@ -65,7 +65,7 @@ export class RoleListComponent {
           icon: 'pi pi-trash',
           action: (usr: Role) => this.showDeleteDialog(usr.id),
           severity: 'danger',
-          tooltip: this._translateService.instant('TABLE.ACTIONS.DELETE', {
+          tooltip: this._translateService.instant('COMMON.DELETE', {
             feature: feature,
           }),
         },
@@ -215,12 +215,13 @@ export class RoleListComponent {
 
   nameSearch = computed(() => {
     this.currentLang();
-    return this._translateService.instant('EMPLOYEES.LIST.FILTERS.NAME');
+    return this._translateService.instant('COMMON.FILTERS.NAME');
   });
 
   addNewLabel = computed(() => {
     this.currentLang();
-    return this._translateService.instant('EMPLOYEES.LIST.ADD');
+    const feature = this.currentLang() === 'en' ? 'Role' : 'Ulogu';
+    return this._translateService.instant('COMMON.LIST.ADD', { feature });
   });
 }
 
