@@ -1,7 +1,5 @@
-import { HttpClient } from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ProjectHistory } from './project-history.model';
-import { environment } from '../../../environments/environment.development';
 import { Observable } from 'rxjs';
 import { BaseCrudService } from '../../shared/data-access/services/base/base-crud.service';
 import { ProjecetHistorySearchCriteria } from './project-history-search.criteria';

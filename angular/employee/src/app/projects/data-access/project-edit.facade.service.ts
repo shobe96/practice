@@ -43,7 +43,7 @@ export class ProjectEditFacadeService extends BaseEditFacade<Project> {
   getEmployees(skills: Skill[], department: Department) {
     if (skills.length > 0 && Object.keys(department).length > 0) {
       const criteria: EmployeeSearchCriteria = {
-        skills: skills,
+        skillIds: skills.map(s => s.id ?? 0),
         departmentId: department.id
       }
       this._withLoading(() => this._employeeService.search(criteria).pipe(tap((value) => this._employees$.next(value.items ?? [])))).subscribe();

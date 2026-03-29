@@ -5,10 +5,10 @@
     (clear)="clear()"
     (refresh)="refresh()"
   >
-    <input formControlName="name" pInputText placeholder="Name of department" />
+    <input formControlName="name" pInputText [placeholder]="nameSearch()" />
   </app-search-filter-wrapper>
 
-  <p-button label="Add New" (onClick)="addNew()" />
+  <p-button [label]="addNewLabel()" (onClick)="addNew()" />
   @if(vm.data.length) {
   <p-table
     [rowHover]="true"
@@ -17,9 +17,9 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th id="department_id">ID</th>
-        <th id="department_name">Name</th>
-        <th id="department_actions">Actions</th>
+        <th id="department_id">{{ 'COMMON.ID' | translate }}</th>
+        <th id="department_name">{{ 'COMMON.NAME' | translate }}</th>
+        <th id="department_actions">{{ 'COMMON.ACTIONS' | translate }}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-department>
@@ -27,7 +27,7 @@
         <td>{{ department.id }}</td>
         <td>{{ department.name }}</td>
         <td>
-          @for(btn of actionButtons; track $index) {
+          @for(btn of actionButtons(); track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(department)"

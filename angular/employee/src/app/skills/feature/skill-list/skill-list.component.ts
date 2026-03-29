@@ -1,5 +1,11 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { Skill } from '../../data-access/skill.model';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -17,6 +23,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-skill-list',
@@ -32,50 +39,89 @@ import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-w
     Paginator,
     ProgressSpinner,
     IconButtonComponent,
-    SearchFilterWrapperComponent
-  ]
+    SearchFilterWrapperComponent,
+    TranslatePipe,
+  ],
 })
 export class SkillListComponent {
-
   skillId: number | null = 0;
-  actionButtons: ActionButtons<Skill>[] = [
-    {
-      icon: 'pi pi-eye',
-      action: (sk: Skill) => this.goToDetails(sk),
-      severity: 'success',
-      tooltip: 'View Skill'
-    },
-    {
-      icon: 'pi pi-pencil',
-      action: (sk: Skill) => this.goToEdit(sk, false),
-      severity: 'warn',
-      tooltip: 'Edit Skill'
-    },
-    {
-      icon: 'pi pi-trash',
-      action: (sk: Skill) => this.showDeleteDialog(sk.id),
-      severity: 'danger',
-      tooltip: 'Delete Skill'
-    }
-  ];
 
-  private _skillListFacade: SkillListFacadeService = inject(SkillListFacadeService);
+  readonly actionButtons = computed((): ActionButtons<Skill>[] => {
+    const feature = this.currentLang() === 'en' ? 'Skill' : 'Veštinu';
+
+    return [
+      {
+        icon: 'pi pi-eye',
+        action: (dep: Skill) => this.goToDetails(dep),
+        severity: 'success',
+        // Translate the tooltips
+        tooltip: this._translateService.instant('COMMON.VIEW', {
+          feature: feature,
+        }),
+      },
+      {
+        icon: 'pi pi-pencil',
+        action: (dep: Skill) => this.goToEdit(dep, false),
+        severity: 'warn',
+        tooltip: this._translateService.instant('COMMON.EDIT', {
+          feature: feature,
+        }),
+      },
+      {
+        icon: 'pi pi-trash',
+        action: (dep: Skill) => this.showDeleteDialog(dep.id),
+        severity: 'danger',
+        tooltip: this._translateService.instant('COMMON.DELETE', {
+          feature: feature,
+        }),
+      },
+    ];
+  });
+
+  private _skillListFacade: SkillListFacadeService = inject(
+    SkillListFacadeService
+  );
   private _formBuilder: FormBuilder = inject(FormBuilder);
   private _router: Router = inject(Router);
   private _dialogService: DialogService = inject(DialogService);
-  private _confirmationService: ConfirmationService = inject(ConfirmationService);
+  private _confirmationService: ConfirmationService =
+    inject(ConfirmationService);
   private _activatedRoute: ActivatedRoute = inject(ActivatedRoute);
+  private readonly _translateService = inject(TranslateService);
 
+  readonly currentLang = toSignal(
+    this._translateService.onLangChange.pipe(
+      map((event) => event.lang),
+      startWith(this._translateService.getCurrentLang() || 'en')
+    )
+  );
+
+  nameSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('COMMON.FILTERS.NAME');
+  });
+
+  addNewLabel = computed(() => {
+    this.currentLang();
+    const feature = this.currentLang() === 'en' ? 'Skill' : 'Veštinu';
+    return this._translateService.instant('COMMON.LIST.ADD', { feature });
+  });
   skillFormGroup = this._formBuilder.group({
-    name: ['']
+    name: [''],
   });
 
-  private readonly _queryParamsSignal = toSignal(this._activatedRoute.queryParams, {
-    initialValue: {}
-  });
+  private readonly _queryParamsSignal = toSignal(
+    this._activatedRoute.queryParams,
+    {
+      initialValue: {},
+    }
+  );
 
   private readonly _skillFormSignal = toSignal(
-    this.skillFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
+    this.skillFormGroup.valueChanges.pipe(
+      debounceTime(2000),
+      distinctUntilChanged()
+    ),
     { initialValue: this.skillFormGroup.getRawValue() }
   );
 
@@ -92,8 +138,8 @@ export class SkillListComponent {
       data: [],
       page: this._defaultPage,
       rowsPerPage: [],
-      loading: false
-    }
+      loading: false,
+    },
   });
 
   constructor() {
@@ -128,7 +174,12 @@ export class SkillListComponent {
   }
 
   goToEdit(skill: Skill | null, disable: boolean): void {
-    const title = skill ? `Skill ${skill.id}` : 'Add new Skill';
+    const newLabel = this.currentLang() === 'en' ? 'Skill' : 'Veštinu';
+    const title = skill
+      ? `${this._translateService.instant('COMMON.SKILL')} ${
+          skill.id
+        }`
+      : this._translateService.instant('COMMON.LIST.ADD', { feature: newLabel });
     const dialogRef = this._dialogService.open(SkillEditComponent, {
       header: title,
       modal: true,
@@ -136,15 +187,15 @@ export class SkillListComponent {
       contentStyle: { overflow: 'auto' },
       inputValues: {
         skill: skill,
-        disable: disable
+        disable: disable,
       },
       baseZIndex: 10000,
-      maximizable: true
+      maximizable: true,
     });
 
     dialogRef?.onClose.subscribe((value: boolean) => {
       if (value) {
-        this.refresh()
+        this.refresh();
       }
     });
   }
@@ -159,18 +210,22 @@ export class SkillListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'skill' : 'veštinu';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete skill with id: ${id}`,
-        header: 'Confirmation',
+        message: this._translateService.instant('CONFIRMATION.DELETE_MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
+        header: this._translateService.instant('CONFIRMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
-          severity: 'danger'
+          label: this._translateService.instant('CONFIRMATION.CANCEL'),
+          severity: 'danger',
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFIRMATION.ACCEPT'),
         },
         accept: () => {
           this._skillListFacade.delete(id);
@@ -181,6 +236,9 @@ export class SkillListComponent {
 
   private _clearSearchFields() {
     this.skillFormGroup.controls['name'].setValue('');
-    this._router.navigate([], { queryParams: { name: '' }, queryParamsHandling: 'merge' })
+    this._router.navigate([], {
+      queryParams: { name: '' },
+      queryParamsHandling: 'merge',
+    });
   }
 }

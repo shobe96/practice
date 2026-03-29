@@ -1,6 +1,12 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  effect,
+  inject,
+} from '@angular/core';
 import { Employee } from '../../data-access/employee.model';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { PaginatorState, Paginator } from 'primeng/paginator';
 import { EmployeeListFacadeService } from '../../data-access/employee-list.facade.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
@@ -18,6 +24,7 @@ import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
 import { ActionButtons } from '../../../shared/data-access/action-buttons.model';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-employee-list',
@@ -33,32 +40,75 @@ import { ActionButtons } from '../../../shared/data-access/action-buttons.model'
     DatePipe,
     ProgressSpinner,
     IconButtonComponent,
-    SearchFilterWrapperComponent
-  ]
+    SearchFilterWrapperComponent,
+    TranslatePipe,
+  ],
 })
 export class EmployeeListComponent {
+  private readonly _translateService = inject(TranslateService);
+
+  readonly currentLang = toSignal(
+    this._translateService.onLangChange.pipe(
+      map((event) => event.lang),
+      startWith(this._translateService.getCurrentLang() || 'en')
+    )
+  );
+
+  addNewLabel = computed(() => {
+    this.currentLang();
+    const feature = this.currentLang() === 'en' ? 'Employee' : 'Zapsolenog';
+    return this._translateService.instant('COMMON.LIST.ADD', {
+      feature,
+    });
+  });
+
+  nameSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('COMMON.FILTERS.NAME');
+  });
+
+  surnameSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('EMPLOYEE.LIST.FILTERS.SURNAME');
+  });
+
+  emailSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('EMPLOYEE.LIST.FILTERS.EMAIL');
+  });
 
   employeeId: number | null = 0;
-  actionButtons: ActionButtons<Employee>[] = [
-    {
-      icon: 'pi pi-eye',
-      action: (emp: Employee) => this.goToDetails(emp),
-      severity: 'success',
-      tooltip: 'View Employee'
-    },
-    {
-      icon: 'pi pi-pencil',
-      action: (emp: Employee) => this.goToEdit(emp, false),
-      severity: 'warn',
-      tooltip: 'Edit Employee'
-    },
-    {
-      icon: 'pi pi-trash',
-      action: (emp: Employee) => this.showDeleteDialog(emp.id),
-      severity: 'danger',
-      tooltip: 'Delete Employee'
-    }
-  ];
+  readonly actionButtons = computed((): ActionButtons<Employee>[] => {
+    const feature = this.currentLang() === 'en' ? 'Employee' : 'Zapsolenog';
+
+    return [
+      {
+        icon: 'pi pi-eye',
+        action: (emp: Employee) => this.goToDetails(emp),
+        severity: 'success',
+        // Translate the tooltips
+        tooltip: this._translateService.instant('COMMON.VIEW', {
+          feature: feature,
+        }),
+      },
+      {
+        icon: 'pi pi-pencil',
+        action: (emp: Employee) => this.goToEdit(emp, false),
+        severity: 'warn',
+        tooltip: this._translateService.instant('COMMON.EDIT', {
+          feature: feature,
+        }),
+      },
+      {
+        icon: 'pi pi-trash',
+        action: (emp: Employee) => this.showDeleteDialog(emp.id),
+        severity: 'danger',
+        tooltip: this._translateService.instant('COMMON.DELETE', {
+          feature: feature,
+        }),
+      },
+    ];
+  });
 
   private readonly _employeeListFacade = inject(EmployeeListFacadeService);
   private readonly _formBuilder = inject(FormBuilder);
@@ -73,12 +123,18 @@ export class EmployeeListComponent {
     email: [''],
   });
 
-  private readonly _queryParamsSignal = toSignal(this._activatedRoute.queryParams, {
-    initialValue: {}
-  });
+  private readonly _queryParamsSignal = toSignal(
+    this._activatedRoute.queryParams,
+    {
+      initialValue: {},
+    }
+  );
 
   private readonly _employeeFormSignal = toSignal(
-    this.employeeFormGroup.valueChanges.pipe(debounceTime(2000), distinctUntilChanged()),
+    this.employeeFormGroup.valueChanges.pipe(
+      debounceTime(2000),
+      distinctUntilChanged()
+    ),
     { initialValue: this.employeeFormGroup.getRawValue() }
   );
 
@@ -95,8 +151,8 @@ export class EmployeeListComponent {
       data: [],
       page: this._defaultPage,
       rowsPerPage: [],
-      loading: false
-    }
+      loading: false,
+    },
   });
 
   constructor() {
@@ -131,7 +187,14 @@ export class EmployeeListComponent {
   }
 
   goToEdit(employee: Employee | null, disable: boolean): void {
-    const title = employee ? `Employee ${employee.id}` : 'Add new Employee';
+    const newLabel = this.currentLang() === 'en' ? 'Employee' : 'Zaposlenog';
+    const title = employee
+      ? `${this._translateService.instant('HOME.PANEL.GENERAL.EMPLOYEE')} ${
+          employee.id
+        }`
+      : this._translateService.instant('FORM.CREATE_TITLE', {
+          feature: newLabel,
+        });
     const dialogRef = this._dialogService.open(EmployeeEditComponent, {
       header: title,
       modal: true,
@@ -139,10 +202,10 @@ export class EmployeeListComponent {
       contentStyle: { overflow: 'auto' },
       inputValues: {
         employee: employee,
-        disable: disable
+        disable: disable,
       },
       baseZIndex: 10000,
-      maximizable: true
+      maximizable: true,
     });
 
     dialogRef?.onClose.subscribe((value: boolean) => {
@@ -162,18 +225,22 @@ export class EmployeeListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'employee' : 'zaposlenog';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete employee with id: ${id}`,
-        header: 'Confirmation',
+        message: this._translateService.instant('CONFIRMATION.DELETE_MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
+        header: this._translateService.instant('CONFIRMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
-          severity: 'danger'
+          label: this._translateService.instant('CONFIRMATION.CANCEL'),
+          severity: 'danger',
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFIRMATION.ACCEPT'),
         },
         accept: () => {
           this._employeeListFacade.delete(id);
@@ -186,6 +253,9 @@ export class EmployeeListComponent {
     this.employeeFormGroup.controls['name'].setValue('');
     this.employeeFormGroup.controls['surname'].setValue('');
     this.employeeFormGroup.controls['email'].setValue('');
-    this._router.navigate([], { queryParams: { name: '', surname: '', email: '' }, queryParamsHandling: 'merge' })
+    this._router.navigate([], {
+      queryParams: { name: '', surname: '', email: '' },
+      queryParamsHandling: 'merge',
+    });
   }
 }

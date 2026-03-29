@@ -4,28 +4,32 @@
       [readonly]="disable"
       formControlName="name"
       pInputText
-      placeholder="Name of skill"
+      [placeholder]="namePlaceholder"
     />
     @if (isInvalid('name')) {
     <app-validation-messages
       [control]="skillFormGroup.controls['name']"
-      [messages]="{required: 'Name is required!',
-      minlength: 'Name must be longer than 5 characters!',
-      maxlength: 'Name must be shorter than 25 characters!'}"
+      [messages]="{
+        required: requiredTranslation('COMMON.NAME'),
+        minlength: minLengthTranslation('COMMON.NAME', 5),
+        maxlength: maxLengthTranslation('COMMON.NAME', 25)
+      }"
     />
     }
     <input
       [readonly]="disable"
       formControlName="description"
       pInputText
-      placeholder="Description of skill"
+      [placeholder]="descriptionPlaceholder"
     />
     @if (isInvalid('description')) {
     <app-validation-messages
       [control]="skillFormGroup.controls['description']"
-      [messages]="{required: 'Description is required!',
-      minlength: 'Description must be longer than 5 characters!',
-      maxlength: 'Description must be shorter than 25 characters!'}"
+      [messages]="{
+        required: requiredTranslation('COMMON.DESCRIPTION'),
+        minlength: minLengthTranslation('COMMON.DESCRIPTION', 5),
+        maxlength: maxLengthTranslation('COMMON.DESCRIPTION', 25)
+      }"
     />
     } @if (viewModel(); as vm) { @if(vm.loading) {
     <div class="card flex justify-center progress-spinner">
@@ -33,12 +37,12 @@
     </div>
     } }
     <div class="action-buttons">
-      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+      <p-button severity="danger" [label]="cancelLabel" (onClick)="cancel()" />
       @if(!disable) {
       <p-button
         severity="success"
         [disabled]="skillFormGroup.invalid"
-        label="Submit"
+        [label]="submitLabel"
         type="submit"
       />
       }

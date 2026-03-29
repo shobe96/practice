@@ -9,14 +9,16 @@
         <input
           formControlName="name"
           pInputText
-          placeholder="Name of employee"
+          [placeholder]="namePlaceholder"
         />
         @if(isInvalid('name')) {
         <app-validation-messages
           [control]="employeeFormGroup.controls['name']"
-          [messages]="{required: 'Name is required!',
-      minlength: 'Name must be longer than 5 characters!',
-      maxlength: 'Name must be shorter than 25 characters!'}"
+          [messages]="{
+            required: requiredTranslation('COMMON.NAME'),
+            minlength: minLengthTranslation('COMMON.NAME', 5),
+            maxlength: maxLengthTranslation('COMMON.NAME', 25)
+          }"
         />
         }
       </div>
@@ -24,14 +26,16 @@
         <input
           formControlName="surname"
           pInputText
-          placeholder="Surname of employee"
+          [placeholder]="surnamePlaceholder"
         />
         @if(isInvalid('surname')) {
         <app-validation-messages
           [control]="employeeFormGroup.controls['surname']"
-          [messages]="{required: 'Surname is required!',
-      minlength: 'Surname must be longer than 5 characters!',
-      maxlength: 'Surname must be shorter than 25 characters!'}"
+          [messages]="{
+            required: requiredTranslation('EMPLOYEE.LIST.TABLE.SURNAME'),
+            minlength: minLengthTranslation('EMPLOYEE.LIST.TABLE.SURNAME', 5),
+            maxlength: maxLengthTranslation('EMPLOYEE.LIST.TABLE.SURNAME', 25)
+          }"
         />
         }
       </div>
@@ -41,14 +45,16 @@
         <input
           pInputText
           formControlName="email"
-          placeholder="Email of employee"
+          [placeholder]="emailPlaceholder"
         />
         @if(isInvalid('email')) {
         <app-validation-messages
           [control]="employeeFormGroup.controls['email']"
-          [messages]="{required: 'Email address is required!',
-    email: 'Email address is not valid!',
-    maxlength: 'Email address must be shorter than 50 characters!'}"
+          [messages]="{
+            required: requiredTranslation('EMPLOYEE.LIST.TABLE.EMAIL'),
+            email: emailTranslation,
+            maxlength: maxLengthTranslation('EMPLOYEE.LIST.TABLE.EMAIL', 50)
+          }"
         />
         }
       </div>
@@ -64,7 +70,7 @@
             formControlName="department"
             [options]="vm.departments"
             optionLabel="name"
-            placeholder="Select a Department"
+            [placeholder]="selectDepratment"
             dataKey="id"
           />
         </div>
@@ -75,24 +81,24 @@
             [options]="vm.skills"
             formControlName="skills"
             optionLabel="name"
-            placeholder="Select Skills"
+            [placeholder]="selectSkills"
           />
         </div>
       </div>
       @if(vm.loading) {
       <div class="card flex justify-center progress-spinner">
-        <p-progress-spinner ariaLabel="loading" />
+        <p-progress-spinner [ariaLabel]="loadingLabel" />
       </div>
       }
     </div>
     }
     <div class="action-buttons">
-      <p-button severity="danger" label="Cancel" (onClick)="cancel()" />
+      <p-button severity="danger" [label]="cancelLabel" (onClick)="cancel()" />
       @if(!disable) {
       <p-button
         severity="success"
         [disabled]="employeeFormGroup.invalid"
-        label="Submit"
+        [label]="submitLabel"
         type="submit"
       />
       }

@@ -2,11 +2,14 @@ import { inject } from "@angular/core";
 import { BehaviorSubject, catchError, finalize, map, Observable, of, OperatorFunction, tap } from "rxjs";
 import { CustomMessageService } from "../custom-message/custom-message.service";
 import { BaseCrudService } from "./base-crud.service";
+import { TranslateService } from "@ngx-translate/core";
 
 export abstract class BaseEditFacade<T extends { id?: number }> {
 
   protected readonly _loading$ = new BehaviorSubject<boolean>(false);
   readonly loading$ = this._loading$.asObservable();
+
+  private _translateService = inject(TranslateService);
 
   // ViewModel can be extended in the derived class
   readonly viewModel$ = this.loading$.pipe(map(loading => ({ loading })));
@@ -22,7 +25,7 @@ export abstract class BaseEditFacade<T extends { id?: number }> {
     return this._withLoading(() => {
 
       return request$.pipe(
-        tap(() => this._customMessageService.showSuccess('Success', 'Saved')),
+        tap(() => this._customMessageService.showSuccess(this._translateService.instant("COMMON.SUCCESS"), this._translateService.instant("FORM.SAVED"))),
         map(() => true),
         this._handleError<boolean>(false)
       );
@@ -36,8 +39,8 @@ export abstract class BaseEditFacade<T extends { id?: number }> {
 
   protected _handleError<T>(fallback: T): OperatorFunction<T, T> {
     return catchError(err => {
-      const msg = err?.error?.message ?? 'Unknown error';
-      this._customMessageService.showError('Error', msg);
+      const msg = err?.error?.message ?? this._translateService.instant("FORM.UNKNOWN_ERROR");
+      this._customMessageService.showError(this._translateService.instant("MODAL.ERROR"), msg);
       return of(fallback);
     });
   }

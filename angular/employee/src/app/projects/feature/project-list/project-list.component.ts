@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, effect, inject } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { PaginatorState, Paginator } from 'primeng/paginator';
-import { debounceTime, distinctUntilChanged } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith } from 'rxjs';
 import { Project } from '../../data-access/project.model';
 import { ProjectListFacadeService } from '../../data-access/project-list.facade.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -18,6 +18,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { PageEvent } from '../../../shared/data-access/page-event.model';
 import { SearchFilterWrapperComponent } from '../../../shared/ui/search-filter-wrapper/search-filter-wrapper.component';
 import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.component';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-list',
@@ -33,32 +34,53 @@ import { IconButtonComponent } from '../../../shared/ui/icon-button/icon-button.
     DatePipe,
     ProgressSpinner,
     SearchFilterWrapperComponent,
-    IconButtonComponent
+    IconButtonComponent,
+    TranslatePipe
   ]
 })
 export class ProjectListComponent {
 
+  private readonly _translateService = inject(TranslateService);
+
+  readonly currentLang = toSignal(
+    this._translateService.onLangChange.pipe(
+      map((event) => event.lang),
+      startWith(this._translateService.getCurrentLang() || 'en')
+    )
+  );
+
   projectId: number | null = 0;
-  actionButtons: ActionButtons<Project>[] = [
-    {
-      icon: 'pi pi-eye',
-      action: (pro: Project) => this.goToDetails(pro),
-      severity: 'success',
-      tooltip: 'View Project'
-    },
-    {
-      icon: 'pi pi-pencil',
-      action: (pro: Project) => this.goToEdit(pro),
-      severity: 'warn',
-      tooltip: 'Edit Project'
-    },
-    {
-      icon: 'pi pi-trash',
-      action: (pro: Project) => this.showDeleteDialog(pro.id),
-      severity: 'danger',
-      tooltip: 'Delete Project'
-    }
-  ];
+  readonly actionButtons = computed((): ActionButtons<Project>[] => {
+      const feature = this.currentLang() === 'en' ? 'Project' : 'Projekat';
+  
+      return [
+        {
+          icon: 'pi pi-eye',
+          action: (pro: Project) => this.goToDetails(pro),
+          severity: 'success',
+          // Translate the tooltips
+          tooltip: this._translateService.instant('COMMON.VIEW', {
+            feature: feature,
+          }),
+        },
+        {
+          icon: 'pi pi-pencil',
+          action: (pro: Project) => this.goToEdit(pro),
+          severity: 'warn',
+          tooltip: this._translateService.instant('COMMON.EDIT', {
+            feature: feature,
+          }),
+        },
+        {
+          icon: 'pi pi-trash',
+          action: (pro: Project) => this.showDeleteDialog(pro.id),
+          severity: 'danger',
+          tooltip: this._translateService.instant('COMMON.DELETE', {
+            feature: feature,
+          }),
+        },
+      ];
+    });
 
   private readonly _projectListFacade: ProjectListFacadeService = inject(ProjectListFacadeService);
   private readonly _formBuilder: FormBuilder = inject(FormBuilder);
@@ -115,6 +137,22 @@ export class ProjectListComponent {
       }
     });
   }
+  
+  addNewLabel = computed(() => {
+    this.currentLang();
+    const feature = this.currentLang() === 'en' ? 'Project' : 'Projekat';
+    return this._translateService.instant('COMMON.LIST.ADD', { feature });
+  });
+
+  nameSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('COMMON.FILTERS.NAME');
+  });
+
+  codeSearch = computed(() => {
+    this.currentLang();
+    return this._translateService.instant('PROJECT.FILTERS.CODE');
+  });
 
   addNew(): void {
     this.goToEdit(null);
@@ -134,7 +172,12 @@ export class ProjectListComponent {
   }
 
   goToEdit(project: Project | null): void {
-    const title = project ? `Project ${project.id}` : 'Add new Project';
+    const newLabel = this.currentLang() === 'en' ? 'Project' : 'novi Projekat';
+    const title = project
+      ? `${this._translateService.instant('COMMON.PROJECT')} ${
+          project.id
+        }`
+      : this._translateService.instant('COMMON.LIST.ADD', { feature: newLabel });
     const dialogRef = this._dialogService.open(ProjectEditComponent, {
       header: title,
       modal: true,
@@ -164,18 +207,22 @@ export class ProjectListComponent {
 
   showDeleteDialog(id: number | undefined): void {
     if (id) {
+      const feature = this.currentLang() === 'en' ? 'project' : 'projekat';
       this._confirmationService.confirm({
-        message: `Are you sure you want to delete project with id: ${id}`,
-        header: 'Confirmation',
+        message: this._translateService.instant('CONFIRMATION.DELETE_MESSAGE', {
+          feature: feature,
+          id: id,
+        }),
+        header: this._translateService.instant('CONFIRMATION.TITLE'),
         closable: true,
         closeOnEscape: true,
         icon: 'pi pi-exclamation-triangle',
         rejectButtonProps: {
-          label: 'Cancel',
+          label: this._translateService.instant('CONFIRMATION.CANCEL'),
           severity: 'danger'
         },
         acceptButtonProps: {
-          label: 'Delete',
+          label: this._translateService.instant('CONFIRMATION.ACCEPT'),
         },
         accept: () => {
           this._projectListFacade.delete(id);

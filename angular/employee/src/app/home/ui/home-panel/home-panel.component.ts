@@ -10,14 +10,14 @@ import { Ripple } from 'primeng/ripple';
 import { TableModule } from 'primeng/table';
 import { PrimeTemplate } from 'primeng/api';
 import { DatePipe } from '@angular/common';
-import { Button } from 'primeng/button';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-home-panel',
   templateUrl: './home-panel.component.html',
   styleUrl: './home-panel.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Paginator, Button, DatePipe]
+  imports: [Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Paginator, DatePipe, TranslatePipe]
 })
 export class HomePanelComponent {
 
@@ -33,7 +33,8 @@ export class HomePanelComponent {
     sort: 'asc',
   };
 
-  private _router: Router = inject(Router);
+  private _router = inject(Router);
+  private _translateService = inject(TranslateService);
 
   goToEdit() {
     this._router.navigate([`/employee/edit/${this.employee.id}`])
@@ -43,5 +44,13 @@ export class HomePanelComponent {
     this.page.first = event.first ?? 0;
     this.page.page = event.page ?? 0;
     this.page.size = event.rows ?? 0;
+  }
+
+  translateStatus(active: boolean | undefined) {
+    if (active) {
+      return this._translateService.instant("HOME.PANEL.GENERAL.ASSAIGNED");
+    } else {
+      return this._translateService.instant("HOME.PANEL.GENERAL.FREE");
+    }
   }
 }

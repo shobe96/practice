@@ -5,11 +5,11 @@
     (clear)="clear()"
     (refresh)="refresh()"
   >
-    <input formControlName="name" pInputText placeholder="Name of project" />
-    <input formControlName="code" pInputText placeholder="Code of project" />
+    <input formControlName="name" pInputText [placeholder]="nameSearch()" />
+    <input formControlName="code" pInputText [placeholder]="codeSearch()" />
   </app-search-filter-wrapper>
 
-  <p-button label="Add New" (onClick)="addNew()" />
+  <p-button [label]="addNewLabel()" (onClick)="addNew()" />
   @if(vm.data.length) {
   <p-table
     [rowHover]="true"
@@ -18,11 +18,11 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th id="id">ID</th>
-        <th id="name">Name</th>
-        <th id="startDate">Start Date</th>
-        <th id="startDate">End Date</th>
-        <th id="actions">Actions</th>
+        <th id="id">{{ 'COMMON.ID' | translate }}</th>
+        <th id="name">{{ 'COMMON.NAME' | translate }}</th>
+        <th id="actions">{{ 'PROJECT.FORM.START' | translate }}</th>
+        <th id="actions">{{ 'PROJECT.FORM.END' | translate }}</th>
+         <th id="actions">{{ 'COMMON.ACTIONS' | translate }}</th>
       </tr>
     </ng-template>
     <ng-template pTemplate="body" let-project>
@@ -32,7 +32,7 @@
         <td>{{ project.startDate | date: "dd/MM/yyyy" }}</td>
         <td>{{ project.endDate | date: "dd/MM/yyyy" }}</td>
         <td>
-          @for(btn of actionButtons; track $index) {
+          @for(btn of actionButtons(); track $index) {
           <app-icon-button
             [icon]="btn.icon"
             (action)="btn.action(project)"

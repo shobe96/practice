@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AuthFacadeService } from '../../../auth/data-access/auth.facade.service';
 import { messageLife } from '../../constants.model';
 import { Menubar } from 'primeng/menubar';
@@ -13,7 +13,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [Menubar, PrimeTemplate, Toast]
 })
-export class NavBarComponent implements OnInit {
+export class NavBarComponent{
 
   life = messageLife;
 
@@ -25,8 +25,4 @@ export class NavBarComponent implements OnInit {
     menuItems: [],
     loading: false
   }});
-
-  ngOnInit(): void {
-    this.authFacade.checkAuthResponse();
-  }
 }

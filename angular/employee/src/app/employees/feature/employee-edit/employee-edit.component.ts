@@ -1,6 +1,17 @@
-import { ChangeDetectionStrategy, Component, inject, Input, OnInit } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  inject,
+  Input,
+  OnInit,
+} from '@angular/core';
 import { Employee } from '../../data-access/employee.model';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { EmployeeEditFacadeService } from '../../data-access/employee-edit.facade.service';
 import { DynamicDialogRef } from 'primeng/dynamicdialog';
 import { InputText } from 'primeng/inputtext';
@@ -10,6 +21,8 @@ import { Button } from 'primeng/button';
 import { ProgressSpinner } from 'primeng/progressspinner';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { ValidationMessagesComponent } from '../../../shared/ui/validation-messages/validation-messages.component';
+import { TranslateService } from '@ngx-translate/core';
+import { map, startWith } from 'rxjs';
 
 @Component({
   selector: 'app-employee-edit',
@@ -23,24 +36,31 @@ import { ValidationMessagesComponent } from '../../../shared/ui/validation-messa
     MultiSelect,
     Button,
     ProgressSpinner,
-    ValidationMessagesComponent
+    ValidationMessagesComponent,
   ],
-  providers: [EmployeeEditFacadeService]
+  providers: [EmployeeEditFacadeService],
 })
 export class EmployeeEditComponent implements OnInit {
-
   employeeFormGroup!: FormGroup;
 
   @Input() employee: Employee = {};
   @Input() disable = false;
 
   private _employeeEditFacade = inject(EmployeeEditFacadeService);
+  private _translateService = inject(TranslateService);
+
+  readonly currentLang = toSignal(
+    this._translateService.onLangChange.pipe(
+      map((event) => event.lang),
+      startWith(this._translateService.getCurrentLang() || 'en')
+    )
+  );
   viewModel = toSignal(this._employeeEditFacade.viewModel$, {
     initialValue: {
       skills: [],
       departments: [],
-      loading: false
-    }
+      loading: false,
+    },
   });
   private _formBuilder = inject(FormBuilder);
   private _dialogRef = inject(DynamicDialogRef);
@@ -57,7 +77,7 @@ export class EmployeeEditComponent implements OnInit {
 
   submit() {
     this.employee = this._getFormValues();
-    this._employeeEditFacade.submit(this.employee).subscribe(res => {
+    this._employeeEditFacade.submit(this.employee).subscribe((res) => {
       if (res) {
         this._dialogRef.close(true);
       }
@@ -66,11 +86,28 @@ export class EmployeeEditComponent implements OnInit {
 
   private _buildForm() {
     this.employeeFormGroup = this._formBuilder.group({
-      name: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
-      surname: ['', [Validators.required, Validators.maxLength(25), Validators.minLength(5)]],
-      email: ['', [Validators.required, Validators.maxLength(50), Validators.email]],
+      name: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(25),
+          Validators.minLength(5),
+        ],
+      ],
+      surname: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(25),
+          Validators.minLength(5),
+        ],
+      ],
+      email: [
+        '',
+        [Validators.required, Validators.maxLength(50), Validators.email],
+      ],
       department: [{}],
-      skills: [[]]
+      skills: [[]],
     });
   }
 
@@ -86,8 +123,8 @@ export class EmployeeEditComponent implements OnInit {
       surname: this.employee.surname ?? '',
       email: this.employee.email ?? '',
       department: this.employee.department ?? {},
-      skills: this.employee.skills ?? []
-    })
+      skills: this.employee.skills ?? [],
+    });
   }
 
   private _getFormValues(): Employee {
@@ -105,8 +142,75 @@ export class EmployeeEditComponent implements OnInit {
 
   private _setFormDisabledState(): void {
     const controls = ['name', 'surname', 'email', 'department', 'skills'];
-    controls.forEach(control =>
-      this.employeeFormGroup.controls[control][this.disable ? 'disable' : 'enable']()
+    controls.forEach((control) =>
+      this.employeeFormGroup.controls[control][
+        this.disable ? 'disable' : 'enable'
+      ]()
     );
+  }
+
+  get submitLabel(): string {
+    return this._translateService.instant('COMMON.SUBMIT');
+  }
+
+  get cancelLabel(): string {
+    return this._translateService.instant('COMMON.CANCEL');
+  }
+
+  get loadingLabel(): string {
+    return this._translateService.instant('COMMON.LOADING');
+  }
+
+  get namePlaceholder(): string {
+    return this._translateService.instant('COMMON.NAME');
+  }
+
+  get surnamePlaceholder(): string {
+    return this._translateService.instant('EMPLOYEE.LIST.TABLE.SURNAME');
+  }
+
+  get emailPlaceholder(): string {
+    return this._translateService.instant('EMPLOYEE.LIST.TABLE.EMAIL');
+  }
+
+  get selectDepratment(): string {
+    const feature = this._setTranslation('Department', 'Odeljenje');
+    return this._translateService.instant('FORM.SELECT_LABEL', { feature: feature });
+  }
+
+  get selectSkills(): string {
+    const feature = this._setTranslation('Skills', 'Veštine');
+    return this._translateService.instant('FORM.SELECT_LABEL', { feature: feature });
+  }
+
+  minLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MIN_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  maxLengthTranslation(key: string, length: number): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.MAX_LENGTH', {
+      field: field,
+      length: length,
+    });
+  }
+
+  requiredTranslation(key: string): string {
+    const field = this._translateService.instant(key);
+    return this._translateService.instant('VALIDATIONS.REQUIRED', {
+      field: field,
+    });
+  }
+
+  get emailTranslation(): string {
+    return this._translateService.instant('VALIDATIONS.EMAIL');
+  }
+
+  private _setTranslation(enLabel: string, rsLabel: string): string {
+    return this.currentLang() === 'en' ? enLabel : rsLabel;
   }
 }

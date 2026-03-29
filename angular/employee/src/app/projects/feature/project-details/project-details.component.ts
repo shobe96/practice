@@ -9,12 +9,13 @@ import { TableModule } from 'primeng/table';
 import { Button } from 'primeng/button';
 import { Tooltip } from 'primeng/tooltip';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-project-details',
   templateUrl: './project-details.component.html',
   styleUrl: './project-details.component.scss',
-  imports: [Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Button, Tooltip]
+  imports: [Tabs, TabList, Ripple, Tab, TabPanels, TabPanel, TableModule, PrimeTemplate, Button, Tooltip, TranslatePipe]
 })
 export class ProjectDetailsComponent {
 
@@ -26,6 +27,7 @@ export class ProjectDetailsComponent {
   private _route = inject(ActivatedRoute);
   private _router = inject(Router)
   private _confirmationService = inject(ConfirmationService);
+  private _translateService = inject(TranslateService);
 
   viewModel = toSignal(this._projectDetailsFacade.viewModel$);
 
@@ -46,21 +48,25 @@ export class ProjectDetailsComponent {
 
   unassignEmployee(employeeId: number, project: Project) {
     this._confirmationService.confirm({
-      message: `Are you sure you want to unassign employee with id: ${employeeId} from project ${project.name}`,
-      header: 'Confirmation',
+      message: this._translateService.instant('PROJECT.DETAILS.EMPLOYEES.UNASSIGN_MESSAGE', { employeeId: employeeId, projectName: project.name, }),
+      header: this._translateService.instant('CONFIRMATION.TITLE'),
       closable: true,
       closeOnEscape: true,
       icon: 'pi pi-exclamation-triangle',
       rejectButtonProps: {
-        label: 'Cancel',
+        label: this._translateService.instant('CONFIRMATION.CANCEL'),
         severity: 'danger'
       },
       acceptButtonProps: {
-        label: 'Unassign',
+        label: this._translateService.instant('PROJECT.DETAILS.EMPLOYEES.UNASSIGN'),
       },
       accept: () => {
         this._projectDetailsFacade.unassignEmployee(employeeId, project);
       },
     });
+  }
+
+  get backLabel() {
+    return this._translateService.instant('PROJECT.DETAILS.BACK');
   }
 }

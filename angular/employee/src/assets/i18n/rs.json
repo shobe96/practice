@@ -1,0 +1,176 @@
+{
+  "COMMON": {
+    "ID": "ID",
+    "NAME": "Ime",
+    "DEPARTMENT": "Odeljenje",
+    "SKILL": "Veština",
+    "DESCRIPTION": "Opis",
+    "ACTIONS": "Akcije",
+    "SUBMIT": "Pošalji",
+    "CANCEL": "Otkaži",
+    "SAVE": "Sačuvaj",
+    "EDIT": "Izmeni",
+    "DELETE": "Obriši",
+    "VIEW": "Pogledaj",
+    "LOADING": "Učitavanje...",
+    "SUCCESS": "Uspeh",
+    "ERROR": "Greška",
+    "PROJECT": "Projekat",
+    "FILTERS": {
+      "NAME": "Pretraži po imenu"
+    },
+    "LIST": {
+      "ADD": "Dodaj {{ feature }}"
+    }
+  },
+  "NAVBAR": {
+    "HOME": "Početna",
+    "FEATURES": {
+      "TITLE": "Funkcije",
+      "EMPLOYEES": "Zaposleni",
+      "DEPARTMENTS": "Odeljenja",
+      "SKILLS": "Veštine",
+      "PROJECTS": "Projekti"
+    },
+    "USER": {
+      "TITLE": "Korisnik",
+      "USERS": "Korisnici",
+      "ROLES": "Uloge",
+      "LOGIN": "Prijava",
+      "REGISTER": "Registracija",
+      "LOGOUT": "Odjava"
+    },
+    "LANGUAGE": {
+      "TITLE": "Jezik",
+      "ENGLISH": "Engleski",
+      "SERBIAN": "Srpski"
+    }
+  },
+  "AUTH": {
+    "LOGIN": {
+      "TITLE": "Prijava",
+      "USERNAME": "Korisničko ime",
+      "PASSWORD": "Lozinka",
+      "SHOW": "Prikaži lozinku",
+      "HIDE": "Sakrij lozinku",
+      "WELCOME": "Dobrodošli"
+    },
+    "REGISTER": {
+      "TITLE": "Registracija novog korisnika",
+      "USERNAME": "Korisničko ime",
+      "PASSWORD": "Lozinka",
+      "CONFIRM_PASSWORD": "Potvrdi lozinku",
+      "ROLES": "Uloge",
+      "EMPLOYEE": "Zaposleni",
+      "SHOW_PASSWORD": "Prikaži lozinku",
+      "HIDE_PASSWORD": "Sakrij lozinku",
+      "PASSWORD_MISMATCH": "Lozinke se ne podudaraju."
+    }
+  },
+  "HOME": {
+    "NOT_LOGGED_IN": "Niste prijavljeni. Molimo kliknite na dugme ispod ili idite na stranicu za prijavu.",
+    "PANEL": {
+      "GENERAL": {
+        "TITLE": "Generalno",
+        "EMPLOYEE": "Zaposleni",
+        "SURNAME": "Prezime",
+        "EMAIL": "Email",
+        "STATUS": "Status",
+        "ASSIGNED": "Zadužen",
+        "FREE": "Slobodan"
+      },
+      "CURRENTLY_ASSIGNED_PROJECT": {
+        "TITLE": "Trenutni projekat",
+        "CODE": "Kod"
+      },
+      "PROJECT_HISTORY": {
+        "TITLE": "Istorija projekata",
+        "CODE": "Kod",
+        "ASSIGNED_ON": "Zadužen od",
+        "UNASSIGNED_ON": "Razadužen od"
+      },
+      "DEPARTMENT_EMPLOYEES": {
+        "TITLE": "Zaposleni u odeljenju",
+        "SURNAME": "Prezime",
+        "EMAIL": "Email",
+        "EMPLOYMENT_DATE": "Datum zaposlenja",
+        "ACTIVE": "Aktivan"
+      }
+    }
+  },
+  "EMPLOYEE": {
+    "LIST": {
+      "FILTERS": {
+        "NAME": "Pretraži po imenu",
+        "SURNAME": "Pretraži po prezimenu",
+        "EMAIL": "Pretraži po email-u"
+      },
+      "TABLE": {
+        "SURNAME": "Prezime",
+        "EMAIL": "Email",
+        "EMPLOYMENT_DATE": "Datum zaposlenja",
+        "ACTIVE": "Aktivan"
+      }
+    }
+  },
+  "PROJECT": {
+    "FILTERS": {
+      "CODE":"Pretraži po kodu"
+    },
+    "FORM": {
+      "TITLE": "Detalji projekta",
+      "CODE": "Kod projekta",
+      "DEPARTMENT": "Odaberi odeljenje",
+      "SKILLS": "Odaberi veštine",
+      "EMPLOYEES": "Odaberi zaposlene",
+      "START": "Datum početka",
+      "END": "Datum završetka"
+    },
+    "DETAILS": {
+      "BACK": "Nazad na listu",
+      "SKILLS": { "TITLE": "Neophodne veštine" },
+      "EMPLOYEES": {
+        "TITLE": "Angažovani tim",
+        "UNASSIGN": "Ukloni",
+        "UNASSIGN_CONFIRM": "Da li ste sigurni da želite da uklonite korisnika {{employeeName}} sa projekta {{projectName}}?"
+      }
+    }
+  },
+  "VALIDATIONS": {
+    "REQUIRED": "{{ field }} je obavezno polje!",
+    "MIN_LENGTH": "{{ field }} mora imati bar {{ length }} karaktera!",
+    "MAX_LENGTH": "{{ field }} ne sme imati više od {{ length }} karaktera!",
+    "EMAIL": "Email adresa nije validna!",
+    "PASSWORD": {
+      "UPPER": "Mora sadržati bar jedno veliko slovo.",
+      "LOWER": "Mora sadržati bar jedno malo slovo.",
+      "SPECIAL": "Mora sadržati bar jedan specijalni karakter.",
+      "LENGTH": "Mora imati najmanje 8 karaktera.",
+      "DIGIT": "Mora sadržati bar jednu cifru."
+    }
+  },
+  "FILTERS": {
+    "TITLE": "Filteri pretrage",
+    "CLEAR": "Očisti filtere",
+    "REFRESH": "Osveži listu"
+  },
+  "FORM": {
+    "CREATE_TITLE": "Dodaj {{ feature }}",
+    "SELECT_LABEL": "Odaberi {{ feature }}",
+    "SAVED_SUCCESS": "{{ feature }} uspešno sačuvan/a!",
+    "ERROR_GENERIC": "Došlo je do neočekivane greške."
+  },
+  "CONFIRMATION": {
+    "TITLE": "Da li ste sigurni?",
+    "DELETE_MESSAGE": "Upravo ćete obrisati {{ feature }} (ID: {{ id }}). Ova radnja je nepovratna.",
+    "CANCEL": "Odustani",
+    "ACCEPT": "Da, obriši"
+  },
+  "USER": {
+    "LIST": {
+      "FILTERS": {
+        "USERNAME": "Pretraži po Korisničkom imenu"
+      }
+    }
+  }
+}

@@ -2,16 +2,16 @@
 <div class="card">
   <p-tabs value="0">
     <p-tablist>
-      <p-tab value="0">General</p-tab>
-      <p-tab value="1">Necessary Skills</p-tab>
-      <p-tab value="2">Assigned Employees</p-tab>
+      <p-tab value="0">{{'PROJECT.DETAILS.GENERAL.TITLE' |translate}}</p-tab>
+      <p-tab value="1">{{'PROJECT.DETAILS.SKILLS.TITLE' |translate}}</p-tab>
+      <p-tab value="2">{{'PROJECT.DETAILS.EMPLOYEES.TITLE' |translate}}</p-tab>
     </p-tablist>
     <p-tabpanels>
       <p-tabpanel value="0">
-        <h1>Project {{ vm.project.id }}</h1>
-        <label for="name">Name:</label>
+        <h1>{{'PROJECT.DETAILS.GENERAL.SUBTITLE' |translate}} {{ vm.project.id }}</h1>
+        <label for="name">{{'PROJECT.DETAILS.GENERAL.NAME' |translate}}:</label>
         <p id="name">{{ vm.project.name }}</p>
-        <label for="name">Code:</label>
+        <label for="name">{{'PROJECT.DETAILS.GENERAL.CODE' |translate}}:</label>
         <p id="name">{{ vm.project.code }}</p>
       </p-tabpanel>
       <p-tabpanel value="1">
@@ -22,8 +22,8 @@
         >
           <ng-template pTemplate="header">
             <tr>
-              <th id="skillName">Name</th>
-              <th id="description">Description</th>
+              <th id="skillName">{{'PROJECT.DETAILS.SKILLS.NAME' |translate}}</th>
+              <th id="description">{{'PROJECT.DETAILS.SKILLS.DESCRIPTION' |translate}}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-skill>
@@ -42,9 +42,9 @@
         >
           <ng-template pTemplate="header">
             <tr>
-              <th id="employeeName">Name</th>
-              <th id="surname">Surname</th>
-              <th id="actions">Actions</th>
+              <th id="employeeName">{{'PROJECT.DETAILS.EMPLOYEES.NAME' |translate}}</th>
+              <th id="surname">{{'PROJECT.DETAILS.EMPLOYEES.SURNAME' |translate}}</th>
+              <th id="actions">{{'PROJECT.DETAILS.EMPLOYEES.ACTIONS' |translate}}</th>
             </tr>
           </ng-template>
           <ng-template pTemplate="body" let-employee>
@@ -62,7 +62,7 @@
                 />
                 <ng-template #deleteTooltip>
                   <div class="flex align-items-center">
-                    <span>Unassign Employee</span>
+                    <span>{{'PROJECT.DETAILS.EMPLOYEES.UNASSIGN' |translate}}</span>
                   </div>
                 </ng-template>
               </td>
@@ -73,7 +73,7 @@
     </p-tabpanels>
   </p-tabs>
   <div class="action-buttons">
-    <p-button label="Back" (onClick)="back()" />
+    <p-button [label]="backLabel" (onClick)="back()" />
   </div>
 </div>
 }
