@@ -6,7 +6,6 @@ import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app/app.component';
 import { importProvidersFrom, provideZoneChangeDetection } from '@angular/core';
-import Aura from '@primeng/themes/aura';
 import { appRoutes } from './app/app.routes';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { DialogService } from 'primeng/dynamicdialog';
@@ -14,6 +13,7 @@ import { authInterceptor } from './app/shared/data-access/interceptors/auth/auth
 import { errorInterceptor } from './app/shared/data-access/interceptors/error/error.interceptor';
 import {provideTranslateService} from "@ngx-translate/core";
 import {provideTranslateHttpLoader} from "@ngx-translate/http-loader";
+import MyTheme from '@primeuix/themes/aura';
 
 
 bootstrapApplication(AppComponent, {
@@ -23,7 +23,7 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(withInterceptorsFromDi()),
     providePrimeNG({
       theme: {
-        preset: Aura
+        preset: MyTheme
       }
     }),
     provideAnimations(),
