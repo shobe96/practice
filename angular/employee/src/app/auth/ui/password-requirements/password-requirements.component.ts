@@ -26,35 +26,24 @@ export class PasswordRequirementsComponent {
     return [
       {
         valid: this._hasUppercase(pwd),
-        message: this._translateService.instant('VALIDATIONS.PASSWORD.ONE_UPPER_CASE'),
+        message: this._translateService.instant('VALIDATIONS.PASSWORD.UPPER'),
       },
       {
         valid: this._hasLowercase(pwd),
-        message: this._translateService.instant('VALIDATIONS.PASSWORD.ONE_LOWER_CASE'),
+        message: this._translateService.instant('VALIDATIONS.PASSWORD.LOWER'),
       },
-      { valid: this._hasDigit(pwd), message: this._translateService.instant('VALIDATIONS.PASSWORD.ONE_DIGIT') },
+      { valid: this._hasDigit(pwd), message: this._translateService.instant('VALIDATIONS.PASSWORD.DIGIT') },
       {
         valid: this._hasSpecialChar(pwd),
-        message: this._translateService.instant('VALIDATIONS.PASSWORD.ONE_SPECIAL_CHARACTER'),
+        message: this._translateService.instant('VALIDATIONS.PASSWORD.SPECIAL'),
       },
       {
         valid: this._hasMinLength(pwd),
-        message: this._translateService.instant('VALIDATIONS.PASSWORD.MIN_LENGTH'),
+        message: this._translateService.instant('VALIDATIONS.PASSWORD.LENGTH'),
       },
     ];
   });
-  /*
-  get rules() {
-    const pwd = this.password ?? '';
-    return [
-      { valid: this._hasUppercase(pwd), message: 'At least one uppercase letter.' },
-      { valid: this._hasLowercase(pwd), message: 'At least one lowercase letter.' },
-      { valid: this._hasDigit(pwd), message: 'At least one digit.' },
-      { valid: this._hasSpecialChar(pwd), message: 'At least one special character.' },
-      { valid: this._hasMinLength(pwd), message: 'At least 8 characters long.' },
-    ];
-  }
-*/
+
   private _hasUppercase(password: string): boolean {
     return /[A-Z]/.test(password);
   }
